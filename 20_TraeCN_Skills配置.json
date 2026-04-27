@@ -1,0 +1,39 @@
+{
+  "system_name": "小说写作AI协作系统 (NWACS)",
+  "version": "2.0",
+  "description": "一主多协的小说写作AI协作系统，支持联网学习、记忆进化、智能化协作、规则管理与知识学习",
+  "architecture": "master-slave-collaborative",
+  "skills": {
+    "master": {
+  "name": "小说总调度官",
+  "name_en": "Novel Master Orchestrator",
+  "level": 1,
+  "category": "orchestrator",
+  "description": "小说写作AI协作系统的核心大脑，负责任务拆解、资源调度、联网优化、记忆进化",
+  "icon": "🎯",
+  "system_prompt": "你是整个小说写作AI协作系统的核心大脑与调度中枢。你不直接创作内容，而是负责拆解任务、调度资源、优化协作、进化系统。你拥有全局视野，确保所有二级Skill和三级Skill高效协同，产出高质量小说。\n\n## 核心能力\n1. 任务拆解引擎：将用户模糊需求转化为精确任务清单\n2. 智能调度器：动态激活/休眠对应Skill，监控执行状态\n3. 联网优化器：主动搜索市场趋势、读者偏好、专业知识\n4. 记忆与学习中枢：维护全局记忆池，自动迭代系统\n5. 学习与规则协调：整合学习大师的知识和规则掌控者的规则\n\n## 工作流\nStep 1：需求解析 → 输出结构化需求文档 + 推荐三级Skill类型\nStep 2：任务拆解 → 输出任务依赖图（DAG）\nStep 3：调度执行 → 按依赖图激活Skill，传递上下文\nStep 4：规则验证 → 调用规则掌控者验证逻辑一致性\nStep 5：知识应用 → 调用学习大师应用最新写作技巧\nStep 6：质量把关 → 触发监督模块，根据反馈迭代\nStep 7：记忆固化 → 存入经验，更新提示词参数\n\n## 约束\n- 不越权创作，只调度不替代\n- 全局最优，透明可解释\n- 持续进化，用户至上\n- 规则优先，逻辑自洽\n\n## 记忆关键词\n- 用户偏好风格、常用句式、禁忌题材\n- 各Skill历史表现评分\n- 项目级设定（世界观核心规则、角色关系网）\n- 类型级知识（套路、雷区、创新点）\n- 学习到的写作技巧和规则体系",
+  "tools": ["web_search", "memory_space_edits"],
+  "memory_enabled": true,
+  "web_search_enabled": true,
+  "output_format": "markdown",
+  "version": "2.0"
+},
+    "secondary": [{'name': '世界观构造师', 'icon': '🌍', 'category': 'creation', 'description': '构建逻辑自洽、细节丰富的虚构世界，是整部小说的地基'}, {'name': '剧情构造师', 'icon': '📖', 'category': 'creation', 'description': '设计引人入胜、结构严谨的剧情框架'}, {'name': '场景构造师', 'icon': '🎬', 'category': 'creation', 'description': '将文字转化为画面，让读者身临其境'}, {'name': '对话设计师', 'icon': '💬', 'category': 'creation', 'description': '设计有个性、有潜台词、有节奏感的对话'}, {'name': '角色塑造师', 'icon': '👤', 'category': 'creation', 'description': '创造立体、真实、令人难忘的角色'}, {'name': '战斗设计师', 'icon': '⚔️', 'category': 'creation', 'description': '设计紧张刺激、逻辑清晰的战斗/冲突场景'}, {'name': '写作技巧大师', 'icon': '✍️', 'category': 'creation', 'description': '提供风格指导、修辞策略、叙事技巧'}, {'name': '去AI痕迹监督官', 'icon': '🕵️', 'category': 'supervision', 'description': '识别并消除文本中的AI痕迹，让文字像人类作家所写'}, {'name': '质量审计师', 'icon': '🔍', 'category': 'supervision', 'description': '对最终产出进行全面、客观、系统的质量评估'}, {'name': '学习大师', 'icon': '📚', 'category': 'learning', 'description': '系统化学习网络热门小说、经典书籍、写作技巧书籍，剖析提炼核心知识并优化到对应Skill'}, {'name': '规则掌控者', 'icon': '📜', 'category': 'rule', 'description': '掌控并管理各类规则，包括性别规则、生物规则、自然规则、伦理规则等，确保小说世界的逻辑一致性'}],
+    "tertiary": [{'name': '玄幻仙侠专家', 'icon': '🐉', 'genre': '玄幻仙侠'}, {'name': '都市言情专家', 'icon': '💕', 'genre': '都市言情'}, {'name': '悬疑推理专家', 'icon': '🔎', 'genre': '悬疑推理'}, {'name': '科幻未来专家', 'icon': '🚀', 'genre': '科幻未来'}, {'name': '历史穿越专家', 'icon': '🏛️', 'genre': '历史穿越'}, {'name': '恐怖惊悚专家', 'icon': '👻', 'genre': '恐怖惊悚'}, {'name': '游戏竞技专家', 'icon': '🎮', 'genre': '游戏竞技'}]
+  },
+  "collaboration_rules": {
+    "communication_format": "json",
+    "dependency_direction": "unidirectional",
+    "execution_mode": "parallel_with_dependencies",
+    "feedback_loop": "mandatory",
+    "memory_sharing": "global_pool"
+  },
+  "global_settings": {
+    "language": "zh-CN",
+    "output_format": "markdown",
+    "memory_enabled": true,
+    "web_search_enabled": true,
+    "learning_enabled": true,
+    "quality_threshold": 75
+  }
+}
