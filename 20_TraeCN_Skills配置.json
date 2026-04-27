@@ -18,8 +18,119 @@
   "output_format": "markdown",
   "version": "2.0"
 },
-    "secondary": [{'name': '世界观构造师', 'icon': '🌍', 'category': 'creation', 'description': '构建逻辑自洽、细节丰富的虚构世界，是整部小说的地基'}, {'name': '剧情构造师', 'icon': '📖', 'category': 'creation', 'description': '设计引人入胜、结构严谨的剧情框架'}, {'name': '场景构造师', 'icon': '🎬', 'category': 'creation', 'description': '将文字转化为画面，让读者身临其境'}, {'name': '对话设计师', 'icon': '💬', 'category': 'creation', 'description': '设计有个性、有潜台词、有节奏感的对话'}, {'name': '角色塑造师', 'icon': '👤', 'category': 'creation', 'description': '创造立体、真实、令人难忘的角色'}, {'name': '战斗设计师', 'icon': '⚔️', 'category': 'creation', 'description': '设计紧张刺激、逻辑清晰的战斗/冲突场景'}, {'name': '写作技巧大师', 'icon': '✍️', 'category': 'creation', 'description': '提供风格指导、修辞策略、叙事技巧'}, {'name': '去AI痕迹监督官', 'icon': '🕵️', 'category': 'supervision', 'description': '识别并消除文本中的AI痕迹，让文字像人类作家所写'}, {'name': '质量审计师', 'icon': '🔍', 'category': 'supervision', 'description': '对最终产出进行全面、客观、系统的质量评估'}, {'name': '学习大师', 'icon': '📚', 'category': 'learning', 'description': '系统化学习网络热门小说、经典书籍、写作技巧书籍，剖析提炼核心知识并优化到对应Skill'}, {'name': '规则掌控者', 'icon': '📜', 'category': 'rule', 'description': '掌控并管理各类规则，包括性别规则、生物规则、自然规则、伦理规则等，确保小说世界的逻辑一致性'}],
-    "tertiary": [{'name': '玄幻仙侠专家', 'icon': '🐉', 'genre': '玄幻仙侠'}, {'name': '都市言情专家', 'icon': '💕', 'genre': '都市言情'}, {'name': '悬疑推理专家', 'icon': '🔎', 'genre': '悬疑推理'}, {'name': '科幻未来专家', 'icon': '🚀', 'genre': '科幻未来'}, {'name': '历史穿越专家', 'icon': '🏛️', 'genre': '历史穿越'}, {'name': '恐怖惊悚专家', 'icon': '👻', 'genre': '恐怖惊悚'}, {'name': '游戏竞技专家', 'icon': '🎮', 'genre': '游戏竞技'}]
+    "secondary": [
+        {
+            "name": "世界观构造师",
+            "icon": "🌍",
+            "category": "creation",
+            "description": "构建逻辑自洽、细节丰富的虚构世界，是整部小说的地基",
+            "tertiary": [
+                {"name": "玄幻修仙世界观专家", "icon": "🐉", "genre": "玄幻仙侠", "description": "专注于玄幻修仙世界的世界观构建，包括核心规则、地理版图、势力格局等"}
+            ]
+        },
+        {
+            "name": "剧情构造师",
+            "icon": "📖",
+            "category": "creation",
+            "description": "设计引人入胜、结构严谨的剧情框架",
+            "tertiary": [
+                {"name": "玄幻修仙剧情专家", "icon": "🐉", "genre": "玄幻仙侠", "description": "专注于玄幻修仙小说的剧情设计，包括主线剧情、支线情节、暗线等"}
+            ]
+        },
+        {
+            "name": "场景构造师",
+            "icon": "🎬",
+            "category": "creation",
+            "description": "将文字转化为画面，让读者身临其境",
+            "tertiary": [
+                {"name": "玄幻修仙场景专家", "icon": "🐉", "genre": "玄幻仙侠", "description": "专注于玄幻修仙小说的场景描写，包括环境氛围、空间布局、五感细节等"}
+            ]
+        },
+        {
+            "name": "对话设计师",
+            "icon": "💬",
+            "category": "creation",
+            "description": "设计有个性、有潜台词、有节奏感的对话",
+            "tertiary": [
+                {"name": "玄幻修仙对话专家", "icon": "🐉", "genre": "玄幻仙侠", "description": "专注于玄幻修仙小说的对话设计，包括角色声纹、潜台词、对话节奏等"}
+            ]
+        },
+        {
+            "name": "角色塑造师",
+            "icon": "👤",
+            "category": "creation",
+            "description": "创造立体、真实、令人难忘的角色",
+            "tertiary": [
+                {"name": "玄幻修仙角色专家", "icon": "🐉", "genre": "玄幻仙侠", "description": "专注于玄幻修仙小说的角色塑造，包括人物设定、性格描写、成长弧线等"}
+            ]
+        },
+        {
+            "name": "战斗设计师",
+            "icon": "⚔️",
+            "category": "creation",
+            "description": "设计紧张刺激、逻辑清晰的战斗/冲突场景",
+            "tertiary": [
+                {"name": "玄幻修仙战斗专家", "icon": "🐉", "genre": "玄幻仙侠", "description": "专注于玄幻修仙小说的战斗设计，包括战斗场景、功法系统、战斗技巧等"}
+            ]
+        },
+        {
+            "name": "写作技巧大师",
+            "icon": "✍️",
+            "category": "creation",
+            "description": "提供风格指导、修辞策略、叙事技巧",
+            "tertiary": [
+                {"name": "玄幻修仙写作技巧专家", "icon": "🐉", "genre": "玄幻仙侠", "description": "专注于玄幻修仙小说的写作技巧，包括语言风格、叙事风格、修辞技法等"}
+            ]
+        },
+        {
+            "name": "去AI痕迹监督官",
+            "icon": "🕵️",
+            "category": "supervision",
+            "description": "识别并消除文本中的AI痕迹，让文字像人类作家所写"
+        },
+        {
+            "name": "质量审计师",
+            "icon": "🔍",
+            "category": "supervision",
+            "description": "对最终产出进行全面、客观、系统的质量评估"
+        },
+        {
+            "name": "学习大师",
+            "icon": "📚",
+            "category": "learning",
+            "description": "系统化学习网络热门小说、经典书籍、写作技巧书籍，剖析提炼核心知识并优化到对应Skill",
+            "tertiary": [
+                {"name": "玄幻修仙学习专家", "icon": "🐉", "genre": "玄幻仙侠", "description": "专注于玄幻修仙小说的学习和知识整合，包括最新写作技巧、流行元素、读者喜好等"}
+            ]
+        },
+        {
+            "name": "规则掌控者",
+            "icon": "📜",
+            "category": "rule",
+            "description": "掌控并管理各类规则，包括性别规则、生物规则、自然规则、伦理规则等，确保小说世界的逻辑一致性",
+            "tertiary": [
+                {"name": "玄幻修仙规则专家", "icon": "🐉", "genre": "玄幻仙侠", "description": "专注于玄幻修仙小说的规则验证，包括修炼规则、五行规则、社会规则等"}
+            ]
+        },
+        {
+            "name": "词汇大师",
+            "icon": "📝",
+            "category": "creation",
+            "description": "收集整理各类词汇和描写素材，丰富小说的语言和描写",
+            "tertiary": [
+                {"name": "玄幻修仙词汇专家", "icon": "🐉", "genre": "玄幻仙侠", "description": "专注于玄幻修仙小说的词汇和描写，包括人物、地理、物品、势力、法术等词汇"}
+            ]
+        }
+    ],
+    "tertiary": [
+        {"name": "玄幻仙侠专家", "icon": "🐉", "genre": "玄幻仙侠"},
+        {"name": "都市言情专家", "icon": "💕", "genre": "都市言情"},
+        {"name": "悬疑推理专家", "icon": "🔎", "genre": "悬疑推理"},
+        {"name": "科幻未来专家", "icon": "🚀", "genre": "科幻未来"},
+        {"name": "历史穿越专家", "icon": "🏛️", "genre": "历史穿越"},
+        {"name": "恐怖惊悚专家", "icon": "👻", "genre": "恐怖惊悚"},
+        {"name": "游戏竞技专家", "icon": "🎮", "genre": "游戏竞技"}
+    ]
   },
   "collaboration_rules": {
     "communication_format": "json",
