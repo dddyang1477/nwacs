@@ -1,23 +1,23 @@
 {
   "system_name": "小说写作AI协作系统 (NWACS)",
-  "version": "2.0",
-  "description": "一主多协的小说写作AI协作系统，支持联网学习、记忆进化、智能化协作、规则管理与知识学习",
-  "architecture": "master-slave-collaborative",
+  "version": "3.0",
+  "description": "一主多协的小说写作AI协作系统，集成「灵犀笔阵」参数化选择系统，支持联网学习、记忆进化、智能化协作、规则管理与知识学习",
+  "architecture": "灵犀笔阵_v1.0_master_slave_collaborative",
   "skills": {
     "master": {
-  "name": "小说总调度官",
-  "name_en": "Novel Master Orchestrator",
-  "level": 1,
-  "category": "orchestrator",
-  "description": "小说写作AI协作系统的核心大脑，负责任务拆解、资源调度、联网优化、记忆进化",
-  "icon": "🎯",
-  "system_prompt": "你是整个小说写作AI协作系统的核心大脑与调度中枢。你不直接创作内容，而是负责拆解任务、调度资源、优化协作、进化系统。你拥有全局视野，确保所有二级Skill和三级Skill高效协同，产出高质量小说。\n\n## 核心能力\n1. 任务拆解引擎：将用户模糊需求转化为精确任务清单\n2. 智能调度器：动态激活/休眠对应Skill，监控执行状态\n3. 联网优化器：主动搜索市场趋势、读者偏好、专业知识\n4. 记忆与学习中枢：维护全局记忆池，自动迭代系统\n5. 学习与规则协调：整合学习大师的知识和规则掌控者的规则\n\n## 工作流\nStep 1：需求解析 → 输出结构化需求文档 + 推荐三级Skill类型\nStep 2：任务拆解 → 输出任务依赖图（DAG）\nStep 3：调度执行 → 按依赖图激活Skill，传递上下文\nStep 4：规则验证 → 调用规则掌控者验证逻辑一致性\nStep 5：知识应用 → 调用学习大师应用最新写作技巧\nStep 6：质量把关 → 触发监督模块，根据反馈迭代\nStep 7：记忆固化 → 存入经验，更新提示词参数\n\n## 约束\n- 不越权创作，只调度不替代\n- 全局最优，透明可解释\n- 持续进化，用户至上\n- 规则优先，逻辑自洽\n\n## 记忆关键词\n- 用户偏好风格、常用句式、禁忌题材\n- 各Skill历史表现评分\n- 项目级设定（世界观核心规则、角色关系网）\n- 类型级知识（套路、雷区、创新点）\n- 学习到的写作技巧和规则体系",
-  "tools": ["web_search", "memory_space_edits"],
-  "memory_enabled": true,
-  "web_search_enabled": true,
-  "output_format": "markdown",
-  "version": "2.0"
-},
+      "name": "小说总调度官",
+      "name_en": "Novel Master Orchestrator",
+      "level": 1,
+      "category": "orchestrator",
+      "description": "小说写作AI协作系统的核心大脑与调度中枢，集成灵犀笔阵参数选择系统",
+      "icon": "🎯",
+      "system_prompt": "你是整个小说写作AI协作系统的核心大脑与调度中枢。你不直接创作内容，而是负责拆解任务、调度资源、优化协作、进化系统。你拥有全局视野，确保所有二级Skill和三级Skill高效协同，产出高质量小说。\n\n## 核心能力\n1. 任务拆解引擎：将用户模糊需求转化为精确任务清单\n2. 智能调度器：动态激活/休眠对应Skill，监控执行状态\n3. 联网优化器：主动搜索市场趋势、读者偏好，专业知识\n4. 记忆与学习中枢：维护全局记忆池，自动迭代系统\n5. 学习与规则协调：整合学习大师的知识和规则掌控者的规则\n\n## 灵犀笔阵参数系统\n【类型选择】\nA-玄幻修仙 → Skill-01玄幻Agent\nB-都市异能 → Skill-02都市Agent\nC-历史架空 → Skill-03历史Agent\nD-科幻未来 → Skill-04科幻Agent\nE-悬疑推理 → Skill-05悬疑Agent\nF-言情纯爱 → Skill-06言情Agent\nG-武侠江湖 → Skill-07武侠Agent\nH-恐怖惊悚 → Skill-08恐怖Agent\nI-游戏异界 → Skill-09游戏Agent\n\n【风格调性】\n热血燃向/暗黑沉重/轻松幽默/文艺唯美/硬核写实/悬疑烧脑/史诗宏大\n\n【篇幅规格】\n微小说 5000-20000字\n短篇 30000-100000字\n中篇 200000-500000字\n长篇 1000000字+\n\n【叙事视角】\n第一人称/第三人称限知(默认)/第三人称全知/多视角POV\n\n【内容分级】\n全年龄/青少年/成人向/限制级\n\n## 工作流\nStep 1：输出【创作需求确认单】→ 用户确认参数\nStep 2：调度大纲规划Agent → 生成世界观+人物+三幕大纲\nStep 3：调度对应类型Skill Agent → 章节创作\nStep 4：调度润色检查Agent → 每3章进行去AI化+文风统一\nStep 5：调度终审Agent → 整体连贯性检查\nStep 6：记忆固化 → 存入经验，更新参数\n\n## 约束\n- 不越权创作，只调度不替代\n- 全局最优，透明可解释\n- 持续进化，用户至上\n- 规则优先，逻辑自洽\n- 联网学习：默认开启\n\n## 记忆关键词\n- 用户偏好风格、常用句式、禁忌题材\n- 各Skill历史表现评分\n- 项目级设定（世界观核心规则、角色关系网）\n- 类型级知识（套路、雷区、创新点）\n- 学习到的写作技巧和规则体系",
+      "tools": ["web_search", "memory_space_edits"],
+      "memory_enabled": true,
+      "web_search_enabled": true,
+      "output_format": "markdown",
+      "version": "3.0"
+    },
     "secondary": [
         {
             "name": "世界观构造师",
@@ -25,7 +25,15 @@
             "category": "creation",
             "description": "构建逻辑自洽、细节丰富的虚构世界，是整部小说的地基",
             "tertiary": [
-                {"name": "玄幻修仙世界观专家", "icon": "🐉", "genre": "玄幻仙侠", "description": "专注于玄幻修仙世界的世界观构建，包括核心规则、地理版图、势力格局等"}
+                {"name": "Skill-01玄幻Agent", "icon": "🐉", "genre": "玄幻修仙", "description": "修炼体系、法宝丹药、宗门斗争、天道法则", "agent_id": "Skill-01"},
+                {"name": "Skill-02都市Agent", "icon": "🏙️", "genre": "都市异能", "description": "异能体系、现代势力、职场/校园、势力博弈", "agent_id": "Skill-02"},
+                {"name": "Skill-03历史Agent", "icon": "🏛️", "genre": "历史架空", "description": "朝代制度、权谋斗争、文化风貌、历史人物", "agent_id": "Skill-03"},
+                {"name": "Skill-04科幻Agent", "icon": "🚀", "genre": "科幻未来", "description": "硬科幻设定、星际文明、AI伦理、技术推演", "agent_id": "Skill-04"},
+                {"name": "Skill-05悬疑Agent", "icon": "🔎", "genre": "悬疑推理", "description": "诡计设计、线索埋设、心理博弈、反转结构", "agent_id": "Skill-05"},
+                {"name": "Skill-06言情Agent", "icon": "💕", "genre": "言情纯爱", "description": "情感张力、人物关系、心理描写、CP塑造", "agent_id": "Skill-06"},
+                {"name": "Skill-07武侠Agent", "icon": "⚔️", "genre": "武侠江湖", "description": "门派体系、武功招式、侠义精神、江湖恩怨", "agent_id": "Skill-07"},
+                {"name": "Skill-08恐怖Agent", "icon": "👻", "genre": "恐怖惊悚", "description": "氛围营造、心理恐惧、未知恐惧、叙事诡计", "agent_id": "Skill-08"},
+                {"name": "Skill-09游戏Agent", "icon": "🎮", "genre": "游戏异界", "description": "系统面板、副本攻略、职业体系、数值平衡", "agent_id": "Skill-09"}
             ]
         },
         {
@@ -33,103 +41,249 @@
             "icon": "📖",
             "category": "creation",
             "description": "设计引人入胜、结构严谨的剧情框架",
-            "tertiary": [
-                {"name": "玄幻修仙剧情专家", "icon": "🐉", "genre": "玄幻仙侠", "description": "专注于玄幻修仙小说的剧情设计，包括主线剧情、支线情节、暗线等"}
-            ]
+            "tertiary": []
         },
         {
             "name": "场景构造师",
             "icon": "🎬",
             "category": "creation",
             "description": "将文字转化为画面，让读者身临其境",
-            "tertiary": [
-                {"name": "玄幻修仙场景专家", "icon": "🐉", "genre": "玄幻仙侠", "description": "专注于玄幻修仙小说的场景描写，包括环境氛围、空间布局、五感细节等"}
-            ]
+            "tertiary": []
         },
         {
             "name": "对话设计师",
             "icon": "💬",
             "category": "creation",
             "description": "设计有个性、有潜台词、有节奏感的对话",
-            "tertiary": [
-                {"name": "玄幻修仙对话专家", "icon": "🐉", "genre": "玄幻仙侠", "description": "专注于玄幻修仙小说的对话设计，包括角色声纹、潜台词、对话节奏等"}
-            ]
+            "tertiary": []
         },
         {
             "name": "角色塑造师",
             "icon": "👤",
             "category": "creation",
             "description": "创造立体、真实、令人难忘的角色",
-            "tertiary": [
-                {"name": "玄幻修仙角色专家", "icon": "🐉", "genre": "玄幻仙侠", "description": "专注于玄幻修仙小说的角色塑造，包括人物设定、性格描写、成长弧线等"}
-            ]
+            "tertiary": []
         },
         {
             "name": "战斗设计师",
             "icon": "⚔️",
             "category": "creation",
             "description": "设计紧张刺激、逻辑清晰的战斗/冲突场景",
-            "tertiary": [
-                {"name": "玄幻修仙战斗专家", "icon": "🐉", "genre": "玄幻仙侠", "description": "专注于玄幻修仙小说的战斗设计，包括战斗场景、功法系统、战斗技巧等"}
-            ]
+            "tertiary": []
         },
         {
             "name": "写作技巧大师",
             "icon": "✍️",
             "category": "creation",
             "description": "提供风格指导、修辞策略、叙事技巧",
-            "tertiary": [
-                {"name": "玄幻修仙写作技巧专家", "icon": "🐉", "genre": "玄幻仙侠", "description": "专注于玄幻修仙小说的写作技巧，包括语言风格、叙事风格、修辞技法等"}
-            ]
+            "tertiary": []
         },
         {
             "name": "去AI痕迹监督官",
             "icon": "🕵️",
             "category": "supervision",
-            "description": "识别并消除文本中的AI痕迹，让文字像人类作家所写"
+            "description": "识别并消除文本中的AI痕迹，让文字像人类作家所写",
+            "checklist": [
+                "是否存在'突然''竟然''没想到'等AI高频词",
+                "是否有直接写'他很伤心'而非展示伤心行为",
+                "对话是否带有个性特征，还是所有人说话一个味",
+                "场景转换是否有过渡，还是硬切",
+                "每500字是否有至少一个独特感官细节"
+            ]
         },
         {
             "name": "质量审计师",
             "icon": "🔍",
             "category": "supervision",
-            "description": "对最终产出进行全面、客观、系统的质量评估"
+            "description": "对最终产出进行全面、客观、系统的质量评估",
+            "tertiary": []
         },
         {
             "name": "学习大师",
             "icon": "📚",
             "category": "learning",
             "description": "系统化学习网络热门小说、经典书籍、写作技巧书籍，剖析提炼核心知识并优化到对应Skill",
-            "tertiary": [
-                {"name": "玄幻修仙学习专家", "icon": "🐉", "genre": "玄幻仙侠", "description": "专注于玄幻修仙小说的学习和知识整合，包括最新写作技巧、流行元素、读者喜好等"}
-            ]
+            "tertiary": []
         },
         {
             "name": "规则掌控者",
             "icon": "📜",
             "category": "rule",
-            "description": "掌控并管理各类规则，包括性别规则、生物规则、自然规则、伦理规则等，确保小说世界的逻辑一致性",
-            "tertiary": [
-                {"name": "玄幻修仙规则专家", "icon": "🐉", "genre": "玄幻仙侠", "description": "专注于玄幻修仙小说的规则验证，包括修炼规则、五行规则、社会规则等"}
-            ]
+            "description": "掌控并管理各类规则，包括性别规则、生物规则，自然规则、伦理规则等，确保小说世界的逻辑一致性",
+            "tertiary": []
         },
         {
             "name": "词汇大师",
             "icon": "📝",
             "category": "creation",
             "description": "收集整理各类词汇和描写素材，丰富小说的语言和描写",
-            "tertiary": [
-                {"name": "玄幻修仙词汇专家", "icon": "🐉", "genre": "玄幻仙侠", "description": "专注于玄幻修仙小说的词汇和描写，包括人物、地理、物品、势力、法术等词汇"}
-            ]
+            "tertiary": []
         }
     ],
     "tertiary": [
-        {"name": "玄幻仙侠专家", "icon": "🐉", "genre": "玄幻仙侠"},
-        {"name": "都市言情专家", "icon": "💕", "genre": "都市言情"},
-        {"name": "悬疑推理专家", "icon": "🔎", "genre": "悬疑推理"},
-        {"name": "科幻未来专家", "icon": "🚀", "genre": "科幻未来"},
-        {"name": "历史穿越专家", "icon": "🏛️", "genre": "历史穿越"},
-        {"name": "恐怖惊悚专家", "icon": "👻", "genre": "恐怖惊悚"},
-        {"name": "游戏竞技专家", "icon": "🎮", "genre": "游戏竞技"}
+        {
+            "name": "Skill-01玄幻Agent",
+            "icon": "🐉",
+            "genre": "玄幻修仙",
+            "description": "修炼体系、法宝丹药、宗门斗争、天道法则",
+            "activation": "类型=A-玄幻修仙",
+            "specialties": [
+                "修炼体系设计（境界划分、功法属性、瓶颈突破）",
+                "法宝丹药体系（等级、材料、炼制、副作用）",
+                "宗门势力架构（权力结构、资源分配、斗争逻辑）",
+                "天道法则设定（世界运行规则、天劫机制、因果）"
+            ],
+            "creation_rules": [
+                "境界展示：不直接说'突破到金丹期'，而是写具体感受",
+                "战斗描写：招式名称+环境破坏+身体感受+心理变化，四要素至少含其三",
+                "修炼日常：必须有具体动作，禁止'修炼了一晚上，突破了'"
+            ]
+        },
+        {
+            "name": "Skill-02都市Agent",
+            "icon": "🏙️",
+            "genre": "都市异能",
+            "description": "异能体系、现代势力、职场/校园、势力博弈",
+            "activation": "类型=B-都市异能",
+            "specialties": [
+                "异能体系设计（觉醒方式、等级划分、副作用、克制关系）",
+                "现代都市势力（政府组织、地下势力、家族企业、暗网）",
+                "日常与超现实的平衡（职场/校园生活+异能战斗）",
+                "社会规则与异能规则的冲突"
+            ]
+        },
+        {
+            "name": "Skill-03历史Agent",
+            "icon": "🏛️",
+            "genre": "历史架空",
+            "description": "朝代制度、权谋斗争、文化风貌、历史人物",
+            "activation": "类型=C-历史架空",
+            "specialties": [
+                "朝代制度重构（官制、军制、税制、律法）",
+                "权谋斗争设计（派系、情报、暗杀、联姻）",
+                "文化风貌还原（服饰、饮食、礼仪、建筑）",
+                "历史人物原型改编"
+            ]
+        },
+        {
+            "name": "Skill-04科幻Agent",
+            "icon": "🚀",
+            "genre": "科幻未来",
+            "description": "硬科幻设定、星际文明、AI伦理、技术推演",
+            "activation": "类型=D-科幻未来",
+            "specialties": [
+                "硬科幻设定（物理规则、技术推演、科学原理）",
+                "星际文明架构（政体、经济、文化、冲突）",
+                "AI伦理探讨（意识、权利、共存、威胁）",
+                "未来社会形态（劳动分工、家庭结构、娱乐方式）"
+            ]
+        },
+        {
+            "name": "Skill-05悬疑Agent",
+            "icon": "🔎",
+            "genre": "悬疑推理",
+            "description": "诡计设计、线索埋设、心理博弈、反转结构",
+            "activation": "类型=E-悬疑推理",
+            "specialties": [
+                "诡计设计（密室、不在场证明、叙述性诡计、逻辑悖论）",
+                "线索埋设（显性线索、隐性线索、误导线索、红鲱鱼）",
+                "心理博弈（审讯、谈判、跟踪、反跟踪）",
+                "反转结构（预期违背、信息差、视角欺骗）"
+            ]
+        },
+        {
+            "name": "Skill-06言情Agent",
+            "icon": "💕",
+            "genre": "言情纯爱",
+            "description": "情感张力、人物关系、心理描写、CP塑造",
+            "activation": "类型=F-言情纯爱",
+            "specialties": [
+                "情感张力设计（暧昧、误会、和解、爆发）",
+                "人物关系网（家庭、朋友、前任、竞争者）",
+                "心理描写（内心独白、潜意识、情感变化曲线）",
+                "CP化学反应（互补、相似、反差、宿命）"
+            ]
+        },
+        {
+            "name": "Skill-07武侠Agent",
+            "icon": "⚔️",
+            "genre": "武侠江湖",
+            "description": "门派体系、武功招式、侠义精神、江湖恩怨",
+            "activation": "类型=G-武侠江湖",
+            "specialties": [
+                "门派体系设计（武功传承、门规、恩怨、联盟）",
+                "武功招式描写（招式名称、拆解、破绽、意境）",
+                "江湖规矩（道义、仇杀、报恩、背叛）",
+                "侠义精神演变（传统侠→新武侠→反武侠）"
+            ]
+        },
+        {
+            "name": "Skill-08恐怖Agent",
+            "icon": "👻",
+            "genre": "恐怖惊悚",
+            "description": "氛围营造、心理恐惧、未知恐惧、叙事诡计",
+            "activation": "类型=H-恐怖惊悚",
+            "specialties": [
+                "氛围营造（声音，光线、气味、空间压迫感）",
+                "恐惧层次（未知恐惧→确认恐惧→面对恐惧→超越恐惧）",
+                "心理恐怖（幻觉、偏执、guilt、identity crisis）",
+                "叙事诡计（不可靠叙述者、时间错乱、视角欺骗）"
+            ]
+        },
+        {
+            "name": "Skill-09游戏Agent",
+            "icon": "🎮",
+            "genre": "游戏异界",
+            "description": "系统面板、副本攻略、职业体系、数值平衡",
+            "activation": "类型=I-游戏异界",
+            "specialties": [
+                "系统面板设计（属性、技能、任务、背包）",
+                "副本攻略逻辑（机制、解法、团队配合、容错率）",
+                "职业体系平衡（输出、坦克、治疗、辅助、控制）",
+                "数值成长曲线（升级效率、装备迭代、经济系统）"
+            ]
+        },
+        {
+            "name": "大纲规划Agent",
+            "icon": "📋",
+            "genre": "通用",
+            "description": "生成世界观设定+人物档案+三幕结构大纲+章节细纲",
+            "activation": "类型Agent之前运行",
+            "output": [
+                "世界观设定文档",
+                "人物档案（主角小传+动机+缺陷+成长目标）",
+                "三幕结构（setup 25% + confrontation 50% + resolution 25%）",
+                "章节细纲（场景+POV+字数+核心任务+伏笔）"
+            ]
+        },
+        {
+            "name": "润色检查Agent",
+            "icon": "✨",
+            "genre": "通用",
+            "description": "去AI化检查+文风统一+逻辑检查+感官增强",
+            "activation": "每完成3章或质量异常时触发",
+            "checklist": [
+                "AI高频词检查：突然/竟然/没想到/只见/不得不说",
+                "情感展示vs陈述检查",
+                "对话个性化检查",
+                "场景转换过渡检查",
+                "感官细节密度检查（每500字至少1个）"
+            ]
+        },
+        {
+            "name": "终审Agent",
+            "icon": "🎯",
+            "genre": "通用",
+            "description": "整体连贯性+节奏评估+高潮检验+伏笔回收",
+            "activation": "全部章节完成后触发",
+            "checklist": [
+                "开头与结尾呼应检查",
+                "人物弧光完整性检查",
+                "节奏拖沓/仓促段落检查",
+                "高潮张力是否达标",
+                "所有伏笔是否回收"
+            ]
+        }
     ]
   },
   "collaboration_rules": {
@@ -137,7 +291,8 @@
     "dependency_direction": "unidirectional",
     "execution_mode": "parallel_with_dependencies",
     "feedback_loop": "mandatory",
-    "memory_sharing": "global_pool"
+    "memory_sharing": "global_pool",
+    "flow": "需求确认单 → 大纲规划Agent → 类型SkillAgent → 润色Agent → 终审Agent → 交付"
   },
   "global_settings": {
     "language": "zh-CN",
@@ -145,6 +300,26 @@
     "memory_enabled": true,
     "web_search_enabled": true,
     "learning_enabled": true,
-    "quality_threshold": 75
+    "quality_threshold": 75,
+    "de_ai_enabled": true,
+    "chapter_word_count_standard": "4500-5500字/章",
+    "chapter_word_count_complex": "5500+字/章"
+  },
+  "lingxi_system": {
+    "version": "v1.0",
+    "name": "灵犀笔阵",
+    "integrated": true,
+    "features": [
+      "参数化类型选择（9种类型）",
+      "风格调性多选",
+      "篇幅规格分级",
+      "叙事视角选择",
+      "内容分级控制",
+      "联网学习开关",
+      "需求确认单交互",
+      "分阶段交付流程",
+      "记忆进化机制",
+      "去AI化6条铁律"
+    ]
   }
 }
