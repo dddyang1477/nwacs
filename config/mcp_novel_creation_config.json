@@ -1,0 +1,14 @@
+{
+  "name": "novel_creation",
+  "description": "小说创作MCP服务器",
+  "command": "python",
+  "args": [
+    "simple_mcp_server.py"
+  ],
+  "env": {},
+  "cwd": "e:\\Program Files (x86)\\Trae CN\\github\\NWACS",
+  "protocol": "stdin",
+  "maxWorkers": 1,
+  "timeout": 300,
+  "version": "1.0.0"
+}

@@ -1,0 +1,27 @@
+{
+  "name": "novel-mcp-server-v2",
+  "version": "1.1.0",
+  "description": "网络小说创作MCP Server - 7大类型差异化支持",
+  "type": "module",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "dev": "tsc --watch"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.0",
+    "zod": "^3.22.4",
+    "axios": "^1.6.0",
+    "cheerio": "^1.0.0-rc.12",
+    "fs-extra": "^11.2.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "@types/fs-extra": "^11.0.4",
+    "typescript": "^5.3.0"
+  },
+  "keywords": ["mcp", "novel", "writing", "ai", "xuanhuan"],
+  "author": "Novel AI Team",
+  "license": "MIT"
+}

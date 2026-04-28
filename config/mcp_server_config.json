@@ -1,0 +1,46 @@
+{
+  "mcpServers": {
+    "novel-creation-python": {
+      "name": "小说创作助手(Python)",
+      "description": "小说创作工具 - 支持大纲生成、章节创作、文本润色、小说保存",
+      "protocol": "stdin",
+      "command": "python",
+      "args": ["simple_mcp_server.py"],
+      "cwd": "e:\\Program Files (x86)\\Trae CN\\github\\NWACS",
+      "env": {},
+      "timeout": 300,
+      "maxWorkers": 3,
+      "version": "1.0.0"
+    },
+    "novel-creation-node": {
+      "name": "小说创作助手(Node.js)",
+      "description": "网络小说创作辅助工具 - 支持趋势分析、世界观构建、风格分析、AI检测等10大功能",
+      "protocol": "stdin",
+      "command": "node",
+      "args": ["novel-mcp-server-v2\\dist\\index.js"],
+      "cwd": "e:\\Program Files (x86)\\Trae CN\\github\\NWACS",
+      "env": {},
+      "timeout": 300,
+      "maxWorkers": 3,
+      "version": "1.1.0"
+    }
+  },
+  "skillIntegration": {
+    "enabled": true,
+    "skillMapping": {
+      "01_一级Skill_小说总调度官": ["novel-creation-python", "novel-creation-node"],
+      "09_二级Skill_写作技巧大师": ["novel-creation-node"],
+      "07_二级Skill_角色塑造师": ["novel-creation-node"],
+      "32_二级Skill_词汇大师": ["novel-creation-node"],
+      "34_技能学习与优化计划": ["novel-creation-node"]
+    },
+    "autoDiscovery": true,
+    "heartbeatInterval": 30
+  },
+  "connectionTesting": {
+    "enabled": true,
+    "testEndpoint": "tools/list",
+    "testInterval": 60,
+    "maxRetries": 3
+  }
+}
