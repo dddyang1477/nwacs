@@ -27,227 +27,17 @@
       ]
     },
     {
-      "topic": "2026 热门小说 分析",
-      "skill_name": "写作技巧大师",
-      "timestamp": "2026-04-28T11:41:12.821170",
-      "duration": 30,
-      "metrics": {
-        "knowledge_acquisition": 93,
-        "understanding_depth": 75,
-        "retention_rate": 88,
-        "comprehension_level": 78,
-        "skill_improvement": 84,
-        "application_ability": 67,
-        "problem_solving": 72,
-        "creativity_enhancement": 68,
-        "learning_efficiency": 75,
-        "focus_level": 80,
-        "active_participation": 75,
-        "practice_frequency": 70
-      },
-      "overall_score": 78,
-      "feedback": "中等！学习效果一般，建议回顾重点内容。",
-      "mastery_level": "掌握",
-      "suggestions": [
-        "建议多做「2026 热门小说 分析」相关的实践练习",
-        "建议针对「2026 热门小说 分析」的薄弱环节进行强化训练"
-      ]
-    },
-    {
       "topic": "2026 写作技巧书籍 推荐",
       "skill_name": "写作技巧大师",
-      "timestamp": "2026-04-28T11:46:12.791084",
+      "timestamp": "2026-04-28T11:45:35.523326",
       "duration": 30,
       "metrics": {
         "knowledge_acquisition": 82,
-        "understanding_depth": 75,
-        "retention_rate": 88,
-        "comprehension_level": 78,
-        "skill_improvement": 82,
-        "application_ability": 79,
-        "problem_solving": 72,
-        "creativity_enhancement": 68,
-        "learning_efficiency": 75,
-        "focus_level": 80,
-        "active_participation": 75,
-        "practice_frequency": 70
-      },
-      "overall_score": 78,
-      "feedback": "中等！学习效果一般，建议回顾重点内容。",
-      "mastery_level": "掌握",
-      "suggestions": [
-        "建议针对「2026 写作技巧书籍 推荐」的薄弱环节进行强化训练"
-      ]
-    },
-    {
-      "topic": "最新写作技巧书籍",
-      "skill_name": "写作技巧大师",
-      "timestamp": "2026-04-28T11:47:41.859820",
-      "duration": 30,
-      "metrics": {
-        "knowledge_acquisition": 86,
-        "understanding_depth": 75,
-        "retention_rate": 92,
-        "comprehension_level": 78,
-        "skill_improvement": 81,
-        "application_ability": 73,
-        "problem_solving": 72,
-        "creativity_enhancement": 68,
-        "learning_efficiency": 75,
-        "focus_level": 80,
-        "active_participation": 75,
-        "practice_frequency": 70
-      },
-      "overall_score": 78,
-      "feedback": "中等！学习效果一般，建议回顾重点内容。",
-      "mastery_level": "掌握",
-      "suggestions": [
-        "建议针对「最新写作技巧书籍」的薄弱环节进行强化训练"
-      ]
-    },
-    {
-      "topic": "文学理论 新发展",
-      "skill_name": "写作技巧大师",
-      "timestamp": "2026-04-28T11:49:10.934191",
-      "duration": 30,
-      "metrics": {
-        "knowledge_acquisition": 81,
-        "understanding_depth": 75,
-        "retention_rate": 84,
-        "comprehension_level": 78,
-        "skill_improvement": 74,
-        "application_ability": 68,
-        "problem_solving": 72,
-        "creativity_enhancement": 68,
-        "learning_efficiency": 75,
-        "focus_level": 80,
-        "active_participation": 75,
-        "practice_frequency": 70
-      },
-      "overall_score": 75,
-      "feedback": "中等！学习效果一般，建议回顾重点内容。",
-      "mastery_level": "掌握",
-      "suggestions": [
-        "建议多做「文学理论 新发展」相关的实践练习",
-        "建议针对「文学理论 新发展」的薄弱环节进行强化训练"
-      ]
-    },
-    {
-      "topic": "跨媒介创作技巧",
-      "skill_name": "写作技巧大师",
-      "timestamp": "2026-04-28T11:50:40.007656",
-      "duration": 30,
-      "metrics": {
-        "knowledge_acquisition": 90,
-        "understanding_depth": 75,
-        "retention_rate": 91,
-        "comprehension_level": 78,
-        "skill_improvement": 81,
-        "application_ability": 78,
-        "problem_solving": 72,
-        "creativity_enhancement": 68,
-        "learning_efficiency": 75,
-        "focus_level": 80,
-        "active_participation": 75,
-        "practice_frequency": 70
-      },
-      "overall_score": 79,
-      "feedback": "中等！学习效果一般，建议回顾重点内容。",
-      "mastery_level": "掌握",
-      "suggestions": [
-        "建议针对「跨媒介创作技巧」的薄弱环节进行强化训练"
-      ]
-    },
-    {
-      "topic": "2026 网络小说 趋势",
-      "skill_name": "世界观构造师",
-      "timestamp": "2026-04-28T11:52:09.084604",
-      "duration": 30,
-      "metrics": {
-        "knowledge_acquisition": 86,
-        "understanding_depth": 75,
-        "retention_rate": 92,
-        "comprehension_level": 78,
-        "skill_improvement": 86,
-        "application_ability": 79,
-        "problem_solving": 72,
-        "creativity_enhancement": 68,
-        "learning_efficiency": 75,
-        "focus_level": 80,
-        "active_participation": 75,
-        "practice_frequency": 70
-      },
-      "overall_score": 79,
-      "feedback": "中等！学习效果一般，建议回顾重点内容。",
-      "mastery_level": "掌握",
-      "suggestions": [
-        "建议针对「2026 网络小说 趋势」的薄弱环节进行强化训练"
-      ]
-    },
-    {
-      "topic": "情感描写技巧 微动作微表情",
-      "skill_name": "对话设计师",
-      "timestamp": "2026-04-28T11:53:38.145460",
-      "duration": 30,
-      "metrics": {
-        "knowledge_acquisition": 82,
-        "understanding_depth": 75,
-        "retention_rate": 83,
-        "comprehension_level": 78,
-        "skill_improvement": 70,
-        "application_ability": 77,
-        "problem_solving": 72,
-        "creativity_enhancement": 68,
-        "learning_efficiency": 75,
-        "focus_level": 80,
-        "active_participation": 75,
-        "practice_frequency": 70
-      },
-      "overall_score": 76,
-      "feedback": "中等！学习效果一般，建议回顾重点内容。",
-      "mastery_level": "掌握",
-      "suggestions": [
-        "建议针对「情感描写技巧 微动作微表情」的薄弱环节进行强化训练"
-      ]
-    },
-    {
-      "topic": "人物刻画方法 情感小说",
-      "skill_name": "角色性格塑造师",
-      "timestamp": "2026-04-28T11:55:07.215152",
-      "duration": 30,
-      "metrics": {
-        "knowledge_acquisition": 94,
         "understanding_depth": 75,
         "retention_rate": 87,
         "comprehension_level": 78,
         "skill_improvement": 71,
-        "application_ability": 72,
-        "problem_solving": 72,
-        "creativity_enhancement": 68,
-        "learning_efficiency": 75,
-        "focus_level": 80,
-        "active_participation": 75,
-        "practice_frequency": 70
-      },
-      "overall_score": 77,
-      "feedback": "中等！学习效果一般，建议回顾重点内容。",
-      "mastery_level": "掌握",
-      "suggestions": [
-        "建议针对「人物刻画方法 情感小说」的薄弱环节进行强化训练"
-      ]
-    },
-    {
-      "topic": "剧情构造技巧 故事合理性",
-      "skill_name": "主线剧情设计师",
-      "timestamp": "2026-04-28T11:56:36.290189",
-      "duration": 30,
-      "metrics": {
-        "knowledge_acquisition": 78,
-        "understanding_depth": 75,
-        "retention_rate": 83,
-        "comprehension_level": 78,
-        "skill_improvement": 82,
-        "application_ability": 67,
+        "application_ability": 79,
         "problem_solving": 72,
         "creativity_enhancement": 68,
         "learning_efficiency": 75,
@@ -256,60 +46,6 @@
         "practice_frequency": 70
       },
       "overall_score": 76,
-      "feedback": "中等！学习效果一般，建议回顾重点内容。",
-      "mastery_level": "掌握",
-      "suggestions": [
-        "建议多做「剧情构造技巧 故事合理性」相关的实践练习",
-        "建议针对「剧情构造技巧 故事合理性」的薄弱环节进行强化训练"
-      ]
-    },
-    {
-      "topic": "2026 热门小说 分析",
-      "skill_name": "写作技巧大师",
-      "timestamp": "2026-04-28T11:58:05.368663",
-      "duration": 30,
-      "metrics": {
-        "knowledge_acquisition": 77,
-        "understanding_depth": 75,
-        "retention_rate": 82,
-        "comprehension_level": 78,
-        "skill_improvement": 86,
-        "application_ability": 68,
-        "problem_solving": 72,
-        "creativity_enhancement": 68,
-        "learning_efficiency": 75,
-        "focus_level": 80,
-        "active_participation": 75,
-        "practice_frequency": 70
-      },
-      "overall_score": 76,
-      "feedback": "中等！学习效果一般，建议回顾重点内容。",
-      "mastery_level": "掌握",
-      "suggestions": [
-        "建议多做「2026 热门小说 分析」相关的实践练习",
-        "建议针对「2026 热门小说 分析」的薄弱环节进行强化训练"
-      ]
-    },
-    {
-      "topic": "2026 写作技巧书籍 推荐",
-      "skill_name": "写作技巧大师",
-      "timestamp": "2026-04-28T11:59:34.449563",
-      "duration": 30,
-      "metrics": {
-        "knowledge_acquisition": 88,
-        "understanding_depth": 75,
-        "retention_rate": 90,
-        "comprehension_level": 78,
-        "skill_improvement": 87,
-        "application_ability": 77,
-        "problem_solving": 72,
-        "creativity_enhancement": 68,
-        "learning_efficiency": 75,
-        "focus_level": 80,
-        "active_participation": 75,
-        "practice_frequency": 70
-      },
-      "overall_score": 79,
       "feedback": "中等！学习效果一般，建议回顾重点内容。",
       "mastery_level": "掌握",
       "suggestions": [
@@ -319,41 +55,15 @@
     {
       "topic": "最新写作技巧书籍",
       "skill_name": "写作技巧大师",
-      "timestamp": "2026-04-28T12:01:03.543159",
+      "timestamp": "2026-04-28T11:47:04.585096",
       "duration": 30,
       "metrics": {
-        "knowledge_acquisition": 82,
+        "knowledge_acquisition": 92,
         "understanding_depth": 75,
-        "retention_rate": 90,
+        "retention_rate": 82,
         "comprehension_level": 78,
-        "skill_improvement": 80,
+        "skill_improvement": 71,
         "application_ability": 78,
-        "problem_solving": 72,
-        "creativity_enhancement": 68,
-        "learning_efficiency": 75,
-        "focus_level": 80,
-        "active_participation": 75,
-        "practice_frequency": 70
-      },
-      "overall_score": 78,
-      "feedback": "中等！学习效果一般，建议回顾重点内容。",
-      "mastery_level": "掌握",
-      "suggestions": [
-        "建议针对「最新写作技巧书籍」的薄弱环节进行强化训练"
-      ]
-    },
-    {
-      "topic": "文学理论 新发展",
-      "skill_name": "写作技巧大师",
-      "timestamp": "2026-04-28T12:02:32.638972",
-      "duration": 30,
-      "metrics": {
-        "knowledge_acquisition": 79,
-        "understanding_depth": 75,
-        "retention_rate": 92,
-        "comprehension_level": 78,
-        "skill_improvement": 74,
-        "application_ability": 84,
         "problem_solving": 72,
         "creativity_enhancement": 68,
         "learning_efficiency": 75,
@@ -365,21 +75,21 @@
       "feedback": "中等！学习效果一般，建议回顾重点内容。",
       "mastery_level": "掌握",
       "suggestions": [
-        "建议针对「文学理论 新发展」的薄弱环节进行强化训练"
+        "建议针对「最新写作技巧书籍」的薄弱环节进行强化训练"
       ]
     },
     {
-      "topic": "跨媒介创作技巧",
+      "topic": "文学理论 新发展",
       "skill_name": "写作技巧大师",
-      "timestamp": "2026-04-28T12:04:01.743876",
+      "timestamp": "2026-04-28T11:48:33.648937",
       "duration": 30,
       "metrics": {
-        "knowledge_acquisition": 82,
+        "knowledge_acquisition": 90,
         "understanding_depth": 75,
-        "retention_rate": 86,
+        "retention_rate": 90,
         "comprehension_level": 78,
-        "skill_improvement": 71,
-        "application_ability": 75,
+        "skill_improvement": 90,
+        "application_ability": 81,
         "problem_solving": 72,
         "creativity_enhancement": 68,
         "learning_efficiency": 75,
@@ -387,25 +97,51 @@
         "active_participation": 75,
         "practice_frequency": 70
       },
-      "overall_score": 76,
-      "feedback": "中等！学习效果一般，建议回顾重点内容。",
+      "overall_score": 80,
+      "feedback": "良好！学习效果不错，建议加强实践应用。",
       "mastery_level": "掌握",
       "suggestions": [
-        "建议针对「跨媒介创作技巧」的薄弱环节进行强化训练"
+        "学习效果良好！建议拓展相关领域的学习"
+      ]
+    },
+    {
+      "topic": "跨媒介创作技巧",
+      "skill_name": "写作技巧大师",
+      "timestamp": "2026-04-28T11:50:02.718490",
+      "duration": 30,
+      "metrics": {
+        "knowledge_acquisition": 88,
+        "understanding_depth": 75,
+        "retention_rate": 92,
+        "comprehension_level": 78,
+        "skill_improvement": 90,
+        "application_ability": 77,
+        "problem_solving": 72,
+        "creativity_enhancement": 68,
+        "learning_efficiency": 75,
+        "focus_level": 80,
+        "active_participation": 75,
+        "practice_frequency": 70
+      },
+      "overall_score": 80,
+      "feedback": "良好！学习效果不错，建议加强实践应用。",
+      "mastery_level": "掌握",
+      "suggestions": [
+        "学习效果良好！建议拓展相关领域的学习"
       ]
     },
     {
       "topic": "2026 网络小说 趋势",
       "skill_name": "世界观构造师",
-      "timestamp": "2026-04-28T12:05:30.856026",
+      "timestamp": "2026-04-28T11:51:31.789384",
       "duration": 30,
       "metrics": {
-        "knowledge_acquisition": 82,
+        "knowledge_acquisition": 77,
         "understanding_depth": 75,
-        "retention_rate": 81,
+        "retention_rate": 84,
         "comprehension_level": 78,
-        "skill_improvement": 76,
-        "application_ability": 68,
+        "skill_improvement": 73,
+        "application_ability": 76,
         "problem_solving": 72,
         "creativity_enhancement": 68,
         "learning_efficiency": 75,
@@ -417,22 +153,21 @@
       "feedback": "中等！学习效果一般，建议回顾重点内容。",
       "mastery_level": "掌握",
       "suggestions": [
-        "建议多做「2026 网络小说 趋势」相关的实践练习",
         "建议针对「2026 网络小说 趋势」的薄弱环节进行强化训练"
       ]
     },
     {
       "topic": "情感描写技巧 微动作微表情",
       "skill_name": "对话设计师",
-      "timestamp": "2026-04-28T12:06:59.971288",
+      "timestamp": "2026-04-28T11:53:00.866197",
       "duration": 30,
       "metrics": {
-        "knowledge_acquisition": 87,
+        "knowledge_acquisition": 79,
         "understanding_depth": 75,
-        "retention_rate": 90,
+        "retention_rate": 87,
         "comprehension_level": 78,
-        "skill_improvement": 75,
-        "application_ability": 82,
+        "skill_improvement": 85,
+        "application_ability": 77,
         "problem_solving": 72,
         "creativity_enhancement": 68,
         "learning_efficiency": 75,
@@ -450,15 +185,15 @@
     {
       "topic": "人物刻画方法 情感小说",
       "skill_name": "角色性格塑造师",
-      "timestamp": "2026-04-28T12:08:29.097234",
+      "timestamp": "2026-04-28T11:54:29.929186",
       "duration": 30,
       "metrics": {
-        "knowledge_acquisition": 83,
+        "knowledge_acquisition": 78,
         "understanding_depth": 75,
-        "retention_rate": 89,
+        "retention_rate": 90,
         "comprehension_level": 78,
-        "skill_improvement": 77,
-        "application_ability": 66,
+        "skill_improvement": 76,
+        "application_ability": 68,
         "problem_solving": 72,
         "creativity_enhancement": 68,
         "learning_efficiency": 75,
@@ -477,41 +212,15 @@
     {
       "topic": "剧情构造技巧 故事合理性",
       "skill_name": "主线剧情设计师",
-      "timestamp": "2026-04-28T12:09:58.227155",
+      "timestamp": "2026-04-28T11:55:58.996813",
       "duration": 30,
       "metrics": {
-        "knowledge_acquisition": 78,
+        "knowledge_acquisition": 93,
         "understanding_depth": 75,
-        "retention_rate": 85,
+        "retention_rate": 91,
         "comprehension_level": 78,
-        "skill_improvement": 75,
-        "application_ability": 83,
-        "problem_solving": 72,
-        "creativity_enhancement": 68,
-        "learning_efficiency": 75,
-        "focus_level": 80,
-        "active_participation": 75,
-        "practice_frequency": 70
-      },
-      "overall_score": 77,
-      "feedback": "中等！学习效果一般，建议回顾重点内容。",
-      "mastery_level": "掌握",
-      "suggestions": [
-        "建议针对「剧情构造技巧 故事合理性」的薄弱环节进行强化训练"
-      ]
-    },
-    {
-      "topic": "2026 热门小说 分析",
-      "skill_name": "写作技巧大师",
-      "timestamp": "2026-04-28T12:11:27.361476",
-      "duration": 30,
-      "metrics": {
-        "knowledge_acquisition": 75,
-        "understanding_depth": 75,
-        "retention_rate": 95,
-        "comprehension_level": 78,
-        "skill_improvement": 83,
-        "application_ability": 85,
+        "skill_improvement": 81,
+        "application_ability": 67,
         "problem_solving": 72,
         "creativity_enhancement": 68,
         "learning_efficiency": 75,
@@ -523,21 +232,100 @@
       "feedback": "中等！学习效果一般，建议回顾重点内容。",
       "mastery_level": "掌握",
       "suggestions": [
+        "建议多做「剧情构造技巧 故事合理性」相关的实践练习",
+        "建议针对「剧情构造技巧 故事合理性」的薄弱环节进行强化训练"
+      ]
+    },
+    {
+      "topic": "2026 热门小说 分析",
+      "skill_name": "写作技巧大师",
+      "timestamp": "2026-04-28T11:57:28.067813",
+      "duration": 30,
+      "metrics": {
+        "knowledge_acquisition": 76,
+        "understanding_depth": 75,
+        "retention_rate": 88,
+        "comprehension_level": 78,
+        "skill_improvement": 76,
+        "application_ability": 80,
+        "problem_solving": 72,
+        "creativity_enhancement": 68,
+        "learning_efficiency": 75,
+        "focus_level": 80,
+        "active_participation": 75,
+        "practice_frequency": 70
+      },
+      "overall_score": 77,
+      "feedback": "中等！学习效果一般，建议回顾重点内容。",
+      "mastery_level": "掌握",
+      "suggestions": [
         "建议针对「2026 热门小说 分析」的薄弱环节进行强化训练"
       ]
     },
     {
       "topic": "2026 写作技巧书籍 推荐",
       "skill_name": "写作技巧大师",
-      "timestamp": "2026-04-28T12:12:56.497663",
+      "timestamp": "2026-04-28T11:58:57.146776",
       "duration": 30,
       "metrics": {
-        "knowledge_acquisition": 76,
+        "knowledge_acquisition": 85,
         "understanding_depth": 75,
-        "retention_rate": 80,
+        "retention_rate": 82,
         "comprehension_level": 78,
-        "skill_improvement": 82,
-        "application_ability": 80,
+        "skill_improvement": 74,
+        "application_ability": 81,
+        "problem_solving": 72,
+        "creativity_enhancement": 68,
+        "learning_efficiency": 75,
+        "focus_level": 80,
+        "active_participation": 75,
+        "practice_frequency": 70
+      },
+      "overall_score": 77,
+      "feedback": "中等！学习效果一般，建议回顾重点内容。",
+      "mastery_level": "掌握",
+      "suggestions": [
+        "建议针对「2026 写作技巧书籍 推荐」的薄弱环节进行强化训练"
+      ]
+    },
+    {
+      "topic": "最新写作技巧书籍",
+      "skill_name": "写作技巧大师",
+      "timestamp": "2026-04-28T12:00:26.229882",
+      "duration": 30,
+      "metrics": {
+        "knowledge_acquisition": 75,
+        "understanding_depth": 75,
+        "retention_rate": 93,
+        "comprehension_level": 78,
+        "skill_improvement": 79,
+        "application_ability": 73,
+        "problem_solving": 72,
+        "creativity_enhancement": 68,
+        "learning_efficiency": 75,
+        "focus_level": 80,
+        "active_participation": 75,
+        "practice_frequency": 70
+      },
+      "overall_score": 77,
+      "feedback": "中等！学习效果一般，建议回顾重点内容。",
+      "mastery_level": "掌握",
+      "suggestions": [
+        "建议针对「最新写作技巧书籍」的薄弱环节进行强化训练"
+      ]
+    },
+    {
+      "topic": "文学理论 新发展",
+      "skill_name": "写作技巧大师",
+      "timestamp": "2026-04-28T12:01:55.326287",
+      "duration": 30,
+      "metrics": {
+        "knowledge_acquisition": 81,
+        "understanding_depth": 75,
+        "retention_rate": 94,
+        "comprehension_level": 78,
+        "skill_improvement": 70,
+        "application_ability": 70,
         "problem_solving": 72,
         "creativity_enhancement": 68,
         "learning_efficiency": 75,
@@ -549,73 +337,21 @@
       "feedback": "中等！学习效果一般，建议回顾重点内容。",
       "mastery_level": "掌握",
       "suggestions": [
-        "建议针对「2026 写作技巧书籍 推荐」的薄弱环节进行强化训练"
-      ]
-    },
-    {
-      "topic": "最新写作技巧书籍",
-      "skill_name": "写作技巧大师",
-      "timestamp": "2026-04-28T12:14:25.645828",
-      "duration": 30,
-      "metrics": {
-        "knowledge_acquisition": 92,
-        "understanding_depth": 75,
-        "retention_rate": 93,
-        "comprehension_level": 78,
-        "skill_improvement": 71,
-        "application_ability": 77,
-        "problem_solving": 72,
-        "creativity_enhancement": 68,
-        "learning_efficiency": 75,
-        "focus_level": 80,
-        "active_participation": 75,
-        "practice_frequency": 70
-      },
-      "overall_score": 78,
-      "feedback": "中等！学习效果一般，建议回顾重点内容。",
-      "mastery_level": "掌握",
-      "suggestions": [
-        "建议针对「最新写作技巧书籍」的薄弱环节进行强化训练"
-      ]
-    },
-    {
-      "topic": "文学理论 新发展",
-      "skill_name": "写作技巧大师",
-      "timestamp": "2026-04-28T12:15:54.798441",
-      "duration": 30,
-      "metrics": {
-        "knowledge_acquisition": 85,
-        "understanding_depth": 75,
-        "retention_rate": 90,
-        "comprehension_level": 78,
-        "skill_improvement": 70,
-        "application_ability": 78,
-        "problem_solving": 72,
-        "creativity_enhancement": 68,
-        "learning_efficiency": 75,
-        "focus_level": 80,
-        "active_participation": 75,
-        "practice_frequency": 70
-      },
-      "overall_score": 77,
-      "feedback": "中等！学习效果一般，建议回顾重点内容。",
-      "mastery_level": "掌握",
-      "suggestions": [
         "建议针对「文学理论 新发展」的薄弱环节进行强化训练"
       ]
     },
     {
       "topic": "跨媒介创作技巧",
       "skill_name": "写作技巧大师",
-      "timestamp": "2026-04-28T12:17:23.955954",
+      "timestamp": "2026-04-28T12:03:24.427478",
       "duration": 30,
       "metrics": {
-        "knowledge_acquisition": 89,
+        "knowledge_acquisition": 92,
         "understanding_depth": 75,
-        "retention_rate": 90,
+        "retention_rate": 88,
         "comprehension_level": 78,
-        "skill_improvement": 80,
-        "application_ability": 81,
+        "skill_improvement": 87,
+        "application_ability": 76,
         "problem_solving": 72,
         "creativity_enhancement": 68,
         "learning_efficiency": 75,
@@ -633,15 +369,15 @@
     {
       "topic": "2026 网络小说 趋势",
       "skill_name": "世界观构造师",
-      "timestamp": "2026-04-28T12:18:53.120233",
+      "timestamp": "2026-04-28T12:04:53.531839",
       "duration": 30,
       "metrics": {
-        "knowledge_acquisition": 88,
+        "knowledge_acquisition": 77,
         "understanding_depth": 75,
-        "retention_rate": 89,
+        "retention_rate": 84,
         "comprehension_level": 78,
-        "skill_improvement": 74,
-        "application_ability": 79,
+        "skill_improvement": 76,
+        "application_ability": 65,
         "problem_solving": 72,
         "creativity_enhancement": 68,
         "learning_efficiency": 75,
@@ -649,25 +385,26 @@
         "active_participation": 75,
         "practice_frequency": 70
       },
-      "overall_score": 78,
+      "overall_score": 75,
       "feedback": "中等！学习效果一般，建议回顾重点内容。",
       "mastery_level": "掌握",
       "suggestions": [
+        "建议多做「2026 网络小说 趋势」相关的实践练习",
         "建议针对「2026 网络小说 趋势」的薄弱环节进行强化训练"
       ]
     },
     {
       "topic": "情感描写技巧 微动作微表情",
       "skill_name": "对话设计师",
-      "timestamp": "2026-04-28T12:20:22.294811",
+      "timestamp": "2026-04-28T12:06:22.642280",
       "duration": 30,
       "metrics": {
-        "knowledge_acquisition": 77,
+        "knowledge_acquisition": 90,
         "understanding_depth": 75,
-        "retention_rate": 88,
+        "retention_rate": 83,
         "comprehension_level": 78,
-        "skill_improvement": 82,
-        "application_ability": 81,
+        "skill_improvement": 70,
+        "application_ability": 76,
         "problem_solving": 72,
         "creativity_enhancement": 68,
         "learning_efficiency": 75,
@@ -685,67 +422,15 @@
     {
       "topic": "人物刻画方法 情感小说",
       "skill_name": "角色性格塑造师",
-      "timestamp": "2026-04-28T12:21:51.473517",
+      "timestamp": "2026-04-28T12:07:51.755274",
       "duration": 30,
       "metrics": {
-        "knowledge_acquisition": 88,
+        "knowledge_acquisition": 91,
         "understanding_depth": 75,
-        "retention_rate": 92,
+        "retention_rate": 84,
         "comprehension_level": 78,
-        "skill_improvement": 89,
-        "application_ability": 80,
-        "problem_solving": 72,
-        "creativity_enhancement": 68,
-        "learning_efficiency": 75,
-        "focus_level": 80,
-        "active_participation": 75,
-        "practice_frequency": 70
-      },
-      "overall_score": 80,
-      "feedback": "良好！学习效果不错，建议加强实践应用。",
-      "mastery_level": "掌握",
-      "suggestions": [
-        "学习效果良好！建议拓展相关领域的学习"
-      ]
-    },
-    {
-      "topic": "剧情构造技巧 故事合理性",
-      "skill_name": "主线剧情设计师",
-      "timestamp": "2026-04-28T12:23:20.663968",
-      "duration": 30,
-      "metrics": {
-        "knowledge_acquisition": 87,
-        "understanding_depth": 75,
-        "retention_rate": 93,
-        "comprehension_level": 78,
-        "skill_improvement": 85,
-        "application_ability": 80,
-        "problem_solving": 72,
-        "creativity_enhancement": 68,
-        "learning_efficiency": 75,
-        "focus_level": 80,
-        "active_participation": 75,
-        "practice_frequency": 70
-      },
-      "overall_score": 79,
-      "feedback": "中等！学习效果一般，建议回顾重点内容。",
-      "mastery_level": "掌握",
-      "suggestions": [
-        "建议针对「剧情构造技巧 故事合理性」的薄弱环节进行强化训练"
-      ]
-    },
-    {
-      "topic": "2026 热门小说 分析",
-      "skill_name": "写作技巧大师",
-      "timestamp": "2026-04-28T12:24:49.859393",
-      "duration": 30,
-      "metrics": {
-        "knowledge_acquisition": 80,
-        "understanding_depth": 75,
-        "retention_rate": 90,
-        "comprehension_level": 78,
-        "skill_improvement": 80,
-        "application_ability": 75,
+        "skill_improvement": 71,
+        "application_ability": 76,
         "problem_solving": 72,
         "creativity_enhancement": 68,
         "learning_efficiency": 75,
@@ -757,21 +442,47 @@
       "feedback": "中等！学习效果一般，建议回顾重点内容。",
       "mastery_level": "掌握",
       "suggestions": [
-        "建议针对「2026 热门小说 分析」的薄弱环节进行强化训练"
+        "建议针对「人物刻画方法 情感小说」的薄弱环节进行强化训练"
       ]
     },
     {
-      "topic": "2026 写作技巧书籍 推荐",
-      "skill_name": "写作技巧大师",
-      "timestamp": "2026-04-28T12:26:19.062529",
+      "topic": "剧情构造技巧 故事合理性",
+      "skill_name": "主线剧情设计师",
+      "timestamp": "2026-04-28T12:09:20.875901",
       "duration": 30,
       "metrics": {
         "knowledge_acquisition": 87,
         "understanding_depth": 75,
-        "retention_rate": 80,
+        "retention_rate": 93,
         "comprehension_level": 78,
-        "skill_improvement": 77,
-        "application_ability": 67,
+        "skill_improvement": 73,
+        "application_ability": 70,
+        "problem_solving": 72,
+        "creativity_enhancement": 68,
+        "learning_efficiency": 75,
+        "focus_level": 80,
+        "active_participation": 75,
+        "practice_frequency": 70
+      },
+      "overall_score": 77,
+      "feedback": "中等！学习效果一般，建议回顾重点内容。",
+      "mastery_level": "掌握",
+      "suggestions": [
+        "建议针对「剧情构造技巧 故事合理性」的薄弱环节进行强化训练"
+      ]
+    },
+    {
+      "topic": "2026 热门小说 分析",
+      "skill_name": "写作技巧大师",
+      "timestamp": "2026-04-28T12:10:50.004278",
+      "duration": 30,
+      "metrics": {
+        "knowledge_acquisition": 79,
+        "understanding_depth": 75,
+        "retention_rate": 88,
+        "comprehension_level": 78,
+        "skill_improvement": 72,
+        "application_ability": 75,
         "problem_solving": 72,
         "creativity_enhancement": 68,
         "learning_efficiency": 75,
@@ -783,22 +494,21 @@
       "feedback": "中等！学习效果一般，建议回顾重点内容。",
       "mastery_level": "掌握",
       "suggestions": [
-        "建议多做「2026 写作技巧书籍 推荐」相关的实践练习",
-        "建议针对「2026 写作技巧书籍 推荐」的薄弱环节进行强化训练"
+        "建议针对「2026 热门小说 分析」的薄弱环节进行强化训练"
       ]
     },
     {
-      "topic": "最新写作技巧书籍",
+      "topic": "2026 写作技巧书籍 推荐",
       "skill_name": "写作技巧大师",
-      "timestamp": "2026-04-28T12:27:48.267014",
+      "timestamp": "2026-04-28T12:12:19.138892",
       "duration": 30,
       "metrics": {
-        "knowledge_acquisition": 93,
+        "knowledge_acquisition": 77,
         "understanding_depth": 75,
-        "retention_rate": 80,
+        "retention_rate": 93,
         "comprehension_level": 78,
-        "skill_improvement": 72,
-        "application_ability": 65,
+        "skill_improvement": 79,
+        "application_ability": 76,
         "problem_solving": 72,
         "creativity_enhancement": 68,
         "learning_efficiency": 75,
@@ -806,7 +516,33 @@
         "active_participation": 75,
         "practice_frequency": 70
       },
-      "overall_score": 76,
+      "overall_score": 77,
+      "feedback": "中等！学习效果一般，建议回顾重点内容。",
+      "mastery_level": "掌握",
+      "suggestions": [
+        "建议针对「2026 写作技巧书籍 推荐」的薄弱环节进行强化训练"
+      ]
+    },
+    {
+      "topic": "最新写作技巧书籍",
+      "skill_name": "写作技巧大师",
+      "timestamp": "2026-04-28T12:13:48.278986",
+      "duration": 30,
+      "metrics": {
+        "knowledge_acquisition": 93,
+        "understanding_depth": 75,
+        "retention_rate": 82,
+        "comprehension_level": 78,
+        "skill_improvement": 79,
+        "application_ability": 66,
+        "problem_solving": 72,
+        "creativity_enhancement": 68,
+        "learning_efficiency": 75,
+        "focus_level": 80,
+        "active_participation": 75,
+        "practice_frequency": 70
+      },
+      "overall_score": 77,
       "feedback": "中等！学习效果一般，建议回顾重点内容。",
       "mastery_level": "掌握",
       "suggestions": [
@@ -817,15 +553,42 @@
     {
       "topic": "文学理论 新发展",
       "skill_name": "写作技巧大师",
-      "timestamp": "2026-04-28T12:29:17.477956",
+      "timestamp": "2026-04-28T12:15:17.425827",
       "duration": 30,
       "metrics": {
-        "knowledge_acquisition": 83,
+        "knowledge_acquisition": 95,
         "understanding_depth": 75,
-        "retention_rate": 84,
+        "retention_rate": 81,
         "comprehension_level": 78,
-        "skill_improvement": 90,
-        "application_ability": 77,
+        "skill_improvement": 79,
+        "application_ability": 67,
+        "problem_solving": 72,
+        "creativity_enhancement": 68,
+        "learning_efficiency": 75,
+        "focus_level": 80,
+        "active_participation": 75,
+        "practice_frequency": 70
+      },
+      "overall_score": 77,
+      "feedback": "中等！学习效果一般，建议回顾重点内容。",
+      "mastery_level": "掌握",
+      "suggestions": [
+        "建议多做「文学理论 新发展」相关的实践练习",
+        "建议针对「文学理论 新发展」的薄弱环节进行强化训练"
+      ]
+    },
+    {
+      "topic": "跨媒介创作技巧",
+      "skill_name": "写作技巧大师",
+      "timestamp": "2026-04-28T12:16:46.583213",
+      "duration": 30,
+      "metrics": {
+        "knowledge_acquisition": 79,
+        "understanding_depth": 75,
+        "retention_rate": 93,
+        "comprehension_level": 78,
+        "skill_improvement": 88,
+        "application_ability": 73,
         "problem_solving": 72,
         "creativity_enhancement": 68,
         "learning_efficiency": 75,
@@ -837,73 +600,21 @@
       "feedback": "中等！学习效果一般，建议回顾重点内容。",
       "mastery_level": "掌握",
       "suggestions": [
-        "建议针对「文学理论 新发展」的薄弱环节进行强化训练"
-      ]
-    },
-    {
-      "topic": "跨媒介创作技巧",
-      "skill_name": "写作技巧大师",
-      "timestamp": "2026-04-28T12:30:46.696751",
-      "duration": 30,
-      "metrics": {
-        "knowledge_acquisition": 89,
-        "understanding_depth": 75,
-        "retention_rate": 94,
-        "comprehension_level": 78,
-        "skill_improvement": 88,
-        "application_ability": 79,
-        "problem_solving": 72,
-        "creativity_enhancement": 68,
-        "learning_efficiency": 75,
-        "focus_level": 80,
-        "active_participation": 75,
-        "practice_frequency": 70
-      },
-      "overall_score": 80,
-      "feedback": "良好！学习效果不错，建议加强实践应用。",
-      "mastery_level": "掌握",
-      "suggestions": [
-        "学习效果良好！建议拓展相关领域的学习"
+        "建议针对「跨媒介创作技巧」的薄弱环节进行强化训练"
       ]
     },
     {
       "topic": "2026 网络小说 趋势",
       "skill_name": "世界观构造师",
-      "timestamp": "2026-04-28T12:32:15.919893",
-      "duration": 30,
-      "metrics": {
-        "knowledge_acquisition": 84,
-        "understanding_depth": 75,
-        "retention_rate": 90,
-        "comprehension_level": 78,
-        "skill_improvement": 90,
-        "application_ability": 82,
-        "problem_solving": 72,
-        "creativity_enhancement": 68,
-        "learning_efficiency": 75,
-        "focus_level": 80,
-        "active_participation": 75,
-        "practice_frequency": 70
-      },
-      "overall_score": 80,
-      "feedback": "良好！学习效果不错，建议加强实践应用。",
-      "mastery_level": "掌握",
-      "suggestions": [
-        "学习效果良好！建议拓展相关领域的学习"
-      ]
-    },
-    {
-      "topic": "情感描写技巧 微动作微表情",
-      "skill_name": "对话设计师",
-      "timestamp": "2026-04-28T12:33:45.149803",
+      "timestamp": "2026-04-28T12:18:15.741150",
       "duration": 30,
       "metrics": {
         "knowledge_acquisition": 86,
         "understanding_depth": 75,
-        "retention_rate": 94,
+        "retention_rate": 87,
         "comprehension_level": 78,
-        "skill_improvement": 89,
-        "application_ability": 67,
+        "skill_improvement": 86,
+        "application_ability": 81,
         "problem_solving": 72,
         "creativity_enhancement": 68,
         "learning_efficiency": 75,
@@ -915,22 +626,47 @@
       "feedback": "中等！学习效果一般，建议回顾重点内容。",
       "mastery_level": "掌握",
       "suggestions": [
-        "建议多做「情感描写技巧 微动作微表情」相关的实践练习",
+        "建议针对「2026 网络小说 趋势」的薄弱环节进行强化训练"
+      ]
+    },
+    {
+      "topic": "情感描写技巧 微动作微表情",
+      "skill_name": "对话设计师",
+      "timestamp": "2026-04-28T12:19:44.908565",
+      "duration": 30,
+      "metrics": {
+        "knowledge_acquisition": 81,
+        "understanding_depth": 75,
+        "retention_rate": 92,
+        "comprehension_level": 78,
+        "skill_improvement": 78,
+        "application_ability": 72,
+        "problem_solving": 72,
+        "creativity_enhancement": 68,
+        "learning_efficiency": 75,
+        "focus_level": 80,
+        "active_participation": 75,
+        "practice_frequency": 70
+      },
+      "overall_score": 77,
+      "feedback": "中等！学习效果一般，建议回顾重点内容。",
+      "mastery_level": "掌握",
+      "suggestions": [
         "建议针对「情感描写技巧 微动作微表情」的薄弱环节进行强化训练"
       ]
     },
     {
       "topic": "人物刻画方法 情感小说",
       "skill_name": "角色性格塑造师",
-      "timestamp": "2026-04-28T12:35:14.393042",
+      "timestamp": "2026-04-28T12:21:14.082347",
       "duration": 30,
       "metrics": {
-        "knowledge_acquisition": 92,
+        "knowledge_acquisition": 90,
         "understanding_depth": 75,
-        "retention_rate": 83,
+        "retention_rate": 89,
         "comprehension_level": 78,
-        "skill_improvement": 77,
-        "application_ability": 78,
+        "skill_improvement": 85,
+        "application_ability": 71,
         "problem_solving": 72,
         "creativity_enhancement": 68,
         "learning_efficiency": 75,
@@ -948,15 +684,15 @@
     {
       "topic": "剧情构造技巧 故事合理性",
       "skill_name": "主线剧情设计师",
-      "timestamp": "2026-04-28T12:36:43.633916",
+      "timestamp": "2026-04-28T12:22:43.257088",
       "duration": 30,
       "metrics": {
-        "knowledge_acquisition": 92,
+        "knowledge_acquisition": 88,
         "understanding_depth": 75,
-        "retention_rate": 80,
+        "retention_rate": 91,
         "comprehension_level": 78,
-        "skill_improvement": 78,
-        "application_ability": 79,
+        "skill_improvement": 75,
+        "application_ability": 77,
         "problem_solving": 72,
         "creativity_enhancement": 68,
         "learning_efficiency": 75,
@@ -974,14 +710,14 @@
     {
       "topic": "2026 热门小说 分析",
       "skill_name": "写作技巧大师",
-      "timestamp": "2026-04-28T12:38:12.883034",
+      "timestamp": "2026-04-28T12:24:12.440176",
       "duration": 30,
       "metrics": {
-        "knowledge_acquisition": 85,
+        "knowledge_acquisition": 77,
         "understanding_depth": 75,
-        "retention_rate": 84,
+        "retention_rate": 90,
         "comprehension_level": 78,
-        "skill_improvement": 87,
+        "skill_improvement": 88,
         "application_ability": 74,
         "problem_solving": 72,
         "creativity_enhancement": 68,
@@ -1000,14 +736,170 @@
     {
       "topic": "2026 写作技巧书籍 推荐",
       "skill_name": "写作技巧大师",
-      "timestamp": "2026-04-28T12:39:42.137585",
+      "timestamp": "2026-04-28T12:25:41.628323",
       "duration": 30,
       "metrics": {
-        "knowledge_acquisition": 85,
+        "knowledge_acquisition": 91,
         "understanding_depth": 75,
-        "retention_rate": 92,
+        "retention_rate": 94,
         "comprehension_level": 78,
-        "skill_improvement": 70,
+        "skill_improvement": 87,
+        "application_ability": 83,
+        "problem_solving": 72,
+        "creativity_enhancement": 68,
+        "learning_efficiency": 75,
+        "focus_level": 80,
+        "active_participation": 75,
+        "practice_frequency": 70
+      },
+      "overall_score": 81,
+      "feedback": "良好！学习效果不错，建议加强实践应用。",
+      "mastery_level": "掌握",
+      "suggestions": [
+        "学习效果良好！建议拓展相关领域的学习"
+      ]
+    },
+    {
+      "topic": "最新写作技巧书籍",
+      "skill_name": "写作技巧大师",
+      "timestamp": "2026-04-28T12:27:10.818341",
+      "duration": 30,
+      "metrics": {
+        "knowledge_acquisition": 78,
+        "understanding_depth": 75,
+        "retention_rate": 83,
+        "comprehension_level": 78,
+        "skill_improvement": 78,
+        "application_ability": 84,
+        "problem_solving": 72,
+        "creativity_enhancement": 68,
+        "learning_efficiency": 75,
+        "focus_level": 80,
+        "active_participation": 75,
+        "practice_frequency": 70
+      },
+      "overall_score": 77,
+      "feedback": "中等！学习效果一般，建议回顾重点内容。",
+      "mastery_level": "掌握",
+      "suggestions": [
+        "建议针对「最新写作技巧书籍」的薄弱环节进行强化训练"
+      ]
+    },
+    {
+      "topic": "文学理论 新发展",
+      "skill_name": "写作技巧大师",
+      "timestamp": "2026-04-28T12:28:40.016031",
+      "duration": 30,
+      "metrics": {
+        "knowledge_acquisition": 90,
+        "understanding_depth": 75,
+        "retention_rate": 83,
+        "comprehension_level": 78,
+        "skill_improvement": 88,
+        "application_ability": 85,
+        "problem_solving": 72,
+        "creativity_enhancement": 68,
+        "learning_efficiency": 75,
+        "focus_level": 80,
+        "active_participation": 75,
+        "practice_frequency": 70
+      },
+      "overall_score": 80,
+      "feedback": "良好！学习效果不错，建议加强实践应用。",
+      "mastery_level": "掌握",
+      "suggestions": [
+        "学习效果良好！建议拓展相关领域的学习"
+      ]
+    },
+    {
+      "topic": "跨媒介创作技巧",
+      "skill_name": "写作技巧大师",
+      "timestamp": "2026-04-28T12:30:09.218334",
+      "duration": 30,
+      "metrics": {
+        "knowledge_acquisition": 81,
+        "understanding_depth": 75,
+        "retention_rate": 86,
+        "comprehension_level": 78,
+        "skill_improvement": 79,
+        "application_ability": 74,
+        "problem_solving": 72,
+        "creativity_enhancement": 68,
+        "learning_efficiency": 75,
+        "focus_level": 80,
+        "active_participation": 75,
+        "practice_frequency": 70
+      },
+      "overall_score": 77,
+      "feedback": "中等！学习效果一般，建议回顾重点内容。",
+      "mastery_level": "掌握",
+      "suggestions": [
+        "建议针对「跨媒介创作技巧」的薄弱环节进行强化训练"
+      ]
+    },
+    {
+      "topic": "2026 网络小说 趋势",
+      "skill_name": "世界观构造师",
+      "timestamp": "2026-04-28T12:31:38.425976",
+      "duration": 30,
+      "metrics": {
+        "knowledge_acquisition": 84,
+        "understanding_depth": 75,
+        "retention_rate": 91,
+        "comprehension_level": 78,
+        "skill_improvement": 74,
+        "application_ability": 75,
+        "problem_solving": 72,
+        "creativity_enhancement": 68,
+        "learning_efficiency": 75,
+        "focus_level": 80,
+        "active_participation": 75,
+        "practice_frequency": 70
+      },
+      "overall_score": 77,
+      "feedback": "中等！学习效果一般，建议回顾重点内容。",
+      "mastery_level": "掌握",
+      "suggestions": [
+        "建议针对「2026 网络小说 趋势」的薄弱环节进行强化训练"
+      ]
+    },
+    {
+      "topic": "情感描写技巧 微动作微表情",
+      "skill_name": "对话设计师",
+      "timestamp": "2026-04-28T12:33:07.640655",
+      "duration": 30,
+      "metrics": {
+        "knowledge_acquisition": 90,
+        "understanding_depth": 75,
+        "retention_rate": 81,
+        "comprehension_level": 78,
+        "skill_improvement": 72,
+        "application_ability": 78,
+        "problem_solving": 72,
+        "creativity_enhancement": 68,
+        "learning_efficiency": 75,
+        "focus_level": 80,
+        "active_participation": 75,
+        "practice_frequency": 70
+      },
+      "overall_score": 77,
+      "feedback": "中等！学习效果一般，建议回顾重点内容。",
+      "mastery_level": "掌握",
+      "suggestions": [
+        "建议针对「情感描写技巧 微动作微表情」的薄弱环节进行强化训练"
+      ]
+    },
+    {
+      "topic": "人物刻画方法 情感小说",
+      "skill_name": "角色性格塑造师",
+      "timestamp": "2026-04-28T12:34:36.861949",
+      "duration": 30,
+      "metrics": {
+        "knowledge_acquisition": 75,
+        "understanding_depth": 75,
+        "retention_rate": 87,
+        "comprehension_level": 78,
+        "skill_improvement": 78,
         "application_ability": 71,
         "problem_solving": 72,
         "creativity_enhancement": 68,
@@ -1020,21 +912,21 @@
       "feedback": "中等！学习效果一般，建议回顾重点内容。",
       "mastery_level": "掌握",
       "suggestions": [
-        "建议针对「2026 写作技巧书籍 推荐」的薄弱环节进行强化训练"
+        "建议针对「人物刻画方法 情感小说」的薄弱环节进行强化训练"
       ]
     },
     {
-      "topic": "最新写作技巧书籍",
-      "skill_name": "写作技巧大师",
-      "timestamp": "2026-04-28T12:41:11.394857",
+      "topic": "剧情构造技巧 故事合理性",
+      "skill_name": "主线剧情设计师",
+      "timestamp": "2026-04-28T12:36:06.087069",
       "duration": 30,
       "metrics": {
-        "knowledge_acquisition": 76,
+        "knowledge_acquisition": 95,
         "understanding_depth": 75,
-        "retention_rate": 82,
+        "retention_rate": 91,
         "comprehension_level": 78,
-        "skill_improvement": 71,
-        "application_ability": 71,
+        "skill_improvement": 85,
+        "application_ability": 66,
         "problem_solving": 72,
         "creativity_enhancement": 68,
         "learning_efficiency": 75,
@@ -1042,9 +934,89 @@
         "active_participation": 75,
         "practice_frequency": 70
       },
-      "overall_score": 74,
+      "overall_score": 79,
       "feedback": "中等！学习效果一般，建议回顾重点内容。",
-      "mastery_level": "了解",
+      "mastery_level": "掌握",
+      "suggestions": [
+        "建议多做「剧情构造技巧 故事合理性」相关的实践练习",
+        "建议针对「剧情构造技巧 故事合理性」的薄弱环节进行强化训练"
+      ]
+    },
+    {
+      "topic": "2026 热门小说 分析",
+      "skill_name": "写作技巧大师",
+      "timestamp": "2026-04-28T12:37:35.320632",
+      "duration": 30,
+      "metrics": {
+        "knowledge_acquisition": 75,
+        "understanding_depth": 75,
+        "retention_rate": 80,
+        "comprehension_level": 78,
+        "skill_improvement": 89,
+        "application_ability": 75,
+        "problem_solving": 72,
+        "creativity_enhancement": 68,
+        "learning_efficiency": 75,
+        "focus_level": 80,
+        "active_participation": 75,
+        "practice_frequency": 70
+      },
+      "overall_score": 77,
+      "feedback": "中等！学习效果一般，建议回顾重点内容。",
+      "mastery_level": "掌握",
+      "suggestions": [
+        "建议针对「2026 热门小说 分析」的薄弱环节进行强化训练"
+      ]
+    },
+    {
+      "topic": "2026 写作技巧书籍 推荐",
+      "skill_name": "写作技巧大师",
+      "timestamp": "2026-04-28T12:39:04.560920",
+      "duration": 30,
+      "metrics": {
+        "knowledge_acquisition": 84,
+        "understanding_depth": 75,
+        "retention_rate": 87,
+        "comprehension_level": 78,
+        "skill_improvement": 76,
+        "application_ability": 66,
+        "problem_solving": 72,
+        "creativity_enhancement": 68,
+        "learning_efficiency": 75,
+        "focus_level": 80,
+        "active_participation": 75,
+        "practice_frequency": 70
+      },
+      "overall_score": 76,
+      "feedback": "中等！学习效果一般，建议回顾重点内容。",
+      "mastery_level": "掌握",
+      "suggestions": [
+        "建议多做「2026 写作技巧书籍 推荐」相关的实践练习",
+        "建议针对「2026 写作技巧书籍 推荐」的薄弱环节进行强化训练"
+      ]
+    },
+    {
+      "topic": "最新写作技巧书籍",
+      "skill_name": "写作技巧大师",
+      "timestamp": "2026-04-28T12:40:33.801908",
+      "duration": 30,
+      "metrics": {
+        "knowledge_acquisition": 91,
+        "understanding_depth": 75,
+        "retention_rate": 80,
+        "comprehension_level": 78,
+        "skill_improvement": 80,
+        "application_ability": 79,
+        "problem_solving": 72,
+        "creativity_enhancement": 68,
+        "learning_efficiency": 75,
+        "focus_level": 80,
+        "active_participation": 75,
+        "practice_frequency": 70
+      },
+      "overall_score": 78,
+      "feedback": "中等！学习效果一般，建议回顾重点内容。",
+      "mastery_level": "掌握",
       "suggestions": [
         "建议针对「最新写作技巧书籍」的薄弱环节进行强化训练"
       ]
@@ -1052,14 +1024,14 @@
     {
       "topic": "文学理论 新发展",
       "skill_name": "写作技巧大师",
-      "timestamp": "2026-04-28T12:42:40.664730",
+      "timestamp": "2026-04-28T12:42:03.051369",
       "duration": 30,
       "metrics": {
-        "knowledge_acquisition": 84,
+        "knowledge_acquisition": 80,
         "understanding_depth": 75,
         "retention_rate": 83,
         "comprehension_level": 78,
-        "skill_improvement": 82,
+        "skill_improvement": 86,
         "application_ability": 69,
         "problem_solving": 72,
         "creativity_enhancement": 68,
@@ -1079,146 +1051,14 @@
     {
       "topic": "跨媒介创作技巧",
       "skill_name": "写作技巧大师",
-      "timestamp": "2026-04-28T12:44:09.930326",
+      "timestamp": "2026-04-28T12:43:32.307455",
       "duration": 30,
       "metrics": {
-        "knowledge_acquisition": 83,
+        "knowledge_acquisition": 78,
         "understanding_depth": 75,
-        "retention_rate": 81,
-        "comprehension_level": 78,
-        "skill_improvement": 71,
-        "application_ability": 76,
-        "problem_solving": 72,
-        "creativity_enhancement": 68,
-        "learning_efficiency": 75,
-        "focus_level": 80,
-        "active_participation": 75,
-        "practice_frequency": 70
-      },
-      "overall_score": 76,
-      "feedback": "中等！学习效果一般，建议回顾重点内容。",
-      "mastery_level": "掌握",
-      "suggestions": [
-        "建议针对「跨媒介创作技巧」的薄弱环节进行强化训练"
-      ]
-    },
-    {
-      "topic": "2026 网络小说 趋势",
-      "skill_name": "世界观构造师",
-      "timestamp": "2026-04-28T12:45:39.212149",
-      "duration": 30,
-      "metrics": {
-        "knowledge_acquisition": 75,
-        "understanding_depth": 75,
-        "retention_rate": 95,
-        "comprehension_level": 78,
-        "skill_improvement": 71,
-        "application_ability": 81,
-        "problem_solving": 72,
-        "creativity_enhancement": 68,
-        "learning_efficiency": 75,
-        "focus_level": 80,
-        "active_participation": 75,
-        "practice_frequency": 70
-      },
-      "overall_score": 77,
-      "feedback": "中等！学习效果一般，建议回顾重点内容。",
-      "mastery_level": "掌握",
-      "suggestions": [
-        "建议针对「2026 网络小说 趋势」的薄弱环节进行强化训练"
-      ]
-    },
-    {
-      "topic": "情感描写技巧 微动作微表情",
-      "skill_name": "对话设计师",
-      "timestamp": "2026-04-28T12:47:08.503154",
-      "duration": 30,
-      "metrics": {
-        "knowledge_acquisition": 76,
-        "understanding_depth": 75,
-        "retention_rate": 82,
+        "retention_rate": 83,
         "comprehension_level": 78,
         "skill_improvement": 89,
-        "application_ability": 70,
-        "problem_solving": 72,
-        "creativity_enhancement": 68,
-        "learning_efficiency": 75,
-        "focus_level": 80,
-        "active_participation": 75,
-        "practice_frequency": 70
-      },
-      "overall_score": 76,
-      "feedback": "中等！学习效果一般，建议回顾重点内容。",
-      "mastery_level": "掌握",
-      "suggestions": [
-        "建议针对「情感描写技巧 微动作微表情」的薄弱环节进行强化训练"
-      ]
-    },
-    {
-      "topic": "人物刻画方法 情感小说",
-      "skill_name": "角色性格塑造师",
-      "timestamp": "2026-04-28T12:48:37.797800",
-      "duration": 30,
-      "metrics": {
-        "knowledge_acquisition": 76,
-        "understanding_depth": 75,
-        "retention_rate": 93,
-        "comprehension_level": 78,
-        "skill_improvement": 73,
-        "application_ability": 67,
-        "problem_solving": 72,
-        "creativity_enhancement": 68,
-        "learning_efficiency": 75,
-        "focus_level": 80,
-        "active_participation": 75,
-        "practice_frequency": 70
-      },
-      "overall_score": 75,
-      "feedback": "中等！学习效果一般，建议回顾重点内容。",
-      "mastery_level": "掌握",
-      "suggestions": [
-        "建议多做「人物刻画方法 情感小说」相关的实践练习",
-        "建议针对「人物刻画方法 情感小说」的薄弱环节进行强化训练"
-      ]
-    },
-    {
-      "topic": "剧情构造技巧 故事合理性",
-      "skill_name": "主线剧情设计师",
-      "timestamp": "2026-04-28T12:50:07.098059",
-      "duration": 30,
-      "metrics": {
-        "knowledge_acquisition": 84,
-        "understanding_depth": 75,
-        "retention_rate": 94,
-        "comprehension_level": 78,
-        "skill_improvement": 70,
-        "application_ability": 68,
-        "problem_solving": 72,
-        "creativity_enhancement": 68,
-        "learning_efficiency": 75,
-        "focus_level": 80,
-        "active_participation": 75,
-        "practice_frequency": 70
-      },
-      "overall_score": 76,
-      "feedback": "中等！学习效果一般，建议回顾重点内容。",
-      "mastery_level": "掌握",
-      "suggestions": [
-        "建议多做「剧情构造技巧 故事合理性」相关的实践练习",
-        "建议针对「剧情构造技巧 故事合理性」的薄弱环节进行强化训练"
-      ]
-    },
-    {
-      "topic": "2026 热门小说 分析",
-      "skill_name": "写作技巧大师",
-      "timestamp": "2026-04-28T12:51:36.395638",
-      "duration": 30,
-      "metrics": {
-        "knowledge_acquisition": 82,
-        "understanding_depth": 75,
-        "retention_rate": 89,
-        "comprehension_level": 78,
-        "skill_improvement": 82,
         "application_ability": 82,
         "problem_solving": 72,
         "creativity_enhancement": 68,
@@ -1231,21 +1071,21 @@
       "feedback": "中等！学习效果一般，建议回顾重点内容。",
       "mastery_level": "掌握",
       "suggestions": [
-        "建议针对「2026 热门小说 分析」的薄弱环节进行强化训练"
+        "建议针对「跨媒介创作技巧」的薄弱环节进行强化训练"
       ]
     },
     {
-      "topic": "2026 写作技巧书籍 推荐",
-      "skill_name": "写作技巧大师",
-      "timestamp": "2026-04-28T12:53:05.706065",
+      "topic": "2026 网络小说 趋势",
+      "skill_name": "世界观构造师",
+      "timestamp": "2026-04-28T12:45:01.570154",
       "duration": 30,
       "metrics": {
-        "knowledge_acquisition": 93,
+        "knowledge_acquisition": 94,
         "understanding_depth": 75,
-        "retention_rate": 86,
+        "retention_rate": 89,
         "comprehension_level": 78,
-        "skill_improvement": 89,
-        "application_ability": 84,
+        "skill_improvement": 84,
+        "application_ability": 85,
         "problem_solving": 72,
         "creativity_enhancement": 68,
         "learning_efficiency": 75,
@@ -1261,17 +1101,43 @@
       ]
     },
     {
-      "topic": "最新写作技巧书籍",
-      "skill_name": "写作技巧大师",
-      "timestamp": "2026-04-28T12:54:35.022148",
+      "topic": "情感描写技巧 微动作微表情",
+      "skill_name": "对话设计师",
+      "timestamp": "2026-04-28T12:46:30.841359",
       "duration": 30,
       "metrics": {
-        "knowledge_acquisition": 86,
+        "knowledge_acquisition": 93,
         "understanding_depth": 75,
-        "retention_rate": 94,
+        "retention_rate": 85,
         "comprehension_level": 78,
-        "skill_improvement": 85,
-        "application_ability": 75,
+        "skill_improvement": 84,
+        "application_ability": 70,
+        "problem_solving": 72,
+        "creativity_enhancement": 68,
+        "learning_efficiency": 75,
+        "focus_level": 80,
+        "active_participation": 75,
+        "practice_frequency": 70
+      },
+      "overall_score": 78,
+      "feedback": "中等！学习效果一般，建议回顾重点内容。",
+      "mastery_level": "掌握",
+      "suggestions": [
+        "建议针对「情感描写技巧 微动作微表情」的薄弱环节进行强化训练"
+      ]
+    },
+    {
+      "topic": "人物刻画方法 情感小说",
+      "skill_name": "角色性格塑造师",
+      "timestamp": "2026-04-28T12:48:00.116819",
+      "duration": 30,
+      "metrics": {
+        "knowledge_acquisition": 89,
+        "understanding_depth": 75,
+        "retention_rate": 91,
+        "comprehension_level": 78,
+        "skill_improvement": 88,
+        "application_ability": 69,
         "problem_solving": 72,
         "creativity_enhancement": 68,
         "learning_efficiency": 75,
@@ -1283,21 +1149,127 @@
       "feedback": "中等！学习效果一般，建议回顾重点内容。",
       "mastery_level": "掌握",
       "suggestions": [
+        "建议多做「人物刻画方法 情感小说」相关的实践练习",
+        "建议针对「人物刻画方法 情感小说」的薄弱环节进行强化训练"
+      ]
+    },
+    {
+      "topic": "剧情构造技巧 故事合理性",
+      "skill_name": "主线剧情设计师",
+      "timestamp": "2026-04-28T12:49:29.398129",
+      "duration": 30,
+      "metrics": {
+        "knowledge_acquisition": 79,
+        "understanding_depth": 75,
+        "retention_rate": 95,
+        "comprehension_level": 78,
+        "skill_improvement": 78,
+        "application_ability": 81,
+        "problem_solving": 72,
+        "creativity_enhancement": 68,
+        "learning_efficiency": 75,
+        "focus_level": 80,
+        "active_participation": 75,
+        "practice_frequency": 70
+      },
+      "overall_score": 78,
+      "feedback": "中等！学习效果一般，建议回顾重点内容。",
+      "mastery_level": "掌握",
+      "suggestions": [
+        "建议针对「剧情构造技巧 故事合理性」的薄弱环节进行强化训练"
+      ]
+    },
+    {
+      "topic": "2026 热门小说 分析",
+      "skill_name": "写作技巧大师",
+      "timestamp": "2026-04-28T12:50:58.686816",
+      "duration": 30,
+      "metrics": {
+        "knowledge_acquisition": 76,
+        "understanding_depth": 75,
+        "retention_rate": 93,
+        "comprehension_level": 78,
+        "skill_improvement": 70,
+        "application_ability": 65,
+        "problem_solving": 72,
+        "creativity_enhancement": 68,
+        "learning_efficiency": 75,
+        "focus_level": 80,
+        "active_participation": 75,
+        "practice_frequency": 70
+      },
+      "overall_score": 75,
+      "feedback": "中等！学习效果一般，建议回顾重点内容。",
+      "mastery_level": "掌握",
+      "suggestions": [
+        "建议多做「2026 热门小说 分析」相关的实践练习",
+        "建议针对「2026 热门小说 分析」的薄弱环节进行强化训练"
+      ]
+    },
+    {
+      "topic": "2026 写作技巧书籍 推荐",
+      "skill_name": "写作技巧大师",
+      "timestamp": "2026-04-28T12:52:27.978327",
+      "duration": 30,
+      "metrics": {
+        "knowledge_acquisition": 90,
+        "understanding_depth": 75,
+        "retention_rate": 81,
+        "comprehension_level": 78,
+        "skill_improvement": 82,
+        "application_ability": 75,
+        "problem_solving": 72,
+        "creativity_enhancement": 68,
+        "learning_efficiency": 75,
+        "focus_level": 80,
+        "active_participation": 75,
+        "practice_frequency": 70
+      },
+      "overall_score": 78,
+      "feedback": "中等！学习效果一般，建议回顾重点内容。",
+      "mastery_level": "掌握",
+      "suggestions": [
+        "建议针对「2026 写作技巧书籍 推荐」的薄弱环节进行强化训练"
+      ]
+    },
+    {
+      "topic": "最新写作技巧书籍",
+      "skill_name": "写作技巧大师",
+      "timestamp": "2026-04-28T12:53:57.281937",
+      "duration": 30,
+      "metrics": {
+        "knowledge_acquisition": 75,
+        "understanding_depth": 75,
+        "retention_rate": 91,
+        "comprehension_level": 78,
+        "skill_improvement": 85,
+        "application_ability": 74,
+        "problem_solving": 72,
+        "creativity_enhancement": 68,
+        "learning_efficiency": 75,
+        "focus_level": 80,
+        "active_participation": 75,
+        "practice_frequency": 70
+      },
+      "overall_score": 77,
+      "feedback": "中等！学习效果一般，建议回顾重点内容。",
+      "mastery_level": "掌握",
+      "suggestions": [
         "建议针对「最新写作技巧书籍」的薄弱环节进行强化训练"
       ]
     },
     {
       "topic": "文学理论 新发展",
       "skill_name": "写作技巧大师",
-      "timestamp": "2026-04-28T12:56:04.338950",
+      "timestamp": "2026-04-28T12:55:26.583563",
       "duration": 30,
       "metrics": {
-        "knowledge_acquisition": 83,
+        "knowledge_acquisition": 85,
         "understanding_depth": 75,
-        "retention_rate": 93,
+        "retention_rate": 84,
         "comprehension_level": 78,
-        "skill_improvement": 70,
-        "application_ability": 82,
+        "skill_improvement": 74,
+        "application_ability": 77,
         "problem_solving": 72,
         "creativity_enhancement": 68,
         "learning_efficiency": 75,
@@ -1315,15 +1287,15 @@
     {
       "topic": "跨媒介创作技巧",
       "skill_name": "写作技巧大师",
-      "timestamp": "2026-04-28T12:57:33.672174",
+      "timestamp": "2026-04-28T12:56:55.893600",
       "duration": 30,
       "metrics": {
-        "knowledge_acquisition": 76,
+        "knowledge_acquisition": 84,
         "understanding_depth": 75,
-        "retention_rate": 94,
+        "retention_rate": 82,
         "comprehension_level": 78,
-        "skill_improvement": 80,
-        "application_ability": 83,
+        "skill_improvement": 78,
+        "application_ability": 81,
         "problem_solving": 72,
         "creativity_enhancement": 68,
         "learning_efficiency": 75,
@@ -1331,7 +1303,7 @@
         "active_participation": 75,
         "practice_frequency": 70
       },
-      "overall_score": 78,
+      "overall_score": 77,
       "feedback": "中等！学习效果一般，建议回顾重点内容。",
       "mastery_level": "掌握",
       "suggestions": [
@@ -1341,15 +1313,15 @@
     {
       "topic": "2026 网络小说 趋势",
       "skill_name": "世界观构造师",
-      "timestamp": "2026-04-28T12:59:03.018723",
+      "timestamp": "2026-04-28T12:58:25.209751",
       "duration": 30,
       "metrics": {
-        "knowledge_acquisition": 91,
+        "knowledge_acquisition": 81,
         "understanding_depth": 75,
-        "retention_rate": 88,
+        "retention_rate": 82,
         "comprehension_level": 78,
-        "skill_improvement": 78,
-        "application_ability": 84,
+        "skill_improvement": 87,
+        "application_ability": 73,
         "problem_solving": 72,
         "creativity_enhancement": 68,
         "learning_efficiency": 75,
@@ -1357,7 +1329,7 @@
         "active_participation": 75,
         "practice_frequency": 70
       },
-      "overall_score": 79,
+      "overall_score": 77,
       "feedback": "中等！学习效果一般，建议回顾重点内容。",
       "mastery_level": "掌握",
       "suggestions": [
@@ -1367,15 +1339,15 @@
     {
       "topic": "情感描写技巧 微动作微表情",
       "skill_name": "对话设计师",
-      "timestamp": "2026-04-28T13:00:32.391662",
+      "timestamp": "2026-04-28T12:59:54.514369",
       "duration": 30,
       "metrics": {
-        "knowledge_acquisition": 79,
+        "knowledge_acquisition": 83,
         "understanding_depth": 75,
-        "retention_rate": 85,
+        "retention_rate": 86,
         "comprehension_level": 78,
-        "skill_improvement": 83,
-        "application_ability": 76,
+        "skill_improvement": 78,
+        "application_ability": 72,
         "problem_solving": 72,
         "creativity_enhancement": 68,
         "learning_efficiency": 75,
@@ -1393,15 +1365,15 @@
     {
       "topic": "人物刻画方法 情感小说",
       "skill_name": "角色性格塑造师",
-      "timestamp": "2026-04-28T13:02:01.738408",
+      "timestamp": "2026-04-28T13:01:23.835246",
       "duration": 30,
       "metrics": {
-        "knowledge_acquisition": 88,
+        "knowledge_acquisition": 94,
         "understanding_depth": 75,
-        "retention_rate": 87,
+        "retention_rate": 81,
         "comprehension_level": 78,
         "skill_improvement": 76,
-        "application_ability": 68,
+        "application_ability": 66,
         "problem_solving": 72,
         "creativity_enhancement": 68,
         "learning_efficiency": 75,
@@ -1420,15 +1392,15 @@
     {
       "topic": "剧情构造技巧 故事合理性",
       "skill_name": "主线剧情设计师",
-      "timestamp": "2026-04-28T13:03:31.102074",
+      "timestamp": "2026-04-28T13:02:53.156941",
       "duration": 30,
       "metrics": {
-        "knowledge_acquisition": 76,
+        "knowledge_acquisition": 80,
         "understanding_depth": 75,
-        "retention_rate": 95,
+        "retention_rate": 83,
         "comprehension_level": 78,
-        "skill_improvement": 90,
-        "application_ability": 75,
+        "skill_improvement": 73,
+        "application_ability": 73,
         "problem_solving": 72,
         "creativity_enhancement": 68,
         "learning_efficiency": 75,
@@ -1436,7 +1408,7 @@
         "active_participation": 75,
         "practice_frequency": 70
       },
-      "overall_score": 78,
+      "overall_score": 75,
       "feedback": "中等！学习效果一般，建议回顾重点内容。",
       "mastery_level": "掌握",
       "suggestions": [
@@ -1446,15 +1418,15 @@
     {
       "topic": "2026 热门小说 分析",
       "skill_name": "写作技巧大师",
-      "timestamp": "2026-04-28T13:05:00.488854",
+      "timestamp": "2026-04-28T13:04:22.484532",
       "duration": 30,
       "metrics": {
-        "knowledge_acquisition": 86,
+        "knowledge_acquisition": 75,
         "understanding_depth": 75,
-        "retention_rate": 93,
+        "retention_rate": 86,
         "comprehension_level": 78,
-        "skill_improvement": 70,
-        "application_ability": 76,
+        "skill_improvement": 85,
+        "application_ability": 77,
         "problem_solving": 72,
         "creativity_enhancement": 68,
         "learning_efficiency": 75,
@@ -1468,6 +1440,58 @@
       "suggestions": [
         "建议针对「2026 热门小说 分析」的薄弱环节进行强化训练"
       ]
+    },
+    {
+      "topic": "2026 写作技巧书籍 推荐",
+      "skill_name": "写作技巧大师",
+      "timestamp": "2026-04-28T13:05:51.813663",
+      "duration": 30,
+      "metrics": {
+        "knowledge_acquisition": 90,
+        "understanding_depth": 75,
+        "retention_rate": 93,
+        "comprehension_level": 78,
+        "skill_improvement": 84,
+        "application_ability": 76,
+        "problem_solving": 72,
+        "creativity_enhancement": 68,
+        "learning_efficiency": 75,
+        "focus_level": 80,
+        "active_participation": 75,
+        "practice_frequency": 70
+      },
+      "overall_score": 79,
+      "feedback": "中等！学习效果一般，建议回顾重点内容。",
+      "mastery_level": "掌握",
+      "suggestions": [
+        "建议针对「2026 写作技巧书籍 推荐」的薄弱环节进行强化训练"
+      ]
+    },
+    {
+      "topic": "最新写作技巧书籍",
+      "skill_name": "写作技巧大师",
+      "timestamp": "2026-04-28T13:07:21.159060",
+      "duration": 30,
+      "metrics": {
+        "knowledge_acquisition": 95,
+        "understanding_depth": 75,
+        "retention_rate": 92,
+        "comprehension_level": 78,
+        "skill_improvement": 77,
+        "application_ability": 79,
+        "problem_solving": 72,
+        "creativity_enhancement": 68,
+        "learning_efficiency": 75,
+        "focus_level": 80,
+        "active_participation": 75,
+        "practice_frequency": 70
+      },
+      "overall_score": 79,
+      "feedback": "中等！学习效果一般，建议回顾重点内容。",
+      "mastery_level": "掌握",
+      "suggestions": [
+        "建议针对「最新写作技巧书籍」的薄弱环节进行强化训练"
+      ]
     }
   ],
   "skill_improvement": {
@@ -1478,253 +1502,257 @@
           "timestamp": "2026-04-28T11:40:35.521780"
         },
         {
-          "score": 78,
-          "timestamp": "2026-04-28T11:41:12.821327"
+          "score": 76,
+          "timestamp": "2026-04-28T11:45:35.523394"
+        },
+        {
+          "score": 77,
+          "timestamp": "2026-04-28T11:47:04.585139"
+        },
+        {
+          "score": 80,
+          "timestamp": "2026-04-28T11:48:33.649003"
+        },
+        {
+          "score": 80,
+          "timestamp": "2026-04-28T11:50:02.718543"
+        },
+        {
+          "score": 77,
+          "timestamp": "2026-04-28T11:57:28.067887"
+        },
+        {
+          "score": 77,
+          "timestamp": "2026-04-28T11:58:57.146863"
+        },
+        {
+          "score": 77,
+          "timestamp": "2026-04-28T12:00:26.229962"
+        },
+        {
+          "score": 76,
+          "timestamp": "2026-04-28T12:01:55.326354"
+        },
+        {
+          "score": 79,
+          "timestamp": "2026-04-28T12:03:24.427552"
+        },
+        {
+          "score": 76,
+          "timestamp": "2026-04-28T12:10:50.004363"
+        },
+        {
+          "score": 77,
+          "timestamp": "2026-04-28T12:12:19.138979"
+        },
+        {
+          "score": 77,
+          "timestamp": "2026-04-28T12:13:48.279075"
+        },
+        {
+          "score": 77,
+          "timestamp": "2026-04-28T12:15:17.425911"
         },
         {
           "score": 78,
-          "timestamp": "2026-04-28T11:46:12.791152"
+          "timestamp": "2026-04-28T12:16:46.583291"
         },
         {
           "score": 78,
-          "timestamp": "2026-04-28T11:47:41.859884"
+          "timestamp": "2026-04-28T12:24:12.440256"
+        },
+        {
+          "score": 81,
+          "timestamp": "2026-04-28T12:25:41.628411"
+        },
+        {
+          "score": 77,
+          "timestamp": "2026-04-28T12:27:10.818427"
+        },
+        {
+          "score": 80,
+          "timestamp": "2026-04-28T12:28:40.016118"
+        },
+        {
+          "score": 77,
+          "timestamp": "2026-04-28T12:30:09.218422"
+        },
+        {
+          "score": 77,
+          "timestamp": "2026-04-28T12:37:35.320726"
+        },
+        {
+          "score": 76,
+          "timestamp": "2026-04-28T12:39:04.560999"
+        },
+        {
+          "score": 78,
+          "timestamp": "2026-04-28T12:40:33.801981"
+        },
+        {
+          "score": 77,
+          "timestamp": "2026-04-28T12:42:03.051445"
+        },
+        {
+          "score": 78,
+          "timestamp": "2026-04-28T12:43:32.307530"
         },
         {
           "score": 75,
-          "timestamp": "2026-04-28T11:49:10.934295"
+          "timestamp": "2026-04-28T12:50:58.686895"
+        },
+        {
+          "score": 78,
+          "timestamp": "2026-04-28T12:52:27.978425"
+        },
+        {
+          "score": 77,
+          "timestamp": "2026-04-28T12:53:57.282024"
+        },
+        {
+          "score": 77,
+          "timestamp": "2026-04-28T12:55:26.583664"
+        },
+        {
+          "score": 77,
+          "timestamp": "2026-04-28T12:56:55.893700"
+        },
+        {
+          "score": 77,
+          "timestamp": "2026-04-28T13:04:22.484604"
         },
         {
           "score": 79,
-          "timestamp": "2026-04-28T11:50:40.007709"
-        },
-        {
-          "score": 76,
-          "timestamp": "2026-04-28T11:58:05.368732"
+          "timestamp": "2026-04-28T13:05:51.813747"
         },
         {
           "score": 79,
-          "timestamp": "2026-04-28T11:59:34.449771"
-        },
-        {
-          "score": 78,
-          "timestamp": "2026-04-28T12:01:03.543228"
-        },
-        {
-          "score": 77,
-          "timestamp": "2026-04-28T12:02:32.639054"
-        },
-        {
-          "score": 76,
-          "timestamp": "2026-04-28T12:04:01.743945"
-        },
-        {
-          "score": 78,
-          "timestamp": "2026-04-28T12:11:27.361560"
-        },
-        {
-          "score": 76,
-          "timestamp": "2026-04-28T12:12:56.497748"
-        },
-        {
-          "score": 78,
-          "timestamp": "2026-04-28T12:14:25.645948"
-        },
-        {
-          "score": 77,
-          "timestamp": "2026-04-28T12:15:54.798528"
-        },
-        {
-          "score": 79,
-          "timestamp": "2026-04-28T12:17:23.956039"
-        },
-        {
-          "score": 77,
-          "timestamp": "2026-04-28T12:24:49.859483"
-        },
-        {
-          "score": 76,
-          "timestamp": "2026-04-28T12:26:19.062593"
-        },
-        {
-          "score": 76,
-          "timestamp": "2026-04-28T12:27:48.267101"
-        },
-        {
-          "score": 78,
-          "timestamp": "2026-04-28T12:29:17.478031"
-        },
-        {
-          "score": 80,
-          "timestamp": "2026-04-28T12:30:46.696855"
-        },
-        {
-          "score": 78,
-          "timestamp": "2026-04-28T12:38:12.883110"
-        },
-        {
-          "score": 76,
-          "timestamp": "2026-04-28T12:39:42.137681"
-        },
-        {
-          "score": 74,
-          "timestamp": "2026-04-28T12:41:11.394929"
-        },
-        {
-          "score": 77,
-          "timestamp": "2026-04-28T12:42:40.664819"
-        },
-        {
-          "score": 76,
-          "timestamp": "2026-04-28T12:44:09.930392"
-        },
-        {
-          "score": 78,
-          "timestamp": "2026-04-28T12:51:36.395727"
-        },
-        {
-          "score": 80,
-          "timestamp": "2026-04-28T12:53:05.706165"
-        },
-        {
-          "score": 79,
-          "timestamp": "2026-04-28T12:54:35.022269"
-        },
-        {
-          "score": 77,
-          "timestamp": "2026-04-28T12:56:04.339044"
-        },
-        {
-          "score": 78,
-          "timestamp": "2026-04-28T12:57:33.672247"
-        },
-        {
-          "score": 77,
-          "timestamp": "2026-04-28T13:05:00.488955"
+          "timestamp": "2026-04-28T13:07:21.159141"
         }
       ],
-      "improvement_trend": 0,
-      "last_updated": "2026-04-28T13:05:00.488961"
+      "improvement_trend": 2,
+      "last_updated": "2026-04-28T13:07:21.159146"
     },
     "世界观构造师": {
       "scores": [
         {
-          "score": 79,
-          "timestamp": "2026-04-28T11:52:09.084714"
+          "score": 75,
+          "timestamp": "2026-04-28T11:51:31.789448"
         },
         {
           "score": 75,
-          "timestamp": "2026-04-28T12:05:30.856129"
-        },
-        {
-          "score": 78,
-          "timestamp": "2026-04-28T12:18:53.120376"
-        },
-        {
-          "score": 80,
-          "timestamp": "2026-04-28T12:32:15.919981"
-        },
-        {
-          "score": 77,
-          "timestamp": "2026-04-28T12:45:39.212235"
+          "timestamp": "2026-04-28T12:04:53.531914"
         },
         {
           "score": 79,
-          "timestamp": "2026-04-28T12:59:03.018800"
+          "timestamp": "2026-04-28T12:18:15.741236"
+        },
+        {
+          "score": 77,
+          "timestamp": "2026-04-28T12:31:38.426058"
+        },
+        {
+          "score": 80,
+          "timestamp": "2026-04-28T12:45:01.570227"
+        },
+        {
+          "score": 77,
+          "timestamp": "2026-04-28T12:58:25.209842"
         }
       ],
-      "improvement_trend": -1,
-      "last_updated": "2026-04-28T12:59:03.018805"
+      "improvement_trend": 0,
+      "last_updated": "2026-04-28T12:58:25.209848"
     },
     "对话设计师": {
       "scores": [
         {
-          "score": 76,
-          "timestamp": "2026-04-28T11:53:38.145518"
+          "score": 78,
+          "timestamp": "2026-04-28T11:53:00.866257"
+        },
+        {
+          "score": 77,
+          "timestamp": "2026-04-28T12:06:22.642360"
+        },
+        {
+          "score": 77,
+          "timestamp": "2026-04-28T12:19:44.908647"
+        },
+        {
+          "score": 77,
+          "timestamp": "2026-04-28T12:33:07.640745"
         },
         {
           "score": 78,
-          "timestamp": "2026-04-28T12:06:59.971384"
+          "timestamp": "2026-04-28T12:46:30.841432"
         },
         {
           "score": 77,
-          "timestamp": "2026-04-28T12:20:22.294896"
-        },
-        {
-          "score": 79,
-          "timestamp": "2026-04-28T12:33:45.149891"
-        },
-        {
-          "score": 76,
-          "timestamp": "2026-04-28T12:47:08.503218"
-        },
-        {
-          "score": 77,
-          "timestamp": "2026-04-28T13:00:32.391738"
+          "timestamp": "2026-04-28T12:59:54.514469"
         }
       ],
-      "improvement_trend": -2,
-      "last_updated": "2026-04-28T13:00:32.391743"
+      "improvement_trend": 0,
+      "last_updated": "2026-04-28T12:59:54.514475"
     },
     "角色性格塑造师": {
       "scores": [
         {
-          "score": 77,
-          "timestamp": "2026-04-28T11:55:07.215211"
-        },
-        {
           "score": 76,
-          "timestamp": "2026-04-28T12:08:29.097294"
+          "timestamp": "2026-04-28T11:54:29.929257"
         },
         {
-          "score": 80,
-          "timestamp": "2026-04-28T12:21:51.473602"
+          "score": 77,
+          "timestamp": "2026-04-28T12:07:51.755357"
         },
         {
           "score": 78,
-          "timestamp": "2026-04-28T12:35:14.393139"
+          "timestamp": "2026-04-28T12:21:14.082426"
         },
         {
-          "score": 75,
-          "timestamp": "2026-04-28T12:48:37.797888"
+          "score": 76,
+          "timestamp": "2026-04-28T12:34:36.862042"
+        },
+        {
+          "score": 79,
+          "timestamp": "2026-04-28T12:48:00.116918"
         },
         {
           "score": 77,
-          "timestamp": "2026-04-28T13:02:01.738484"
+          "timestamp": "2026-04-28T13:01:23.835328"
         }
       ],
-      "improvement_trend": -1,
-      "last_updated": "2026-04-28T13:02:01.738490"
+      "improvement_trend": 1,
+      "last_updated": "2026-04-28T13:01:23.835334"
     },
     "主线剧情设计师": {
       "scores": [
         {
-          "score": 76,
-          "timestamp": "2026-04-28T11:56:36.290267"
+          "score": 78,
+          "timestamp": "2026-04-28T11:55:58.996898"
         },
         {
           "score": 77,
-          "timestamp": "2026-04-28T12:09:58.227230"
+          "timestamp": "2026-04-28T12:09:20.875985"
+        },
+        {
+          "score": 78,
+          "timestamp": "2026-04-28T12:22:43.257164"
         },
         {
           "score": 79,
-          "timestamp": "2026-04-28T12:23:20.664092"
+          "timestamp": "2026-04-28T12:36:06.087150"
         },
         {
           "score": 78,
-          "timestamp": "2026-04-28T12:36:43.634002"
+          "timestamp": "2026-04-28T12:49:29.398227"
         },
         {
-          "score": 76,
-          "timestamp": "2026-04-28T12:50:07.098158"
-        },
-        {
-          "score": 78,
-          "timestamp": "2026-04-28T13:03:31.102158"
+          "score": 75,
+          "timestamp": "2026-04-28T13:02:53.157035"
         }
       ],
-      "improvement_trend": 0,
-      "last_updated": "2026-04-28T13:03:31.102164"
+      "improvement_trend": -4,
+      "last_updated": "2026-04-28T13:02:53.157040"
     }
   },
-  "last_update": "2026-04-28T13:05:00.488965"
+  "last_update": "2026-04-28T13:07:21.159150"
 }
