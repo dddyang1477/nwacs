@@ -11310,5 +11310,866 @@
     "topic": "修辞手法运用",
     "timestamp": "2026-04-28T13:00:08.675295",
     "learning_count": 51
+  },
+  {
+    "skill_name": "去AI痕迹监督官",
+    "skill_type": "secondary",
+    "topic": "自然语言优化",
+    "timestamp": "2026-04-28T13:00:10.701659",
+    "learning_count": 51
+  },
+  {
+    "skill_name": "质量审计师",
+    "skill_type": "secondary",
+    "topic": "结构完整性检查",
+    "timestamp": "2026-04-28T13:00:12.726662",
+    "learning_count": 51
+  },
+  {
+    "skill_name": "学习大师",
+    "skill_type": "secondary",
+    "topic": "经典文学研究",
+    "timestamp": "2026-04-28T13:00:14.752130",
+    "learning_count": 51
+  },
+  {
+    "skill_name": "规则掌控者",
+    "skill_type": "secondary",
+    "topic": "社会规则构建",
+    "timestamp": "2026-04-28T13:00:16.777638",
+    "learning_count": 51
+  },
+  {
+    "skill_name": "词汇大师",
+    "skill_type": "secondary",
+    "topic": "描写素材积累",
+    "timestamp": "2026-04-28T13:00:18.802851",
+    "learning_count": 51
+  },
+  {
+    "skill_name": "世界观构造师",
+    "skill_type": "secondary",
+    "topic": "都市异能设定方法",
+    "timestamp": "2026-04-28T13:00:34.397857",
+    "learning_count": 51
+  },
+  {
+    "skill_name": "剧情构造师",
+    "skill_type": "secondary",
+    "topic": "英雄之旅模板应用",
+    "timestamp": "2026-04-28T13:00:36.425053",
+    "learning_count": 51
+  },
+  {
+    "skill_name": "角色塑造师",
+    "skill_type": "secondary",
+    "topic": "人物动机设定",
+    "timestamp": "2026-04-28T13:00:38.452569",
+    "learning_count": 51
+  },
+  {
+    "skill_name": "战斗设计师",
+    "skill_type": "secondary",
+    "topic": "招式命名艺术",
+    "timestamp": "2026-04-28T13:00:40.481591",
+    "learning_count": 51
+  },
+  {
+    "skill_name": "场景构造师",
+    "skill_type": "secondary",
+    "topic": "感官细节描写",
+    "timestamp": "2026-04-28T13:00:42.508697",
+    "learning_count": 51
+  },
+  {
+    "skill_name": "对话设计师",
+    "skill_type": "secondary",
+    "topic": "潜台词设计",
+    "timestamp": "2026-04-28T13:00:44.538171",
+    "learning_count": 51
+  },
+  {
+    "skill_name": "写作技巧大师",
+    "skill_type": "secondary",
+    "topic": "修辞手法运用",
+    "timestamp": "2026-04-28T13:00:46.566678",
+    "learning_count": 51
+  },
+  {
+    "skill_name": "去AI痕迹监督官",
+    "skill_type": "secondary",
+    "topic": "自然语言优化",
+    "timestamp": "2026-04-28T13:00:48.594968",
+    "learning_count": 51
+  },
+  {
+    "skill_name": "质量审计师",
+    "skill_type": "secondary",
+    "topic": "结构完整性检查",
+    "timestamp": "2026-04-28T13:00:50.623353",
+    "learning_count": 51
+  },
+  {
+    "skill_name": "学习大师",
+    "skill_type": "secondary",
+    "topic": "经典文学研究",
+    "timestamp": "2026-04-28T13:00:52.650745",
+    "learning_count": 51
+  },
+  {
+    "skill_name": "规则掌控者",
+    "skill_type": "secondary",
+    "topic": "社会规则构建",
+    "timestamp": "2026-04-28T13:00:54.679419",
+    "learning_count": 51
+  },
+  {
+    "skill_name": "词汇大师",
+    "skill_type": "secondary",
+    "topic": "描写素材积累",
+    "timestamp": "2026-04-28T13:00:56.707985",
+    "learning_count": 51
+  },
+  {
+    "skill_name": "世界观构造师",
+    "skill_type": "secondary",
+    "topic": "世界规则一致性维护",
+    "timestamp": "2026-04-28T13:01:05.056144",
+    "learning_count": 44
+  },
+  {
+    "skill_name": "剧情构造师",
+    "skill_type": "secondary",
+    "topic": "剧情节奏控制",
+    "timestamp": "2026-04-28T13:01:07.085681",
+    "learning_count": 44
+  },
+  {
+    "skill_name": "角色塑造师",
+    "skill_type": "secondary",
+    "topic": "反派角色塑造技巧",
+    "timestamp": "2026-04-28T13:01:09.113306",
+    "learning_count": 44
+  },
+  {
+    "skill_name": "战斗设计师",
+    "skill_type": "secondary",
+    "topic": "特殊能力对决设计",
+    "timestamp": "2026-04-28T13:01:11.142597",
+    "learning_count": 44
+  },
+  {
+    "skill_name": "场景构造师",
+    "skill_type": "secondary",
+    "topic": "地域特色体现",
+    "timestamp": "2026-04-28T13:01:13.168589",
+    "learning_count": 44
+  },
+  {
+    "skill_name": "对话设计师",
+    "skill_type": "secondary",
+    "topic": "冲突对话设计",
+    "timestamp": "2026-04-28T13:01:15.197623",
+    "learning_count": 44
+  },
+  {
+    "skill_name": "写作技巧大师",
+    "skill_type": "secondary",
+    "topic": "去AI化写作方法",
+    "timestamp": "2026-04-28T13:01:17.224381",
+    "learning_count": 44
+  },
+  {
+    "skill_name": "去AI痕迹监督官",
+    "skill_type": "secondary",
+    "topic": "写作风格多样性",
+    "timestamp": "2026-04-28T13:01:19.250954",
+    "learning_count": 44
+  },
+  {
+    "skill_name": "质量审计师",
+    "skill_type": "secondary",
+    "topic": "读者体验优化",
+    "timestamp": "2026-04-28T13:01:21.278072",
+    "learning_count": 44
+  },
+  {
+    "skill_name": "学习大师",
+    "skill_type": "secondary",
+    "topic": "学习方法优化",
+    "timestamp": "2026-04-28T13:01:23.304997",
+    "learning_count": 44
+  },
+  {
+    "skill_name": "规则掌控者",
+    "skill_type": "secondary",
+    "topic": "规则冲突解决",
+    "timestamp": "2026-04-28T13:01:25.332668",
+    "learning_count": 44
+  },
+  {
+    "skill_name": "世界观构造师",
+    "skill_type": "secondary",
+    "topic": "科幻世界规则设计",
+    "timestamp": "2026-04-28T13:01:25.841298",
+    "learning_count": 52
+  },
+  {
+    "skill_name": "词汇大师",
+    "skill_type": "secondary",
+    "topic": "修辞丰富度提升",
+    "timestamp": "2026-04-28T13:01:27.360470",
+    "learning_count": 44
+  },
+  {
+    "skill_name": "剧情构造师",
+    "skill_type": "secondary",
+    "topic": "悬疑反转设计技巧",
+    "timestamp": "2026-04-28T13:01:27.867688",
+    "learning_count": 52
+  },
+  {
+    "skill_name": "角色塑造师",
+    "skill_type": "secondary",
+    "topic": "角色成长弧光设计",
+    "timestamp": "2026-04-28T13:01:29.893939",
+    "learning_count": 52
+  },
+  {
+    "skill_name": "战斗设计师",
+    "skill_type": "secondary",
+    "topic": "战斗节奏控制",
+    "timestamp": "2026-04-28T13:01:31.921258",
+    "learning_count": 52
+  },
+  {
+    "skill_name": "场景构造师",
+    "skill_type": "secondary",
+    "topic": "空间布局设计",
+    "timestamp": "2026-04-28T13:01:33.946764",
+    "learning_count": 52
+  },
+  {
+    "skill_name": "对话设计师",
+    "skill_type": "secondary",
+    "topic": "对话节奏控制",
+    "timestamp": "2026-04-28T13:01:35.972490",
+    "learning_count": 52
+  },
+  {
+    "skill_name": "写作技巧大师",
+    "skill_type": "secondary",
+    "topic": "叙事视角选择",
+    "timestamp": "2026-04-28T13:01:37.996605",
+    "learning_count": 52
+  },
+  {
+    "skill_name": "去AI痕迹监督官",
+    "skill_type": "secondary",
+    "topic": "人类风格模拟",
+    "timestamp": "2026-04-28T13:01:40.022110",
+    "learning_count": 52
+  },
+  {
+    "skill_name": "质量审计师",
+    "skill_type": "secondary",
+    "topic": "人物一致性检查",
+    "timestamp": "2026-04-28T13:01:42.047089",
+    "learning_count": 52
+  },
+  {
+    "skill_name": "学习大师",
+    "skill_type": "secondary",
+    "topic": "写作技巧创新",
+    "timestamp": "2026-04-28T13:01:44.074140",
+    "learning_count": 52
+  },
+  {
+    "skill_name": "规则掌控者",
+    "skill_type": "secondary",
+    "topic": "特殊规则设计",
+    "timestamp": "2026-04-28T13:01:46.099506",
+    "learning_count": 52
+  },
+  {
+    "skill_name": "词汇大师",
+    "skill_type": "secondary",
+    "topic": "语言风格优化",
+    "timestamp": "2026-04-28T13:01:48.126659",
+    "learning_count": 52
+  },
+  {
+    "skill_name": "世界观构造师",
+    "skill_type": "secondary",
+    "topic": "科幻世界规则设计",
+    "timestamp": "2026-04-28T13:02:03.746548",
+    "learning_count": 52
+  },
+  {
+    "skill_name": "剧情构造师",
+    "skill_type": "secondary",
+    "topic": "悬疑反转设计技巧",
+    "timestamp": "2026-04-28T13:02:05.773568",
+    "learning_count": 52
+  },
+  {
+    "skill_name": "角色塑造师",
+    "skill_type": "secondary",
+    "topic": "角色成长弧光设计",
+    "timestamp": "2026-04-28T13:02:07.802909",
+    "learning_count": 52
+  },
+  {
+    "skill_name": "战斗设计师",
+    "skill_type": "secondary",
+    "topic": "战斗节奏控制",
+    "timestamp": "2026-04-28T13:02:09.840219",
+    "learning_count": 52
+  },
+  {
+    "skill_name": "场景构造师",
+    "skill_type": "secondary",
+    "topic": "空间布局设计",
+    "timestamp": "2026-04-28T13:02:11.867608",
+    "learning_count": 52
+  },
+  {
+    "skill_name": "对话设计师",
+    "skill_type": "secondary",
+    "topic": "对话节奏控制",
+    "timestamp": "2026-04-28T13:02:13.894234",
+    "learning_count": 52
+  },
+  {
+    "skill_name": "写作技巧大师",
+    "skill_type": "secondary",
+    "topic": "叙事视角选择",
+    "timestamp": "2026-04-28T13:02:15.923389",
+    "learning_count": 52
+  },
+  {
+    "skill_name": "去AI痕迹监督官",
+    "skill_type": "secondary",
+    "topic": "人类风格模拟",
+    "timestamp": "2026-04-28T13:02:17.953397",
+    "learning_count": 52
+  },
+  {
+    "skill_name": "质量审计师",
+    "skill_type": "secondary",
+    "topic": "人物一致性检查",
+    "timestamp": "2026-04-28T13:02:19.983019",
+    "learning_count": 52
+  },
+  {
+    "skill_name": "学习大师",
+    "skill_type": "secondary",
+    "topic": "写作技巧创新",
+    "timestamp": "2026-04-28T13:02:22.011590",
+    "learning_count": 52
+  },
+  {
+    "skill_name": "规则掌控者",
+    "skill_type": "secondary",
+    "topic": "特殊规则设计",
+    "timestamp": "2026-04-28T13:02:24.039651",
+    "learning_count": 52
+  },
+  {
+    "skill_name": "词汇大师",
+    "skill_type": "secondary",
+    "topic": "语言风格优化",
+    "timestamp": "2026-04-28T13:02:26.070870",
+    "learning_count": 52
+  },
+  {
+    "skill_name": "世界观构造师",
+    "skill_type": "secondary",
+    "topic": "玄幻世界构建技巧",
+    "timestamp": "2026-04-28T13:02:34.398163",
+    "learning_count": 45
+  },
+  {
+    "skill_name": "剧情构造师",
+    "skill_type": "secondary",
+    "topic": "三幕式结构设计",
+    "timestamp": "2026-04-28T13:02:36.426478",
+    "learning_count": 45
+  },
+  {
+    "skill_name": "角色塑造师",
+    "skill_type": "secondary",
+    "topic": "角色性格刻画方法",
+    "timestamp": "2026-04-28T13:02:38.454020",
+    "learning_count": 45
+  },
+  {
+    "skill_name": "战斗设计师",
+    "skill_type": "secondary",
+    "topic": "战斗场景描写技巧",
+    "timestamp": "2026-04-28T13:02:40.482760",
+    "learning_count": 45
+  },
+  {
+    "skill_name": "场景构造师",
+    "skill_type": "secondary",
+    "topic": "环境氛围营造",
+    "timestamp": "2026-04-28T13:02:42.510850",
+    "learning_count": 45
+  },
+  {
+    "skill_name": "对话设计师",
+    "skill_type": "secondary",
+    "topic": "对话个性塑造",
+    "timestamp": "2026-04-28T13:02:44.539424",
+    "learning_count": 45
+  },
+  {
+    "skill_name": "写作技巧大师",
+    "skill_type": "secondary",
+    "topic": "风格定位与统一",
+    "timestamp": "2026-04-28T13:02:46.567000",
+    "learning_count": 45
+  },
+  {
+    "skill_name": "去AI痕迹监督官",
+    "skill_type": "secondary",
+    "topic": "AI痕迹识别技巧",
+    "timestamp": "2026-04-28T13:02:48.593069",
+    "learning_count": 45
+  },
+  {
+    "skill_name": "质量审计师",
+    "skill_type": "secondary",
+    "topic": "小说质量评估标准",
+    "timestamp": "2026-04-28T13:02:50.621101",
+    "learning_count": 45
+  },
+  {
+    "skill_name": "学习大师",
+    "skill_type": "secondary",
+    "topic": "网络小说趋势分析",
+    "timestamp": "2026-04-28T13:02:52.647974",
+    "learning_count": 45
+  },
+  {
+    "skill_name": "规则掌控者",
+    "skill_type": "secondary",
+    "topic": "自然规则设定",
+    "timestamp": "2026-04-28T13:02:54.675910",
+    "learning_count": 45
+  },
+  {
+    "skill_name": "世界观构造师",
+    "skill_type": "secondary",
+    "topic": "历史架空背景构建",
+    "timestamp": "2026-04-28T13:02:55.164045",
+    "learning_count": 53
+  },
+  {
+    "skill_name": "词汇大师",
+    "skill_type": "secondary",
+    "topic": "词汇收集与整理",
+    "timestamp": "2026-04-28T13:02:56.706598",
+    "learning_count": 45
+  },
+  {
+    "skill_name": "剧情构造师",
+    "skill_type": "secondary",
+    "topic": "伏笔埋设与回收",
+    "timestamp": "2026-04-28T13:02:57.189510",
+    "learning_count": 53
+  },
+  {
+    "skill_name": "角色塑造师",
+    "skill_type": "secondary",
+    "topic": "人物关系网络构建",
+    "timestamp": "2026-04-28T13:02:59.216579",
+    "learning_count": 53
+  },
+  {
+    "skill_name": "战斗设计师",
+    "skill_type": "secondary",
+    "topic": "不同境界战斗差异",
+    "timestamp": "2026-04-28T13:03:01.242238",
+    "learning_count": 53
+  },
+  {
+    "skill_name": "场景构造师",
+    "skill_type": "secondary",
+    "topic": "场景转换技巧",
+    "timestamp": "2026-04-28T13:03:03.268939",
+    "learning_count": 53
+  },
+  {
+    "skill_name": "对话设计师",
+    "skill_type": "secondary",
+    "topic": "情感对话描写",
+    "timestamp": "2026-04-28T13:03:05.296237",
+    "learning_count": 53
+  },
+  {
+    "skill_name": "写作技巧大师",
+    "skill_type": "secondary",
+    "topic": "节奏控制技巧",
+    "timestamp": "2026-04-28T13:03:07.321963",
+    "learning_count": 53
+  },
+  {
+    "skill_name": "去AI痕迹监督官",
+    "skill_type": "secondary",
+    "topic": "文本质量评估",
+    "timestamp": "2026-04-28T13:03:09.347191",
+    "learning_count": 53
+  },
+  {
+    "skill_name": "质量审计师",
+    "skill_type": "secondary",
+    "topic": "逻辑合理性验证",
+    "timestamp": "2026-04-28T13:03:11.373164",
+    "learning_count": 53
+  },
+  {
+    "skill_name": "学习大师",
+    "skill_type": "secondary",
+    "topic": "跨领域知识融合",
+    "timestamp": "2026-04-28T13:03:13.400511",
+    "learning_count": 53
+  },
+  {
+    "skill_name": "规则掌控者",
+    "skill_type": "secondary",
+    "topic": "规则一致性维护",
+    "timestamp": "2026-04-28T13:03:15.427658",
+    "learning_count": 53
+  },
+  {
+    "skill_name": "词汇大师",
+    "skill_type": "secondary",
+    "topic": "专业术语应用",
+    "timestamp": "2026-04-28T13:03:17.453281",
+    "learning_count": 53
+  },
+  {
+    "skill_name": "世界观构造师",
+    "skill_type": "secondary",
+    "topic": "历史架空背景构建",
+    "timestamp": "2026-04-28T13:03:33.110731",
+    "learning_count": 53
+  },
+  {
+    "skill_name": "剧情构造师",
+    "skill_type": "secondary",
+    "topic": "伏笔埋设与回收",
+    "timestamp": "2026-04-28T13:03:35.141011",
+    "learning_count": 53
+  },
+  {
+    "skill_name": "角色塑造师",
+    "skill_type": "secondary",
+    "topic": "人物关系网络构建",
+    "timestamp": "2026-04-28T13:03:37.169991",
+    "learning_count": 53
+  },
+  {
+    "skill_name": "战斗设计师",
+    "skill_type": "secondary",
+    "topic": "不同境界战斗差异",
+    "timestamp": "2026-04-28T13:03:39.205001",
+    "learning_count": 53
+  },
+  {
+    "skill_name": "场景构造师",
+    "skill_type": "secondary",
+    "topic": "场景转换技巧",
+    "timestamp": "2026-04-28T13:03:41.232613",
+    "learning_count": 53
+  },
+  {
+    "skill_name": "对话设计师",
+    "skill_type": "secondary",
+    "topic": "情感对话描写",
+    "timestamp": "2026-04-28T13:03:43.260491",
+    "learning_count": 53
+  },
+  {
+    "skill_name": "写作技巧大师",
+    "skill_type": "secondary",
+    "topic": "节奏控制技巧",
+    "timestamp": "2026-04-28T13:03:45.314919",
+    "learning_count": 53
+  },
+  {
+    "skill_name": "去AI痕迹监督官",
+    "skill_type": "secondary",
+    "topic": "文本质量评估",
+    "timestamp": "2026-04-28T13:03:47.341522",
+    "learning_count": 53
+  },
+  {
+    "skill_name": "质量审计师",
+    "skill_type": "secondary",
+    "topic": "逻辑合理性验证",
+    "timestamp": "2026-04-28T13:03:49.370057",
+    "learning_count": 53
+  },
+  {
+    "skill_name": "学习大师",
+    "skill_type": "secondary",
+    "topic": "跨领域知识融合",
+    "timestamp": "2026-04-28T13:03:51.398504",
+    "learning_count": 53
+  },
+  {
+    "skill_name": "规则掌控者",
+    "skill_type": "secondary",
+    "topic": "规则一致性维护",
+    "timestamp": "2026-04-28T13:03:53.428410",
+    "learning_count": 53
+  },
+  {
+    "skill_name": "词汇大师",
+    "skill_type": "secondary",
+    "topic": "专业术语应用",
+    "timestamp": "2026-04-28T13:03:55.456761",
+    "learning_count": 53
+  },
+  {
+    "skill_name": "世界观构造师",
+    "skill_type": "secondary",
+    "topic": "都市异能设定方法",
+    "timestamp": "2026-04-28T13:04:03.746261",
+    "learning_count": 46
+  },
+  {
+    "skill_name": "剧情构造师",
+    "skill_type": "secondary",
+    "topic": "英雄之旅模板应用",
+    "timestamp": "2026-04-28T13:04:05.774991",
+    "learning_count": 46
+  },
+  {
+    "skill_name": "角色塑造师",
+    "skill_type": "secondary",
+    "topic": "人物动机设定",
+    "timestamp": "2026-04-28T13:04:07.804446",
+    "learning_count": 46
+  },
+  {
+    "skill_name": "战斗设计师",
+    "skill_type": "secondary",
+    "topic": "招式命名艺术",
+    "timestamp": "2026-04-28T13:04:09.833288",
+    "learning_count": 46
+  },
+  {
+    "skill_name": "场景构造师",
+    "skill_type": "secondary",
+    "topic": "感官细节描写",
+    "timestamp": "2026-04-28T13:04:11.861526",
+    "learning_count": 46
+  },
+  {
+    "skill_name": "对话设计师",
+    "skill_type": "secondary",
+    "topic": "潜台词设计",
+    "timestamp": "2026-04-28T13:04:13.890003",
+    "learning_count": 46
+  },
+  {
+    "skill_name": "写作技巧大师",
+    "skill_type": "secondary",
+    "topic": "修辞手法运用",
+    "timestamp": "2026-04-28T13:04:15.918336",
+    "learning_count": 46
+  },
+  {
+    "skill_name": "去AI痕迹监督官",
+    "skill_type": "secondary",
+    "topic": "自然语言优化",
+    "timestamp": "2026-04-28T13:04:17.947631",
+    "learning_count": 46
+  },
+  {
+    "skill_name": "质量审计师",
+    "skill_type": "secondary",
+    "topic": "结构完整性检查",
+    "timestamp": "2026-04-28T13:04:19.975608",
+    "learning_count": 46
+  },
+  {
+    "skill_name": "学习大师",
+    "skill_type": "secondary",
+    "topic": "经典文学研究",
+    "timestamp": "2026-04-28T13:04:22.003528",
+    "learning_count": 46
+  },
+  {
+    "skill_name": "规则掌控者",
+    "skill_type": "secondary",
+    "topic": "社会规则构建",
+    "timestamp": "2026-04-28T13:04:24.032408",
+    "learning_count": 46
+  },
+  {
+    "skill_name": "世界观构造师",
+    "skill_type": "secondary",
+    "topic": "世界规则一致性维护",
+    "timestamp": "2026-04-28T13:04:24.490488",
+    "learning_count": 54
+  },
+  {
+    "skill_name": "词汇大师",
+    "skill_type": "secondary",
+    "topic": "描写素材积累",
+    "timestamp": "2026-04-28T13:04:26.061634",
+    "learning_count": 46
+  },
+  {
+    "skill_name": "剧情构造师",
+    "skill_type": "secondary",
+    "topic": "剧情节奏控制",
+    "timestamp": "2026-04-28T13:04:26.516399",
+    "learning_count": 54
+  },
+  {
+    "skill_name": "角色塑造师",
+    "skill_type": "secondary",
+    "topic": "反派角色塑造技巧",
+    "timestamp": "2026-04-28T13:04:28.542167",
+    "learning_count": 54
+  },
+  {
+    "skill_name": "战斗设计师",
+    "skill_type": "secondary",
+    "topic": "特殊能力对决设计",
+    "timestamp": "2026-04-28T13:04:30.568558",
+    "learning_count": 54
+  },
+  {
+    "skill_name": "场景构造师",
+    "skill_type": "secondary",
+    "topic": "地域特色体现",
+    "timestamp": "2026-04-28T13:04:32.594823",
+    "learning_count": 54
+  },
+  {
+    "skill_name": "对话设计师",
+    "skill_type": "secondary",
+    "topic": "冲突对话设计",
+    "timestamp": "2026-04-28T13:04:34.623356",
+    "learning_count": 54
+  },
+  {
+    "skill_name": "写作技巧大师",
+    "skill_type": "secondary",
+    "topic": "去AI化写作方法",
+    "timestamp": "2026-04-28T13:04:36.649819",
+    "learning_count": 54
+  },
+  {
+    "skill_name": "去AI痕迹监督官",
+    "skill_type": "secondary",
+    "topic": "写作风格多样性",
+    "timestamp": "2026-04-28T13:04:38.677530",
+    "learning_count": 54
+  },
+  {
+    "skill_name": "质量审计师",
+    "skill_type": "secondary",
+    "topic": "读者体验优化",
+    "timestamp": "2026-04-28T13:04:40.705889",
+    "learning_count": 54
+  },
+  {
+    "skill_name": "学习大师",
+    "skill_type": "secondary",
+    "topic": "学习方法优化",
+    "timestamp": "2026-04-28T13:04:42.732152",
+    "learning_count": 54
+  },
+  {
+    "skill_name": "规则掌控者",
+    "skill_type": "secondary",
+    "topic": "规则冲突解决",
+    "timestamp": "2026-04-28T13:04:44.758325",
+    "learning_count": 54
+  },
+  {
+    "skill_name": "词汇大师",
+    "skill_type": "secondary",
+    "topic": "修辞丰富度提升",
+    "timestamp": "2026-04-28T13:04:46.784470",
+    "learning_count": 54
+  },
+  {
+    "skill_name": "世界观构造师",
+    "skill_type": "secondary",
+    "topic": "世界规则一致性维护",
+    "timestamp": "2026-04-28T13:05:02.496709",
+    "learning_count": 54
+  },
+  {
+    "skill_name": "剧情构造师",
+    "skill_type": "secondary",
+    "topic": "剧情节奏控制",
+    "timestamp": "2026-04-28T13:05:04.528465",
+    "learning_count": 54
+  },
+  {
+    "skill_name": "角色塑造师",
+    "skill_type": "secondary",
+    "topic": "反派角色塑造技巧",
+    "timestamp": "2026-04-28T13:05:06.559201",
+    "learning_count": 54
+  },
+  {
+    "skill_name": "战斗设计师",
+    "skill_type": "secondary",
+    "topic": "特殊能力对决设计",
+    "timestamp": "2026-04-28T13:05:08.595068",
+    "learning_count": 54
+  },
+  {
+    "skill_name": "场景构造师",
+    "skill_type": "secondary",
+    "topic": "地域特色体现",
+    "timestamp": "2026-04-28T13:05:10.635946",
+    "learning_count": 54
+  },
+  {
+    "skill_name": "对话设计师",
+    "skill_type": "secondary",
+    "topic": "冲突对话设计",
+    "timestamp": "2026-04-28T13:05:12.664827",
+    "learning_count": 54
+  },
+  {
+    "skill_name": "写作技巧大师",
+    "skill_type": "secondary",
+    "topic": "去AI化写作方法",
+    "timestamp": "2026-04-28T13:05:14.695166",
+    "learning_count": 54
+  },
+  {
+    "skill_name": "去AI痕迹监督官",
+    "skill_type": "secondary",
+    "topic": "写作风格多样性",
+    "timestamp": "2026-04-28T13:05:16.723601",
+    "learning_count": 54
+  },
+  {
+    "skill_name": "质量审计师",
+    "skill_type": "secondary",
+    "topic": "读者体验优化",
+    "timestamp": "2026-04-28T13:05:18.752812",
+    "learning_count": 54
+  },
+  {
+    "skill_name": "学习大师",
+    "skill_type": "secondary",
+    "topic": "学习方法优化",
+    "timestamp": "2026-04-28T13:05:20.882231",
+    "learning_count": 54
   }
 ]
