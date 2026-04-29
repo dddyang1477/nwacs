@@ -39,17 +39,37 @@ class SkillCollaboration:
         """初始化大模型客户端"""
         try:
             import openai
-            api_key = os.environ.get('OPENAI_API_KEY') or os.environ.get('DEEPSEEK_API_KEY')
-            if api_key:
-                self.llm_client = openai.OpenAI(api_key=api_key)
+            
+            # 从配置文件读取API密钥
+            config = self._load_config()
+            api_key = config.get('api_key') or os.environ.get('OPENAI_API_KEY') or os.environ.get('DEEPSEEK_API_KEY')
+            base_url = config.get('base_url') or os.environ.get('OPENAI_BASE_URL')
+            self.model = config.get('model', 'deepseek-chat')
+            
+            if api_key and config.get('enabled', True):
+                if base_url:
+                    self.llm_client = openai.OpenAI(api_key=api_key, base_url=base_url)
+                else:
+                    self.llm_client = openai.OpenAI(api_key=api_key)
                 self.llm_enabled = True
-                logger.info("大模型客户端已初始化")
+                logger.info("大模型客户端已初始化，模型: %s" % self.model)
             else:
-                logger.info("未配置API密钥，大模型功能未启用")
+                logger.info("未配置API密钥或未启用，大模型功能未启用")
         except ImportError:
             logger.info("openai库未安装，大模型功能未启用")
         except Exception as e:
             logger.log_exception(e, "初始化大模型客户端")
+    
+    def _load_config(self):
+        """从配置文件加载设置"""
+        config_file = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), 'config.json')
+        if os.path.exists(config_file):
+            try:
+                with open(config_file, 'r', encoding='utf-8') as f:
+                    return json.load(f)
+            except Exception:
+                return {}
+        return {}
 
     def share_learning_to_knowledge_base(self, skill_name, topic, learning_result):
         """将学习内容分享到知识库"""
@@ -159,7 +179,7 @@ class SkillCollaboration:
             prompt = self._build_analysis_prompt(content, analysis_type)
 
             response = self.llm_client.chat.completions.create(
-                model="gpt-3.5-turbo",
+                model=self.model,
                 messages=[
                     {"role": "system", "content": "你是一个专业的小说创作分析师，擅长提取关键信息、总结趋势、提供写作建议。"},
                     {"role": "user", "content": prompt}
@@ -173,7 +193,7 @@ class SkillCollaboration:
 
             return {
                 'analysis': result,
-                'model': 'gpt-3.5-turbo',
+                'model': self.model,
                 'timestamp': datetime.now().isoformat()
             }
 

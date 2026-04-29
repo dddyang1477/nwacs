@@ -149,11 +149,28 @@ class SkillLearner:
         return topic
     
     def simulate_learning(self, topic):
-        """学习过程（联网版）"""
+        """学习过程（智能切换：大模型 → 联网 → 模拟）"""
         logger.debug("%s 正在深入学习: %s" % (self.skill_name, topic))
 
+        # 策略1：优先使用大模型学习
+        if COLLABORATION_ENABLED:
+            try:
+                collab = get_skill_collaboration()
+                if collab.llm_enabled and collab.llm_client:
+                    logger.info("%s 尝试使用大模型学习" % self.skill_name)
+                    llm_result = self._learn_with_llm(topic)
+                    if llm_result:
+                        logger.info("%s 大模型学习完成" % self.skill_name)
+                        return llm_result
+                    else:
+                        logger.info("%s 大模型学习返回空结果，切换到联网学习" % self.skill_name)
+                else:
+                    logger.debug("%s 大模型未启用，跳过" % self.skill_name)
+            except Exception as e:
+                logger.info("%s 大模型学习失败 (%s)，切换到联网学习" % (self.skill_name, str(e)))
+
+        # 策略2：使用联网学习
         if WEB_LEARNING_ENABLED:
-            # 真正的联网学习
             try:
                 web_learning = get_web_learning()
                 learning_result = web_learning.search_and_learn(self.skill_name, topic)
@@ -166,21 +183,64 @@ class SkillLearner:
                     return learning_result
             except Exception as e:
                 logger.log_exception(e, "%s 联网学习" % self.skill_name)
-                # 如果联网失败，使用模拟学习
-                time.sleep(2)
+                logger.info("%s 联网学习失败，切换到模拟学习" % self.skill_name)
         else:
-            # 模拟学习时间
-            time.sleep(2)
+            logger.debug("%s 联网学习未启用" % self.skill_name)
 
-        # 模拟学习成果（备用）
+        # 策略3：使用模拟学习（最后备用）
+        time.sleep(2)
+        logger.info("%s 使用模拟学习" % self.skill_name)
+        
         learning_outcome = {
             'topic': topic,
             'skill_name': self.skill_name,
             'learned_points': self.generate_learning_points(topic),
-            'timestamp': datetime.now().isoformat()
+            'timestamp': datetime.now().isoformat(),
+            'learning_method': 'simulation'
         }
 
         return learning_outcome
+    
+    def _learn_with_llm(self, topic):
+        """使用大模型进行学习"""
+        try:
+            collab = get_skill_collaboration()
+            if not collab or not collab.llm_enabled:
+                return None
+            
+            # 构建学习提示
+            prompt = """请作为一位专业的写作导师，针对以下学习主题提供详细的学习内容：
+            
+学习主题：%s
+
+请提供：
+1. 核心概念和定义
+2. 关键技巧和方法
+3. 实际案例分析
+4. 学习建议和练习
+
+请用清晰、结构化的方式输出，便于整理成学习笔记。
+""" % topic
+            
+            # 调用大模型
+            result = collab.analyze_with_llm({'topic': topic, 'prompt': prompt}, "learning")
+            
+            if result and isinstance(result, dict):
+                return {
+                    'topic': topic,
+                    'skill_name': self.skill_name,
+                    'key_points': result.get('key_points', []),
+                    'trends': result.get('trends', []),
+                    'tips': result.get('tips', []),
+                    'learning_method': 'llm',
+                    'timestamp': datetime.now().isoformat()
+                }
+            
+            return None
+            
+        except Exception as e:
+            logger.log_exception(e, "%s _learn_with_llm" % self.skill_name)
+            return None
     
     def generate_learning_points(self, topic):
         """生成学习要点（模拟）"""

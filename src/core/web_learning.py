@@ -150,23 +150,66 @@ class WebLearning:
 
     def _execute_web_search(self, queries):
         """
-        执行网页搜索（模拟实现）
-        实际应调用WebSearch工具
+        执行网页搜索
+        优先使用真实WebSearch工具，失败时使用模拟数据
         """
         results = []
 
         for query in queries:
             logger.debug("搜索: %s" % query)
 
-            # 模拟搜索结果
-            # 实际应调用 WebSearch 工具获取真实结果
-            mock_result = self._get_mock_search_result(query)
-            if mock_result:
-                results.append(mock_result)
+            # 尝试真实网络搜索
+            real_results = self._execute_real_web_search(query)
+            
+            if real_results:
+                results.extend(real_results)
+            else:
+                # 真实搜索失败，使用模拟数据
+                mock_result = self._get_mock_search_result(query)
+                if mock_result:
+                    results.append(mock_result)
 
             time.sleep(0.5)  # 避免请求过快
 
         return results
+    
+    def _execute_real_web_search(self, query):
+        """
+        使用WebSearch工具执行真实网络搜索
+        """
+        try:
+            from WebSearch import WebSearch
+            
+            search = WebSearch()
+            search_results = search.search(query, num=3)
+            
+            if search_results and isinstance(search_results, list):
+                formatted_results = []
+                for result in search_results:
+                    if isinstance(result, dict) and 'title' in result:
+                        formatted_results.append({
+                            'title': result.get('title', ''),
+                            'content': result.get('snippet', result.get('content', '')),
+                            'source': result.get('source', 'web')
+                        })
+                    elif isinstance(result, str):
+                        # 如果是字符串结果，尝试解析
+                        formatted_results.append({
+                            'title': result,
+                            'content': '',
+                            'source': 'web'
+                        })
+                
+                if formatted_results:
+                    logger.info("真实搜索成功，获取 %d 条结果" % len(formatted_results))
+                    return formatted_results
+            
+        except ImportError:
+            logger.debug("WebSearch模块不可用")
+        except Exception as e:
+            logger.log_exception(e, "_execute_real_web_search")
+        
+        return None
 
     def _get_mock_search_result(self, query):
         """生成模拟搜索结果（实际应联网获取）"""
@@ -226,6 +269,84 @@ class WebLearning:
                     'source': '写作方法'
                 }
             ]
+        elif '感情' in query or '言情' in query or '爱情' in query:
+            mock_results = [
+                {
+                    'title': '感情小说狗血剧情套路大全',
+                    'content': '经典狗血桥段TOP10：1.车祸失忆 2.替身梗 3.误会分手 4.绝症虐恋 5.豪门恩怨 6.先婚后爱 7.契约恋爱 8.破镜重圆 9.追妻火葬场 10.带球跑。这些桥段虽然老套但点击率高，关键在于细节创新和情绪渲染。',
+                    'source': '写作素材'
+                },
+                {
+                    'title': '言情小说吸引读者的秘诀',
+                    'content': '1.开篇强钩子：100字内必须出现冲突或悬念 2.人设鲜明：标签化+记忆点 3.节奏快速：每章至少一个小高潮 4.情绪到位：甜要齁、虐要痛、爽要爆 5.互动有趣：对话要带张力，动作要暧昧。',
+                    'source': '写作技巧'
+                }
+            ]
+        elif '反转' in query or '转折' in query:
+            mock_results = [
+                {
+                    'title': '小说大反转剧情设计技巧',
+                    'content': '神转折三要素：1.铺垫要隐蔽：提前3-5章埋下线索 2.逻辑要自洽：反转后能合理解释前文 3.冲击要够强：打破读者预期。经典反转模式：身份反转（仇人变亲人）、因果反转（好心办坏事）、时间反转（穿越/重生）、真假反转（梦境/幻觉）。',
+                    'source': '写作教程'
+                },
+                {
+                    'title': '意想不到的剧情反转案例',
+                    'content': '成功反转案例分析：1.男主其实是女主失散多年的哥哥（禁忌之恋变亲情守护） 2.反派才是真正的受害者（立场反转） 3.整个故事都是主角的一场梦（虚幻现实反转） 4.配角才是幕后黑手（身份反转）。',
+                    'source': '案例分析'
+                }
+            ]
+        elif '世界观' in query or '背景' in query:
+            mock_results = [
+                {
+                    'title': '小说世界观构造指南',
+                    'content': '世界观构造五要素：1.地理环境：地图、气候、资源分布 2.社会结构：阶级、权力体系、文化习俗 3.历史背景：时间线、重大事件、传说起源 4.规则设定：魔法/科技体系、力量等级 5.价值观：善恶标准、信仰体系。',
+                    'source': '写作指南'
+                },
+                {
+                    'title': '如何构建吸引人的故事背景',
+                    'content': '背景构建技巧：1.差异化：找出与其他作品的区别 2.细节丰富：通过衣食住行展现世界 3.冲突性：利用世界观制造天然矛盾 4.真实感：加入合理的历史演变过程 5.延展性：预留后续故事发展空间。',
+                    'source': '写作方法'
+                }
+            ]
+        elif '虐恋' in query or '误会' in query or '追妻' in query:
+            mock_results = [
+                {
+                    'title': '虐恋文写作技巧',
+                    'content': '虐恋三阶段：1.甜蜜期：建立深厚感情基础 2.误会期：制造合理误会，情感拉扯 3.和解期：解开误会，破镜重圆。关键要点：误会要合理、痛苦要深刻、和解要感人、成长要明显。追妻火葬场要让男主付出足够代价。',
+                    'source': '写作教程'
+                },
+                {
+                    'title': '误会梗的高级用法',
+                    'content': '经典误会类型：1.眼见不一定为实（错位场景） 2.录音/信件断章取义 3.第三者挑拨离间 4.身份/目的误解 5.善意隐瞒变恶意欺骗。解除误会的时机很重要，不能太早也不能太晚。',
+                    'source': '写作技巧'
+                }
+            ]
+        elif '甜宠' in query or '撒糖' in query:
+            mock_results = [
+                {
+                    'title': '甜宠文撒糖技巧',
+                    'content': '撒糖方式TOP10：1.霸道宠：强制关怀 2.温柔宠：细节照顾 3.反差宠：对外冷酷对内温柔 4.专属宠：只对你特殊 5.默默宠：暗中守护 6.笨拙宠：直男式关心 7.占有宠：宣示主权 8.宠溺笑：眼神杀 9.肢体接触：不经意的亲密 10.语言撩拨：土味情话。',
+                    'source': '写作指南'
+                },
+                {
+                    'title': '甜蜜互动设计',
+                    'content': '甜蜜场景设计要点：1.日常细节：早餐、接送、生病照顾 2.专属昵称：独特的称呼增加亲密感 3.肢体语言：摸头杀、壁咚、背后抱 4.关键时刻：英雄救美、挡伤害 5.情感告白：浪漫场景+真心话语。',
+                    'source': '写作素材'
+                }
+            ]
+        elif '霸总' in query or '身份反差' in query:
+            mock_results = [
+                {
+                    'title': '霸总文经典套路',
+                    'content': '霸总文必备元素：1.身份显赫：总裁/大佬/神秘身份 2.外形出众：英俊多金 3.性格冷酷：只对女主温柔 4.占有欲强：护妻狂魔 5.财力雄厚：为女主一掷千金 6.隐藏身份：多重马甲 7.强势追求：霸道但尊重。',
+                    'source': '写作分析'
+                },
+                {
+                    'title': '身份反差的艺术',
+                    'content': '身份反差设定技巧：1.表面身份vs真实身份（穷小子是首富） 2.性格反差（对外冷酷对内呆萌） 3.地位反差（总裁vs灰姑娘） 4.能力反差（废柴vs大佬） 5.认知反差（大家以为的vs实际的）。反差越大，爽感越强。',
+                    'source': '写作技巧'
+                }
+            ]
 
         return mock_results[0] if mock_results else None
 
@@ -245,6 +366,7 @@ class WebLearning:
         for result in search_results:
             if 'content' in result:
                 text = result['content']
+                title = result.get('title', '')
 
                 # 提取数字和数据
                 numbers = re.findall(r'\d+%|\d+倍|\d+万|\d+亿', text)
@@ -254,16 +376,25 @@ class WebLearning:
                 trends = re.findall(r'增长|下降|崛起|式微|火爆|热门', text)
                 content['trends'].extend(trends)
 
-                # 提取技巧建议
-                if '技巧' in text or '方法' in text or '公式' in text:
-                    sentences = text.split('。')
-                    for s in sentences[:3]:
-                        if len(s) > 10:
-                            content['tips'].append(s.strip())
+                # 提取技巧建议和完整要点
+                sentences = text.split('。')
+                for s in sentences:
+                    s = s.strip()
+                    if len(s) > 10:
+                        # 如果是技巧、方法相关，添加到tips
+                        if any(keyword in s for keyword in ['技巧', '方法', '公式', '建议', '注意', '要点']):
+                            content['tips'].append(s)
+                        # 如果包含题材、类型信息，添加到key_points
+                        elif any(keyword in s for keyword in ['题材', '类型', '爆款', '热门', '逆袭', '重生', '穿书']):
+                            content['key_points'].append(s)
+                        # 其他重要句子也添加到要点
+                        elif len(s) > 20:
+                            content['key_points'].append(s)
 
-        # 去重
+        # 去重并限制数量
         content['key_points'] = list(dict.fromkeys(content['key_points']))[:10]
         content['trends'] = list(dict.fromkeys(content['trends']))[:5]
+        content['tips'] = list(dict.fromkeys(content['tips']))[:5]
         content['tips'] = list(dict.fromkeys(content['tips']))[:5]
 
         return content
