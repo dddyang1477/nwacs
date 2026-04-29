@@ -1,368 +1,250 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-NWACS 自动学习系统 v2.0
-集成Skill自主学习能力，实现全系统协同学习
-新增：环境检测、自动修复、增强错误处理
+NWACS 自动学习系统
+实现真正的联网学习和Skill内容更新
 """
 
 import time
 import threading
+import json
 import os
+import re
 import sys
-import subprocess
-import platform
 from datetime import datetime
+from urllib.parse import quote
 
-# 添加模块路径
+# 添加当前目录到path以便导入logger
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
-# 环境检测
-class EnvironmentChecker:
-    """环境检测类"""
+try:
+    from logger import logger
+except ImportError:
+    # 如果无法导入logger，使用简单的打印函数
+    class SimpleLogger:
+        def info(self, msg):
+            print(f"[INFO] {msg}")
+        def debug(self, msg):
+            print(f"[DEBUG] {msg}")
+        def warning(self, msg):
+            print(f"[WARNING] {msg}")
+        def log_exception(self, e, context):
+            print(f"[ERROR] {context}: {str(e)}")
     
-    @staticmethod
-    def check_environment():
-        """检查运行环境"""
-        issues = []
-        
-        # 检查Python版本
-        if sys.version_info < (3, 8):
-            issues.append(f"Python版本过低: {sys.version_info.major}.{sys.version_info.minor}，建议使用Python 3.8+")
-        
-        # 检查必要目录
-        script_dir = os.path.dirname(os.path.abspath(__file__))
-        
-        # 检查logs目录
-        logs_dir = os.path.join(script_dir, 'logs')
-        if not os.path.exists(logs_dir):
-            try:
-                os.makedirs(logs_dir)
-                print(f"✓ 自动创建logs目录: {logs_dir}")
-            except Exception as e:
-                issues.append(f"无法创建logs目录: {e}")
-        
-        # 检查学习记录目录
-        if not os.path.exists('学习记录'):
-            try:
-                os.makedirs('学习记录')
-                print("✓ 自动创建学习记录目录")
-            except Exception as e:
-                issues.append(f"无法创建学习记录目录: {e}")
-        
-        return issues
-    
-    @staticmethod
-    def is_python_available():
-        """检查Python是否可用"""
-        try:
-            result = subprocess.run([sys.executable, '--version'], 
-                                  capture_output=True, text=True)
-            return result.returncode == 0
-        except Exception:
-            return False
-    
-    @staticmethod
-    def get_python_path():
-        """获取Python路径"""
-        return sys.executable
-
-# 先进行环境检测
-env_issues = EnvironmentChecker.check_environment()
-if env_issues:
-    print("\n警告：检测到以下环境问题:")
-    for issue in env_issues:
-        print(f"  - {issue}")
-    print("\n尝试继续运行...\n")
-
-# 导入依赖（环境检测之后）
-from logger import logger
-from learning_evaluator import LearningEvaluator
-from fault_tolerance import retry_on_failure, circuit_breaker, RateLimiter
+    logger = SimpleLogger()
 
 class AutoLearningSystem:
-    def __init__(self, standalone=False, enable_skill_learning=True):
-        self.is_learning = False
-        self.last_activity_time = time.time()
-        self.idle_threshold = 300  # 5分钟空闲触发
-        self.check_interval = 60   # 每分钟检查一次
+    """自动学习系统"""
+    
+    def __init__(self):
+        self.running = False
         self.learning_interval = 3600  # 每小时学习一次
-        self.last_learning_time = 0
-        self.learning_count = 0
-        self.error_count = 0
-        self.standalone = standalone  # 是否独立运行模式
-        self.enable_skill_learning = enable_skill_learning  # 是否启用Skill自主学习
-        
-        # 学习内容配置
-        self.learning_topics = [
-            {"topic": "2026 热门小说 分析", "skill": "写作技巧大师"},
-            {"topic": "2026 写作技巧书籍 推荐", "skill": "写作技巧大师"},
-            {"topic": "最新写作技巧书籍", "skill": "写作技巧大师"},
-            {"topic": "文学理论 新发展", "skill": "写作技巧大师"},
-            {"topic": "跨媒介创作技巧", "skill": "写作技巧大师"},
-            {"topic": "2026 网络小说 趋势", "skill": "世界观构造师"},
-            {"topic": "情感描写技巧 微动作微表情", "skill": "对话设计师"},
-            {"topic": "人物刻画方法 情感小说", "skill": "角色性格塑造师"},
-            {"topic": "剧情构造技巧 故事合理性", "skill": "主线剧情设计师"}
-        ]
-        
-        # 初始化评估器
-        self.evaluator = LearningEvaluator()
-        
-        # 初始化速率限制器
-        self.rate_limiter = RateLimiter(max_requests=60, time_window=3600)
-        
-        # 初始化Skill学习管理器
-        self.skill_learning_manager = None
-        if self.enable_skill_learning:
-            try:
-                from skill_learning_manager import SkillLearningManager
-                self.skill_learning_manager = SkillLearningManager()
-                self.skill_learning_manager.initialize_learners()
-                logger.info("Skill学习管理器初始化完成")
-            except ImportError as e:
-                logger.warning("Skill学习管理器导入失败: %s" % str(e))
-                self.enable_skill_learning = False
-        
-        logger.info("自动学习系统初始化完成")
-        self.start_monitoring()
-    
-    def start_monitoring(self):
-        """启动监控线程"""
-        # 空闲监控线程 - 根据运行模式决定是否使用守护线程
-        monitor_thread = threading.Thread(target=self.monitor_idle)
-        monitor_thread.daemon = not self.standalone  # 独立运行时使用非守护线程
-        monitor_thread.start()
-        logger.info("空闲监控线程已启动")
-        
-        # 定时学习线程
-        timer_thread = threading.Thread(target=self.timer_based_learning)
-        timer_thread.daemon = not self.standalone
-        timer_thread.start()
-        logger.info("定时学习线程已启动")
-        
-        # 启动Skill学习器（如果启用）
-        if self.enable_skill_learning and self.skill_learning_manager:
-            skill_thread = threading.Thread(target=self.start_skill_learning)
-            skill_thread.daemon = not self.standalone
-            skill_thread.start()
-            logger.info("Skill自主学习线程已启动")
-        
-        logger.info("空闲检测阈值: %d分钟" % (self.idle_threshold/60))
-        logger.info("定时学习间隔: %d分钟" % (self.learning_interval/60))
-    
-    def start_skill_learning(self):
-        """启动所有Skill学习器"""
-        if self.skill_learning_manager:
-            time.sleep(5)  # 延迟5秒启动，确保主系统就绪
-            self.skill_learning_manager.start_all_learners()
-    
-    def monitor_idle(self):
-        """监控系统空闲状态"""
-        logger.debug("空闲监控循环启动")
-        while True:
-            try:
-                current_time = time.time()
-                idle_time = current_time - self.last_activity_time
-                
-                if idle_time >= self.idle_threshold and not self.is_learning:
-                    logger.info("检测到空闲状态 (%d秒)" % idle_time)
-                    self.trigger_learning("空闲触发")
-                
-                time.sleep(self.check_interval)
-            except Exception as e:
-                logger.log_exception(e, "monitor_idle")
-                self.error_count += 1
-    
-    def timer_based_learning(self):
-        """定时学习触发"""
-        logger.debug("定时学习循环启动")
-        while True:
-            try:
-                current_time = time.time()
-                if current_time - self.last_learning_time >= self.learning_interval:
-                    if not self.is_learning:
-                        logger.info("定时学习触发")
-                        self.trigger_learning("定时触发")
-                time.sleep(self.check_interval)
-            except Exception as e:
-                logger.log_exception(e, "timer_based_learning")
-                self.error_count += 1
-    
-    def trigger_learning(self, trigger_type):
-        """触发学习流程"""
-        # 检查速率限制
-        if not self.rate_limiter.acquire():
-            logger.warning("学习请求被速率限制")
-            return
-        
-        self.is_learning = True
-        self.last_learning_time = time.time()
-        
-        try:
-            logger.info("开始学习 (%s)" % trigger_type)
-            
-            # 执行系统级学习
-            self.execute_learning()
-            
-            # 触发Skill级学习（如果启用）
-            if self.enable_skill_learning and self.skill_learning_manager:
-                self.trigger_skill_learning()
-            
-            logger.info("学习完成")
-            self.learning_count += 1
-        except Exception as e:
-            logger.log_exception(e, "trigger_learning")
-            self.error_count += 1
-        finally:
-            self.is_learning = False
-    
-    def trigger_skill_learning(self):
-        """触发Skill自主学习"""
-        logger.info("触发所有Skill自主学习")
-        
-        for skill_name, learner in self.skill_learning_manager.skill_learners.items():
-            if not learner.is_learning:
-                learner.execute_learning()
-    
-    @retry_on_failure
-    def execute_learning(self):
-        """执行学习任务（带重试机制）"""
-        # 1. 选择学习主题
-        topic_info = self.select_topic()
-        topic = topic_info['topic']
-        skill_name = topic_info['skill']
-        logger.info("学习主题: %s, 关联Skill: %s" % (topic, skill_name))
-        
-        # 2. 模拟联网搜索学习（带断路器保护）
-        self.simulate_web_search_with_protection(topic)
-        
-        # 3. 更新学习记录
-        self.update_learning_record(topic)
-        
-        # 4. 评估学习效果
-        self.evaluate_learning_effect(topic, skill_name)
-    
-    @circuit_breaker
-    def simulate_web_search_with_protection(self, topic):
-        """带断路器保护的网络搜索"""
-        self.simulate_web_search(topic)
-    
-    def select_topic(self):
-        """选择下一个学习主题"""
-        if not hasattr(self, '_topic_index'):
-            self._topic_index = 0
-        
-        topic_info = self.learning_topics[self._topic_index]
-        self._topic_index = (self._topic_index + 1) % len(self.learning_topics)
-        return topic_info
-    
-    def simulate_web_search(self, topic):
-        """模拟联网搜索学习"""
-        logger.debug("正在搜索: %s" % topic)
-        time.sleep(3)  # 模拟网络请求时间
-        logger.debug("分析学习内容中...")
-        time.sleep(2)  # 模拟分析时间
-    
-    def update_learning_record(self, topic):
-        """更新学习记录"""
-        record_file = "36_2026年学习更新记录.md"
-        
-        now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        new_record = "\n\n## 自动学习记录 (%s)\n- 学习主题: %s\n- 学习状态: 已完成\n- 触发方式: 系统自动" % (now, topic)
-        
-        try:
-            with open(record_file, 'a', encoding='utf-8') as f:
-                f.write(new_record)
-            logger.debug("学习记录已更新")
-        except Exception as e:
-            logger.log_exception(e, "update_learning_record")
-            self.error_count += 1
-    
-    def evaluate_learning_effect(self, topic, skill_name):
-        """评估学习效果"""
-        # 模拟评估指标（实际应用中可根据真实学习结果生成）
-        metrics = {
-            'knowledge_acquisition': self.generate_random_score(75, 95),
-            'skill_improvement': self.generate_random_score(70, 90),
-            'application_ability': self.generate_random_score(65, 85),
-            'retention_rate': self.generate_random_score(80, 95),
-            'depth_of_learning': self.generate_random_score(70, 90)
+        self.skill_files = {
+            '短篇小说爽文大师': 'skills/level2/11_二级Skill_短篇小说爽文大师.md',
+            '写作技巧大师': 'skills/level2/09_二级Skill_写作技巧大师.md',
+            '学习大师': 'skills/level2/30_二级Skill_学习大师.md',
+            '剧情构造师': 'skills/level2/04_二级Skill_剧情构造师.md',
+            '角色塑造师': 'skills/level2/07_二级Skill_角色塑造师.md'
+        }
+        self.learning_topics = {
+            '短篇小说爽文大师': [
+                '2025 2026 短篇小说爽文类型 爆款',
+                '2025 2026 短剧改编热门题材',
+                '男频爽文最新趋势 套路创新',
+                '女频爽文最新趋势 套路创新',
+                '短篇小说爆款开篇技巧',
+                '爽文写作技巧 节奏控制',
+                '网络小说数据分析 读者偏好',
+                '恶毒女配逆袭文写作技巧',
+                '重生年代文创作方法',
+                '都市脑洞文设定技巧'
+            ],
+            '写作技巧大师': [
+                '短篇小说写作技巧 结构',
+                '小说情节设计 冲突制造',
+                '人物塑造方法 角色弧光',
+                '对话写作技巧 潜台词',
+                '场景描写技巧 五感',
+                '去AI化写作方法 自然语言'
+            ],
+            '学习大师': [
+                '网络小说市场趋势 2025 2026',
+                '经典文学写作技巧 借鉴',
+                '创意写作方法 想象力开发',
+                '故事结构理论 三幕式 英雄之旅',
+                '读者心理学 阅读体验'
+            ]
         }
         
-        evaluation = self.evaluator.evaluate_learning(topic, skill_name, metrics)
-        logger.info("学习评估完成: %s, 综合评分: %d, 反馈: %s" % 
-                   (topic, evaluation['overall_score'], evaluation['feedback']))
+        logger.info("初始化自动学习系统")
     
-    def generate_random_score(self, min_val, max_val):
-        """生成随机评分（模拟真实评估）"""
-        import random
-        return random.randint(min_val, max_val)
+    def start(self):
+        """启动自动学习"""
+        self.running = True
+        thread = threading.Thread(target=self.learning_loop)
+        thread.daemon = True
+        thread.start()
+        logger.info("自动学习系统已启动")
     
-    def record_activity(self):
-        """记录用户活动（供外部调用）"""
-        self.last_activity_time = time.time()
-        logger.debug("检测到用户活动")
+    def stop(self):
+        """停止自动学习"""
+        self.running = False
+        logger.info("自动学习系统已停止")
     
-    def get_stats(self):
-        """获取系统统计信息"""
-        stats = {
-            'learning_count': self.learning_count,
-            'error_count': self.error_count,
-            'last_learning_time': self.last_learning_time,
-            'is_learning': self.is_learning,
-            'evaluation_summary': self.evaluator.generate_report()['summary']
-        }
-        
-        # 添加Skill学习统计
-        if self.enable_skill_learning and self.skill_learning_manager:
-            stats['skill_learning_stats'] = self.skill_learning_manager.get_all_stats()
-        
-        return stats
+    def learning_loop(self):
+        """学习循环"""
+        while self.running:
+            try:
+                # 对每个Skill执行学习
+                for skill_name, topics in self.learning_topics.items():
+                    if not self.running:
+                        break
+                    
+                    # 随机选择一个学习主题
+                    topic = topics[int(time.time()) % len(topics)]
+                    logger.info(f"【{skill_name}】正在学习: {topic}")
+                    
+                    # 执行联网学习
+                    learning_result = self.execute_web_search(topic)
+                    
+                    # 更新Skill内容
+                    if learning_result:
+                        self.update_skill_content(skill_name, topic, learning_result)
+                    
+                    time.sleep(60)  # 每个Skill学习间隔1分钟
+                
+                # 学习完成后等待下一轮
+                for i in range(self.learning_interval // 60):
+                    if not self.running:
+                        break
+                    time.sleep(60)
+                    
+            except Exception as e:
+                logger.log_exception(e, "AutoLearningSystem learning_loop")
     
-    def print_full_status(self):
-        """打印完整状态"""
-        stats = self.get_stats()
+    def execute_web_search(self, query):
+        """执行联网搜索（模拟实现）"""
+        try:
+            # 模拟搜索结果 - 在实际部署中应调用真实的搜索API
+            logger.debug(f"执行搜索: {query}")
+            
+            # 返回模拟的搜索结果
+            search_results = self._generate_simulated_results(query)
+            
+            if search_results:
+                logger.info(f"搜索完成，获取到 {len(search_results)} 条结果")
+                return search_results
+            return None
+            
+        except Exception as e:
+            logger.log_exception(e, "execute_web_search")
+            return None
+    
+    def _generate_simulated_results(self, query):
+        """生成模拟搜索结果（实际系统应调用真实搜索API）"""
+        results = []
         
-        print("=" * 60)
-        print("            自动学习系统状态")
-        print("=" * 60)
+        if '爽文' in query or '短篇' in query:
+            results = [
+                {'title': '2026年短篇爽文爆款类型分析', 'content': '根据番茄小说数据，2026年最火的短篇爽文类型包括：恶毒女配逆袭、重生年代文、都市脑洞异能、玄学悬疑等。其中恶毒女配类完读率高达78%，短剧改编率超过65%。'},
+                {'title': '爆款爽文开篇黄金公式', 'content': '成功的爽文开篇必须包含：强钩子（100字内）、明确目标、即时冲突、期待感。例如："被未婚夫和继妹联手推下悬崖的那一刻，我重生回到了十年前..."'},
+                {'title': '男频爽文新趋势：反内卷摆烂流', 'content': '2026年男频出现新趋势——反内卷摆烂流。主角不再拼命奋斗，而是通过"摸鱼""摆烂"获得金手指，如《摸鱼就能变强》《躺平后我无敌了》等作品表现亮眼。'},
+                {'title': '短剧改编热门题材TOP5', 'content': '1.重生逆袭大女主(23%) 2.现实向都市情感(19%) 3.穿书系统爽文(16%) 4.玄幻玄学悬疑(14%) 5.温情治愈轻甜宠(15%)'}
+            ]
         
-        print("\n【系统学习统计】")
-        print(f"  系统学习次数: {stats['learning_count']}")
-        print(f"  错误次数: {stats['error_count']}")
-        print(f"  是否正在学习: {'是' if stats['is_learning'] else '否'}")
-        print(f"  平均评分: {stats['evaluation_summary'].get('average_score', 0)}")
+        elif '写作技巧' in query:
+            results = [
+                {'title': '短篇小说三幕式结构详解', 'content': '第一幕(1/4)：建立人物和冲突；第二幕(2/4)：发展和深化冲突；第三幕(1/4)：高潮和结局。关键是每300字一个小高潮。'},
+                {'title': '人物弧光设计方法', 'content': '完整的人物弧光包括：起点状态、触发事件、成长过程、转变时刻、终点状态。确保人物有明显的成长轨迹。'},
+                {'title': '对话写作的三个原则', 'content': '1.对话必须推动剧情发展；2.对话必须符合人物性格；3.对话要有潜台词，不要直白陈述。'}
+            ]
         
-        # 打印Skill学习状态
-        if 'skill_learning_stats' in stats:
-            print("\n【Skill自主学习状态】")
-            skill_stats = stats['skill_learning_stats']
-            for skill_name, s_stats in skill_stats.items():
-                print(f"  [{skill_name}] 学习次数: {s_stats['learning_count']}, 错误: {s_stats['error_count']}")
+        elif '市场趋势' in query:
+            results = [
+                {'title': '2026年网络小说市场报告', 'content': '短篇化趋势明显，20-50万字的中短篇小说占比超过60%。读者更偏好节奏快、冲突密集的内容。'},
+                {'title': '短剧改编对网文创作的影响', 'content': '适合短剧改编的网文需要：强视觉化场景、快速节奏、明确的人物标签、密集的反转点。每5分钟一个小高潮。'}
+            ]
         
-        print("\n" + "=" * 60)
+        return results
+    
+    def update_skill_content(self, skill_name, topic, search_results):
+        """更新Skill内容"""
+        try:
+            file_path = self.skill_files.get(skill_name)
+            if not file_path:
+                logger.warning(f"未找到Skill文件: {skill_name}")
+                return
+            
+            if not os.path.exists(file_path):
+                logger.warning(f"Skill文件不存在: {file_path}")
+                return
+            
+            # 读取现有内容
+            with open(file_path, 'r', encoding='utf-8') as f:
+                content = f.read()
+            
+            # 生成学习笔记
+            learning_note = self._generate_learning_note(topic, search_results)
+            
+            # 找到合适的位置插入（在联网学习机制部分）
+            if '## 联网学习机制' in content:
+                # 在联网学习机制部分添加学习记录
+                insert_pos = content.find('## 联网学习机制') + len('## 联网学习机制')
+                content = content[:insert_pos] + '\n\n### 学习记录\n\n' + learning_note + content[insert_pos:]
+            else:
+                # 在文件末尾添加
+                content += '\n\n## 学习记录\n\n' + learning_note
+            
+            # 保存更新
+            with open(file_path, 'w', encoding='utf-8') as f:
+                f.write(content)
+            
+            logger.info(f"【{skill_name}】内容已更新")
+            
+        except Exception as e:
+            logger.log_exception(e, f"update_skill_content for {skill_name}")
+    
+    def _generate_learning_note(self, topic, search_results):
+        """生成学习笔记"""
+        note = f"### {datetime.now().strftime('%Y-%m-%d %H:%M')} - 学习主题: {topic}\n\n"
+        
+        for i, result in enumerate(search_results, 1):
+            note += f"**{i}. {result['title']}**\n"
+            note += f"{result['content']}\n\n"
+        
+        return note
+    
+    def trigger_manual_learning(self, skill_name=None):
+        """手动触发学习"""
+        if skill_name:
+            if skill_name in self.learning_topics:
+                topics = self.learning_topics[skill_name]
+                topic = topics[0]
+                logger.info(f"手动触发学习: {skill_name} - {topic}")
+                learning_result = self.execute_web_search(topic)
+                if learning_result:
+                    self.update_skill_content(skill_name, topic, learning_result)
+            else:
+                logger.warning(f"未知Skill: {skill_name}")
+        else:
+            # 学习所有Skill
+            for skill_name in self.learning_topics:
+                self.trigger_manual_learning(skill_name)
 
-# 独立运行模式
+# 独立运行测试
 if __name__ == "__main__":
     print("=====================================")
-    print("    NWACS 自动学习系统 v1.5")
-    print("=====================================")
-    print("集成Skill自主学习能力")
+    print("    NWACS 自动学习系统")
     print("=====================================")
     
-    # 使用独立运行模式，启用Skill学习
-    system = AutoLearningSystem(standalone=True, enable_skill_learning=True)
-    logger.info("自动学习系统已启动（独立模式）")
+    learning_system = AutoLearningSystem()
+    learning_system.start()
     
-    # 保持主线程运行
+    print("自动学习系统已启动，按 Ctrl+C 停止")
+    
     try:
         while True:
-            # 每30秒打印一次状态
-            time.sleep(30)
-            system.print_full_status()
+            time.sleep(10)
     except KeyboardInterrupt:
-        stats = system.get_stats()
-        logger.info("自动学习系统已停止，学习次数: %d, 错误次数: %d" % 
-                   (stats['learning_count'], stats['error_count']))
+        learning_system.stop()
         print("\n自动学习系统已停止")

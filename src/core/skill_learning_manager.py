@@ -3,6 +3,7 @@
 """
 NWACS Skill自主学习管理器
 为所有Skill添加独立的自主学习能力
+支持真正的联网学习功能
 """
 
 import time
@@ -12,9 +13,46 @@ import os
 from datetime import datetime
 from logger import logger
 
+# 尝试导入联网学习模块
+try:
+    from web_learning import get_web_learning
+    WEB_LEARNING_ENABLED = True
+except ImportError:
+    WEB_LEARNING_ENABLED = False
+    logger.warning("联网学习模块未启用，使用模拟学习")
+
+# 尝试导入协作模块
+try:
+    from skill_collaboration import get_skill_collaboration
+    COLLABORATION_ENABLED = True
+except ImportError:
+    COLLABORATION_ENABLED = False
+    logger.warning("协作模块未启用")
+
+# 大模型分析开关
+LLM_ANALYSIS_ENABLED = True
+
 class SkillLearner:
     """单个Skill的学习器"""
-    
+
+    # Skill文件路径映射
+    SKILL_FILE_MAP = {
+        '世界观构造师': 'skills/level2/03_二级Skill_世界观构造师.md',
+        '剧情构造师': 'skills/level2/04_二级Skill_剧情构造师.md',
+        '角色塑造师': 'skills/level2/07_二级Skill_角色塑造师.md',
+        '战斗设计师': 'skills/level2/08_二级Skill_战斗设计师.md',
+        '场景构造师': 'skills/level2/05_二级Skill_场景构造师.md',
+        '对话设计师': 'skills/level2/06_二级Skill_对话设计师.md',
+        '写作技巧大师': 'skills/level2/09_二级Skill_写作技巧大师.md',
+        '去AI痕迹监督官': 'skills/level2/10_二级Skill_去AI痕迹监督官.md',
+        '质量审计师': 'skills/level2/11_二级Skill_质量审计师.md',
+        '学习大师': 'skills/level2/30_二级Skill_学习大师.md',
+        '规则掌控者': 'skills/level2/31_二级Skill_规则掌控者.md',
+        '词汇大师': 'skills/level2/32_二级Skill_词汇大师.md',
+        '短篇小说爽文大师': 'skills/level2/11_二级Skill_短篇小说爽文大师.md',
+        '小说总调度官': 'skills/level2/01_二级Skill_小说总调度官.md',
+    }
+
     def __init__(self, skill_name, skill_type, learning_topics):
         self.skill_name = skill_name
         self.skill_type = skill_type
@@ -56,21 +94,45 @@ class SkillLearner:
         """执行学习"""
         self.is_learning = True
         self.last_learning_time = time.time()
-        
+
         try:
             # 选择学习主题
             topic = self.select_topic()
             logger.info("%s 正在学习: %s" % (self.skill_name, topic))
-            
-            # 模拟学习过程
-            self.simulate_learning(topic)
-            
+
+            # 执行学习（联网或模拟）
+            learning_result = self.simulate_learning(topic)
+
             # 更新学习记录
             self.update_learning_record(topic)
-            
+
+            # 分发学习内容到对应的Skill文件
+            if learning_result:
+                self.distribute_learning_content(topic, learning_result)
+
+                # 分享到知识库（协作功能）
+                if COLLABORATION_ENABLED:
+                    try:
+                        collab = get_skill_collaboration()
+                        collab.share_learning_to_knowledge_base(self.skill_name, topic, learning_result)
+
+                        # 大模型分析（如果启用）
+                        if LLM_ANALYSIS_ENABLED and collab.llm_enabled:
+                            llm_result = collab.analyze_with_llm(learning_result, "skill_update")
+                            if llm_result:
+                                logger.info("%s 大模型分析完成" % self.skill_name)
+                                # 可以将分析结果也加入知识库
+                                collab.share_learning_to_knowledge_base(
+                                    self.skill_name,
+                                    topic + "_LLM分析",
+                                    llm_result
+                                )
+                    except Exception as e:
+                        logger.log_exception(e, "%s 协作功能" % self.skill_name)
+
             self.learning_count += 1
             logger.info("%s 学习完成" % self.skill_name)
-            
+
         except Exception as e:
             logger.log_exception(e, "%s execute_learning" % self.skill_name)
             self.error_count += 1
@@ -87,18 +149,37 @@ class SkillLearner:
         return topic
     
     def simulate_learning(self, topic):
-        """模拟学习过程"""
+        """学习过程（联网版）"""
         logger.debug("%s 正在深入学习: %s" % (self.skill_name, topic))
-        time.sleep(2)  # 模拟学习时间
-        
-        # 模拟学习成果
+
+        if WEB_LEARNING_ENABLED:
+            # 真正的联网学习
+            try:
+                web_learning = get_web_learning()
+                learning_result = web_learning.search_and_learn(self.skill_name, topic)
+
+                if learning_result:
+                    logger.info("%s 联网学习完成，获得 %d 条要点" % (
+                        self.skill_name,
+                        len(learning_result.get('key_points', []))
+                    ))
+                    return learning_result
+            except Exception as e:
+                logger.log_exception(e, "%s 联网学习" % self.skill_name)
+                # 如果联网失败，使用模拟学习
+                time.sleep(2)
+        else:
+            # 模拟学习时间
+            time.sleep(2)
+
+        # 模拟学习成果（备用）
         learning_outcome = {
             'topic': topic,
             'skill_name': self.skill_name,
             'learned_points': self.generate_learning_points(topic),
             'timestamp': datetime.now().isoformat()
         }
-        
+
         return learning_outcome
     
     def generate_learning_points(self, topic):
@@ -160,7 +241,91 @@ class SkillLearner:
             
         except Exception as e:
             logger.log_exception(e, "%s _save_to_record" % self.skill_name)
-    
+
+    def distribute_learning_content(self, topic, learning_result):
+        """将学习内容分发到对应的Skill文件"""
+        skill_file = self.SKILL_FILE_MAP.get(self.skill_name)
+        if not skill_file:
+            logger.debug("%s 未配置Skill文件路径" % self.skill_name)
+            return False
+
+        # 确保路径是相对于工作目录
+        if not os.path.isabs(skill_file):
+            base_dir = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
+            skill_file = os.path.join(base_dir, skill_file)
+
+        if not os.path.exists(skill_file):
+            logger.warning("%s Skill文件不存在: %s" % (self.skill_name, skill_file))
+            return False
+
+        try:
+            # 读取现有内容
+            with open(skill_file, 'r', encoding='utf-8') as f:
+                content = f.read()
+
+            # 生成学习内容章节
+            chapter_title = "## 学习成果 - %s\n\n" % datetime.now().strftime('%Y-%m-%d')
+            chapter_content = chapter_title
+
+            if isinstance(learning_result, dict):
+                # 添加学习主题
+                chapter_content += "**学习主题：** %s\n\n" % topic
+
+                # 添加关键数据
+                if 'key_points' in learning_result and learning_result['key_points']:
+                    chapter_content += "**关键数据：**\n"
+                    for point in learning_result['key_points'][:5]:
+                        chapter_content += "- %s\n" % point
+                    chapter_content += "\n"
+
+                # 添加趋势分析
+                if 'trends' in learning_result and learning_result['trends']:
+                    chapter_content += "**趋势分析：**\n"
+                    for trend in learning_result['trends'][:3]:
+                        chapter_content += "- %s\n" % trend
+                    chapter_content += "\n"
+
+                # 添加写作技巧
+                if 'tips' in learning_result and learning_result['tips']:
+                    chapter_content += "**写作技巧：**\n"
+                    for tip in learning_result['tips'][:3]:
+                        if len(tip) < 200:
+                            chapter_content += "- %s\n" % tip
+                    chapter_content += "\n"
+
+                # 添加搜索结果摘要
+                if 'search_results' in learning_result and learning_result['search_results']:
+                    chapter_content += "**参考资料：**\n"
+                    for i, result in enumerate(learning_result['search_results'][:2], 1):
+                        title = result.get('title', '未知')
+                        chapter_content += "- %s\n" % title
+                    chapter_content += "\n"
+            else:
+                # 简单文本
+                chapter_content += "%s\n\n" % str(learning_result)
+
+            chapter_content += "---\n*本章节由自动学习系统于 %s 生成*\n\n" % datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+
+            # 查找插入位置（在文件末尾或特定标记处）
+            marker = "<!-- 学习成果自动插入位置 -->"
+            if marker in content:
+                # 在标记处插入
+                content = content.replace(marker, chapter_content + marker)
+            else:
+                # 在文件末尾添加
+                content += "\n\n" + chapter_content
+
+            # 保存更新
+            with open(skill_file, 'w', encoding='utf-8') as f:
+                f.write(content)
+
+            logger.info("%s 学习内容已分发到: %s" % (self.skill_name, skill_file))
+            return True
+
+        except Exception as e:
+            logger.log_exception(e, "%s distribute_learning_content" % self.skill_name)
+            return False
+
     def get_stats(self):
         """获取统计信息"""
         return {
@@ -265,6 +430,17 @@ class SkillLearningManager:
                 '语言风格优化',
                 '专业术语应用',
                 '修辞丰富度提升'
+            ],
+            '短篇小说爽文大师': [
+                '2025 2026 短篇小说爽文类型 爆款',
+                '2025 2026 短剧改编热门题材',
+                '男频爽文最新趋势 套路创新',
+                '女频爽文最新趋势 套路创新',
+                '短篇小说爆款开篇技巧',
+                '爽文写作技巧 节奏控制',
+                '恶毒女配逆袭文写作技巧',
+                '重生年代文创作方法',
+                '都市脑洞文设定技巧'
             ]
         }
     
@@ -314,6 +490,46 @@ class SkillLearningManager:
             print(f"  当前学习主题: {stats['learning_topics'][stats['_topic_index']] if hasattr(stats, '_topic_index') else '未知'}")
         
         print("\n" + "=" * 60)
+
+    def collaborative_learn(self, skill_names, shared_topic):
+        """协作学习：多个Skill共同学习一个主题"""
+        if not COLLABORATION_ENABLED:
+            logger.warning("协作功能未启用")
+            return None
+
+        try:
+            collab = get_skill_collaboration()
+            logger.info("启动协作学习: %s" % skill_names)
+
+            # 多Skill协作学习
+            results = collab.collaborative_learning(skill_names, shared_topic)
+
+            # 通知相关Skill更新
+            for skill_name in skill_names:
+                if skill_name in self.skill_learners:
+                    learner = self.skill_learners[skill_name]
+                    # 获取相关Skill的知识
+                    related = collab.get_related_knowledge(skill_name, shared_topic)
+                    if related:
+                        logger.info("%s 获得 %d 条相关知识" % (skill_name, len(related)))
+
+            return results
+
+        except Exception as e:
+            logger.log_exception(e, "collaborative_learn")
+            return None
+
+    def query_cross_skill_knowledge(self, skill_name):
+        """查询跨Skill知识"""
+        if not COLLABORATION_ENABLED:
+            return {}
+
+        try:
+            collab = get_skill_collaboration()
+            return collab.get_skill_insights(skill_name)
+        except Exception as e:
+            logger.log_exception(e, "query_cross_skill_knowledge")
+            return {}
 
 # 独立运行测试
 if __name__ == "__main__":
