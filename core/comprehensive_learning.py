@@ -98,7 +98,27 @@ class AutoLearningSystem:
             time.sleep(0.5)
         print(f"  ✅ 完成小说分析")
 
-    def _save_learning(self, content, category):
+    def learn_novel_genres(self):
+        """学习网络小说风格类型（2024-2025最新）"""
+        genres = [
+            "【都市】华娱+年代+重生铁三角、神豪文变种（情报系统、低调致富）",
+            "【历史】大明题材遥遥领先、锦衣卫/皇亲/文官穿越、红楼西游IP改编",
+            "【仙侠】西游化+苟道长生、稳健经营、百世积累、家族传承",
+            "【玄幻】高武+面板流、规则重构型（修士明明很强却过分谨慎）",
+            "【轻小说】火影/海贼/HP IP二创、综漫、抽象/乐子人标签",
+            "【无限流】规则怪谈+国风怪谈、单元剧模式、群像叙事",
+            "【系统流升级】情报每日刷新、职业面板、词条化能力",
+            "【苟道流】稳如老狗、极致低调隐匿、智斗高智商博弈",
+            "【女频趋势】事业线+情感线双强、无CP崛起、新世代亲密关系",
+            "【热门元素】美利坚背景异军突起、克苏鲁+种田混搭"
+        ]
+        for genre in genres:
+            print(f"  🎯 研究：{genre[:50]}...")
+            self._save_learning(genre, "小说类型")
+            time.sleep(0.5)
+        print(f"  ✅ 完成网络小说类型学习")
+
+    def learn_writing_techniques(self):
         """保存学习内容"""
         timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
         filename = f"{LEARNING_DIR}{category}_{timestamp}.txt"
@@ -127,7 +147,8 @@ class AutoLearningSystem:
             ("词汇收集", self.learn_vocabulary),
             ("修炼体系", self.learn_cultivation_system),
             ("剧情设计", self.learn_plot_design),
-            ("小说分析", self.learn_novel_analysis)
+            ("小说分析", self.learn_novel_analysis),
+            ("小说类型", self.learn_novel_genres)
         ]
 
         for name, func in learning_modules:
