@@ -30,7 +30,11 @@ class AutoLearningSystem:
             "玄幻小说爽点设计",
             "对话设计技巧",
             "场景描写技巧",
-            "人物塑造技巧"
+            "人物塑造技巧",
+            "三幕式结构运用",
+            "节奏把控技巧",
+            "悬念设置方法",
+            "伏笔回收技巧"
         ]
         for topic in topics:
             print(f"  📚 学习：{topic}")
@@ -75,7 +79,10 @@ class AutoLearningSystem:
             "冲突构建方法",
             "伏笔埋设与回收",
             "高潮设计原则",
-            "结局处理方式"
+            "结局处理方式",
+            "单元剧结构设计",
+            "递进式结构设计",
+            "痛爽文模式设计"
         ]
         for design in designs:
             print(f"  📝 剖析：{design}")
@@ -118,7 +125,7 @@ class AutoLearningSystem:
             time.sleep(0.5)
         print(f"  ✅ 完成网络小说类型学习")
 
-    def learn_writing_techniques(self):
+    def _save_learning(self, content, category):
         """保存学习内容"""
         timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
         filename = f"{LEARNING_DIR}{category}_{timestamp}.txt"
@@ -132,6 +139,7 @@ class AutoLearningSystem:
 
     def run_learning_cycle(self):
         """运行完整学习周期"""
+        self.learned_count = 0
         print(f"""
 ╔══════════════════════════════════════════════════════════════╗
 ║                                                              ║
@@ -179,6 +187,7 @@ def main():
 ║         ✅ 修炼体系研究                                      ║
 ║         ✅ 剧情设计分析                                      ║
 ║         ✅ 热门小说剖析                                      ║
+║         ✅ 小说类型分析                                      ║
 ║                                                              ║
 ╚══════════════════════════════════════════════════════════════╝
     """)
