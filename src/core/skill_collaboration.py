@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-NWACS Skill协作模块
-支持Skill间知识共享与大模型协作分析
+NWACS Skill 协作模块（优化版）
+支持 Skill 间知识共享与大模型协作分析
+优化功能：余额检测、限流重试、本地缓存、多模型支持
 """
 
 import json
@@ -11,14 +12,23 @@ import time
 from datetime import datetime
 from logger import logger
 
+# 导入大模型优化器
+try:
+    from llm_optimizer import get_llm_optimizer
+    OPTIMIZER_ENABLED = True
+except ImportError:
+    OPTIMIZER_ENABLED = False
+    logger.warning("大模型优化器未启用")
+
 class SkillCollaboration:
-    """Skill协作管理器"""
+    """Skill 协作管理器（优化版）"""
 
     def __init__(self):
         self.knowledge_base = {}
         self.collaboration_cache = {}
         self.llm_enabled = False
         self.llm_client = None
+        self.optimizer = None
 
         self._init_knowledge_base()
         self._init_llm_client()
@@ -36,11 +46,16 @@ class SkillCollaboration:
                 self.knowledge_base = {}
 
     def _init_llm_client(self):
-        """初始化大模型客户端"""
+        """初始化大模型客户端（优化版）"""
         try:
             import openai
             
-            # 从配置文件读取API密钥
+            # 初始化优化器
+            if OPTIMIZER_ENABLED:
+                self.optimizer = get_llm_optimizer()
+                logger.info("大模型优化器已初始化")
+            
+            # 从配置文件读取 API 密钥
             config = self._load_config()
             api_key = config.get('api_key') or os.environ.get('OPENAI_API_KEY') or os.environ.get('DEEPSEEK_API_KEY')
             base_url = config.get('base_url') or os.environ.get('OPENAI_BASE_URL')
@@ -51,12 +66,23 @@ class SkillCollaboration:
                     self.llm_client = openai.OpenAI(api_key=api_key, base_url=base_url)
                 else:
                     self.llm_client = openai.OpenAI(api_key=api_key)
-                self.llm_enabled = True
-                logger.info("大模型客户端已初始化，模型: %s" % self.model)
+                
+                # 检查余额
+                if self.optimizer:
+                    balance = self.optimizer.check_balance(self.llm_client)
+                    if balance and balance.get('available'):
+                        self.llm_enabled = True
+                        logger.info("大模型客户端已初始化，模型：%s，余额：%.2f" % (self.model, balance.get('amount', 0)))
+                    else:
+                        logger.warning("大模型余额不足，功能受限")
+                        self.llm_enabled = False
+                else:
+                    self.llm_enabled = True
+                    logger.info("大模型客户端已初始化，模型：%s" % self.model)
             else:
-                logger.info("未配置API密钥或未启用，大模型功能未启用")
+                logger.info("未配置 API 密钥或未启用，大模型功能未启用")
         except ImportError:
-            logger.info("openai库未安装，大模型功能未启用")
+            logger.info("openai 库未安装，大模型功能未启用")
         except Exception as e:
             logger.log_exception(e, "初始化大模型客户端")
     
@@ -171,30 +197,67 @@ class SkillCollaboration:
         return related
 
     def analyze_with_llm(self, content, analysis_type="summary"):
-        """使用大模型分析内容"""
+        """使用大模型分析内容（优化版：带缓存、限流、重试）"""
         if not self.llm_enabled:
+            logger.debug("大模型未启用，跳过分析")
             return None
 
         try:
             prompt = self._build_analysis_prompt(content, analysis_type)
-
-            response = self.llm_client.chat.completions.create(
-                model=self.model,
-                messages=[
-                    {"role": "system", "content": "你是一个专业的小说创作分析师，擅长提取关键信息、总结趋势、提供写作建议。"},
-                    {"role": "user", "content": prompt}
-                ],
-                temperature=0.7,
-                max_tokens=1000
-            )
+            temperature = 0.7
+            
+            # 1. 尝试从缓存获取
+            if self.optimizer:
+                cached_result = self.optimizer.get_from_cache(prompt, self.model, temperature)
+                if cached_result:
+                    logger.info("命中缓存，直接返回")
+                    return {
+                        'analysis': cached_result,
+                        'model': self.model,
+                        'timestamp': datetime.now().isoformat(),
+                        'from_cache': True
+                    }
+            
+            # 2. 选择最佳模型
+            task_model = self.model
+            if self.optimizer:
+                task_model = self.optimizer.select_best_model(analysis_type)
+                logger.debug("为任务 '%s' 选择模型：%s" % (analysis_type, task_model))
+            
+            # 3. 带重试的执行
+            def make_request():
+                return self.llm_client.chat.completions.create(
+                    model=task_model,
+                    messages=[
+                        {"role": "system", "content": "你是一个专业的小说创作分析师，擅长提取关键信息、总结趋势、提供写作建议。"},
+                        {"role": "user", "content": prompt}
+                    ],
+                    temperature=temperature,
+                    max_tokens=1000
+                )
+            
+            if self.optimizer:
+                response = self.optimizer.execute_with_retry(make_request)
+            else:
+                response = make_request()
 
             result = response.choices[0].message.content
-            logger.info("大模型分析完成")
+            logger.info("大模型分析完成，模型：%s" % task_model)
+            
+            # 4. 保存到缓存
+            if self.optimizer:
+                self.optimizer.save_to_cache(prompt, task_model, temperature, result)
+            
+            # 5. 估算成本
+            if self.optimizer:
+                cost = self.optimizer.estimate_cost(len(result), task_model)
+                logger.debug("本次请求估算成本：$%.4f" % cost)
 
             return {
                 'analysis': result,
-                'model': self.model,
-                'timestamp': datetime.now().isoformat()
+                'model': task_model,
+                'timestamp': datetime.now().isoformat(),
+                'from_cache': False
             }
 
         except Exception as e:

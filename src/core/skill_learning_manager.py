@@ -29,6 +29,14 @@ except ImportError:
     COLLABORATION_ENABLED = False
     logger.warning("协作模块未启用")
 
+# 尝试导入智能分发模块
+try:
+    from smart_distributor import get_learning_distributor
+    DISTRIBUTOR_ENABLED = True
+except ImportError:
+    DISTRIBUTOR_ENABLED = False
+    logger.warning("智能分发模块未启用")
+
 # 大模型分析开关
 LLM_ANALYSIS_ENABLED = True
 
@@ -106,7 +114,24 @@ class SkillLearner:
             # 更新学习记录
             self.update_learning_record(topic)
 
-            # 分发学习内容到对应的Skill文件
+            # 智能分发学习内容
+            if learning_result and DISTRIBUTOR_ENABLED:
+                try:
+                    distributor = get_learning_distributor()
+                    learning_result['skill_name'] = self.skill_name
+                    learning_result['topic'] = topic
+                    
+                    dist_result = distributor.distribute_learning(learning_result)
+                    
+                    if dist_result.get('distributed'):
+                        logger.info("学习内容已智能分发到：%s" % dist_result.get('target_skill'))
+                    else:
+                        logger.debug("跳过学习分发：%s" % dist_result.get('reason'))
+                        return  # 跳过本次学习
+                except Exception as e:
+                    logger.log_exception(e, "%s 智能分发" % self.skill_name)
+
+            # 分发学习内容到对应的 Skill 文件
             if learning_result:
                 self.distribute_learning_content(topic, learning_result)
 
@@ -124,7 +149,7 @@ class SkillLearner:
                                 # 可以将分析结果也加入知识库
                                 collab.share_learning_to_knowledge_base(
                                     self.skill_name,
-                                    topic + "_LLM分析",
+                                    topic + "_LLM 分析",
                                     llm_result
                                 )
                     except Exception as e:

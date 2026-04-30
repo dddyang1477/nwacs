@@ -1,137 +1,137 @@
-{
-  "timestamp": "2026-04-29T16:02:06.222022",
-  "overall_status": "warning",
-  "checks": [
-    {
-      "name": "文件完整性检查",
-      "status": "pass",
-      "items": [
-        {
-          "message": "所有文件完整性检查通过"
-        }
-      ]
-    },
-    {
-      "name": "学习标记检查",
-      "status": "warning",
-      "items": [
-        {
-          "skill": "03_二级Skill_世界观构造师",
-          "issue": "缺少学习标记",
-          "severity": "warning",
-          "suggestion": "运行\"添加学习标记.bat\"添加标记"
-        },
-        {
-          "skill": "04_二级Skill_剧情构造师",
-          "issue": "缺少学习标记",
-          "severity": "warning",
-          "suggestion": "运行\"添加学习标记.bat\"添加标记"
-        },
-        {
-          "skill": "05_二级Skill_场景构造师",
-          "issue": "缺少学习标记",
-          "severity": "warning",
-          "suggestion": "运行\"添加学习标记.bat\"添加标记"
-        },
-        {
-          "skill": "06_二级Skill_对话设计师",
-          "issue": "缺少学习标记",
-          "severity": "warning",
-          "suggestion": "运行\"添加学习标记.bat\"添加标记"
-        },
-        {
-          "skill": "07_二级Skill_角色塑造师",
-          "issue": "缺少学习标记",
-          "severity": "warning",
-          "suggestion": "运行\"添加学习标记.bat\"添加标记"
-        },
-        {
-          "skill": "08_二级Skill_战斗设计师",
-          "issue": "缺少学习标记",
-          "severity": "warning",
-          "suggestion": "运行\"添加学习标记.bat\"添加标记"
-        },
-        {
-          "skill": "09_二级Skill_写作技巧大师",
-          "issue": "缺少学习标记",
-          "severity": "warning",
-          "suggestion": "运行\"添加学习标记.bat\"添加标记"
-        },
-        {
-          "skill": "10_二级Skill_去AI痕迹监督官",
-          "issue": "缺少学习标记",
-          "severity": "warning",
-          "suggestion": "运行\"添加学习标记.bat\"添加标记"
-        },
-        {
-          "skill": "11_二级Skill_质量审计师",
-          "issue": "缺少学习标记",
-          "severity": "warning",
-          "suggestion": "运行\"添加学习标记.bat\"添加标记"
-        },
-        {
-          "skill": "30_二级Skill_学习大师",
-          "issue": "缺少学习标记",
-          "severity": "warning",
-          "suggestion": "运行\"添加学习标记.bat\"添加标记"
-        },
-        {
-          "skill": "31_二级Skill_规则掌控者",
-          "issue": "缺少学习标记",
-          "severity": "warning",
-          "suggestion": "运行\"添加学习标记.bat\"添加标记"
-        },
-        {
-          "skill": "32_二级Skill_词汇大师",
-          "issue": "缺少学习标记",
-          "severity": "warning",
-          "suggestion": "运行\"添加学习标记.bat\"添加标记"
-        }
-      ]
-    },
-    {
-      "name": "协作关系检查",
-      "status": "pass",
-      "items": [
-        {
-          "message": "协作模块已就绪"
-        },
-        {
-          "message": "协作学习方法已集成"
-        }
-      ]
-    },
-    {
-      "name": "知识库检查",
-      "status": "pass",
-      "items": [
-        {
-          "issue": "知识库文件不存在",
-          "severity": "info",
-          "suggestion": "运行学习系统将自动创建"
-        }
-      ]
-    }
-  ],
-  "summary": {
-    "passed": 3,
-    "warning": 1,
-    "error": 0,
-    "total": 4
-  },
-  "suggestions": [
-    "运行\"添加学习标记.bat\"添加标记",
-    "运行\"添加学习标记.bat\"添加标记",
-    "运行\"添加学习标记.bat\"添加标记",
-    "运行\"添加学习标记.bat\"添加标记",
-    "运行\"添加学习标记.bat\"添加标记",
-    "运行\"添加学习标记.bat\"添加标记",
-    "运行\"添加学习标记.bat\"添加标记",
-    "运行\"添加学习标记.bat\"添加标记",
-    "运行\"添加学习标记.bat\"添加标记",
-    "运行\"添加学习标记.bat\"添加标记",
-    "运行\"添加学习标记.bat\"添加标记",
-    "运行\"添加学习标记.bat\"添加标记",
-    "运行学习系统将自动创建"
-  ]
+{
+  "timestamp": "2026-04-29T16:02:06.222022",
+  "overall_status": "warning",
+  "checks": [
+    {
+      "name": "文件完整性检查",
+      "status": "pass",
+      "items": [
+        {
+          "message": "所有文件完整性检查通过"
+        }
+      ]
+    },
+    {
+      "name": "学习标记检查",
+      "status": "warning",
+      "items": [
+        {
+          "skill": "03_二级Skill_世界观构造师",
+          "issue": "缺少学习标记",
+          "severity": "warning",
+          "suggestion": "运行\"添加学习标记.bat\"添加标记"
+        },
+        {
+          "skill": "04_二级Skill_剧情构造师",
+          "issue": "缺少学习标记",
+          "severity": "warning",
+          "suggestion": "运行\"添加学习标记.bat\"添加标记"
+        },
+        {
+          "skill": "05_二级Skill_场景构造师",
+          "issue": "缺少学习标记",
+          "severity": "warning",
+          "suggestion": "运行\"添加学习标记.bat\"添加标记"
+        },
+        {
+          "skill": "06_二级Skill_对话设计师",
+          "issue": "缺少学习标记",
+          "severity": "warning",
+          "suggestion": "运行\"添加学习标记.bat\"添加标记"
+        },
+        {
+          "skill": "07_二级Skill_角色塑造师",
+          "issue": "缺少学习标记",
+          "severity": "warning",
+          "suggestion": "运行\"添加学习标记.bat\"添加标记"
+        },
+        {
+          "skill": "08_二级Skill_战斗设计师",
+          "issue": "缺少学习标记",
+          "severity": "warning",
+          "suggestion": "运行\"添加学习标记.bat\"添加标记"
+        },
+        {
+          "skill": "09_二级Skill_写作技巧大师",
+          "issue": "缺少学习标记",
+          "severity": "warning",
+          "suggestion": "运行\"添加学习标记.bat\"添加标记"
+        },
+        {
+          "skill": "10_二级Skill_去AI痕迹监督官",
+          "issue": "缺少学习标记",
+          "severity": "warning",
+          "suggestion": "运行\"添加学习标记.bat\"添加标记"
+        },
+        {
+          "skill": "11_二级Skill_质量审计师",
+          "issue": "缺少学习标记",
+          "severity": "warning",
+          "suggestion": "运行\"添加学习标记.bat\"添加标记"
+        },
+        {
+          "skill": "30_二级Skill_学习大师",
+          "issue": "缺少学习标记",
+          "severity": "warning",
+          "suggestion": "运行\"添加学习标记.bat\"添加标记"
+        },
+        {
+          "skill": "31_二级Skill_规则掌控者",
+          "issue": "缺少学习标记",
+          "severity": "warning",
+          "suggestion": "运行\"添加学习标记.bat\"添加标记"
+        },
+        {
+          "skill": "32_二级Skill_词汇大师",
+          "issue": "缺少学习标记",
+          "severity": "warning",
+          "suggestion": "运行\"添加学习标记.bat\"添加标记"
+        }
+      ]
+    },
+    {
+      "name": "协作关系检查",
+      "status": "pass",
+      "items": [
+        {
+          "message": "协作模块已就绪"
+        },
+        {
+          "message": "协作学习方法已集成"
+        }
+      ]
+    },
+    {
+      "name": "知识库检查",
+      "status": "pass",
+      "items": [
+        {
+          "issue": "知识库文件不存在",
+          "severity": "info",
+          "suggestion": "运行学习系统将自动创建"
+        }
+      ]
+    }
+  ],
+  "summary": {
+    "passed": 3,
+    "warning": 1,
+    "error": 0,
+    "total": 4
+  },
+  "suggestions": [
+    "运行\"添加学习标记.bat\"添加标记",
+    "运行\"添加学习标记.bat\"添加标记",
+    "运行\"添加学习标记.bat\"添加标记",
+    "运行\"添加学习标记.bat\"添加标记",
+    "运行\"添加学习标记.bat\"添加标记",
+    "运行\"添加学习标记.bat\"添加标记",
+    "运行\"添加学习标记.bat\"添加标记",
+    "运行\"添加学习标记.bat\"添加标记",
+    "运行\"添加学习标记.bat\"添加标记",
+    "运行\"添加学习标记.bat\"添加标记",
+    "运行\"添加学习标记.bat\"添加标记",
+    "运行\"添加学习标记.bat\"添加标记",
+    "运行学习系统将自动创建"
+  ]
 }
