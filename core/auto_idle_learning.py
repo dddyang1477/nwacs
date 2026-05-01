@@ -110,7 +110,7 @@ class IdleLearningMonitor:
         
         # 执行学习脚本
         try:
-            os.system(f'py {self.learning_script}')
+            os.system(f'py "{self.learning_script}"')
         except Exception as e:
             print(f"❌ 启动学习失败: {e}")
     
@@ -203,7 +203,7 @@ def main():
     parser = argparse.ArgumentParser(description='NWACS 自动空闲学习监控器 v2.0')
     parser.add_argument('-t', '--threshold', type=int, default=600,
                         help='空闲时间阈值（秒），默认600秒（10分钟）')
-    parser.add_argument('-s', '--script', type=str, default='nwacs_comprehensive_learning.py',
+    parser.add_argument('-s', '--script', type=str, default='core/comprehensive_learning.py',
                         help='学习脚本路径')
     
     args = parser.parse_args()
