@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NWACS v7.0 - 小说创作AI协作系统</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft YaHei", sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            padding: 40px 0;
+        }
+
+        .header h1 {
+            font-size: 3em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .version {
+            display: inline-block;
+            background: rgba(255,255,255,0.2);
+            padding: 5px 15px;
+            border-radius: 20px;
+            margin-top: 15px;
+            font-size: 0.9em;
+        }
+
+        .main-content {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            padding: 40px;
+            margin-bottom: 20px;
+        }
+
+        .section-title {
+            font-size: 1.8em;
+            color: #333;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 3px solid #667eea;
+        }
+
+        .novel-types {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
+        .novel-type-card {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            border-radius: 15px;
+            padding: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+
+        .novel-type-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            border-color: #667eea;
+        }
+
+        .novel-type-card h3 {
+            font-size: 1.3em;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .novel-type-card .icon {
+            font-size: 2.5em;
+            margin-bottom: 15px;
+        }
+
+        .novel-type-card p {
+            color: #666;
+            font-size: 0.9em;
+        }
+
+        .creation-form {
+            background: #f9f9f9;
+            border-radius: 15px;
+            padding: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 1.1em;
+            color: #333;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 1em;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .form-group textarea {
+            min-height: 150px;
+            resize: vertical;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            font-size: 1.1em;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-block;
+            text-decoration: none;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+        }
+
+        .btn-secondary:hover {
+            background: #5a6268;
+            box-shadow: 0 5px 20px rgba(108, 117, 125, 0.4);
+        }
+
+        .output-section {
+            margin-top: 40px;
+            padding-top: 40px;
+            border-top: 2px solid #e0e0e0;
+        }
+
+        .output-box {
+            background: #f5f5f5;
+            border-radius: 15px;
+            padding: 30px;
+            min-height: 300px;
+            white-space: pre-wrap;
+            font-family: "Microsoft YaHei", serif;
+            line-height: 1.8;
+            font-size: 1em;
+        }
+
+        .output-box:empty::before {
+            content: "创作的文字将显示在这里...";
+            color: #999;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+        }
+
+        .stat-card .number {
+            font-size: 2.5em;
+            font-weight: bold;
+        }
+
+        .stat-card .label {
+            font-size: 0.9em;
+            opacity: 0.9;
+        }
+
+        .footer {
+            text-align: center;
+            color: white;
+            padding: 20px;
+            opacity: 0.8;
+        }
+
+        .footer a {
+            color: white;
+            text-decoration: none;
+        }
+
+        .success-message {
+            background: #d4edda;
+            color: #155724;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .error-message {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2em;
+            }
+
+            .novel-types {
+                grid-template-columns: 1fr;
+            }
+
+            .main-content {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎭 NWACS v7.0</h1>
+            <p>小说创作AI协作系统 - 让AI成为您的专业创作团队</p>
+            <div class="version">
+                版本 v7.0 | 架构 v2.2 | 28个三级Skill | 32个知识库
+            </div>
+        </div>
+
+        <div class="main-content">
+            <h2 class="section-title">📚 选择小说类型</h2>
+
+            <div class="novel-types">
+                <div class="novel-type-card" onclick="selectType('xuanhuan')">
+                    <div class="icon">🐉</div>
+                    <h3>玄幻仙侠</h3>
+                    <p>修仙、玄幻、仙侠、修真</p>
+                </div>
+
+                <div class="novel-type-card" onclick="selectType('dushi')">
+                    <div class="icon">🏙️</div>
+                    <h3>都市言情</h3>
+                    <p>都市、言情、职场、总裁</p>
+                </div>
+
+                <div class="novel-type-card" onclick="selectType('xuanyi')">
+                    <div class="icon">🔍</div>
+                    <h3>悬疑推理</h3>
+                    <p>悬疑、推理、侦探、惊悚</p>
+                </div>
+
+                <div class="novel-type-card" onclick="selectType('kehuan')">
+                    <div class="icon">🚀</div>
+                    <h3>科幻未来</h3>
+                    <p>科幻、未来、末世、星际</p>
+                </div>
+
+                <div class="novel-type-card" onclick="selectType('lishi')">
+                    <div class="icon">📜</div>
+                    <h3>历史穿越</h3>
+                    <p>历史、穿越、架空、古代</p>
+                </div>
+
+                <div class="novel-type-card" onclick="selectType('kongbu')">
+                    <div class="icon">👻</div>
+                    <h3>恐怖惊悚</h3>
+                    <p>恐怖、惊悚、灵异、鬼怪</p>
+                </div>
+
+                <div class="novel-type-card" onclick="selectType('youxi')">
+                    <div class="icon">🎮</div>
+                    <h3>游戏竞技</h3>
+                    <p>游戏、竞技、电竞、网游</p>
+                </div>
+
+                <div class="novel-type-card" onclick="selectType('nvpin')">
+                    <div class="icon">💖</div>
+                    <h3>女频系列</h3>
+                    <p>总裁、年代、马甲、萌宝</p>
+                </div>
+            </div>
+
+            <div class="creation-form">
+                <h2 class="section-title">✍️ 开始创作</h2>
+
+                <form id="creationForm">
+                    <div class="form-group">
+                        <label for="novelType">📖 小说类型</label>
+                        <select id="novelType" required>
+                            <option value="">请先选择小说类型</option>
+                            <option value="xuanhuan">🐉 玄幻仙侠</option>
+                            <option value="dushi">🏙️ 都市言情</option>
+                            <option value="xuanyi">🔍 悬疑推理</option>
+                            <option value="kehuan">🚀 科幻未来</option>
+                            <option value="lishi">📜 历史穿越</option>
+                            <option value="kongbu">👻 恐怖惊悚</option>
+                            <option value="youxi">🎮 游戏竞技</option>
+                            <option value="nvpin">💖 女频系列</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="chapterTitle">📝 章节标题</label>
+                        <input type="text" id="chapterTitle" placeholder="例如：第一章 废物崛起" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="requirements">💡 创作需求</label>
+                        <textarea id="requirements" placeholder="描述你想要的故事...
+例如：写一个废柴逆袭的玄幻开篇，主角是家族弃子，被未婚妻当众退婚，后获得神秘传承" required></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="wordCount">📊 目标字数</label>
+                        <select id="wordCount">
+                            <option value="2000">2000字（短篇）</option>
+                            <option value="3000" selected>3000字（标准）</option>
+                            <option value="5000">5000字（长篇）</option>
+                        </select>
+                    </div>
+
+                    <button type="submit" class="btn" id="submitBtn">
+                        🚀 开始创作
+                    </button>
+                </form>
+
+                <div class="output-section" id="outputSection" style="display: none;">
+                    <h2 class="section-title">📖 创作结果</h2>
+
+                    <div id="messageBox"></div>
+
+                    <div id="loadingBox" class="loading" style="display: none;">
+                        <div class="spinner"></div>
+                        <p>正在创作中，请稍候...</p>
+                    </div>
+
+                    <div class="output-box" id="outputBox"></div>
+
+                    <div style="margin-top: 20px;">
+                        <button class="btn btn-secondary" onclick="copyOutput()">📋 复制内容</button>
+                        <button class="btn btn-secondary" onclick="clearOutput()">🗑️ 清空</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="stats">
+                <div class="stat-card">
+                    <div class="number">28</div>
+                    <div class="label">三级Skill</div>
+                </div>
+                <div class="stat-card">
+                    <div class="number">32</div>
+                    <div class="label">知识库</div>
+                </div>
+                <div class="stat-card">
+                    <div class="number">8</div>
+                    <div class="label">小说类型</div>
+                </div>
+                <div class="stat-card">
+                    <div class="number">v7.0</div>
+                    <div class="label">系统版本</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>NWACS v7.0 - 让AI成为您的专业创作团队</p>
+            <p>查看更多：<a href="docs/guides/快速开始指南.md">快速开始指南</a> | <a href="docs/guides/小说创作模板库.md">创作模板库</a></p>
+        </div>
+    </div>
+
+    <script>
+        function selectType(type) {
+            document.getElementById('novelType').value = type;
+            document.getElementById('requirements').focus();
+
+            const cards = document.querySelectorAll('.novel-type-card');
+            cards.forEach(card => card.style.borderColor = 'transparent');
+            event.target.closest('.novel-type-card').style.borderColor = '#667eea';
+        }
+
+        document.getElementById('creationForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            const novelType = document.getElementById('novelType').value;
+            const chapterTitle = document.getElementById('chapterTitle').value;
+            const requirements = document.getElementById('requirements').value;
+            const wordCount = document.getElementById('wordCount').value;
+
+            const submitBtn = document.getElementById('submitBtn');
+            const outputSection = document.getElementById('outputSection');
+            const loadingBox = document.getElementById('loadingBox');
+            const outputBox = document.getElementById('outputBox');
+            const messageBox = document.getElementById('messageBox');
+
+            outputSection.style.display = 'block';
+            messageBox.innerHTML = '';
+            outputBox.innerHTML = '';
+            loadingBox.style.display = 'block';
+            submitBtn.disabled = true;
+
+            try {
+                const response = await fetch('http://localhost:5000/api/create', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        novel_type: novelType,
+                        chapter_title: chapterTitle,
+                        prompt: requirements,
+                        word_count: parseInt(wordCount)
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error('API请求失败');
+                }
+
+                const data = await response.json();
+
+                loadingBox.style.display = 'none';
+                outputBox.innerHTML = data.content;
+
+                messageBox.innerHTML = '<div class="success-message">✅ 创作完成！</div>';
+
+            } catch (error) {
+                loadingBox.style.display = 'none';
+                messageBox.innerHTML = `<div class="error-message">❌ 创作失败：${error.message}</div>`;
+
+                outputBox.innerHTML = `【提示】
+这是一个Web UI演示界面。
+
+由于NWACS核心引擎使用Python开发，
+要使用完整的创作功能，请：
+
+1. 双击「启动NWACS.bat」
+2. 选择「1. 小说创作引擎」
+
+或者在命令行中运行：
+python core/nwacs_launcher.py
+
+---
+您输入的创作需求：
+类型: ${novelType}
+标题: ${chapterTitle}
+需求: ${requirements}
+字数: ${wordCount}字`;
+            } finally {
+                submitBtn.disabled = false;
+            }
+        });
+
+        function copyOutput() {
+            const outputBox = document.getElementById('outputBox');
+            navigator.clipboard.writeText(outputBox.innerText).then(() => {
+                alert('内容已复制到剪贴板！');
+            });
+        }
+
+        function clearOutput() {
+            document.getElementById('outputBox').innerHTML = '';
+            document.getElementById('messageBox').innerHTML = '';
+        }
+    </script>
+</body>
+</html>

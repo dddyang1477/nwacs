@@ -1,0 +1,25 @@
+{
+  "enable": true,
+  "mode": "qiyewechat",
+  "qiyewechat": {
+    "webhook_url": "",
+    "secret": "",
+    "chat_id": ""
+  },
+  "personal": {
+    "auto_login": true
+  },
+  "push_events": [
+    "task_start",
+    "task_progress",
+    "task_complete",
+    "learning_complete",
+    "quality_warning"
+  ],
+  "feature_flags": {
+    "enable_progress_push": true,
+    "enable_learning_report": true,
+    "enable_command_mode": true,
+    "enable_nlp_mode": true
+  }
+}

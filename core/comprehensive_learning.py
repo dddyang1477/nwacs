@@ -19,6 +19,15 @@ VERSION = "3.0"
 LEARNING_DIR = "skills/level2/learnings/"
 SKILLS_DIR = "skills/level2/"
 
+# 尝试导入飞书集成
+try:
+    sys.path.insert(0, str(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
+    from core.feishu.nwacs_feishu import NWACSFeishuIntegration
+    FEISHU_AVAILABLE = True
+except:
+    FEISHU_AVAILABLE = False
+    print("[飞书] 飞书推送模块未加载，跳过推送")
+
 class AutoLearningSystem:
     """自动学习系统"""
 
@@ -26,6 +35,23 @@ class AutoLearningSystem:
         os.makedirs(LEARNING_DIR, exist_ok=True)
         self.learned_count = 0
         self.learned_content = {}
+        self.feishu_integration = None
+        if FEISHU_AVAILABLE:
+            try:
+                self.feishu_integration = NWACSFeishuIntegration()
+                print("[飞书] 飞书推送已就绪")
+            except Exception as e:
+                print(f"[飞书] 飞书初始化失败: {e}")
+                self.feishu_integration = None
+
+    def send_feishu_notification(self, title, message):
+        """发送飞书通知"""
+        if self.feishu_integration:
+            try:
+                self.feishu_integration.send_custom_message(title, message)
+                print(f"[飞书] 通知已发送: {title}")
+            except Exception as e:
+                print(f"[飞书] 发送失败: {e}")
 
     def learn_writing_techniques(self):
         """学习写作技巧"""
@@ -412,6 +438,29 @@ class AutoLearningSystem:
 
         if update_skills:
             self.update_skills()
+
+        # 发送飞书通知
+        if self.feishu_integration:
+            self.send_feishu_notification(
+                "📚 NWACS 学习完成",
+                f"""
+✅ 学习完成通知
+
+📊 本次学习统计:
+- 学习主题: {self.learned_count}个
+- 学习时间: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
+- 学习内容: 写作技巧、词汇、修炼体系、剧情设计、小说分析
+
+📂 学习记录: {LEARNING_DIR}
+
+🔥 热门趋势:
+- 情绪流·虐恋追妻火葬场
+- 赛博修仙·科技与玄学融合
+- 无限流·规则怪谈
+
+⏰ 系统将继续自动学习
+"""
+            )
 
         print(f"""
 ╔══════════════════════════════════════════════════════════════╗

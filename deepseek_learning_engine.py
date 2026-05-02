@@ -6,6 +6,8 @@ NWACS v7.0 DeepSeek联网学习脚本
 1. 安装依赖：pip install openai
 2. 配置环境变量：export DEEPSEEK_API_KEY="your-api-key"
    或在代码中直接设置 DEEPSEEK_API_KEY = "your-api-key"
+3. （可选，推荐）配置飞书推送：在 config/feishu_config.json 中填写飞书机器人webhook
+4. （可选）配置微信推送：在 config/wechat_config.json 中填写企业微信webhook
 
 运行方式：
 python deepseek_learning_engine.py --duration 4h
@@ -14,9 +16,14 @@ python deepseek_learning_engine.py --duration 4h
 import os
 import time
 import json
+import sys
 from datetime import datetime
 from pathlib import Path
 from typing import List, Dict, Any
+
+# 添加项目根目录到路径，便于导入模块
+PROJECT_ROOT = Path(__file__).parent
+sys.path.insert(0, str(PROJECT_ROOT))
 
 try:
     from openai import OpenAI
@@ -24,10 +31,24 @@ except ImportError:
     print("❌ 请先安装 openai 库：pip install openai")
     exit(1)
 
+# 尝试导入飞书集成模块（推荐）
+try:
+    from core.feishu.nwacs_feishu import NWACSFeishuIntegration
+    FEISHU_AVAILABLE = True
+except:
+    FEISHU_AVAILABLE = False
+
+# 尝试导入微信集成模块（可选）
+try:
+    from core.wechat.nwacs_wechat import NWACSWechatIntegration
+    WECHAT_AVAILABLE = True
+except:
+    WECHAT_AVAILABLE = False
+
 class DeepSeekLearningEngine:
     """DeepSeek联网学习引擎"""
 
-    def __init__(self, api_key: str = None):
+    def __init__(self, api_key: str = None, enable_feishu: bool = True, enable_wechat: bool = True):
         self.api_key = api_key or os.environ.get("DEEPSEEK_API_KEY")
         if not self.api_key:
             raise ValueError("❌ 请设置 DEEPSEEK_API_KEY 环境变量或传入api_key参数")
@@ -44,6 +65,28 @@ class DeepSeekLearningEngine:
         self.start_time = None
         self.end_time = None
 
+        # 飞书集成（推荐）
+        self.enable_feishu = enable_feishu and FEISHU_AVAILABLE
+        self.feishu_integration = None
+        if self.enable_feishu:
+            try:
+                self.feishu_integration = NWACSFeishuIntegration()
+                self.log("📱 飞书推送功能已启用")
+            except Exception as e:
+                self.log(f"⚠️ 飞书推送初始化失败: {e}")
+                self.enable_feishu = False
+
+        # 微信集成（可选）
+        self.enable_wechat = enable_wechat and WECHAT_AVAILABLE
+        self.wechat_integration = None
+        if self.enable_wechat:
+            try:
+                self.wechat_integration = NWACSWechatIntegration()
+                self.log("💬 微信推送功能已启用")
+            except Exception as e:
+                self.log(f"⚠️ 微信推送初始化失败: {e}")
+                self.enable_wechat = False
+
         self.knowledge_bases = [
             "跨媒体开发知识库.txt",
             "学习进化系统知识库.txt",
@@ -56,7 +99,10 @@ class DeepSeekLearningEngine:
             "科幻末日小说详细知识库.txt",
             "写作技巧_画面感与人物刻画指南.txt",
             "小说人物起名知识库.txt",
-            "网络流行语知识库.txt"
+            "网络流行语知识库.txt",
+            "写作手法与修辞知识库.txt",
+            "小说创作灵感库.txt",
+            "写作经典技巧精华库.txt"
         ]
 
     def log(self, message: str):
@@ -250,7 +296,80 @@ class DeepSeekLearningEngine:
             f.write(report)
 
         self.log(f"✅ 报告已保存: {report_file}")
+
+        # 推送到飞书（如果启用，推荐）
+        if self.enable_feishu and self.feishu_integration:
+            try:
+                self.log("📱 正在推送学习报告到飞书...")
+                self._push_to_feishu(str(report_file))
+                self.log("✅ 报告已推送到飞书")
+            except Exception as e:
+                self.log(f"⚠️ 飞书推送失败: {e}")
+
+        # 推送到微信（如果启用，可选）
+        if self.enable_wechat and self.wechat_integration:
+            try:
+                self.log("💬 正在推送学习报告到微信...")
+                self._push_to_wechat(str(report_file))
+                self.log("✅ 报告已推送到微信")
+            except Exception as e:
+                self.log(f"⚠️ 微信推送失败: {e}")
+
         return report
+
+    def _push_to_feishu(self, report_file: str):
+        """推送学习报告到飞书"""
+        if not self.feishu_integration:
+            return
+
+        # 提取热门趋势
+        trends = []
+        for item in self.learned_content:
+            result = item.get('result', '')
+            if "虐恋" in result or "赛博修仙" in result or "无限流" in result:
+                # 简单提取前3个热点
+                if "虐恋" in result and len(trends) < 3:
+                    trends.append("虐恋追妻火葬场")
+                if "赛博修仙" in result and len(trends) < 3:
+                    trends.append("赛博修仙")
+                if "无限流" in result and len(trends) < 3:
+                    trends.append("无限流·规则怪谈")
+
+        if not trends:
+            trends = ["持续学习优化中..."]
+
+        self.feishu_integration.send_learning_complete(
+            report_path=report_file,
+            knowledge_count=len(self.knowledge_bases),
+            top_trends=trends
+        )
+
+    def _push_to_wechat(self, report_file: str):
+        """推送学习报告到微信"""
+        if not self.wechat_integration:
+            return
+
+        # 提取热门趋势
+        trends = []
+        for item in self.learned_content:
+            result = item.get('result', '')
+            if "虐恋" in result or "赛博修仙" in result or "无限流" in result:
+                # 简单提取前3个热点
+                if "虐恋" in result and len(trends) < 3:
+                    trends.append("虐恋追妻火葬场")
+                if "赛博修仙" in result and len(trends) < 3:
+                    trends.append("赛博修仙")
+                if "无限流" in result and len(trends) < 3:
+                    trends.append("无限流·规则怪谈")
+
+        if not trends:
+            trends = ["持续学习优化中..."]
+
+        self.wechat_integration.send_learning_complete(
+            report_path=report_file,
+            knowledge_count=len(self.knowledge_bases),
+            top_trends=trends
+        )
 
     def run(self, duration_hours: float = 4):
         """运行学习引擎"""
@@ -274,6 +393,8 @@ def main():
     parser = argparse.ArgumentParser(description='NWACS v7.0 DeepSeek联网学习引擎')
     parser.add_argument('--duration', type=str, default='4h', help='学习时长，如 4h, 2h, 30m')
     parser.add_argument('--api-key', type=str, default=None, help='DeepSeek API密钥')
+    parser.add_argument('--disable-feishu', action='store_true', help='禁用飞书推送')
+    parser.add_argument('--disable-wechat', action='store_true', help='禁用微信推送')
 
     args = parser.parse_args()
 
@@ -281,13 +402,23 @@ def main():
     duration = duration_map.get(args.duration, 4)
 
     try:
-        engine = DeepSeekLearningEngine(api_key=args.api_key)
+        engine = DeepSeekLearningEngine(
+            api_key=args.api_key,
+            enable_feishu=not args.disable_feishu,
+            enable_wechat=not args.disable_wechat
+        )
         engine.run(duration_hours=duration)
     except ValueError as e:
         print(e)
         print("\n📌 使用方法：")
         print("1. 设置环境变量：export DEEPSEEK_API_KEY='your-key'")
         print("2. 运行脚本：python deepseek_learning_engine.py --duration 4h")
+        print("\n📱 飞书集成（推荐）：")
+        print("  如需启用飞书推送，请配置 config/feishu_config.json")
+        print("  填入飞书机器人webhook_url即可")
+        print("\n💬 微信集成（可选）：")
+        print("  如需启用微信推送，请配置 config/wechat_config.json")
+        print("  填入企业微信webhook_url即可")
 
 
 if __name__ == "__main__":

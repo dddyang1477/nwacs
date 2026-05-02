@@ -1,0 +1,17 @@
+{
+  "enable": true,
+  "webhook_url": "",
+  "secret": "",
+  "push_events": [
+    "task_start",
+    "task_progress",
+    "task_complete",
+    "learning_complete",
+    "quality_warning"
+  ],
+  "feature_flags": {
+    "enable_progress_push": true,
+    "enable_learning_report": true,
+    "enable_markdown": true
+  }
+}
