@@ -1,0 +1,820 @@
+```json
+{
+  "api_documentation": {
+    "base_url": "http://localhost:8000",
+    "version": "8.0.0",
+    "endpoints": [
+      {
+        "endpoint": "/api/generate",
+        "method": "POST",
+        "description": "通用内容生成接口，根据提示词生成各类文本内容",
+        "request": {
+          "prompt": {
+            "type": "string",
+            "required": true,
+            "description": "生成提示词，描述需要生成的内容"
+          },
+          "style": {
+            "type": "string",
+            "required": false,
+            "description": "写作风格，可选值：default、formal、creative、concise"
+          },
+          "temperature": {
+            "type": "number",
+            "required": false,
+            "description": "温度参数，控制输出的随机性，范围0.0-2.0，默认0.7"
+          },
+          "max_tokens": {
+            "type": "integer",
+            "required": false,
+            "description": "最大生成token数，默认1024"
+          }
+        },
+        "response": {
+          "success": {
+            "type": "boolean",
+            "description": "请求是否成功"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "result": {
+                "type": "string",
+                "description": "生成的内容"
+              },
+              "usage": {
+                "type": "object",
+                "properties": {
+                  "prompt_tokens": "integer",
+                  "completion_tokens": "integer",
+                  "total_tokens": "integer"
+                }
+              }
+            }
+          }
+        },
+        "example": {
+          "request": {
+            "prompt": "写一段玄幻战斗场景",
+            "style": "creative",
+            "temperature": 0.8
+          },
+          "response": {
+            "success": true,
+            "data": {
+              "result": "天地变色，风云汇聚。李尘手中长剑泛起青色光芒，剑意如龙，直冲云霄。对面的魔尊冷笑一声，双手结印，万道黑芒如暴雨般倾泻而下...",
+              "usage": {
+                "prompt_tokens": 12,
+                "completion_tokens": 56,
+                "total_tokens": 68
+              }
+            }
+          }
+        }
+      },
+      {
+        "endpoint": "/api/generate/outline",
+        "method": "POST",
+        "description": "生成文章大纲，支持多种文体",
+        "request": {
+          "topic": {
+            "type": "string",
+            "required": true,
+            "description": "文章主题"
+          },
+          "genre": {
+            "type": "string",
+            "required": false,
+            "description": "文体类型，可选：novel、essay、report、article，默认novel"
+          },
+          "sections": {
+            "type": "integer",
+            "required": false,
+            "description": "大纲章节数量，范围1-10，默认5"
+          },
+          "style": {
+            "type": "string",
+            "required": false,
+            "description": "写作风格"
+          }
+        },
+        "response": {
+          "success": {
+            "type": "boolean"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "outline": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "title": "string",
+                    "description": "string",
+                    "key_points": "array"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "example": {
+          "request": {
+            "topic": "修仙世界的宗门崛起",
+            "genre": "novel",
+            "sections": 3
+          },
+          "response": {
+            "success": true,
+            "data": {
+              "outline": [
+                {
+                  "title": "开篇：凡人少年",
+                  "description": "主角出身平凡，意外获得修炼机缘",
+                  "key_points": ["身世背景", "奇遇获得", "入门测试"]
+                },
+                {
+                  "title": "中篇：宗门历练",
+                  "description": "在宗门中修炼成长，结交朋友与敌人",
+                  "key_points": ["修炼突破", "宗门大比", "秘境探险"]
+                },
+                {
+                  "title": "终章：崛起之路",
+                  "description": "面对强敌，最终带领宗门走向辉煌",
+                  "key_points": ["危机降临", "绝地反击", "宗门复兴"]
+                }
+              ]
+            }
+          }
+        }
+      },
+      {
+        "endpoint": "/api/generate/character",
+        "method": "POST",
+        "description": "生成角色设定，包括外貌、性格、背景等",
+        "request": {
+          "name": {
+            "type": "string",
+            "required": true,
+            "description": "角色名称"
+          },
+          "role_type": {
+            "type": "string",
+            "required": false,
+            "description": "角色类型，可选：protagonist、antagonist、supporting、minor，默认protagonist"
+          },
+          "universe": {
+            "type": "string",
+            "required": false,
+            "description": "世界观设定，如：玄幻、科幻、现代"
+          },
+          "traits": {
+            "type": "array",
+            "required": false,
+            "description": "指定角色特征列表",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "response": {
+          "success": {
+            "type": "boolean"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "character": {
+                "type": "object",
+                "properties": {
+                  "name": "string",
+                  "appearance": "string",
+                  "personality": "string",
+                  "background": "string",
+                  "abilities": "array",
+                  "motivation": "string",
+                  "arc": "string"
+                }
+              }
+            }
+          }
+        },
+        "example": {
+          "request": {
+            "name": "林月",
+            "role_type": "protagonist",
+            "universe": "玄幻",
+            "traits": ["聪慧", "坚韧", "善良"]
+          },
+          "response": {
+            "success": true,
+            "data": {
+              "character": {
+                "name": "林月",
+                "appearance": "身姿修长，一袭白衣，眉间一点朱砂，双眸如星辰般明亮",
+                "personality": "聪慧过人却不张扬，内心坚韧不拔，对弱者充满同情",
+                "background": "出身修仙世家，幼年遭遇变故，独自在乱世中求生存",
+                "abilities": ["灵剑术", "阵法精通", "治愈术"],
+                "motivation": "寻找失散亲人，揭开家族覆灭的真相",
+                "arc": "从一个天真的少女成长为独当一面的修仙者"
+              }
+            }
+          }
+        }
+      },
+      {
+        "endpoint": "/api/generate/scene",
+        "method": "POST",
+        "description": "生成场景描写，包含环境、氛围、细节",
+        "request": {
+          "scene_type": {
+            "type": "string",
+            "required": true,
+            "description": "场景类型，可选：battle、romantic、mystery、daily、nature"
+          },
+          "setting": {
+            "type": "string",
+            "required": true,
+            "description": "场景设定描述"
+          },
+          "mood": {
+            "type": "string",
+            "required": false,
+            "description": "氛围情绪，可选：tense、peaceful、joyful、sad、mysterious"
+          },
+          "time_of_day": {
+            "type": "string",
+            "required": false,
+            "description": "时间段，可选：dawn、morning、afternoon、evening、night"
+          },
+          "sensory_details": {
+            "type": "boolean",
+            "required": false,
+            "description": "是否包含感官细节描述，默认true"
+          }
+        },
+        "response": {
+          "success": {
+            "type": "boolean"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "scene": {
+                "type": "object",
+                "properties": {
+                  "description": "string",
+                  "atmosphere": "string",
+                  "key_elements": "array",
+                  "sensory_details": "object"
+                }
+              }
+            }
+          }
+        },
+        "example": {
+          "request": {
+            "scene_type": "battle",
+            "setting": "废弃的古战场，阴云密布",
+            "mood": "tense",
+            "time_of_day": "evening"
+          },
+          "response": {
+            "success": true,
+            "data": {
+              "scene": {
+                "description": "残阳如血，映照在破碎的旌旗之上。古战场上散落着锈蚀的兵器，空气中弥漫着铁锈与泥土的气息。远处的山峦在暮色中若隐若现，仿佛沉睡的巨兽。",
+                "atmosphere": "肃杀而苍凉，每一寸空气都凝结着历史的沉重",
+                "key_elements": ["残阳", "破碎旌旗", "锈蚀兵器", "暮色山峦"],
+                "sensory_details": {
+                  "visual": "暗红色的天空，黑色的焦土",
+                  "auditory": "风声呜咽，远处传来乌鸦的叫声",
+                  "olfactory": "铁锈味，泥土的腥味",
+                  "tactile": "干燥的风吹过，带着细沙"
+                }
+              }
+            }
+          }
+        }
+      },
+      {
+        "endpoint": "/api/generate/dialogue",
+        "method": "POST",
+        "description": "生成角色对话，支持多人对话场景",
+        "request": {
+          "characters": {
+            "type": "array",
+            "required": true,
+            "description": "参与对话的角色列表",
+            "items": {
+              "type": "object",
+              "properties": {
+                "name": "string",
+                "personality": "string"
+              }
+            }
+          },
+          "context": {
+            "type": "string",
+            "required": true,
+            "description": "对话发生的背景情境"
+          },
+          "tone": {
+            "type": "string",
+            "required": false,
+            "description": "语气风格，可选：casual、formal、dramatic、humorous，默认casual"
+          },
+          "length": {
+            "type": "integer",
+            "required": false,
+            "description": "对话轮次数量，范围1-20，默认5"
+          }
+        },
+        "response": {
+          "success": {
+            "type": "boolean"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "dialogue": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "speaker": "string",
+                    "line": "string",
+                    "emotion": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "example": {
+          "request": {
+            "characters": [
+              {"name": "张明", "personality": "急躁"},
+              {"name": "李华", "personality": "冷静"}
+            ],
+            "context": "两人在密室中发现了一个神秘宝盒",
+            "tone": "dramatic",
+            "length": 3
+          },
+          "response": {
+            "success": true,
+            "data": {
+              "dialogue": [
+                {
+                  "speaker": "张明",
+                  "line": "快打开看看！说不定是什么绝世宝物！",
+                  "emotion": "兴奋"
+                },
+                {
+                  "speaker": "李华",
+                  "line": "慢着，这盒子上的符文很古怪，贸然打开可能会有危险。",
+                  "emotion": "谨慎"
+                },
+                {
+                  "speaker": "张明",
+                  "line": "都到这一步了，还犹豫什么？让我来！",
+                  "emotion": "急切"
+                }
+              ]
+            }
+          }
+        }
+      },
+      {
+        "endpoint": "/api/rewrite",
+        "method": "POST",
+        "description": "文本重写，支持风格转换、精简或扩写",
+        "request": {
+          "text": {
+            "type": "string",
+            "required": true,
+            "description": "需要重写的原始文本"
+          },
+          "target_style": {
+            "type": "string",
+            "required": false,
+            "description": "目标风格，可选：formal、casual、poetic、academic、journalistic"
+          },
+          "action": {
+            "type": "string",
+            "required": false,
+            "description": "重写方式，可选：rewrite、summarize、expand，默认rewrite"
+          },
+          "preserve_meaning": {
+            "type": "boolean",
+            "required": false,
+            "description": "是否保留原意，默认true"
+          }
+        },
+        "response": {
+          "success": {
+            "type": "boolean"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "original": "string",
+              "rewritten": "string",
+              "changes_summary": "string"
+            }
+          }
+        },
+        "example": {
+          "request": {
+            "text": "他跑得很快，一下子就到了终点。",
+            "target_style": "poetic",
+            "action": "rewrite"
+          },
+          "response": {
+            "success": true,
+            "data": {
+              "original": "他跑得很快，一下子就到了终点。",
+              "rewritten": "他如离弦之箭，转瞬间便已冲过终点线，只留下一道残影。",
+              "changes_summary": "增加比喻修辞，丰富动作描写，提升文学性"
+            }
+          }
+        }
+      },
+      {
+        "endpoint": "/api/continue",
+        "method": "POST",
+        "description": "续写文本，基于已有内容继续生成",
+        "request": {
+          "text": {
+            "type": "string",
+            "required": true,
+            "description": "已有的文本内容"
+          },
+          "direction": {
+            "type": "string",
+            "required": false,
+            "description": "续写方向提示，可选：continue、alternative、climax、resolution"
+          },
+          "length": {
+            "type": "integer",
+            "required": false,
+            "description": "续写长度（token数），范围50-2000，默认500"
+          },
+          "style_consistency": {
+            "type": "number",
+            "required": false,
+            "description": "风格一致性强度，范围0.0-1.0，默认0.8"
+          }
+        },
+        "response": {
+          "success": {
+            "type": "boolean"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "original": "string",
+              "continuation": "string",
+              "full_text": "string"
+            }
+          }
+        },
+        "example": {
+          "request": {
+            "text": "他推开了那扇尘封已久的门，眼前是一片黑暗。",
+            "direction": "climax",
+            "length": 200
+          },
+          "response": {
+            "success": true,
+            "data": {
+              "original": "他推开了那扇尘封已久的门，眼前是一片黑暗。",
+              "continuation": "突然，黑暗中亮起无数光点，如同星辰般闪烁。他这才发现，自己站在一个巨大的地下殿堂中，四周的墙壁上刻满了古老的符文。最中央的位置，悬浮着一把散发着幽蓝光芒的长剑。",
+              "full_text": "他推开了那扇尘封已久的门，眼前是一片黑暗。突然，黑暗中亮起无数光点，如同星辰般闪烁。他这才发现，自己站在一个巨大的地下殿堂中，四周的墙壁上刻满了古老的符文。最中央的位置，悬浮着一把散发着幽蓝光芒的长剑。"
+            }
+          }
+        }
+      },
+      {
+        "endpoint": "/api/skills",
+        "method": "GET",
+        "description": "获取所有可用的Skill列表",
+        "request": {
+          "category": {
+            "type": "string",
+            "required": false,
+            "description": "按分类筛选，可选：writing、editing、analysis、translation"
+          },
+          "page": {
+            "type": "integer",
+            "required": false,
+            "description": "页码，默认1"
+          },
+          "page_size": {
+            "type": "integer",
+            "required": false,
+            "description": "每页数量，默认20，最大100"
+          }
+        },
+        "response": {
+          "success": {
+            "type": "boolean"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "skills": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "id": "string",
+                    "name": "string",
+                    "description": "string",
+                    "category": "string",
+                    "version": "string",
+                    "parameters": "object"
+                  }
+                }
+              },
+              "total": "integer",
+              "page": "integer",
+              "page_size": "integer"
+            }
+          }
+        },
+        "example": {
+          "request": {
+            "category": "writing",
+            "page": 1,
+            "page_size": 10
+          },
+          "response": {
+            "success": true,
+            "data": {
+              "skills": [
+                {
+                  "id": "skill_writing_001",
+                  "name": "玄幻小说生成器",
+                  "description": "专门生成玄幻题材小说内容",
+                  "category": "writing",
+                  "version": "2.1.0",
+                  "parameters": {
+                    "world_view": {"type": "string", "required": true},
+                    "power_system": {"type": "string", "required": false}
+                  }
+                }
+              ],
+              "total": 15,
+              "page": 1,
+              "page_size": 10
+            }
+          }
+        }
+      },
+      {
+        "endpoint": "/api/skills/{skill_id}/execute",
+        "method": "POST",
+        "description": "执行指定的Skill，根据Skill定义处理输入",
+        "request": {
+          "parameters": {
+            "type": "object",
+            "required": true,
+            "description": "Skill所需的参数，根据具体Skill定义"
+          },
+          "async": {
+            "type": "boolean",
+            "required": false,
+            "description": "是否异步执行，默认false"
+          }
+        },
+        "response": {
+          "success": {
+            "type": "boolean"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "result": "object",
+              "execution_time": "number",
+              "skill_id": "string"
+            }
+          }
+        },
+        "example": {
+          "request": {
+            "parameters": {
+              "world_view": "修仙世界",
+              "power_system": "灵气修炼",
+              "character_name": "叶凡"
+            }
+          },
+          "response": {
+            "success": true,
+            "data": {
+              "result": {
+                "generated_content": "叶凡盘膝坐在灵泉边，感受着天地灵气的流动...",
+                "metadata": {
+                  "world_view": "修仙世界",
+                  "power_system": "灵气修炼"
+                }
+              },
+              "execution_time": 1.234,
+              "skill_id": "skill_writing_001"
+            }
+          }
+        }
+      },
+      {
+        "endpoint": "/api/knowledge/search",
+        "method": "GET",
+        "description": "搜索知识库中的条目",
+        "request": {
+          "query": {
+            "type": "string",
+            "required": true,
+            "description": "搜索关键词"
+          },
+          "category": {
+            "type": "string",
+            "required": false,
+            "description": "按分类筛选，可选：general、world_building、character、plot"
+          },
+          "page": {
+            "type": "integer",
+            "required": false,
+            "description": "页码，默认1"
+          },
+          "page_size": {
+            "type": "integer",
+            "required": false,
+            "description": "每页数量，默认10，最大50"
+          },
+          "sort_by": {
+            "type": "string",
+            "required": false,
+            "description": "排序方式，可选：relevance、date、title，默认relevance"
+          }
+        },
+        "response": {
+          "success": {
+            "type": "boolean"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "results": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "id": "string",
+                    "title": "string",
+                    "summary": "string",
+                    "category": "string",
+                    "relevance_score": "number"
+                  }
+                }
+              },
+              "total": "integer",
+              "page": "integer",
+              "page_size": "integer"
+            }
+          }
+        },
+        "example": {
+          "request": {
+            "query": "修仙境界",
+            "category": "world_building",
+            "page": 1,
+            "page_size": 5
+          },
+          "response": {
+            "success": true,
+            "data": {
+              "results": [
+                {
+                  "id": "kb_wb_001",
+                  "title": "修仙境界体系",
+                  "summary": "修仙世界中的境界划分：练气、筑基、金丹、元婴、化神、大乘",
+                  "category": "world_building",
+                  "relevance_score": 0.95
+                }
+              ],
+              "total": 3,
+              "page": 1,
+              "page_size": 5
+            }
+          }
+        }
+      },
+      {
+        "endpoint": "/api/knowledge/{item_id}",
+        "method": "GET",
+        "description": "获取指定知识条目的详细信息",
+        "request": {
+          "item_id": {
+            "type": "string",
+            "required": true,
+            "description": "知识条目ID（路径参数）"
+          },
+          "include_related": {
+            "type": "boolean",
+            "required": false,
+            "description": "是否包含关联条目，默认false"
+          }
+        },
+        "response": {
+          "success": {
+            "type": "boolean"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "id": "string",
+              "title": "string",
+              "content": "string",
+              "category": "string",
+              "tags": "array",
+              "created_at": "string",
+              "updated_at": "string",
+              "version": "integer",
+              "related_items": "array"
+            }
+          }
+        },
+        "example": {
+          "request": {
+            "item_id": "kb_wb_001",
+            "include_related": true
+          },
+          "response": {
+            "success": true,
+            "data": {
+              "id": "kb_wb_001",
+              "title": "修仙境界体系",
+              "content": "修仙境界是修仙世界中的实力划分标准，从低到高依次为：练气期、筑基期、金丹期、元婴期、化神期、大乘期。每个境界又分为前期、中期、后期三个小阶段。",
+              "category": "world_building",
+              "tags": ["修仙", "境界", "修炼体系"],
+              "created_at": "2024-01-15T10:30:00Z",
+              "updated_at": "2024-03-20T14:22:00Z",
+              "version": 3,
+              "related_items": [
+                {"id": "kb_wb_002", "title": "灵气等级分类"},
+                {"id": "kb_wb_003", "title": "突破渡劫机制"}
+              ]
+            }
+          }
+        }
+      },
+      {
+        "endpoint": "/api/knowledge/stats",
+        "method": "GET",
+        "description": "获取知识库的统计信息",
+        "request": {},
+        "response": {
+          "success": {
+            "type": "boolean"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "total_items": "integer",
+              "total_categories": "integer",
+              "category_breakdown": {
+                "type": "object",
+                "additionalProperties": {
+                  "type": "integer"
+                }
+              },
+              "recent_updates": "integer",
+              "last_updated": "string",
+              "storage_size": "string"
+            }
+          }
+        },
+        "example": {
+          "request": {},
+          "response": {
+            "success": true,
+            "data": {
+              "total_items": 1250,
+              "total_categories": 4,
+              "category_breakdown": {
+                "general": 450,
+                "world_building": 320,
+                "character": 280,
+                "plot": 200
+              },
+              "recent_updates": 15,
+              "last_updated": "2024-03-25T08:00:00Z",
+              "storage_size": "45.2 MB"
+            }
+          }
+        }
+      }
+    ]
+  }
+}
+```
