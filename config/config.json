@@ -1,0 +1,73 @@
+{
+  "version": "8.0.0",
+  "name": "NWACS V8.0",
+  "description": "Novel Writing AI Collaborative System",
+  "author": "NWACS Team",
+  "created_at": "2026-05-02T21:25:19.303171",
+  "deepseek": {
+    "api_key": "sk-f3246fbd1eef446e9a11d78efefd9bba",
+    "base_url": "https://api.deepseek.com",
+    "timeout": 120,
+    "max_tokens": 8000,
+    "temperature": 0.7
+  },
+  "models": {
+    "deepseek": {
+      "enabled": true,
+      "api_key": "sk-f3246fbd1eef446e9a11d78efefd9bba",
+      "model_name": "deepseek-chat"
+    }
+  },
+  "paths": {
+    "data": "data",
+    "logs": "logs",
+    "skills": "skills",
+    "knowledge_base": "knowledge_base",
+    "output": "output",
+    "novels": "novels"
+  },
+  "server": {
+    "host": "127.0.0.1",
+    "port": 8000,
+    "debug": true,
+    "workers": 4
+  },
+  "logging": {
+    "level": "INFO",
+    "format": "%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+    "file_max_bytes": 10485760,
+    "file_backup_count": 5
+  },
+  "feishu": {
+    "enabled": true,
+    "webhook_url": "https://open.feishu.cn/open-apis/bot/v2/hook/c808e5d5-1912-4795-9347-a05cc15c5b89",
+    "secret": "",
+    "push_events": [
+      "task_start",
+      "task_progress",
+      "task_complete",
+      "learning_complete",
+      "quality_warning"
+    ],
+    "feature_flags": {
+      "enable_progress_push": true,
+      "enable_learning_report": true,
+      "enable_markdown": true
+    }
+  },
+  "features": {
+    "creative_engine": true,
+    "skill_manager": true,
+    "knowledge_base": true,
+    "multi_model": true,
+    "real_time_collaboration": false,
+    "web_ui": true,
+    "api_gateway": true
+  },
+  "performance": {
+    "cache_enabled": true,
+    "cache_ttl": 3600,
+    "rate_limit": 100,
+    "rate_limit_window": 60
+  }
+}
