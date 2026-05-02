@@ -4,7 +4,7 @@
 NWACS 百万字长篇小说协作创作系统 - 增强版
 核心功能：
 1. 世界观框架生成
-2. 人物框架生成
+2. 人物框架生成（集成智能命名系统）
 3. 剧情大纲生成
 4. 章节标题生成
 5. 伏笔追踪
@@ -16,13 +16,22 @@ NWACS 百万字长篇小说协作创作系统 - 增强版
 import os
 import sys
 import json
+import random
 from datetime import datetime
 from dataclasses import dataclass, asdict, field
 from typing import List, Dict, Any, Optional
 
 sys.stdout.reconfigure(encoding='utf-8')
 
-VERSION = "2.0"
+# 导入命名系统
+try:
+    from character_namer import CharacterNamer
+    NAMER_AVAILABLE = True
+except:
+    NAMER_AVAILABLE = False
+    print("⚠️ 命名系统未找到，将使用默认命名")
+
+VERSION = "3.0"
 NOVEL_DIR = "novel_project/"
 
 @dataclass
@@ -102,9 +111,14 @@ class PlotFramework:
 class NovelProjectManager:
     """小说项目管理器 - 核心协作系统"""
 
-    def __init__(self, project_name="默认小说"):
+    def __init__(self, project_name="默认小说", reset_project=False):
         self.project_name = project_name
         self.project_dir = f"{NOVEL_DIR}{project_name}/"
+        
+        # 如果要求重置项目，先删除旧数据
+        if reset_project:
+            self._reset_project()
+            
         self._ensure_dirs()
 
         self.world_framework = WorldFramework()
@@ -117,6 +131,16 @@ class NovelProjectManager:
         self.chapters: List[ChapterRecord] = []
 
         self._load_data()
+
+    def _reset_project(self):
+        """重置项目数据"""
+        import shutil
+        if os.path.exists(self.project_dir):
+            try:
+                shutil.rmtree(self.project_dir)
+                print(f"🧹 已清除旧项目数据：{self.project_dir}")
+            except Exception as e:
+                print(f"⚠️ 清除项目数据失败：{e}")
 
     def _ensure_dirs(self):
         os.makedirs(self.project_dir, exist_ok=True)
@@ -185,13 +209,34 @@ class NovelProjectManager:
     # ==============
 
     def generate_world_framework(self, novel_type="玄幻修仙", main_theme="复仇与成长"):
-        """生成世界观框架"""
+        """生成世界观框架 - 随机化版本"""
         print(f"\n🌍 生成世界观框架...")
+
+        # 随机世界名
+        world_names = ["苍元大陆", "天玄界", "紫云界", "玄天大陆", "九幽冥界",
+                       "龙域大陆", "万灵界", "九霄大陆", "洪荒界", "星辰界"]
+        world_name = random.choice(world_names)
+
+        # 随机大陆名
+        continent_names = ["中洲", "东荒", "西漠", "北原", "南疆",
+                          "中央大陆", "中州", "中土", "四海大陆"]
+        main_continent = random.choice(continent_names)
+
+        # 随机势力
+        faction_prefixes = ["苍云", "太清", "天机", "玄剑", "万法",
+                           "血神", "万鬼", "逍遥", "星河", "紫霄"]
+        faction_suffixes = ["宗", "宫", "阁", "谷", "派", "门"]
+        main_factions = []
+        
+        for _ in range(4):
+            prefix = random.choice(faction_prefixes)
+            suffix = random.choice(faction_suffixes)
+            main_factions.append(f"{prefix}{suffix}")
 
         self.world_framework = WorldFramework(
             world_type=novel_type,
-            world_name="苍元大陆",
-            main_continent="中洲",
+            world_name=world_name,
+            main_continent=main_continent,
             power_system="灵气修炼体系",
             cultivation_realms=[
                 "炼气期（寿元150-200年）",
@@ -205,10 +250,10 @@ class NovelProjectManager:
                 "渡劫期（永生或灰飞）"
             ],
             main_factions=[
-                "正道七宗：苍云宗、太清宫、天机阁等",
-                "魔道四派：血神教、万鬼宗等",
-                "三大古派：太清宫（炼丹）、剑阁（剑道）、万法宗（万法）",
-                "劫运教：神秘组织，背后操控修仙界"
+                f"正道七宗：{main_factions[0]}、{main_factions[1]}等",
+                f"魔道四派：{main_factions[2]}、{main_factions[3]}等",
+                f"三大古派：{main_factions[0]}（炼丹）、{main_factions[1]}（剑道）",
+                "神秘组织：背后操控修仙界"
             ],
             core_conflict=main_theme,
             special_rules=[
@@ -219,16 +264,32 @@ class NovelProjectManager:
         )
 
         self._save_data()
-        print(f"✅ 世界观框架生成完成！")
+        print(f"✅ 世界观框架生成完成！世界名：{world_name}")
         return self.world_framework
 
     def generate_character_framework(self):
-        """生成人物框架"""
+        """生成人物框架 - 集成智能命名系统"""
         print(f"\n👤 生成人物框架...")
+
+        # 初始化命名系统
+        if NAMER_AVAILABLE:
+            namer = CharacterNamer()
+            protagonist_name = namer.name_gentle_male()
+            female_lead1 = namer.name_warm_female()
+            female_lead2 = namer.name_strong_female()
+            female_lead3 = namer.name_villain()  # 用反派名字给神秘女配
+            antagonist1 = namer.name_villain()
+        else:
+            # 备选方案
+            protagonist_name = "李云飞"
+            female_lead1 = "林雨薇"
+            female_lead2 = "赵灵儿"
+            female_lead3 = "柳如烟"
+            antagonist1 = "王傲天"
 
         self.character_framework = CharacterFramework(
             protagonist={
-                "name": "顾长青",
+                "name": protagonist_name,
                 "age": 17,
                 "personality": "谨慎、冷静、隐忍、智斗为先，典型的苟道流",
                 "appearance": "眉清目秀，气质内敛，看似普通",
@@ -238,21 +299,21 @@ class NovelProjectManager:
             },
             female_leads=[
                 {
-                    "name": "苏瑶",
+                    "name": female_lead1,
                     "age": 18,
                     "personality": "温柔但有原则，外柔内刚",
                     "identity": "太清宫圣女",
                     "relationship": "红颜知己"
                 },
                 {
-                    "name": "姜雪晴",
+                    "name": female_lead2,
                     "age": 19,
                     "personality": "冷漠聪明，高冷傲娇",
                     "identity": "天机阁少阁主",
                     "relationship": "盟友/合作伙伴"
                 },
                 {
-                    "name": "白骨夫人",
+                    "name": female_lead3,
                     "age": "未知",
                     "personality": "妩媚狡猾，亦敌亦友",
                     "identity": "白骨谷主",
@@ -261,13 +322,13 @@ class NovelProjectManager:
             ],
             antagonists=[
                 {
-                    "name": "王天辰",
+                    "name": antagonist1,
                     "identity": "苍云宗执法长老",
                     "status": "已死（被灭口）",
-                    "behind": "劫运教"
+                    "behind": "神秘组织"
                 },
                 {
-                    "name": "劫运教",
+                    "name": "神秘组织",
                     "identity": "幕后黑手",
                     "goal": "控制修仙界"
                 }
@@ -275,12 +336,36 @@ class NovelProjectManager:
         )
 
         self._save_data()
-        print(f"✅ 人物框架生成完成！")
+        print(f"✅ 人物框架生成完成！主角：{protagonist_name}")
         return self.character_framework
 
     def generate_plot_framework(self, total_chapters=200):
-        """生成剧情框架"""
+        """生成剧情框架 - 随机化版本"""
         print(f"\n📖 生成剧情框架...")
+
+        # 随机选择剧情主题
+        plot_themes = [
+            "凡人之路：觉醒与隐忍",
+            "逆天改命：从废柴到至尊",
+            "修仙长生：追寻永恒之道",
+            "复仇之路：血债血偿",
+            "万界遨游：从凡人到仙帝"
+        ]
+        main_theme = random.choice(plot_themes)
+
+        # 随机选择主线情节
+        main_plots = [
+            "{protagonist}复仇，查清灭门案真相",
+            "{protagonist}获得神秘传承，一步步崛起",
+            "{protagonist}在末法时代寻找长生之路",
+            "{protagonist}卷入修仙界最大阴谋",
+            "{protagonist}从凡人一步步修炼到仙帝"
+        ]
+        main_plot_template = random.choice(main_plots)
+
+        # 获取主角名
+        prot_name = self.character_framework.protagonist.get('name', '主角')
+        main_plot = main_plot_template.format(protagonist=prot_name)
 
         volumes = []
         chapters_per_volume = 40
@@ -302,12 +387,12 @@ class NovelProjectManager:
             })
 
         self.plot_framework = PlotFramework(
-            main_plot="顾长青复仇，查清灭门案真相",
+            main_plot=main_plot,
             sub_plots=[
                 "父亲下落之谜",
                 "长生会阴谋",
                 "天道沉睡真相",
-                "与三女的感情发展"
+                "感情发展"
             ],
             plot_arcs=volumes,
             total_chapters=total_chapters
@@ -315,6 +400,7 @@ class NovelProjectManager:
 
         self._save_data()
         print(f"✅ 剧情框架生成完成！共{total_chapters}章，分为{len(volumes)}卷")
+        print(f"   主线：{main_plot}")
         return self.plot_framework
 
     # ==============

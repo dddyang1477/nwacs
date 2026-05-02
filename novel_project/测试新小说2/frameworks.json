@@ -1,0 +1,129 @@
+{
+    "world": {
+        "world_type": "玄幻修仙",
+        "world_name": "九幽冥界",
+        "main_continent": "西漠",
+        "power_system": "灵气修炼体系",
+        "cultivation_realms": [
+            "炼气期（寿元150-200年）",
+            "筑基期（寿元300-500年）",
+            "金丹期（寿元800-1500年）",
+            "元婴期（寿元3000-5000年）",
+            "化神期（寿元1-3万年）",
+            "炼虚期（寿元5-10万年）",
+            "合体期（寿元20-50万年）",
+            "大乘期（寿元100万年以上）",
+            "渡劫期（永生或灰飞）"
+        ],
+        "main_factions": [
+            "正道七宗：玄剑谷、万法谷等",
+            "魔道四派：逍遥谷、太清宗等",
+            "三大古派：玄剑谷（炼丹）、万法谷（剑道）",
+            "神秘组织：背后操控修仙界"
+        ],
+        "core_conflict": "复仇与成长",
+        "special_rules": [
+            "末法时代：灵气日益稀薄",
+            "天道沉睡：世界规则紊乱",
+            "长生会：修仙界隐藏的最大阴谋组织"
+        ]
+    },
+    "character": {
+        "protagonist": {
+            "name": "温然",
+            "age": 17,
+            "personality": "谨慎、冷静、隐忍、智斗为先，典型的苟道流",
+            "appearance": "眉清目秀，气质内敛，看似普通",
+            "background": "家族被灭，父亲蒙冤而死",
+            "abilities": [
+                "望气之术",
+                "窃运术",
+                "毒术"
+            ],
+            "goals": [
+                "查清灭门真相",
+                "复仇",
+                "在修仙界存活"
+            ]
+        },
+        "female_leads": [
+            {
+                "name": "白柔",
+                "age": 18,
+                "personality": "温柔但有原则，外柔内刚",
+                "identity": "太清宫圣女",
+                "relationship": "红颜知己"
+            },
+            {
+                "name": "江舒",
+                "age": 19,
+                "personality": "冷漠聪明，高冷傲娇",
+                "identity": "天机阁少阁主",
+                "relationship": "盟友/合作伙伴"
+            },
+            {
+                "name": "萧烈",
+                "age": "未知",
+                "personality": "妩媚狡猾，亦敌亦友",
+                "identity": "白骨谷主",
+                "relationship": "长辈旧识"
+            }
+        ],
+        "antagonists": [
+            {
+                "name": "南宫殇",
+                "identity": "苍云宗执法长老",
+                "status": "已死（被灭口）",
+                "behind": "神秘组织"
+            },
+            {
+                "name": "神秘组织",
+                "identity": "幕后黑手",
+                "goal": "控制修仙界"
+            }
+        ],
+        "supporting_chars": []
+    },
+    "plot": {
+        "main_plot": "温然卷入修仙界最大阴谋",
+        "sub_plots": [
+            "父亲下落之谜",
+            "长生会阴谋",
+            "天道沉睡真相",
+            "感情发展"
+        ],
+        "plot_arcs": [
+            {
+                "name": "第1卷：凡人之路：觉醒与隐忍",
+                "start_chapter": 1,
+                "end_chapter": 40,
+                "theme": "凡人之路：觉醒与隐忍"
+            },
+            {
+                "name": "第2卷：逃亡之路：追杀与成长",
+                "start_chapter": 41,
+                "end_chapter": 80,
+                "theme": "逃亡之路：追杀与成长"
+            },
+            {
+                "name": "第3卷：纵横修仙：崭露头角",
+                "start_chapter": 81,
+                "end_chapter": 120,
+                "theme": "纵横修仙：崭露头角"
+            },
+            {
+                "name": "第4卷：长生之谜：揭开阴谋",
+                "start_chapter": 121,
+                "end_chapter": 160,
+                "theme": "长生之谜：揭开阴谋"
+            },
+            {
+                "name": "第5卷：长夜将明：最终决战",
+                "start_chapter": 161,
+                "end_chapter": 200,
+                "theme": "长夜将明：最终决战"
+            }
+        ],
+        "total_chapters": 200
+    }
+}
