@@ -1,0 +1,211 @@
+```json
+{
+  "world_settings": [
+    {
+      "world_id": "xianxia_001",
+      "world_name": "九霄仙域",
+      "geography": {
+        "continents": ["中州", "南域", "北荒", "东洲", "西域"],
+        "famous_mountains": ["青云峰", "天剑山", "万兽山脉", "幽冥深渊", "蓬莱仙岛"],
+        "seas": ["东海龙宫", "西海归墟", "南海秘境", "北海冰原"]
+      },
+      "powers": {
+        "supreme_forces": [
+          {"name": "天机阁", "specialty": "情报与占卜"},
+          {"name": "万佛寺", "specialty": "佛法与炼体"},
+          {"name": "剑冢", "specialty": "剑道传承"},
+          {"name": "丹殿", "specialty": "炼丹之术"},
+          {"name": "器宗", "specialty": "炼器之道"}
+        ],
+        "major_families": ["林家", "萧家", "叶家", "秦家", "楚家"]
+      },
+      "rules": {
+        "cultivation_system": "炼气 → 筑基 → 金丹 → 元婴 → 化神 → 渡劫 → 大乘 → 真仙",
+        "spiritual_energy": "灵气浓度决定修炼速度，中州灵气最浓",
+        "formation_system": "一级至九级阵法，威力递增",
+        "talent_tiers": ["凡体", "灵体", "道体", "圣体", "神体", "混沌体"]
+      },
+      "cultures": {
+        "sects": "以宗门为尊，等级森严",
+        "events": "每百年举办一次天骄大会",
+        "taboos": "渡劫期不可轻易出手，否则天道反噬",
+        "currency": "灵石（下品、中品、上品、极品）"
+      },
+      "unique_locations": [
+        {"name": "禁地·坠仙崖", "description": "传闻有真仙陨落于此，禁制重重"},
+        {"name": "秘境·上古遗迹", "description": "上古大能洞府，蕴含大机缘"},
+        {"name": "奇地·时空裂缝", "description": "连接异界的通道，危机与机遇并存"}
+      ],
+      "beasts_system": {
+        "tiers": ["凡兽", "灵兽", "妖兽", "仙兽", "神兽"],
+        "legendary_beasts": ["真龙", "凤凰", "麒麟", "白虎", "玄武"]
+      }
+    },
+    {
+      "world_id": "xianxia_002",
+      "world_name": "混沌纪元",
+      "geography": {
+        "realms": ["天界", "人界", "魔界", "冥界", "妖界"],
+        "mainland": ["洪荒大陆", "破碎虚空", "无尽海域"],
+        "danger_zones": ["混乱之地", "暗影深渊", "虚空裂缝"]
+      },
+      "powers": {
+        "heavenly_courts": [
+          {"name": "天帝庭", "domain": "统御万界"},
+          {"name": "命运神殿", "domain": "掌控气运"},
+          {"name": "轮回塔", "domain": "掌管生死"}
+        ],
+        "ancient_clans": ["盘古族", "女娲族", "伏羲族", "神农族"]
+      },
+      "rules": {
+        "cultivation_system": "淬体 → 开脉 → 神海 → 道宫 → 仙台 → 圣人 → 大帝 → 天帝",
+        "dao_understanding": "领悟天道法则，每条大道皆可成圣",
+        "realm_restrictions": "不同境界不可跨界，否则被天道压制"
+      },
+      "cultures": {
+        "sects": "万族林立，强者为尊",
+        "events": "万年一次的天道论道大会",
+        "taboos": "不可逆天而行，否则遭天谴",
+        "resources": "仙晶、神石、混沌之气"
+      },
+      "unique_locations": [
+        {"name": "天梯·通天路", "description": "通往天界的唯一通道，九死一生"},
+        {"name": "禁地·混沌海", "description": "天地未开之时的混沌区域"},
+        {"name": "圣地·轮回池", "description": "可让人轮回转世，保留记忆"}
+      ],
+      "special_systems": {
+        "talent": ["凡体", "王体", "皇体", "帝体", "圣体", "神体", "混沌体"],
+        "bloodlines": ["神族血脉", "魔族血脉", "妖族血脉", "古族血脉"]
+      }
+    },
+    {
+      "world_id": "xianxia_003",
+      "world_name": "万界之巅",
+      "geography": {
+        "universes": ["主宇宙", "平行宇宙", "异次元空间"],
+        "cultivation_planes": ["凡人界", "修仙界", "仙界", "神界", "混沌界"],
+        "mystical_locations": ["天道山", "命运河", "因果树", "时空塔"]
+      },
+      "powers": {
+        "universal_forces": [
+          {"name": "天道殿", "authority": "管理万界秩序"},
+          {"name": "时空管理局", "authority": "维护时空稳定"},
+          {"name": "命运司", "authority": "掌控众生因果"}
+        ],
+        "supreme_entities": ["创世神", "毁灭之神", "生命女神", "时间之神"]
+      },
+      "rules": {
+        "cultivation_system": "凡人 → 修士 → 仙人 → 神祇 → 主宰 → 天道",
+        "universal_laws": "每个宇宙有独立的法则体系",
+        "power_balance": "至高存在不可轻易干涉低等位面"
+      },
+      "cultures": {
+        "sects": "万界道统，各有传承",
+        "events": "纪元更替时的大清洗",
+        "taboos": "不可窥探天机，否则遭反噬",
+        "currency": "天道功德、信仰之力"
+      },
+      "unique_locations": [
+        {"name": "起源之地", "description": "万物诞生的最初之地"},
+        {"name": "终焉之谷", "description": "一切终结的归宿"},
+        {"name": "万界图书馆", "description": "记载所有位面知识的圣地"}
+      ],
+      "special_features": {
+        "reincarnation": "大能者可保留记忆转世",
+        "time_flow": "不同位面时间流速不同"
+      }
+    },
+    {
+      "world_id": "urban_001",
+      "world_name": "都市异能",
+      "geography": {
+        "cities": ["帝都", "魔都", "妖都", "地下城"],
+        "hidden_realms": ["昆仑秘境", "神农架禁区", "百慕大三角"],
+        "dimensions": ["主世界", "镜像世界", "暗影界"]
+      },
+      "powers": {
+        "official": [
+          {"name": "龙组", "description": "国家神秘组织，处理超自然事件"},
+          {"name": "异调局", "description": "异能者管理部门，注册与监管"},
+          {"name": "古武协会", "description": "古武修炼者联盟，维护秩序"}
+        ],
+        "underground": [
+          {"name": "暗网", "description": "地下信息交易平台"},
+          {"name": "黑市", "description": "非法异能物品交易场所"},
+          {"name": "血族议会", "description": "吸血鬼势力组织"}
+        ],
+        "hidden_families": ["龙家", "凤家", "麒麟家", "玄武家"]
+      },
+      "social_structure": {
+        "upper_class": "隐世家族掌权者、S级异能者",
+        "middle_class": "古武世家、A级异能者",
+        "lower_class": "普通人、低级异能者"
+      },
+      "special_places": {
+        "training_grounds": ["昆仑秘境", "神农架禁区", "龙脉之地"],
+        "underground_arenas": ["黑拳场", "异能者角斗场", "古武擂台"],
+        "clubs": ["异能者酒吧", "古武茶馆", "魔法书屋"]
+      },
+      "rules": {
+        "power_system": "F级 → E级 → D级 → C级 → B级 → A级 → S级 → SS级 → SSS级",
+        "awakening": "16-25岁为异能觉醒高峰期",
+        "restrictions": "在普通人面前禁止使用异能"
+      },
+      "unique_items": [
+        {"name": "异能石", "description": "可激发潜能的特殊矿石"},
+        {"name": "古武秘籍", "description": "失传的武学传承"}
+      ]
+    },
+    {
+      "world_id": "urban_002",
+      "world_name": "科技修真",
+      "geography": {
+        "regions": ["华夏区", "欧美区", "东南亚区", "暗影区"],
+        "virtual_worlds": ["元宇宙", "意识空间", "量子网络"],
+        "space_stations": ["天宫号", "方舟计划", "星际之门"]
+      },
+      "powers": {
+        "corporations": [
+          {"name": "神启科技", "description": "基因改造技术领导者"},
+          {"name": "量子集团", "description": "量子计算机开发商"},
+          {"name": "生命之树", "description": "生物科技巨头"}
+        ],
+        "government_agencies": [
+          {"name": "超自然管理局", "description": "管理超能力者"},
+          {"name": "星际探索局", "description": "外星文明研究"},
+          {"name": "意识安全局", "description": "网络意识保护"}
+        ],
+        "resistance": [
+          {"name": "自由联盟", "description": "反对科技垄断组织"},
+          {"name": "自然守护者", "description": "保护传统修炼方式"}
+        ]
+      },
+      "social_structure": {
+        "upper_class": "科技巨头、顶级黑客、S级改造人",
+        "middle_class": "中级改造人、程序员、研究人员",
+        "lower_class": "普通人、被淘汰的修真者"
+      },
+      "special_places": {
+        "research_labs": ["基因改造中心", "量子实验室", "意识上传站"],
+        "illegal_zones": ["黑市交易所", "地下实验室", "非法改造诊所"],
+        "virtual_places": ["竞技场", "修炼空间", "知识图书馆"]
+      },
+      "rules": {
+        "power_system": "基因改造等级：F-SSS级",
+        "technology": "纳米技术、基因编辑、量子计算、意识上传",
+        "restrictions": "禁止非法人体改造，需要政府许可"
+      },
+      "unique_items": [
+        {"name": "纳米芯片", "description": "可提升脑域开发度"},
+        {"name": "基因药剂", "description": "可激发潜能，但有副作用"},
+        {"name": "量子终端", "description": "连接量子网络的设备"}
+      ],
+      "special_features": {
+        "cybernetics": "人体改造技术，可替换肢体",
+        "uploading": "意识可上传至虚拟世界",
+        "ai_assistants": "每个人工智能助手"
+      }
+    }
+  ]
+}
+```
