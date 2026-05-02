@@ -1,0 +1,17 @@
+{
+  "enable": true,
+  "webhook_url": "https://open.feishu.cn/open-apis/bot/v2/hook/c808e5d5-1912-4795-9347-a05cc15c5b89",
+  "secret": "",
+  "push_events": [
+    "task_start",
+    "task_progress",
+    "task_complete",
+    "learning_complete",
+    "quality_warning"
+  ],
+  "feature_flags": {
+    "enable_progress_push": true,
+    "enable_learning_report": true,
+    "enable_markdown": true
+  }
+}
