@@ -1,0 +1,312 @@
+好的，作为一名专业的项目架构师和文件系统整理专家，我将为您详细分析当前NWACS项目的混乱状况，并提供一个清晰、可执行的重构方案。
+
+### 1. 推荐的新目录结构
+
+重构后的目录结构将遵循“高内聚、低耦合”的原则，将不同职责的文件归类到对应的顶层目录下。`.git` 和 `.trae` 目录保持不变。
+
+```
+NWACS_ROOT/
+├── .git/                              # 保留，不移动
+├── .trae/                             # 保留，不移动
+│
+├── core/                              # 核心业务逻辑
+│   ├── __init__.py
+│   ├── main.py                        # 主入口文件
+│   ├── nwacs_main.py                  # NWACS主程序
+│   ├── config.json                    # 主配置文件 (从根目录移入)
+│   ├── server_simple.py               # 简单服务器模块
+│   └── ... (其他核心模块)
+│
+├── skills/                            # 技能/功能模块
+│   ├── __init__.py
+│   ├── deepseek_learning_engine.py
+│   ├── deepseek_online_optimize.py
+│   ├── simple_learning.py
+│   ├── specialized_learning.py
+│   ├── feishu_server_v2.py
+│   ├── feishu_deepseek_diagnosis.py
+│   └── ... (其他技能文件)
+│
+├── config/                            # 配置文件
+│   └── ... (如果 core/config.json 是唯一配置，可留空)
+│
+├── docs/                              # 文档
+│   ├── QUICK_START.md
+│   ├── FEISHU_DEBUG.md
+│   ├── WRITING_TOOLS_GUIDE.md
+│   ├── 飞书指令服务器配置指南.md
+│   ├── 项目状态报告.md
+│   ├── NWACS_v7.0_二次优化完成总结.md
+│   ├── NWACS_v7.0_优化完成总结.md
+│   ├── NWACS全面优化完成总结.md
+│   └── NWACS最终优化完成总结.md
+│
+├── scripts/                           # 启动/工具脚本
+│   ├── bat/                           # Windows批处理文件
+│   │   ├── 启动API服务.bat
+│   │   ├── 启动DeepSeek评测.bat
+│   │   ├── 启动NWACS.bat
+│   │   ├── 启动创作引擎.bat
+│   │   ├── 启动功能测试.bat
+│   │   ├── 启动团队协作.bat
+│   │   ├── 启动微信集成.bat
+│   │   ├── 启动知识库管理.bat
+│   │   ├── 启动诊断工具.bat
+│   │   ├── 启动超级启动器.bat
+│   │   ├── 启动飞书指令服务器.bat
+│   │   ├── 启动飞书集成.bat
+│   │   ├── install_ngrok.bat
+│   │   ├── install_ngrok_en.bat
+│   │   ├── learn_now.bat
+│   │   ├── quick_learning_test.bat
+│   │   ├── run_learning_test.bat
+│   │   ├── run_test.bat
+│   │   ├── run_test_en.bat
+│   │   ├── start_auto_learn.bat
+│   │   ├── start_feishu_server.bat
+│   │   ├── start_nwacs.bat
+│   │   ├── start_nwacs_main.bat
+│   │   └── start_server.bat
+│   └── ps1/                           # PowerShell脚本
+│       └── test_feishu.ps1
+│
+├── tests/                             # 正式测试文件
+│   ├── test_feishu.py
+│   ├── test_output.py
+│   ├── test_port.py
+│   ├── test_python_env.py
+│   ├── test_server.py
+│   ├── simple_test.py
+│   ├── simple_evaluator.py
+│   ├── simple_feishu_test.py
+│   ├── enterprise_comparison.py
+│   ├── manual_feishu_test.py
+│   ├── quick_check.py
+│   ├── quick_feishu_test.py
+│   ├── quick_learning_test.py
+│   ├── run_learning_quick.py
+│   ├── run_learning_test.py
+│   ├── feishu_auto_demo.py
+│   ├── feishu_command_server.py
+│   ├── feishu_debug.py
+│   ├── feishu_final_test.py
+│   ├── feishu_simple_test.py
+│   ├── feishu_test_send.py
+│   └── setup_feishu.py
+│
+├── temp_tests/                        # 临时/一次性测试脚本
+│   ├── deepseek_classics_learning.py
+│   └── start_auto_learn.py
+│
+├── novels/                            # 小说输出目录
+│   ├── 缄默天师/                      # 以小说名命名的文件夹
+│   │   ├── 小说大纲_缄默天师.txt
+│   │   └── ... (小说章节、设定等)
+│   └── ... (其他小说)
+│
+├── tools/                             # 独立工具
+│   ├── deepseek_optimization_report.txt
+│   └── ... (其他报告或工具)
+│
+├── records/                           # 运行记录和日志 (保留)
+│   └── ...
+│
+├── logs/                              # 日志文件夹 (保留)
+│   └── ...
+│
+├── output/                            # 其他输出 (保留)
+│   └── ...
+│
+├── manuscripts/                       # 手稿 (保留)
+│   └── ...
+│
+├── archive/                           # 归档 (保留)
+│   └── ...
+│
+├── backup/                            # 备份 (保留)
+├── temp_backup/                       # 临时备份 (保留)
+│
+├── novel_creation/                    # 创作相关 (保留)
+├── novel_project/                     # 项目相关 (保留)
+├── novel-mcp-server-v2/               # 子项目 (保留)
+├── learning/                          # 学习资料 (保留)
+├── web_ui/                            # 前端UI (保留)
+├── examples/                          # 示例 (保留)
+├── maintenance/                       # 维护脚本 (保留)
+│
+└── __pycache__/                       # Python缓存 (可删除，但保留)
+```
+
+### 2. 文件归类方案
+
+| 原路径 | 目标路径 | 说明 |
+| :--- | :--- | :--- |
+| `根目录/config.json` | `core/config.json` | 核心配置文件，随核心代码移动 |
+| `根目录/main.py` | `core/main.py` | 主入口文件 |
+| `根目录/nwacs_main.py` | `core/nwacs_main.py` | NWACS主程序 |
+| `根目录/server_simple.py` | `core/server_simple.py` | 简单服务器 |
+| `根目录/deepseek_learning_engine.py` | `skills/deepseek_learning_engine.py` | DeepSeek学习引擎技能 |
+| `根目录/deepseek_online_optimize.py` | `skills/deepseek_online_optimize.py` | DeepSeek在线优化技能 |
+| `根目录/simple_learning.py` | `skills/simple_learning.py` | 简单学习技能 |
+| `根目录/specialized_learning.py` | `skills/specialized_learning.py` | 专业学习技能 |
+| `根目录/feishu_*.py` (多个文件) | `skills/feishu_*.py` | 飞书集成相关技能 |
+| `根目录/*.md` (文档类) | `docs/` | 所有Markdown文档 |
+| `根目录/*.bat` | `scripts/bat/` | 所有Windows批处理文件 |
+| `根目录/*.ps1` | `scripts/ps1/` | PowerShell脚本 |
+| `根目录/*test*.py` (正式测试) | `tests/` | 包含 `test` 关键字的文件 |
+| `根目录/*simple_test*.py` | `tests/` | 简单测试文件 |
+| `根目录/*quick_*.py` | `tests/` | 快速测试文件 |
+| `根目录/run_*.py` | `tests/` | 运行测试的脚本 |
+| `根目录/enterprise_comparison.py` | `tests/` | 企业对比测试 |
+| `根目录/manual_feishu_test.py` | `tests/` | 手动测试 |
+| `根目录/setup_feishu.py` | `tests/` | 飞书设置脚本 (归类为测试) |
+| `根目录/deepseek_classics_learning.py` | `temp_tests/` | 看起来像是一次性学习测试 |
+| `根目录/start_auto_learn.py` | `temp_tests/` | 自动学习启动脚本，更像临时测试 |
+| `根目录/小说大纲_缄默天师.txt` | `novels/缄默天师/` | 小说大纲 |
+| `根目录/deepseek_optimization_report.txt` | `tools/` | 优化报告，作为工具输出 |
+
+### 3. 迁移脚本 (PowerShell)
+
+将以下内容保存为 `migrate_nwacs.ps1`，并在NWACS项目的根目录下以管理员身份运行。
+
+```powershell
+# migrate_nwacs.ps1
+# 用途：重构NWACS项目目录结构
+# 注意：请在脚本所在目录（项目根目录）运行
+
+Write-Host "开始迁移NWACS项目结构..." -ForegroundColor Green
+
+# 1. 创建新目录结构
+Write-Host "创建新目录..." -ForegroundColor Yellow
+$newDirs = @(
+    "scripts\bat",
+    "scripts\ps1",
+    "tests",
+    "temp_tests",
+    "novels\缄默天师"
+)
+foreach ($dir in $newDirs) {
+    if (-not (Test-Path $dir)) {
+        New-Item -ItemType Directory -Path $dir -Force | Out-Null
+        Write-Host "  创建目录: $dir" -ForegroundColor Gray
+    }
+}
+
+# 2. 移动配置文件
+Write-Host "移动配置文件..." -ForegroundColor Yellow
+Move-Item -Path ".\config.json" -Destination ".\core\config.json" -Force -ErrorAction SilentlyContinue
+
+# 3. 移动核心文件到 core/
+Write-Host "移动核心文件到 core/..." -ForegroundColor Yellow
+$coreFiles = @("main.py", "nwacs_main.py", "server_simple.py")
+foreach ($file in $coreFiles) {
+    if (Test-Path ".\$file") {
+        Move-Item -Path ".\$file" -Destination ".\core\$file" -Force
+        Write-Host "  移动: $file -> core/"
+    }
+}
+
+# 4. 移动技能文件到 skills/
+Write-Host "移动技能文件到 skills/..." -ForegroundColor Yellow
+$skillFiles = Get-ChildItem -Path ".\" -File | Where-Object { $_.Name -match "^(deepseek|feishu|simple_learning|specialized_learning)\.py$" }
+foreach ($file in $skillFiles) {
+    Move-Item -Path $file.FullName -Destination ".\skills\$($file.Name)" -Force
+    Write-Host "  移动: $($file.Name) -> skills/"
+}
+
+# 5. 移动文档到 docs/
+Write-Host "移动文档到 docs/..." -ForegroundColor Yellow
+$docFiles = Get-ChildItem -Path ".\" -File | Where-Object { $_.Extension -eq ".md" }
+foreach ($file in $docFiles) {
+    Move-Item -Path $file.FullName -Destination ".\docs\$($file.Name)" -Force
+    Write-Host "  移动: $($file.Name) -> docs/"
+}
+
+# 6. 移动批处理文件到 scripts/bat/
+Write-Host "移动批处理文件到 scripts/bat/..." -ForegroundColor Yellow
+$batFiles = Get-ChildItem -Path ".\" -File | Where-Object { $_.Extension -eq ".bat" }
+foreach ($file in $batFiles) {
+    Move-Item -Path $file.FullName -Destination ".\scripts\bat\$($file.Name)" -Force
+    Write-Host "  移动: $($file.Name) -> scripts/bat/"
+}
+
+# 7. 移动PowerShell脚本到 scripts/ps1/
+Write-Host "移动PowerShell脚本到 scripts/ps1/..." -ForegroundColor Yellow
+$ps1Files = Get-ChildItem -Path ".\" -File | Where-Object { $_.Extension -eq ".ps1" }
+foreach ($file in $ps1Files) {
+    Move-Item -Path $file.FullName -Destination ".\scripts\ps1\$($file.Name)" -Force
+    Write-Host "  移动: $($file.Name) -> scripts/ps1/"
+}
+
+# 8. 移动测试文件到 tests/
+Write-Host "移动测试文件到 tests/..." -ForegroundColor Yellow
+$testPattern = @("test_feishu", "test_output", "test_port", "test_python_env", "test_server",
+                 "simple_test", "simple_evaluator", "simple_feishu_test",
+                 "enterprise_comparison", "manual_feishu_test", "quick_check",
+                 "quick_feishu_test", "quick_learning_test", "run_learning_quick",
+                 "run_learning_test", "feishu_auto_demo", "feishu_command_server",
+                 "feishu_debug", "feishu_final_test", "feishu_simple_test",
+                 "feishu_test_send", "setup_feishu")
+foreach ($pattern in $testPattern) {
+    $testFile = ".\$pattern.py"
+    if (Test-Path $testFile) {
+        Move-Item -Path $testFile -Destination ".\tests\$pattern.py" -Force
+        Write-Host "  移动: $pattern.py -> tests/"
+    }
+}
+
+# 9. 移动临时测试文件到 temp_tests/
+Write-Host "移动临时测试文件到 temp_tests/..." -ForegroundColor Yellow
+$tempTestFiles = @("deepseek_classics_learning.py", "start_auto_learn.py")
+foreach ($file in $tempTestFiles) {
+    if (Test-Path ".\$file") {
+        Move-Item -Path ".\$file" -Destination ".\temp_tests\$file" -Force
+        Write-Host "  移动: $file -> temp_tests/"
+    }
+}
+
+# 10. 移动小说相关文件
+Write-Host "移动小说相关文件..." -ForegroundColor Yellow
+$novelFiles = Get-ChildItem -Path ".\" -File | Where-Object { $_.Name -match "小说|大纲" }
+foreach ($file in $novelFiles) {
+    $novelName = "缄默天师"  # 根据实际情况调整
+    Move-Item -Path $file.FullName -Destination ".\novels\$novelName\$($file.Name)" -Force
+    Write-Host "  移动: $($file.Name) -> novels/$novelName/"
+}
+
+# 11. 移动工具/报告文件
+Write-Host "移动工具文件到 tools/..." -ForegroundColor Yellow
+$toolFiles = @("deepseek_optimization_report.txt")
+foreach ($file in $toolFiles) {
+    if (Test-Path ".\$file") {
+        Move-Item -Path ".\$file" -Destination ".\tools\$file" -Force
+        Write-Host "  移动: $file -> tools/"
+    }
+}
+
+Write-Host "迁移完成！" -ForegroundColor Green
+Write-Host "请检查是否有遗漏的文件，并更新相关导入路径。" -ForegroundColor Cyan
+```
+
+### 4. 注意事项和验证步骤
+
+#### 注意事项
+1.  **备份先行**：在执行迁移脚本之前，建议对整个项目进行一次完整备份（可以使用 `git stash` 或复制整个文件夹）。
+2.  **路径依赖**：迁移后，所有脚本中硬编码的文件路径（如 `open('config.json')`）都需要更新。例如，`config.json` 现在位于 `core/config.json`。
+3.  **模块导入**：如果Python文件之间有 `import` 关系（例如 `from deepseek_learning_engine import ...`），迁移后需要检查导入路径是否正确。可能需要更新为 `from skills.deepseek_learning_engine import ...`。
+4.  **`.gitignore` 更新**：检查 `.gitignore` 文件，确保 `temp_tests/`、`novels/` 等新目录的忽略规则是正确的。`novels/` 通常不需要被Git跟踪，除非你想版本控制小说内容。
+5.  **脚本执行权限**：PowerShell脚本可能需要先执行 `Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass` 才能运行。
+6.  **手动检查**：脚本可能无法覆盖所有边界情况（如文件名包含特殊字符）。迁移后，请手动检查根目录，确认所有文件都已正确归类。
+
+#### 验证步骤
+1.  **完整性检查**：
+    ```powershell
+    # 列出根目录下所有非目录文件，确认数量大幅减少
+    Get-ChildItem -Path ".\" -File | Select-Object Name
+    ```
+    理想情况下，根目录应该只剩下 `.gitignore`、`README.md` 等极少数文件。
+
+2.  **路径更新检查**：
+    ```bash
+    # 在Linux/WSL或Git Bash中，搜索所有Python文件中对旧路径的引用
+    grep -rn "
