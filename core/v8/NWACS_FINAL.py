@@ -588,7 +588,7 @@ class NWACSFinal:
             print(f"⚠️ AI去痕模块加载跳过: {e}")
             processed_opening = original_opening
         
-                        # 3. Integrate three-time quality check process
+        # 3. Integrate three-time quality check process
         print("\n" + "="*60)
         print("Starting three-time quality check process...")
         print("   Up to 3 checks, will reprocess if failed")
