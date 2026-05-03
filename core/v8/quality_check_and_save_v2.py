@@ -1,13 +1,8 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-【NWACS V9.0】严格质量检测系统（含人工处理提示
-📋 流程：
-1. 调用API生成内容
-2. 执行多维度质量检测
-3. 检测不合格 → 自动重写（最多3次）
-4. 第3次失败 → 【标记待人工处理】
-5. 检测合格 → 保存到文件
+【NWACS 简化质量检测系统】
+📋 功能：适合开局等短篇内容检测
 """
 
 import sys
@@ -15,9 +10,9 @@ import os
 from datetime import datetime
 sys.stdout.reconfigure(encoding='utf-8')
 
-API_KEY = "sk-f3246fbd1eef446e9a11d78efefd9bba"
-BASE_URL = "https://api.deepseek.com"
-MIN_WORDS = 4000  # ⚠️ 硬性要求
+# 简化版参数 - 适合开局检测
+MIN_WORDS = 300  # 开局300字足够
+MIN_PARAGRAPHS = 3  # 至少3段
 MAX_RETRY = 3
 
 def call_deepseek(prompt, system_prompt=None):
@@ -89,20 +84,19 @@ class QualityChecker:
         return final_result, self.report
     
     def check_word_count(self):
-        """字数检测"""
+        """字数检测 - 开局版"""
         wc = len(self.content)
         passed = wc >= MIN_WORDS
-        msg = f"{'✅' if passed else '❌'} 字数: {wc}字 (≥{MIN_WORDS}字)"
+        msg = f"{'✅' if passed else '⚠️'} 字数: {wc}字 (≥{MIN_WORDS}字)"
         self.report["word_count"] = wc
         return passed, msg
     
     def check_structure(self):
-        """结构检测"""
-        paragraphs = self.content.split('\n\n')
-        lines = self.content.split('\n')
+        """结构检测 - 开局版"""
+        paragraphs = [p for p in self.content.split('\n\n') if p.strip()]
         avg_paragraph_len = sum(len(p) for p in paragraphs) / max(len(paragraphs),1)
-        passed = len(paragraphs) >= 10 and avg_paragraph_len > 100
-        msg = f"{'✅' if passed else '❌'} 段落: {len(paragraphs)}段, 平均{int(avg_paragraph_len)}字"
+        passed = len(paragraphs) >= MIN_PARAGRAPHS
+        msg = f"{'✅' if passed else '⚠️'} 段落: {len(paragraphs)}段, 平均{int(avg_paragraph_len)}字"
         self.report["paragraphs"] = len(paragraphs)
         return passed, msg
     

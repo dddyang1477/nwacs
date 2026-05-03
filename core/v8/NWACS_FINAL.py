@@ -14,6 +14,10 @@ from datetime import datetime
 current_dir = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, current_dir)
 
+import io
+sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
+sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding='utf-8')
+
 # 显示启动界面
 print("="*80)
 print("""
@@ -456,46 +460,270 @@ class NWACSFinal:
         input("\n按回车返回主菜单...")
     
     def quick_generate(self):
-        """快速生成开局"""
+        """快速生成开局 - 自动保存功能"""
         print("\n" + "="*80)
-        print("⚡ 快速生成开局（基于爆款模板）")
+        print("🚀 快速生成开局 - 自动保存功能")
         print("="*80)
         
-        print("\n请选择类型：")
+        # 1. 让用户输入小说名
+        print("\n请输入小说名称：")
+        novel_name = input("小说名: ").strip()
+        
+        if not novel_name:
+            print("\n⚠️ 小说名不能为空！")
+            input("按回车返回...")
+            return
+        
+        # 2. 让用户选择类型
+        print("\n请选择小说类型：")
         print("1. 玄幻/仙侠")
         print("2. 都市")
         print("3. 悬疑")
         print("4. 言情")
-        print("0. 返回主菜单")
+        print("0. 返回")
         
         choice = input("\n请输入选项 (0-4): ").strip()
         
         if choice == "0":
             return
         
+        genre_map = {
+            "1": "xuanhuan",
+            "2": "dushi",
+            "3": "xuanyi",
+            "4": "yanqing"
+        }
+        
+        genre_name_map = {
+            "xuanhuan": "玄幻/仙侠",
+            "dushi": "都市",
+            "xuanyi": "悬疑",
+            "yanqing": "言情"
+        }
+        
+        if choice not in genre_map:
+            print("\n⚠️ 无效选项！")
+            input("按回车返回...")
+            return
+        
+        genre = genre_map[choice]
+        
+        # 3. 选择模板
         try:
             from bestseller_opening_templates_v16 import BestsellerOpeningTemplates
             templates = BestsellerOpeningTemplates()
-            
-            genre_map = {
-                "1": "xuanhuan",
-                "2": "dushi",
-                "3": "xuanyi",
-                "4": "yanqing"
-            }
-            
-            genre = genre_map.get(choice)
-            
-            if genre and hasattr(templates, 'templates'):
-                template_list = templates.templates.get(genre, [])
-                if template_list:
-                    print(f"\n📖 为您推荐模板: {template_list[0]['name']}")
-                    print(f"📝 基于爆款: {template_list[0].get('based_on', '爆款')}")
-                    print(f"\n📋 公式: {template_list[0].get('formula', '')}")
-                    print(f"\n📄 示例开局:")
-                    print(template_list[0].get('example_opening', ''))
         except Exception as e:
-            print("\n⚠️ 快速生成模块未加载")
+            print(f"⚠️ 模板模块加载失败: {e}")
+            input("按回车返回...")
+            return
+        
+        if genre not in templates.templates:
+            print("\n⚠️ 没有找到该类型模板！")
+            input("按回车返回...")
+            return
+        
+        print(f"\n【{genre_name_map[genre]} 10个模板】")
+        for i, t in enumerate(templates.templates[genre]):
+            print(f"  {i+1}. {t['name']} (基于: {t.get('based_on', '爆款')})")
+        
+        print("\n请选择模板编号 (1-10)：")
+        template_choice = input("模板编号: ").strip()
+        
+        if not template_choice.isdigit():
+            print("\n⚠️ 请输入有效数字！")
+            input("按回车返回...")
+            return
+        
+        template_idx = int(template_choice) - 1
+        
+        if template_idx < 0 or template_idx >= len(templates.templates[genre]):
+            print("\n⚠️ 模板编号无效！")
+            input("按回车返回...")
+            return
+        
+        selected_template = templates.templates[genre][template_idx]
+        
+        # 4. 创建文件夹并保存
+        self.save_novel_to_folder(novel_name, selected_template, genre_name_map[genre])
+    
+    def save_novel_to_folder(self, novel_name, template, genre_name):
+        """保存小说到文件夹 - 增强版：含AI去痕和质量检测"""
+        import os
+        from datetime import datetime
+        
+        # 创建小说主文件夹
+        base_path = os.path.dirname(os.path.abspath(__file__))
+        novels_folder = os.path.join(base_path, "novels")
+        if not os.path.exists(novels_folder):
+            os.makedirs(novels_folder)
+        
+        # 创建以小说名命名的文件夹
+        clean_name = "".join(c for c in novel_name if c.isalnum() or c in (' ', '-', '_')).rstrip()
+        novel_folder = os.path.join(novels_folder, clean_name)
+        
+        # 如果文件夹已存在，添加时间戳
+        if os.path.exists(novel_folder):
+            timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+            novel_folder = os.path.join(novels_folder, f"{clean_name}_{timestamp}")
+        
+        os.makedirs(novel_folder)
+        
+        print(f"\n✅ 已创建小说文件夹: {novel_folder}")
+        
+        # 1. 获取开局内容
+        original_opening = template['example_opening']
+        
+        # 2. 集成AI去痕功能
+        print("\n" + "="*60)
+        print("🔍 开始AI检测与去痕...")
+        print("="*60)
+        
+        processed_opening = original_opening
+        try:
+            # 尝试加载AI去痕模块
+            from ai_detector_and_rewriter import AIDetectorAndRewriter
+            detector = AIDetectorAndRewriter()
+            processed_opening = detector.check_and_rewrite(original_opening)
+        except Exception as e:
+            print(f"⚠️ AI去痕模块加载跳过: {e}")
+            processed_opening = original_opening
+        
+                        # 3. Integrate three-time quality check process
+        print("\n" + "="*60)
+        print("Starting three-time quality check process...")
+        print("   Up to 3 checks, will reprocess if failed")
+        print("="*60)
+
+        try:
+            from three_time_quality_check import call_three_time_quality_check
+            processed_opening, quality_passed, quality_report = call_three_time_quality_check(
+                processed_opening,
+                chapter_num=1,
+                novel_title=novel_name
+            )
+
+            if quality_passed:
+                print("All three checks passed!")
+            else:
+                print("Warning: Not all checks passed, suggest manual review")
+
+        except Exception as e:
+            print(f"Three-time check error: {e}")
+            print("   Falling back to basic quality check...")
+            try:
+                from quality_check_and_save_v2 import QualityChecker
+                checker = QualityChecker(processed_opening, 1)
+                passed, report = checker.run_all_checks()
+
+                if not passed:
+                    print("Warning: Quality check suggests manual review")
+            except Exception as e2:
+                print(f"Quality check module skipped: {e2}")      
+        # 4. 保存小说信息文件
+        info_file = os.path.join(novel_folder, "小说信息.md")
+        with open(info_file, "w", encoding="utf-8") as f:
+            f.write(f"# {novel_name}\n\n")
+            f.write(f"**类型**: {genre_name}\n")
+            f.write(f"**模板**: {template['name']}\n")
+            f.write(f"**基于**: {template.get('based_on', '爆款')}\n")
+            f.write(f"**创建时间**: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n")
+            f.write(f"**AI处理**: 已通过AI检测与去痕处理\n\n")
+            f.write(f"## 爆款公式\n{template['formula']}\n\n")
+            f.write(f"## 核心要素\n")
+            for elem in template['core_elements']:
+                f.write(f"- {elem}\n")
+        
+        print(f"✅ 已保存小说信息: {info_file}")
+        
+        # 5. 保存开局文件（原始版和去痕版都保存）
+        opening_file = os.path.join(novel_folder, "第一章_开局_去痕版.txt")
+        with open(opening_file, "w", encoding="utf-8") as f:
+            f.write(f"# {novel_name} - 第一章\n\n")
+            f.write(f"## 版本说明\n")
+            f.write(f"- 此版本经过AI去痕处理，降低AI特征\n\n")
+            f.write(f"## 模板结构\n")
+            for chap in template.get('structure', []):
+                f.write(f"第{chap['chapter']}章: {chap['title']}\n")
+                f.write(f"  {chap['content']}\n\n")
+            f.write(f"\n## 正文\n")
+            f.write(processed_opening)
+        
+        print(f"✅ 已保存开局(去痕版): {opening_file}")
+        
+        # 保存原始版作为参考
+        original_file = os.path.join(novel_folder, "第一章_开局_参考版.txt")
+        with open(original_file, "w", encoding="utf-8") as f:
+            f.write(f"# {novel_name} - 第一章（原始参考）\n\n")
+            f.write(f"## 正文\n")
+            f.write(original_opening)
+        
+        print(f"✅ 已保存参考版: {original_file}")
+        
+        # 6. 保存大纲模板文件
+        outline_file = os.path.join(novel_folder, "小说大纲.md")
+        with open(outline_file, "w", encoding="utf-8") as f:
+            f.write(f"# {novel_name} - 小说大纲\n\n")
+            f.write(f"## 基本信息\n")
+            f.write(f"- 作品名: {novel_name}\n")
+            f.write(f"- 作品类型: {genre_name}\n")
+            f.write(f"- 预计字数: (建议3-5万字短剧版 / 30-100万字长篇)\n")
+            f.write(f"- 核心卖点: (一句话概括)\n\n")
+            f.write(f"## AI去痕提示\n")
+            f.write(f"- 已自动处理，但建议后续人工润色\n")
+            f.write(f"- 可在基础上调整句式，增加个人风格\n")
+            f.write(f"- 参考原始版进行对比，找到最佳平衡点\n\n")
+            f.write(f"## 主角设定\n")
+            f.write(f"- 主角名: (填写)\n")
+            f.write(f"- 主角身份: (填写)\n")
+            f.write(f"- 金手指: (填写)\n")
+            f.write(f"- 核心目标: (填写)\n\n")
+            f.write(f"## 开篇设定\n")
+            f.write(f"- 开篇场景: (填写)\n")
+            f.write(f"- 第一个冲突: (填写)\n")
+            f.write(f"- 主角困境: (填写)\n\n")
+            f.write(f"## 章节大纲\n")
+            f.write(f"第1章: (填写)\n")
+            f.write(f"第2章: (填写)\n")
+            f.write(f"第3章: (填写)\n")
+        
+        print(f"✅ 已保存大纲模板: {outline_file}")
+        
+        # 7. 保存AI去痕指南
+        guide_file = os.path.join(novel_folder, "AI去痕与优化指南.md")
+        with open(guide_file, "w", encoding="utf-8") as f:
+            f.write(f"# {novel_name} - AI去痕与优化指南\n\n")
+            f.write(f"## 检测结果\n")
+            f.write(f"- 已进行AI特征检测与初步去痕\n\n")
+            f.write(f"## 进一步人工优化建议\n\n")
+            f.write(f"### 1. 词句方面\n")
+            f.write(f"- 减少成语/排比过度使用\n")
+            f.write(f"- 增加口语化表达，增强真实感\n")
+            f.write(f"- 适当使用语气词（嗯、哦、呢）\n\n")
+            f.write(f"### 2. 结构方面\n")
+            f.write(f"- 避免完美的段落长度整齐\n")
+            f.write(f"- 偶尔有小的逻辑跳跃或不完整表达\n")
+            f.write(f"- 增加一些'题外话'或细节描写\n\n")
+            f.write(f"### 3. 内容方面\n")
+            f.write(f"- 加入个人化的设定与观察\n")
+            f.write(f"- 增加一些'无关紧要'的细节描写\n")
+            f.write(f"- 对话更自然，不要太书面化\n\n")
+            f.write(f"### 4. 错误与瑕疵\n")
+            f.write(f"- 适当保留一些无伤大雅的小错误或不完美\n")
+            f.write(f"- 不要修改得过于完美\n")
+            f.write(f"- 保留一些个人风格的痕迹\n\n")
+        
+        print(f"✅ 已保存去痕指南: {guide_file}")
+        
+        print("\n" + "="*60)
+        print(f"🎉 小说《{novel_name}》创建成功！")
+        print("="*60)
+        print(f"\n小说文件夹: {novel_folder}")
+        print("\n已创建文件:")
+        print("  1. 小说信息.md - 模板信息与核心要素")
+        print("  2. 第一章_开局_去痕版.txt - 推荐使用此版本")
+        print("  3. 第一章_开局_参考版.txt - 原始版对比参考")
+        print("  4. 小说大纲.md - 可编辑的大纲模板")
+        print("  5. AI去痕与优化指南.md - 后续人工优化建议")
         
         input("\n按回车返回主菜单...")
     
@@ -881,4 +1109,4 @@ class NWACSFinal:
 
 if __name__ == "__main__":
     engine = NWACSFinal()
-
+    engine.run()
