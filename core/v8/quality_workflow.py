@@ -175,7 +175,8 @@ class QualityWorkflowManager:
         issues = []
 
         # 句子长度检查
-        sentences = text.split(/[.。!！?？]/)
+        import re
+        sentences = re.split(r'[.。!！?？]', text)
         avg_len = sum(len(s) for s in sentences) / max(len(sentences), 1)
 
         if avg_len > 50:
