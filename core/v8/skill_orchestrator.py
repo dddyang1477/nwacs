@@ -1,14 +1,15 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-NWACS V8.0 Skill协作编排系统
-实现小说写作流水线，让多个Skill有序高效地协作
+NWACS V8.0 Skill协作编排系统 - 自动执行模式
+实现小说写作流水线，让多个Skill有序自动地协作
 """
 
 import sys
 import json
 import os
 from datetime import datetime
+import time
 
 sys.stdout.reconfigure(encoding='utf-8')
 
@@ -34,7 +35,7 @@ def call_deepseek(prompt, system_prompt=None, temperature=0.7):
             "temperature": temperature,
             "max_tokens": 8000
         }
-        response = requests.post(url, headers=headers, json=data, timeout=180)
+        response = requests.post(url, headers=headers, json=data, timeout=300)
         response.raise_for_status()
         result = response.json()
         return result["choices"][0]["message"]["content"]
@@ -98,7 +99,7 @@ class NovelWritingPipeline:
                 "stage_id": 6,
                 "name": "高潮设计",
                 "skills": ["高潮设计师", "节奏控制师"],
-                "description": "优化每章的高潮场面，控制整体节奏",
+                "description": "优化章节的高潮场面，控制整体节奏",
                 "input": "章节内容",
                 "output": "优化后的高潮章节"
             },
@@ -159,28 +160,31 @@ class NovelWritingPipeline:
 
         print("\n" + "="*60)
 
-    def execute_stage(self, stage_id):
+    def execute_stage(self, stage_id, auto_mode=False):
         """执行单个阶段"""
         stage = self.pipeline_stages[stage_id - 1]
         print(f"\n" + "="*60)
         print(f"🚀 执行阶段{stage['stage_id']}: {stage['name']}")
         print("="*60)
 
+        # 获取前面阶段的输出作为上下文
+        context = self.get_stage_context(stage_id)
+
         # 根据阶段类型执行不同的逻辑
         if stage["name"] == "世界观设定":
-            output = self._world_building_stage()
+            output = self._world_building_stage(context)
         elif stage["name"] == "人物塑造":
-            output = self._character_design_stage()
+            output = self._character_design_stage(context)
         elif stage["name"] == "剧情大纲":
-            output = self._plot_outline_stage()
+            output = self._plot_outline_stage(context)
         elif stage["name"] == "伏笔埋设":
-            output = self._foreshadowing_stage()
+            output = self._foreshadowing_stage(context)
         elif stage["name"] == "章节创作":
-            output = self._chapter_writing_stage()
+            output = self._chapter_writing_stage(context)
         elif stage["name"] == "高潮设计":
-            output = self._climax_design_stage()
+            output = self._climax_design_stage(context)
         elif stage["name"] == "质量审查":
-            output = self._quality_review_stage()
+            output = self._quality_review_stage(context)
         else:
             output = "未知阶段"
 
@@ -209,9 +213,24 @@ class NovelWritingPipeline:
 
         return False
 
-    def _world_building_stage(self):
+    def get_stage_context(self, stage_id):
+        """获取前面阶段的输出作为上下文"""
+        context_parts = []
+
+        for i in range(1, stage_id):
+            if i in self.pipeline_state["stages_completed"]:
+                stage_info = self.pipeline_state["stage_outputs"].get(str(i))
+                if stage_info and os.path.exists(stage_info["output_file"]):
+                    with open(stage_info["output_file"], 'r', encoding='utf-8') as f:
+                        content = f.read()
+                        context_parts.append(f"\n## 阶段{i} - {stage_info['stage_name']} 的输出：\n")
+                        context_parts.append(content[:3000])  # 限制长度避免太长
+
+        return "\n".join(context_parts)
+
+    def _world_building_stage(self, context):
         """阶段1: 世界观设定"""
-        prompt = f"""请为小说《{self.novel_name}》（{self.genre}类型）构建完整的世界观设定：
+        prompt = f"""请为小说《{self.novel_name}》（{self.genre}类型）构建完整的世界观设定！
 
 请包括：
 1. 境界体系（详细说明每个境界）
@@ -220,9 +239,11 @@ class NovelWritingPipeline:
 4. 历史背景（重要历史事件）
 5. 修炼法则（特殊规则、禁忌）
 
-请详细、结构化地回答，至少1000字以上。"""
+请详细、结构化地回答，至少1000字以上！
 
-        system_prompt = "你是一位专业的玄幻小说世界观设计师，擅长构建宏大而严谨的世界观设定。"
+{context}"""
+
+        system_prompt = "你是一位专业的玄幻小说世界观设计师，擅长构建宏大而严谨的世界观设定！"
         print(f"   🔧 调用技能: 世界观构造师")
         output = call_deepseek(prompt, system_prompt, temperature=0.7)
 
@@ -230,9 +251,9 @@ class NovelWritingPipeline:
             print(f"   ✅ 世界观设定完成")
         return output
 
-    def _character_design_stage(self):
+    def _character_design_stage(self, context):
         """阶段2: 人物塑造"""
-        prompt = f"""请为小说《{self.novel_name}》设计完整的人物设定：
+        prompt = f"""请为小说《{self.novel_name}》设计完整的人物设定！
 
 请包括：
 1. 主角（姓名、外貌、性格、背景、成长弧光、金手指）
@@ -241,9 +262,11 @@ class NovelWritingPipeline:
 4. 反派（至少1-2个反派，要有动机）
 5. 人物关系图谱（主要人物之间的关系）
 
-请详细、结构化地回答。"""
+请详细、结构化地回答！
 
-        system_prompt = "你是一位专业的人物塑造师，擅长设计立体而有魅力的小说人物。"
+{context}"""
+
+        system_prompt = "你是一位专业的人物塑造师，擅长设计立体而有魅力的小说人物！"
         print(f"   🔧 调用技能: 角色塑造师")
         output = call_deepseek(prompt, system_prompt, temperature=0.7)
 
@@ -251,9 +274,9 @@ class NovelWritingPipeline:
             print(f"   ✅ 人物塑造完成")
         return output
 
-    def _plot_outline_stage(self):
+    def _plot_outline_stage(self, context):
         """阶段3: 剧情大纲"""
-        prompt = f"""请为小说《{self.novel_name}》设计完整的剧情大纲：
+        prompt = f"""请为小说《{self.novel_name}》设计完整的剧情大纲！
 
 请包括：
 1. 核心主题和核心冲突
@@ -265,9 +288,11 @@ class NovelWritingPipeline:
 4. 主要爽点设计
 5. 高潮布局
 
-请详细、结构化地回答。"""
+请详细、结构化地回答！
 
-        system_prompt = "你是一位专业的剧情构造师，擅长设计紧凑而有吸引力的小说剧情大纲。"
+{context}"""
+
+        system_prompt = "你是一位专业的剧情构造师，擅长设计紧凑而有吸引力的小说剧情大纲！"
         print(f"   🔧 调用技能: 剧情构造师")
         output = call_deepseek(prompt, system_prompt, temperature=0.7)
 
@@ -275,9 +300,9 @@ class NovelWritingPipeline:
             print(f"   ✅ 剧情大纲完成")
         return output
 
-    def _foreshadowing_stage(self):
+    def _foreshadowing_stage(self, context):
         """阶段4: 伏笔埋设"""
-        prompt = f"""请为小说《{self.novel_name}》设计伏笔埋设计划：
+        prompt = f"""请为小说《{self.novel_name}》设计伏笔埋设计划！
 
 请包括：
 1. 开篇需要埋设的关键伏笔
@@ -286,9 +311,11 @@ class NovelWritingPipeline:
 4. 伏笔埋设技巧和要点
 5. 避免伏笔冲突或遗忘的注意事项
 
-请详细、结构化地回答。"""
+请详细、结构化地回答！
 
-        system_prompt = "你是一位专业的伏笔埋设师，擅长在前文埋设自然而巧妙的伏笔。"
+{context}"""
+
+        system_prompt = "你是一位专业的伏笔埋设师，擅长在前文埋设自然而巧妙的伏笔！"
         print(f"   🔧 调用技能: 伏笔埋设师")
         output = call_deepseek(prompt, system_prompt, temperature=0.7)
 
@@ -296,9 +323,9 @@ class NovelWritingPipeline:
             print(f"   ✅ 伏笔埋设完成")
         return output
 
-    def _chapter_writing_stage(self):
+    def _chapter_writing_stage(self, context):
         """阶段5: 章节创作（示例）"""
-        prompt = f"""请为小说《{self.novel_name}》创作第1章：
+        prompt = f"""请为小说《{self.novel_name}》创作第1章！
 
 要求：
 1. 开篇即高能，吸引读者
@@ -309,9 +336,11 @@ class NovelWritingPipeline:
 6. 对话要自然
 7. 字数：2000-3000字
 
-请完整创作。"""
+请完整创作！
 
-        system_prompt = "你是一位顶尖的小说作家，擅长写精彩的开篇章节。"
+{context}"""
+
+        system_prompt = "你是一位顶尖的小说作家，擅长写精彩的开篇章节！"
         print(f"   🔧 调用技能: 场景构造师 + 对话设计师")
         output = call_deepseek(prompt, system_prompt, temperature=0.7)
 
@@ -319,9 +348,9 @@ class NovelWritingPipeline:
             print(f"   ✅ 第1章创作完成")
         return output
 
-    def _climax_design_stage(self):
+    def _climax_design_stage(self, context):
         """阶段6: 高潮设计"""
-        prompt = f"""请为小说《{self.novel_name}》优化章节，设计高潮场面：
+        prompt = f"""请为小说《{self.novel_name}》优化章节，设计高潮场面！
 
 要求：
 1. 分析章节中的高潮点是否足够突出
@@ -330,9 +359,11 @@ class NovelWritingPipeline:
 4. 增强爽点
 5. 优化场景描写和对话
 
-请给出优化建议和优化后的章节内容。"""
+请给出优化建议和优化后的章节内容！
 
-        system_prompt = "你是一位专业的高潮设计师和节奏控制师，擅长营造有冲击力的小说高潮。"
+{context}"""
+
+        system_prompt = "你是一位专业的高潮设计师和节奏控制师，擅长营造有冲击力的小说高潮！"
         print(f"   🔧 调用技能: 高潮设计师 + 节奏控制师")
         output = call_deepseek(prompt, system_prompt, temperature=0.7)
 
@@ -340,22 +371,24 @@ class NovelWritingPipeline:
             print(f"   ✅ 高潮设计完成")
         return output
 
-    def _quality_review_stage(self):
+    def _quality_review_stage(self, context):
         """阶段7: 质量审查"""
-        prompt = f"""请对小说《{self.novel_name}》进行质量审查：
+        prompt = f"""请对小说《{self.novel_name}》进行质量审查！
 
 请检查：
 1. 逻辑是否自洽
 2. 人物行为是否符合设定
-3. 情节发展是否合理
+3. 剧情发展是否合理
 4. 伏笔是否合理埋设和回收
 5. 语言质量
 6. 节奏是否得当
 7. 有哪些可以改进的地方
 
-请给出详细的审查意见和修改建议。"""
+请给出详细的审查意见和修改建议！
 
-        system_prompt = "你是一位专业的小说编辑，擅长审查小说质量并提出改进建议。"
+{context}"""
+
+        system_prompt = "你是一位专业的小说编辑，擅长审查小说质量并提出改进建议！"
         print(f"   🔧 调用技能: 质量审查师")
         output = call_deepseek(prompt, system_prompt, temperature=0.7)
 
@@ -363,7 +396,7 @@ class NovelWritingPipeline:
             print(f"   ✅ 质量审查完成")
         return output
 
-    def run_entire_pipeline(self):
+    def run_entire_pipeline(self, auto_mode=False):
         """运行整个写作流水线"""
         self.display_pipeline()
 
@@ -371,27 +404,38 @@ class NovelWritingPipeline:
         print(f"小说: {self.novel_name}")
         print(f"类型: {self.genre}")
 
+        if auto_mode:
+            print(f"模式: 🚀 自动执行模式（各阶段自动依次进行）")
+        else:
+            print(f"模式: 👋 手动确认模式（每个阶段完成后确认）")
+
+        start_time = datetime.now()
+
         for stage in self.pipeline_stages:
             if stage["stage_id"] in self.pipeline_state["stages_completed"]:
                 print(f"\n⏭️ 阶段{stage['stage_id']}已完成，跳过")
                 continue
 
-            success = self.execute_stage(stage["stage_id"])
+            success = self.execute_stage(stage["stage_id"], auto_mode)
 
             if not success:
                 print(f"\n❌ 阶段{stage['stage_id']}执行失败，流水线暂停")
                 break
 
-            if stage["stage_id"] < len(self.pipeline_stages):
+            if not auto_mode and stage["stage_id"] < len(self.pipeline_stages):
                 choice = input(f"\n是否继续下一阶段？(Y/n): ").strip().lower()
                 if choice == "n":
                     print(f"\n⏸️ 流水线暂停，下次运行可继续")
                     break
 
+        end_time = datetime.now()
+        duration = (end_time - start_time).total_seconds() / 60
+
         print(f"\n" + "="*60)
         print("🎉 小说写作流水线执行完成！")
         print("="*60)
         print(f"完成的阶段: {len(self.pipeline_state['stages_completed'])}/{len(self.pipeline_stages)}")
+        print(f"总耗时: {duration:.1f}分钟")
         print(f"输出目录: {self.pipeline_dir}")
 
     def continue_from_stage(self, stage_id):
@@ -408,9 +452,13 @@ class NovelWritingPipeline:
 
 def main():
     print("="*60)
-    print("📋 NWACS V8.0 Skill协作编排系统")
+    print("📋 NWACS V8.0 Skill协作编排系统 - 自动执行模式")
     print("="*60)
-    print("\n本系统实现小说写作流水线，让多个Skill有序协作！")
+    print("\n【核心功能】")
+    print("  ✅ 7阶段完整写作流程")
+    print("  ✅ Skill之间有序自动协作")
+    print("  ✅ 自动模式：开始后各阶段自动依次运行")
+    print("  ✅ 前阶段输出作为后阶段输入")
     print("="*60)
 
     novel_name = input("\n请输入小说名称: ").strip()
@@ -430,7 +478,9 @@ def main():
     pipeline = NovelWritingPipeline(novel_name, genre)
 
     # 检查是否有已存在的流水线
-    if pipeline.load_pipeline():
+    existing_pipeline = pipeline.load_pipeline()
+
+    if existing_pipeline:
         print("\n检测到已存在的写作进度！")
         print(f"当前阶段: {pipeline.pipeline_state['current_stage']}")
         print(f"已完成: {len(pipeline.pipeline_state['stages_completed'])} 阶段")
@@ -442,23 +492,34 @@ def main():
 
     pipeline.display_pipeline()
 
-    print("\n请选择:")
-    print("   1. 运行完整写作流水线（推荐）")
+    print("\n请选择执行模式:")
+    print("   A. 🚀 自动执行模式（推荐）")
+    print("      - 开始后各阶段自动依次运行")
+    print("      - 无需每个阶段手动确认")
+    print("   M. 👋 手动确认模式")
+    print("      - 每个阶段完成后确认")
+    mode_choice = input("\n请选择 (A/M，默认=A): ").strip().upper()
+
+    auto_mode = (mode_choice != "M")
+
+    print("\n请选择操作:")
+    print("   1. 运行完整写作流水线")
     print("   2. 从指定阶段继续")
     print("   3. 查看已有阶段输出")
     choice = input("\n请选择 (1/2/3): ").strip()
 
     if choice == "1":
-        pipeline.run_entire_pipeline()
+        pipeline.run_entire_pipeline(auto_mode)
     elif choice == "2":
         stage_id = int(input("\n请输入要从第几阶段开始: ").strip())
         pipeline.continue_from_stage(stage_id)
-        pipeline.run_entire_pipeline()
+        pipeline.run_entire_pipeline(auto_mode)
     elif choice == "3":
         print("\n📁 阶段输出文件:")
         for stage_id in pipeline.pipeline_state["stages_completed"]:
-            output_file = pipeline.pipeline_state["stage_outputs"][str(stage_id)]["output_file"]
-            print(f"   阶段{stage_id}: {output_file}")
+            stage_info = pipeline.pipeline_state["stage_outputs"].get(str(stage_id))
+            if stage_info:
+                print(f"   阶段{stage_id}: {stage_info['output_file']}")
     else:
         print("\n无效选项")
 
