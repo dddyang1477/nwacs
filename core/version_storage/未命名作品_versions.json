@@ -1,0 +1,47 @@
+{
+  "novel_title": "未命名作品",
+  "current_branch": "main",
+  "branches": {
+    "main": "01c51609-bfc"
+  },
+  "updated_at": "2026-05-05T14:49:35.285261",
+  "total_snapshots": 3,
+  "snapshots": [
+    {
+      "snapshot_id": "95b14e60-c9f",
+      "chapter": 1,
+      "content": "测试内容",
+      "word_count": 4,
+      "snapshot_type": "手动保存",
+      "timestamp": "2026-05-05T14:39:20.901013",
+      "message": "",
+      "tags": [],
+      "parent_snapshot": "",
+      "branch_name": "main"
+    },
+    {
+      "snapshot_id": "cd1edbb0-3a7",
+      "chapter": 1,
+      "content": "测试内容",
+      "word_count": 4,
+      "snapshot_type": "手动保存",
+      "timestamp": "2026-05-05T14:46:40.304683",
+      "message": "",
+      "tags": [],
+      "parent_snapshot": "95b14e60-c9f",
+      "branch_name": "main"
+    },
+    {
+      "snapshot_id": "01c51609-bfc",
+      "chapter": 1,
+      "content": "测试内容",
+      "word_count": 4,
+      "snapshot_type": "手动保存",
+      "timestamp": "2026-05-05T14:49:35.285250",
+      "message": "",
+      "tags": [],
+      "parent_snapshot": "cd1edbb0-3a7",
+      "branch_name": "main"
+    }
+  ]
+}

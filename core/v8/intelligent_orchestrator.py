@@ -96,6 +96,11 @@ class IntelligentOrchestrator:
             ("learning_engine", "自学习进化引擎", []),
             ("pipeline", "写作协作流水线", ["novel_memory", "engine", "plotter", "detector"]),
             ("skill_manager", "Skill管理器", ["engine"]),
+            ("lorebook", "触发式设定注入系统(Lorebook)", []),
+            ("story_bible", "集中式创作圣经(Story Bible)", []),
+            ("style_manager", "AI风格模块化切换系统", []),
+            ("version_manager", "版本管理与历史回溯", []),
+            ("platform_exporter", "多平台格式化导出", ["novel_memory"]),
         ]
 
         for name, desc, deps in builtins:
@@ -184,6 +189,26 @@ class IntelligentOrchestrator:
                 manager.set_engine(engine)
             return manager
 
+        elif name == "lorebook":
+            from lorebook import Lorebook
+            return Lorebook()
+
+        elif name == "story_bible":
+            from story_bible import StoryBible
+            return StoryBible()
+
+        elif name == "style_manager":
+            from style_module_manager import StyleModuleManager
+            return StyleModuleManager()
+
+        elif name == "version_manager":
+            from version_manager import VersionManager
+            return VersionManager()
+
+        elif name == "platform_exporter":
+            from platform_exporter import PlatformExporter
+            return PlatformExporter()
+
         return None
 
     def _get_instance(self, name: str):
@@ -232,6 +257,36 @@ class IntelligentOrchestrator:
 
             elif command == "create_character":
                 result = self._cmd_create_character(**kwargs)
+
+            elif command == "lorebook_trigger":
+                result = self._cmd_lorebook_trigger(**kwargs)
+
+            elif command == "lorebook_add_entry":
+                result = self._cmd_lorebook_add_entry(**kwargs)
+
+            elif command == "bible_add_entry":
+                result = self._cmd_bible_add_entry(**kwargs)
+
+            elif command == "bible_check_consistency":
+                result = self._cmd_bible_check_consistency()
+
+            elif command == "style_activate":
+                result = self._cmd_style_activate(**kwargs)
+
+            elif command == "style_list":
+                result = self._cmd_style_list()
+
+            elif command == "version_snapshot":
+                result = self._cmd_version_snapshot(**kwargs)
+
+            elif command == "version_diff":
+                result = self._cmd_version_diff(**kwargs)
+
+            elif command == "version_rollback":
+                result = self._cmd_version_rollback(**kwargs)
+
+            elif command == "export_platform":
+                result = self._cmd_export_platform(**kwargs)
 
             else:
                 result["error"] = f"未知命令: {command}"
@@ -464,6 +519,207 @@ class IntelligentOrchestrator:
             )
 
         return {"success": True, "data": char_data}
+
+    def _cmd_lorebook_trigger(self, **kwargs) -> Dict:
+        self.load_module("lorebook")
+        lorebook = self._get_instance("lorebook")
+        if not lorebook:
+            return {"success": False, "error": "Lorebook模块未加载"}
+
+        text = kwargs.get("text", "")
+        chapter = kwargs.get("chapter", 0)
+        triggered = lorebook.trigger(text, chapter)
+        context = lorebook.build_context(text, chapter)
+
+        return {
+            "success": True,
+            "data": {
+                "triggered_count": len(triggered),
+                "entries": [
+                    {"name": e.name, "category": e.category.value, "priority": e.priority.label}
+                    for e in triggered
+                ],
+                "context": context,
+            },
+        }
+
+    def _cmd_lorebook_add_entry(self, **kwargs) -> Dict:
+        self.load_module("lorebook")
+        lorebook = self._get_instance("lorebook")
+        if not lorebook:
+            return {"success": False, "error": "Lorebook模块未加载"}
+
+        from lorebook import LorebookEntry, EntryCategory, EntryPriority
+
+        cat_map = {c.value: c for c in EntryCategory}
+        pri_map = {p.weight: p for p in EntryPriority}
+
+        entry = LorebookEntry(
+            entry_id="",
+            name=kwargs.get("name", ""),
+            category=cat_map.get(kwargs.get("category", "自定义"), EntryCategory.CUSTOM),
+            content=kwargs.get("content", ""),
+            trigger_keywords=kwargs.get("keywords", []),
+            priority=pri_map.get(kwargs.get("priority", 3), EntryPriority.MEDIUM),
+        )
+        eid = lorebook.add_entry(entry)
+        return {"success": True, "data": {"entry_id": eid}}
+
+    def _cmd_bible_add_entry(self, **kwargs) -> Dict:
+        self.load_module("story_bible")
+        bible = self._get_instance("story_bible")
+        if not bible:
+            return {"success": False, "error": "StoryBible模块未加载"}
+
+        from story_bible import BibleEntry, BibleSection
+
+        sec_map = {s.value: s for s in BibleSection}
+        entry = BibleEntry(
+            entry_id="",
+            section=sec_map.get(kwargs.get("section", "研究资料"), BibleSection.RESEARCH),
+            title=kwargs.get("title", ""),
+            content=kwargs.get("content", ""),
+            tags=kwargs.get("tags", []),
+        )
+        eid = bible.add_entry(entry)
+        return {"success": True, "data": {"entry_id": eid}}
+
+    def _cmd_bible_check_consistency(self) -> Dict:
+        self.load_module("story_bible")
+        bible = self._get_instance("story_bible")
+        if not bible:
+            return {"success": False, "error": "StoryBible模块未加载"}
+
+        issues = bible.check_consistency()
+        return {
+            "success": True,
+            "data": {
+                "issue_count": len(issues),
+                "issues": [
+                    {"entry_a": i.entry_a, "entry_b": i.entry_b,
+                     "field": i.field, "severity": i.severity,
+                     "description": i.description}
+                    for i in issues
+                ],
+            },
+        }
+
+    def _cmd_style_activate(self, **kwargs) -> Dict:
+        self.load_module("style_manager")
+        style_mgr = self._get_instance("style_manager")
+        if not style_mgr:
+            return {"success": False, "error": "风格模块未加载"}
+
+        module_id = kwargs.get("module_id", "")
+        if module_id:
+            ok = style_mgr.activate(module_id)
+            if not ok:
+                return {"success": False, "error": f"风格模块不存在: {module_id}"}
+
+        active = style_mgr.active_module
+        return {
+            "success": True,
+            "data": {
+                "active_style": active.name if active else "无",
+                "rules": style_mgr.get_active_rules(),
+                "prompt": style_mgr.get_active_prompt()[:200],
+            },
+        }
+
+    def _cmd_style_list(self) -> Dict:
+        self.load_module("style_manager")
+        style_mgr = self._get_instance("style_manager")
+        if not style_mgr:
+            return {"success": False, "error": "风格模块未加载"}
+
+        modules = style_mgr.list_modules()
+        return {
+            "success": True,
+            "data": [
+                {"id": m.module_id, "name": m.name, "category": m.category.label,
+                 "description": m.description}
+                for m in modules
+            ],
+        }
+
+    def _cmd_version_snapshot(self, **kwargs) -> Dict:
+        self.load_module("version_manager")
+        ver_mgr = self._get_instance("version_manager")
+        if not ver_mgr:
+            return {"success": False, "error": "版本管理模块未加载"}
+
+        from version_manager import SnapshotType
+        snap_id = ver_mgr.create_snapshot(
+            chapter=kwargs.get("chapter", 1),
+            content=kwargs.get("content", ""),
+            snapshot_type=SnapshotType.MANUAL,
+            message=kwargs.get("message", ""),
+        )
+        return {"success": True, "data": {"snapshot_id": snap_id}}
+
+    def _cmd_version_diff(self, **kwargs) -> Dict:
+        self.load_module("version_manager")
+        ver_mgr = self._get_instance("version_manager")
+        if not ver_mgr:
+            return {"success": False, "error": "版本管理模块未加载"}
+
+        diff = ver_mgr.diff(kwargs.get("snap_a", ""), kwargs.get("snap_b", ""))
+        if not diff:
+            return {"success": False, "error": "版本对比失败"}
+
+        return {
+            "success": True,
+            "data": {
+                "added": diff.added_lines,
+                "removed": diff.removed_lines,
+                "modified": diff.modified_lines,
+                "total_changes": diff.total_changes,
+                "change_ratio": diff.change_ratio,
+            },
+        }
+
+    def _cmd_version_rollback(self, **kwargs) -> Dict:
+        self.load_module("version_manager")
+        ver_mgr = self._get_instance("version_manager")
+        if not ver_mgr:
+            return {"success": False, "error": "版本管理模块未加载"}
+
+        new_id = ver_mgr.rollback(kwargs.get("snapshot_id", ""))
+        if not new_id:
+            return {"success": False, "error": "回滚失败"}
+
+        return {"success": True, "data": {"new_snapshot_id": new_id}}
+
+    def _cmd_export_platform(self, **kwargs) -> Dict:
+        self.load_module("platform_exporter")
+        exporter = self._get_instance("platform_exporter")
+        if not exporter:
+            return {"success": False, "error": "导出模块未加载"}
+
+        from platform_exporter import NovelMeta, ChapterData, ExportPlatform
+
+        plat_map = {p.label: p for p in ExportPlatform}
+        platform = plat_map.get(kwargs.get("platform", "通用TXT"), ExportPlatform.TXT)
+
+        chapters = []
+        for ch_data in kwargs.get("chapters", []):
+            chapters.append(ChapterData(
+                chapter_num=ch_data.get("num", 1),
+                title=ch_data.get("title", ""),
+                content=ch_data.get("content", ""),
+                word_count=ch_data.get("words", 0),
+            ))
+
+        meta = NovelMeta(
+            title=kwargs.get("title", "未命名作品"),
+            author=kwargs.get("author", "未知作者"),
+            genre=kwargs.get("genre", "其他"),
+            synopsis=kwargs.get("synopsis", ""),
+            tags=kwargs.get("tags", []),
+        )
+
+        path = exporter.export(meta, chapters, platform)
+        return {"success": True, "data": {"output_path": path}}
 
     def get_module_status(self) -> Dict[str, Dict]:
         """获取所有模块状态"""
