@@ -17,7 +17,10 @@ from typing import Dict, Any, Optional
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from urllib.parse import urlparse, parse_qs
 
-sys.stdout.reconfigure(encoding='utf-8')
+try:
+    sys.stdout.reconfigure(encoding='utf-8')
+except (AttributeError, OSError):
+    pass
 
 class APIResponse:
     """API响应"""

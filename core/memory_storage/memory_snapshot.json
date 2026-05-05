@@ -1,0 +1,290 @@
+{
+  "session_id": "20260505_041403",
+  "stats": {
+    "total_adds": 14,
+    "total_retrievals": 0,
+    "total_deletes": 0
+  },
+  "stores": {
+    "conversation": {
+      "store_type": "conversation",
+      "entries": {},
+      "tag_index": {}
+    },
+    "character": {
+      "store_type": "character",
+      "entries": {
+        "b96c0bf25cc7": {
+          "entry_id": "b96c0bf25cc7",
+          "memory_type": "character",
+          "content": "叶青云 - 主角，青云宗外门弟子",
+          "tags": [
+            "主角",
+            "青云宗"
+          ],
+          "metadata": {},
+          "created_at": "2026-05-05T04:14:03.881750",
+          "updated_at": "2026-05-05T04:14:03.881750",
+          "access_count": 0,
+          "importance": 5
+        },
+        "1dd631200069": {
+          "entry_id": "1dd631200069",
+          "memory_type": "character",
+          "content": "苏婉儿 - 女主，神秘身份",
+          "tags": [
+            "女主",
+            "神秘"
+          ],
+          "metadata": {},
+          "created_at": "2026-05-05T04:14:03.881787",
+          "updated_at": "2026-05-05T04:14:03.881787",
+          "access_count": 0,
+          "importance": 8
+        },
+        "04f1211b5e4e": {
+          "entry_id": "04f1211b5e4e",
+          "memory_type": "character",
+          "content": "叶青云 - 主角，青云宗外门弟子",
+          "tags": [
+            "主角",
+            "青云宗"
+          ],
+          "metadata": {},
+          "created_at": "2026-05-05T04:15:09.158564",
+          "updated_at": "2026-05-05T04:15:09.158564",
+          "access_count": 0,
+          "importance": 5
+        },
+        "6d958def6b12": {
+          "entry_id": "6d958def6b12",
+          "memory_type": "character",
+          "content": "苏婉儿 - 女主，神秘身份",
+          "tags": [
+            "女主",
+            "神秘"
+          ],
+          "metadata": {},
+          "created_at": "2026-05-05T04:15:09.158597",
+          "updated_at": "2026-05-05T04:15:09.158597",
+          "access_count": 0,
+          "importance": 8
+        }
+      },
+      "tag_index": {
+        "主角": [
+          "b96c0bf25cc7",
+          "04f1211b5e4e"
+        ],
+        "青云宗": [
+          "b96c0bf25cc7",
+          "04f1211b5e4e"
+        ],
+        "女主": [
+          "1dd631200069",
+          "6d958def6b12"
+        ],
+        "神秘": [
+          "1dd631200069",
+          "6d958def6b12"
+        ]
+      }
+    },
+    "plot": {
+      "store_type": "plot",
+      "entries": {
+        "038bc9c024ea": {
+          "entry_id": "038bc9c024ea",
+          "memory_type": "plot",
+          "content": "第1章：叶青云在宗门测试中觉醒废灵根",
+          "tags": [
+            "第1章",
+            "觉醒"
+          ],
+          "metadata": {},
+          "created_at": "2026-05-05T04:14:03.882093",
+          "updated_at": "2026-05-05T04:14:03.882093",
+          "access_count": 0,
+          "importance": 5
+        },
+        "ca07f26bae64": {
+          "entry_id": "ca07f26bae64",
+          "memory_type": "plot",
+          "content": "第5章：叶青云意外获得神秘玉佩",
+          "tags": [
+            "第5章",
+            "奇遇"
+          ],
+          "metadata": {},
+          "created_at": "2026-05-05T04:14:03.882124",
+          "updated_at": "2026-05-05T04:14:03.882124",
+          "access_count": 0,
+          "importance": 9
+        },
+        "480ee3190697": {
+          "entry_id": "480ee3190697",
+          "memory_type": "plot",
+          "content": "第1章：叶青云在宗门测试中觉醒废灵根",
+          "tags": [
+            "第1章",
+            "觉醒"
+          ],
+          "metadata": {},
+          "created_at": "2026-05-05T04:15:09.158899",
+          "updated_at": "2026-05-05T04:15:09.158899",
+          "access_count": 0,
+          "importance": 5
+        },
+        "edc9f1356a0c": {
+          "entry_id": "edc9f1356a0c",
+          "memory_type": "plot",
+          "content": "第5章：叶青云意外获得神秘玉佩",
+          "tags": [
+            "第5章",
+            "奇遇"
+          ],
+          "metadata": {},
+          "created_at": "2026-05-05T04:15:09.158931",
+          "updated_at": "2026-05-05T04:15:09.158931",
+          "access_count": 0,
+          "importance": 9
+        }
+      },
+      "tag_index": {
+        "第1章": [
+          "038bc9c024ea",
+          "480ee3190697"
+        ],
+        "觉醒": [
+          "038bc9c024ea",
+          "480ee3190697"
+        ],
+        "第5章": [
+          "ca07f26bae64",
+          "edc9f1356a0c"
+        ],
+        "奇遇": [
+          "ca07f26bae64",
+          "edc9f1356a0c"
+        ]
+      }
+    },
+    "world": {
+      "store_type": "world",
+      "entries": {
+        "e974e6d69254": {
+          "entry_id": "e974e6d69254",
+          "memory_type": "world",
+          "content": "青云宗位于青云山脉，有九座主峰",
+          "tags": [
+            "宗门",
+            "地理"
+          ],
+          "metadata": {},
+          "created_at": "2026-05-05T04:14:03.882403",
+          "updated_at": "2026-05-05T04:14:03.882403",
+          "access_count": 0,
+          "importance": 5
+        },
+        "27223dd16b88": {
+          "entry_id": "27223dd16b88",
+          "memory_type": "world",
+          "content": "修炼境界：炼气→筑基→金丹→元婴→化神",
+          "tags": [
+            "修炼",
+            "境界"
+          ],
+          "metadata": {},
+          "created_at": "2026-05-05T04:14:03.882427",
+          "updated_at": "2026-05-05T04:14:03.882427",
+          "access_count": 0,
+          "importance": 5
+        },
+        "d5b56dd7de57": {
+          "entry_id": "d5b56dd7de57",
+          "memory_type": "world",
+          "content": "青云宗位于青云山脉，有九座主峰",
+          "tags": [
+            "宗门",
+            "地理"
+          ],
+          "metadata": {},
+          "created_at": "2026-05-05T04:15:09.159201",
+          "updated_at": "2026-05-05T04:15:09.159201",
+          "access_count": 0,
+          "importance": 5
+        },
+        "eac4342177ca": {
+          "entry_id": "eac4342177ca",
+          "memory_type": "world",
+          "content": "修炼境界：炼气→筑基→金丹→元婴→化神",
+          "tags": [
+            "修炼",
+            "境界"
+          ],
+          "metadata": {},
+          "created_at": "2026-05-05T04:15:09.159221",
+          "updated_at": "2026-05-05T04:15:09.159221",
+          "access_count": 0,
+          "importance": 5
+        }
+      },
+      "tag_index": {
+        "宗门": [
+          "e974e6d69254",
+          "d5b56dd7de57"
+        ],
+        "地理": [
+          "e974e6d69254",
+          "d5b56dd7de57"
+        ],
+        "修炼": [
+          "27223dd16b88",
+          "eac4342177ca"
+        ],
+        "境界": [
+          "27223dd16b88",
+          "eac4342177ca"
+        ]
+      }
+    },
+    "knowledge": {
+      "store_type": "knowledge",
+      "entries": {
+        "f33c5741d5c5": {
+          "entry_id": "f33c5741d5c5",
+          "memory_type": "knowledge",
+          "content": "黄金三章：前三章必须完成世界观展示+冲突建立+悬念设置",
+          "tags": [
+            "写作技巧"
+          ],
+          "metadata": {},
+          "created_at": "2026-05-05T04:14:03.882733",
+          "updated_at": "2026-05-05T04:14:03.882733",
+          "access_count": 0,
+          "importance": 5
+        },
+        "6fd57d21c349": {
+          "entry_id": "6fd57d21c349",
+          "memory_type": "knowledge",
+          "content": "黄金三章：前三章必须完成世界观展示+冲突建立+悬念设置",
+          "tags": [
+            "写作技巧"
+          ],
+          "metadata": {},
+          "created_at": "2026-05-05T04:15:09.159519",
+          "updated_at": "2026-05-05T04:15:09.159519",
+          "access_count": 0,
+          "importance": 5
+        }
+      },
+      "tag_index": {
+        "写作技巧": [
+          "f33c5741d5c5",
+          "6fd57d21c349"
+        ]
+      }
+    }
+  },
+  "saved_at": "2026-05-05T04:15:09.161069"
+}

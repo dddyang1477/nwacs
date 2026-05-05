@@ -8,7 +8,10 @@
 import sys
 import os
 from datetime import datetime
-sys.stdout.reconfigure(encoding='utf-8')
+try:
+    sys.stdout.reconfigure(encoding='utf-8')
+except (AttributeError, OSError):
+    pass
 
 # 简化版参数 - 适合开局检测
 MIN_WORDS = 300  # 开局300字足够

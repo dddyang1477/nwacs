@@ -1,0 +1,1440 @@
+{
+  "novel_title": "测试仙侠",
+  "total_words_processed": 1926,
+  "fs_counter": 17,
+  "issue_counter": 23,
+  "characters": {
+    "叶青云": {
+      "name": "叶青云",
+      "aliases": [],
+      "role": "主角",
+      "gender": "男",
+      "age": 18,
+      "appearance": {
+        "眼睛": "黑色",
+        "头发": "黑色"
+      },
+      "personality": [
+        "坚毅",
+        "果敢",
+        "重情义"
+      ],
+      "abilities": [
+        {
+          "name": "修为",
+          "type": "cultivation",
+          "level": "筑基"
+        }
+      ],
+      "catchphrases": [],
+      "speech_style": {},
+      "relationships": {},
+      "first_appearance_chapter": 1,
+      "last_appearance_chapter": 0,
+      "status": "存活",
+      "notes": ""
+    },
+    "苏婉儿": {
+      "name": "苏婉儿",
+      "aliases": [],
+      "role": "女主",
+      "gender": "女",
+      "age": 17,
+      "appearance": {},
+      "personality": [
+        "神秘",
+        "温柔",
+        "聪慧"
+      ],
+      "abilities": [],
+      "catchphrases": [],
+      "speech_style": {},
+      "relationships": {},
+      "first_appearance_chapter": 1,
+      "last_appearance_chapter": 0,
+      "status": "存活",
+      "notes": ""
+    },
+    "叶玄逸飞": {
+      "name": "叶玄逸飞",
+      "aliases": [],
+      "role": "主角",
+      "gender": "男",
+      "age": 0,
+      "appearance": {},
+      "personality": [],
+      "abilities": [],
+      "catchphrases": [],
+      "speech_style": {},
+      "relationships": {},
+      "first_appearance_chapter": 1,
+      "last_appearance_chapter": 0,
+      "status": "存活",
+      "notes": ""
+    },
+    "叶清明哲": {
+      "name": "叶清明哲",
+      "aliases": [],
+      "role": "主角",
+      "gender": "男",
+      "age": 0,
+      "appearance": {},
+      "personality": [],
+      "abilities": [],
+      "catchphrases": [],
+      "speech_style": {},
+      "relationships": {},
+      "first_appearance_chapter": 1,
+      "last_appearance_chapter": 0,
+      "status": "存活",
+      "notes": ""
+    },
+    "叶正镔": {
+      "name": "叶正镔",
+      "aliases": [],
+      "role": "主角",
+      "gender": "男",
+      "age": 0,
+      "appearance": {},
+      "personality": [],
+      "abilities": [],
+      "catchphrases": [],
+      "speech_style": {},
+      "relationships": {},
+      "first_appearance_chapter": 1,
+      "last_appearance_chapter": 0,
+      "status": "存活",
+      "notes": ""
+    },
+    "叶正锡鑫": {
+      "name": "叶正锡鑫",
+      "aliases": [],
+      "role": "主角",
+      "gender": "男",
+      "age": 0,
+      "appearance": {},
+      "personality": [],
+      "abilities": [],
+      "catchphrases": [],
+      "speech_style": {},
+      "relationships": {},
+      "first_appearance_chapter": 1,
+      "last_appearance_chapter": 0,
+      "status": "存活",
+      "notes": ""
+    },
+    "叶云清源": {
+      "name": "叶云清源",
+      "aliases": [],
+      "role": "主角",
+      "gender": "男",
+      "age": 0,
+      "appearance": {},
+      "personality": [],
+      "abilities": [],
+      "catchphrases": [],
+      "speech_style": {},
+      "relationships": {},
+      "first_appearance_chapter": 1,
+      "last_appearance_chapter": 0,
+      "status": "存活",
+      "notes": ""
+    }
+  },
+  "foreshadowings": {
+    "FS_0001": {
+      "fs_id": "FS_0001",
+      "description": "苏婉儿的真实身份是魔教圣女",
+      "planted_chapter": 1,
+      "expected_payoff_chapter": 50,
+      "actual_payoff_chapter": null,
+      "status": "已埋设",
+      "type": "identity",
+      "importance": 9,
+      "related_characters": [
+        "苏婉儿"
+      ],
+      "tags": [],
+      "created_at": "2026-05-05T04:24:01.728746",
+      "resolved_at": ""
+    },
+    "FS_0002": {
+      "fs_id": "FS_0002",
+      "description": "叶青云的玉佩蕴含上古传承",
+      "planted_chapter": 3,
+      "expected_payoff_chapter": 30,
+      "actual_payoff_chapter": 30,
+      "status": "已回收",
+      "type": "power_up",
+      "importance": 8,
+      "related_characters": [
+        "叶青云"
+      ],
+      "tags": [],
+      "created_at": "2026-05-05T04:24:01.728784",
+      "resolved_at": "2026-05-05T12:27:10.163552"
+    },
+    "FS_0003": {
+      "fs_id": "FS_0003",
+      "description": "苏婉儿的真实身份是魔教圣女",
+      "planted_chapter": 1,
+      "expected_payoff_chapter": 50,
+      "actual_payoff_chapter": null,
+      "status": "已埋设",
+      "type": "identity",
+      "importance": 9,
+      "related_characters": [
+        "苏婉儿"
+      ],
+      "tags": [],
+      "created_at": "2026-05-05T04:35:46.628513",
+      "resolved_at": ""
+    },
+    "FS_0004": {
+      "fs_id": "FS_0004",
+      "description": "叶青云的玉佩蕴含上古传承",
+      "planted_chapter": 3,
+      "expected_payoff_chapter": 30,
+      "actual_payoff_chapter": null,
+      "status": "已埋设",
+      "type": "power_up",
+      "importance": 8,
+      "related_characters": [
+        "叶青云"
+      ],
+      "tags": [],
+      "created_at": "2026-05-05T04:35:46.628528",
+      "resolved_at": ""
+    },
+    "FS_0005": {
+      "fs_id": "FS_0005",
+      "description": "青云宗内隐藏着叛徒",
+      "planted_chapter": 5,
+      "expected_payoff_chapter": 40,
+      "actual_payoff_chapter": null,
+      "status": "已埋设",
+      "type": "plot",
+      "importance": 7,
+      "related_characters": [],
+      "tags": [],
+      "created_at": "2026-05-05T04:35:46.628536",
+      "resolved_at": ""
+    },
+    "FS_0006": {
+      "fs_id": "FS_0006",
+      "description": "苏婉儿的真实身份是魔教圣女",
+      "planted_chapter": 1,
+      "expected_payoff_chapter": 50,
+      "actual_payoff_chapter": null,
+      "status": "已埋设",
+      "type": "identity",
+      "importance": 9,
+      "related_characters": [
+        "苏婉儿"
+      ],
+      "tags": [],
+      "created_at": "2026-05-05T04:36:53.871252",
+      "resolved_at": ""
+    },
+    "FS_0007": {
+      "fs_id": "FS_0007",
+      "description": "叶青云的玉佩蕴含上古传承",
+      "planted_chapter": 3,
+      "expected_payoff_chapter": 30,
+      "actual_payoff_chapter": null,
+      "status": "已埋设",
+      "type": "power_up",
+      "importance": 8,
+      "related_characters": [
+        "叶青云"
+      ],
+      "tags": [],
+      "created_at": "2026-05-05T04:36:53.871274",
+      "resolved_at": ""
+    },
+    "FS_0008": {
+      "fs_id": "FS_0008",
+      "description": "青云宗内隐藏着叛徒",
+      "planted_chapter": 5,
+      "expected_payoff_chapter": 40,
+      "actual_payoff_chapter": null,
+      "status": "已埋设",
+      "type": "plot",
+      "importance": 7,
+      "related_characters": [],
+      "tags": [],
+      "created_at": "2026-05-05T04:36:53.871284",
+      "resolved_at": ""
+    },
+    "FS_0009": {
+      "fs_id": "FS_0009",
+      "description": "苏婉儿的真实身份是魔教圣女",
+      "planted_chapter": 1,
+      "expected_payoff_chapter": 50,
+      "actual_payoff_chapter": null,
+      "status": "已埋设",
+      "type": "identity",
+      "importance": 9,
+      "related_characters": [
+        "苏婉儿"
+      ],
+      "tags": [],
+      "created_at": "2026-05-05T04:42:06.868344",
+      "resolved_at": ""
+    },
+    "FS_0010": {
+      "fs_id": "FS_0010",
+      "description": "叶青云的玉佩蕴含上古传承",
+      "planted_chapter": 3,
+      "expected_payoff_chapter": 30,
+      "actual_payoff_chapter": null,
+      "status": "已埋设",
+      "type": "power_up",
+      "importance": 8,
+      "related_characters": [
+        "叶青云"
+      ],
+      "tags": [],
+      "created_at": "2026-05-05T04:42:06.868364",
+      "resolved_at": ""
+    },
+    "FS_0011": {
+      "fs_id": "FS_0011",
+      "description": "青云宗内隐藏着叛徒",
+      "planted_chapter": 5,
+      "expected_payoff_chapter": 40,
+      "actual_payoff_chapter": null,
+      "status": "已埋设",
+      "type": "plot",
+      "importance": 7,
+      "related_characters": [],
+      "tags": [],
+      "created_at": "2026-05-05T04:42:06.868373",
+      "resolved_at": ""
+    },
+    "FS_0012": {
+      "fs_id": "FS_0012",
+      "description": "苏婉儿的真实身份是魔教圣女",
+      "planted_chapter": 1,
+      "expected_payoff_chapter": 50,
+      "actual_payoff_chapter": null,
+      "status": "已埋设",
+      "type": "identity",
+      "importance": 9,
+      "related_characters": [
+        "苏婉儿"
+      ],
+      "tags": [],
+      "created_at": "2026-05-05T12:25:48.361229",
+      "resolved_at": ""
+    },
+    "FS_0013": {
+      "fs_id": "FS_0013",
+      "description": "叶青云的玉佩蕴含上古传承",
+      "planted_chapter": 3,
+      "expected_payoff_chapter": 30,
+      "actual_payoff_chapter": null,
+      "status": "已埋设",
+      "type": "power_up",
+      "importance": 8,
+      "related_characters": [
+        "叶青云"
+      ],
+      "tags": [],
+      "created_at": "2026-05-05T12:25:48.361244",
+      "resolved_at": ""
+    },
+    "FS_0014": {
+      "fs_id": "FS_0014",
+      "description": "青云宗内隐藏着叛徒",
+      "planted_chapter": 5,
+      "expected_payoff_chapter": 40,
+      "actual_payoff_chapter": null,
+      "status": "已埋设",
+      "type": "plot",
+      "importance": 7,
+      "related_characters": [],
+      "tags": [],
+      "created_at": "2026-05-05T12:25:48.361250",
+      "resolved_at": ""
+    },
+    "FS_0015": {
+      "fs_id": "FS_0015",
+      "description": "苏婉儿的真实身份是魔教圣女",
+      "planted_chapter": 1,
+      "expected_payoff_chapter": 50,
+      "actual_payoff_chapter": null,
+      "status": "已埋设",
+      "type": "identity",
+      "importance": 9,
+      "related_characters": [
+        "苏婉儿"
+      ],
+      "tags": [],
+      "created_at": "2026-05-05T12:27:10.163520",
+      "resolved_at": ""
+    },
+    "FS_0016": {
+      "fs_id": "FS_0016",
+      "description": "叶青云的玉佩蕴含上古传承",
+      "planted_chapter": 3,
+      "expected_payoff_chapter": 30,
+      "actual_payoff_chapter": null,
+      "status": "已埋设",
+      "type": "power_up",
+      "importance": 8,
+      "related_characters": [
+        "叶青云"
+      ],
+      "tags": [],
+      "created_at": "2026-05-05T12:27:10.163533",
+      "resolved_at": ""
+    },
+    "FS_0017": {
+      "fs_id": "FS_0017",
+      "description": "青云宗内隐藏着叛徒",
+      "planted_chapter": 5,
+      "expected_payoff_chapter": 40,
+      "actual_payoff_chapter": null,
+      "status": "已埋设",
+      "type": "plot",
+      "importance": 7,
+      "related_characters": [],
+      "tags": [],
+      "created_at": "2026-05-05T12:27:10.163541",
+      "resolved_at": ""
+    }
+  },
+  "style_fingerprints": {
+    "1": {
+      "chapter": 1,
+      "avg_sentence_length": 22.57,
+      "sentence_length_std": 3.96,
+      "dialogue_ratio": 0.2081,
+      "description_ratio": 0.1429,
+      "action_ratio": 0.1429,
+      "inner_thought_ratio": 0.1429,
+      "paragraph_count": 6,
+      "avg_paragraph_length": 27.67,
+      "top_words": [
+        [
+          "叶青云站",
+          1
+        ],
+        [
+          "在青云宗",
+          1
+        ],
+        [
+          "山门前",
+          1
+        ],
+        [
+          "望着巍峨",
+          1
+        ],
+        [
+          "的九座主",
+          1
+        ],
+        [
+          "心中豪情",
+          1
+        ],
+        [
+          "万丈",
+          1
+        ],
+        [
+          "从今天起",
+          1
+        ],
+        [
+          "我叶青云",
+          1
+        ],
+        [
+          "就是青云",
+          1
+        ],
+        [
+          "宗的弟子",
+          1
+        ],
+        [
+          "他握紧拳",
+          1
+        ],
+        [
+          "眼中闪烁",
+          1
+        ],
+        [
+          "着坚定的",
+          1
+        ],
+        [
+          "光芒",
+          1
+        ],
+        [
+          "身旁的苏",
+          1
+        ],
+        [
+          "婉儿微微",
+          1
+        ],
+        [
+          "一笑",
+          1
+        ],
+        [
+          "叶师兄",
+          1
+        ],
+        [
+          "以后还请",
+          1
+        ]
+      ],
+      "emotional_curve": [
+        0.1429,
+        0.1429,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "unique_word_count": 20,
+      "total_word_count": 173,
+      "computed_at": "2026-05-05T12:27:10.163184"
+    },
+    "2": {
+      "chapter": 2,
+      "avg_sentence_length": 26.8,
+      "sentence_length_std": 3.19,
+      "dialogue_ratio": 0.0,
+      "description_ratio": 0.2,
+      "action_ratio": 0.0,
+      "inner_thought_ratio": 0.6,
+      "paragraph_count": 5,
+      "avg_paragraph_length": 27.8,
+      "top_words": [
+        [
+          "叶青云缓",
+          1
+        ],
+        [
+          "缓地站起",
+          1
+        ],
+        [
+          "宛如一只",
+          1
+        ],
+        [
+          "刚刚破茧",
+          1
+        ],
+        [
+          "而出的蝴",
+          1
+        ],
+        [
+          "心中不禁",
+          1
+        ],
+        [
+          "激动万分",
+          1
+        ],
+        [
+          "仿佛天地",
+          1
+        ],
+        [
+          "都在为他",
+          1
+        ],
+        [
+          "欢呼",
+          1
+        ],
+        [
+          "眼前的景",
+          1
+        ],
+        [
+          "象十分壮",
+          1
+        ],
+        [
+          "格外震撼",
+          1
+        ],
+        [
+          "人心",
+          1
+        ],
+        [
+          "这一切似",
+          1
+        ],
+        [
+          "乎都像是",
+          1
+        ],
+        [
+          "一场梦境",
+          1
+        ],
+        [
+          "渐渐地",
+          1
+        ],
+        [
+          "叶青云才",
+          1
+        ],
+        [
+          "相信这是",
+          1
+        ]
+      ],
+      "emotional_curve": [
+        0.4,
+        0.0,
+        0.2,
+        0.2,
+        0.0,
+        0.0
+      ],
+      "unique_word_count": 15,
+      "total_word_count": 145,
+      "computed_at": "2026-05-05T12:27:10.163396"
+    }
+  },
+  "issues": [
+    {
+      "issue_id": "style_1",
+      "category": "风格漂移",
+      "severity": "明显偏移",
+      "description": "第2章对话占比(0.00%)与前5章均值(21.56%)偏差过大",
+      "chapter": 2,
+      "related_chapters": [],
+      "suggestion": "检查是否AI生成内容过多，或叙事节奏突变",
+      "resolved": false
+    },
+    {
+      "issue_id": "char_2",
+      "category": "人物一致性",
+      "severity": "明显偏移",
+      "description": "「叶青云」外貌矛盾: 眼睛 原为「黑色」,第10章变为「蓝色」",
+      "chapter": 10,
+      "related_chapters": [],
+      "suggestion": "统一「叶青云」的眼睛描述",
+      "resolved": false
+    },
+    {
+      "issue_id": "timeline_3",
+      "category": "时间线",
+      "severity": "轻微偏移",
+      "description": "第5章出现新地点「上古秘境」，前章地点为「青云宗山门」，请确认地点切换是否合理",
+      "chapter": 5,
+      "related_chapters": [
+        1,
+        5
+      ],
+      "suggestion": "添加地点切换的过渡描写",
+      "resolved": false
+    },
+    {
+      "issue_id": "style_4",
+      "category": "风格漂移",
+      "severity": "明显偏移",
+      "description": "第2章对话占比(0.00%)与前5章均值(20.81%)偏差过大",
+      "chapter": 2,
+      "related_chapters": [],
+      "suggestion": "检查是否AI生成内容过多，或叙事节奏突变",
+      "resolved": false
+    },
+    {
+      "issue_id": "char_5",
+      "category": "人物一致性",
+      "severity": "明显偏移",
+      "description": "「叶青云」外貌矛盾: 眼睛 原为「黑色」,第10章变为「蓝色」",
+      "chapter": 10,
+      "related_chapters": [],
+      "suggestion": "统一「叶青云」的眼睛描述",
+      "resolved": false
+    },
+    {
+      "issue_id": "timeline_6",
+      "category": "时间线",
+      "severity": "轻微偏移",
+      "description": "第5章出现新地点「上古秘境」，前章地点为「青云宗山门」，请确认地点切换是否合理",
+      "chapter": 5,
+      "related_chapters": [
+        1,
+        5
+      ],
+      "suggestion": "添加地点切换的过渡描写",
+      "resolved": false
+    },
+    {
+      "issue_id": "power_7",
+      "category": "实力体系",
+      "severity": "严重冲突",
+      "description": "「叶青云」实力倒退: 第20章为「炼气」，但之前已是「筑基」",
+      "chapter": 20,
+      "related_chapters": [],
+      "suggestion": "修正实力描述，保持筑基或更高",
+      "resolved": false
+    },
+    {
+      "issue_id": "style_8",
+      "category": "风格漂移",
+      "severity": "明显偏移",
+      "description": "第2章对话占比(0.00%)与前5章均值(20.81%)偏差过大",
+      "chapter": 2,
+      "related_chapters": [],
+      "suggestion": "检查是否AI生成内容过多，或叙事节奏突变",
+      "resolved": false
+    },
+    {
+      "issue_id": "char_9",
+      "category": "人物一致性",
+      "severity": "明显偏移",
+      "description": "「叶青云」外貌矛盾: 眼睛 原为「黑色」,第10章变为「蓝色」",
+      "chapter": 10,
+      "related_chapters": [],
+      "suggestion": "统一「叶青云」的眼睛描述",
+      "resolved": false
+    },
+    {
+      "issue_id": "timeline_10",
+      "category": "时间线",
+      "severity": "轻微偏移",
+      "description": "第5章出现新地点「上古秘境」，前章地点为「青云宗山门」，请确认地点切换是否合理",
+      "chapter": 5,
+      "related_chapters": [
+        1,
+        5
+      ],
+      "suggestion": "添加地点切换的过渡描写",
+      "resolved": false
+    },
+    {
+      "issue_id": "power_11",
+      "category": "实力体系",
+      "severity": "严重冲突",
+      "description": "「叶青云」实力倒退: 第20章为「炼气」，但之前已是「筑基」",
+      "chapter": 20,
+      "related_chapters": [],
+      "suggestion": "修正实力描述，保持筑基或更高",
+      "resolved": false
+    },
+    {
+      "issue_id": "style_12",
+      "category": "风格漂移",
+      "severity": "明显偏移",
+      "description": "第2章对话占比(0.00%)与前5章均值(20.81%)偏差过大",
+      "chapter": 2,
+      "related_chapters": [],
+      "suggestion": "检查是否AI生成内容过多，或叙事节奏突变",
+      "resolved": false
+    },
+    {
+      "issue_id": "char_13",
+      "category": "人物一致性",
+      "severity": "明显偏移",
+      "description": "「叶青云」外貌矛盾: 眼睛 原为「黑色」,第10章变为「蓝色」",
+      "chapter": 10,
+      "related_chapters": [],
+      "suggestion": "统一「叶青云」的眼睛描述",
+      "resolved": false
+    },
+    {
+      "issue_id": "timeline_14",
+      "category": "时间线",
+      "severity": "轻微偏移",
+      "description": "第5章出现新地点「上古秘境」，前章地点为「青云宗山门」，请确认地点切换是否合理",
+      "chapter": 5,
+      "related_chapters": [
+        1,
+        5
+      ],
+      "suggestion": "添加地点切换的过渡描写",
+      "resolved": false
+    },
+    {
+      "issue_id": "power_15",
+      "category": "实力体系",
+      "severity": "严重冲突",
+      "description": "「叶青云」实力倒退: 第20章为「炼气」，但之前已是「筑基」",
+      "chapter": 20,
+      "related_chapters": [],
+      "suggestion": "修正实力描述，保持筑基或更高",
+      "resolved": false
+    },
+    {
+      "issue_id": "style_16",
+      "category": "风格漂移",
+      "severity": "明显偏移",
+      "description": "第2章对话占比(0.00%)与前5章均值(20.81%)偏差过大",
+      "chapter": 2,
+      "related_chapters": [],
+      "suggestion": "检查是否AI生成内容过多，或叙事节奏突变",
+      "resolved": false
+    },
+    {
+      "issue_id": "char_17",
+      "category": "人物一致性",
+      "severity": "明显偏移",
+      "description": "「叶青云」外貌矛盾: 眼睛 原为「黑色」,第10章变为「蓝色」",
+      "chapter": 10,
+      "related_chapters": [],
+      "suggestion": "统一「叶青云」的眼睛描述",
+      "resolved": false
+    },
+    {
+      "issue_id": "timeline_18",
+      "category": "时间线",
+      "severity": "轻微偏移",
+      "description": "第5章出现新地点「上古秘境」，前章地点为「青云宗山门」，请确认地点切换是否合理",
+      "chapter": 5,
+      "related_chapters": [
+        1,
+        5
+      ],
+      "suggestion": "添加地点切换的过渡描写",
+      "resolved": false
+    },
+    {
+      "issue_id": "power_19",
+      "category": "实力体系",
+      "severity": "严重冲突",
+      "description": "「叶青云」实力倒退: 第20章为「炼气」，但之前已是「筑基」",
+      "chapter": 20,
+      "related_chapters": [],
+      "suggestion": "修正实力描述，保持筑基或更高",
+      "resolved": false
+    },
+    {
+      "issue_id": "style_20",
+      "category": "风格漂移",
+      "severity": "明显偏移",
+      "description": "第2章对话占比(0.00%)与前5章均值(20.81%)偏差过大",
+      "chapter": 2,
+      "related_chapters": [],
+      "suggestion": "检查是否AI生成内容过多，或叙事节奏突变",
+      "resolved": false
+    },
+    {
+      "issue_id": "char_21",
+      "category": "人物一致性",
+      "severity": "明显偏移",
+      "description": "「叶青云」外貌矛盾: 眼睛 原为「黑色」,第10章变为「蓝色」",
+      "chapter": 10,
+      "related_chapters": [],
+      "suggestion": "统一「叶青云」的眼睛描述",
+      "resolved": false
+    },
+    {
+      "issue_id": "timeline_22",
+      "category": "时间线",
+      "severity": "轻微偏移",
+      "description": "第5章出现新地点「上古秘境」，前章地点为「青云宗山门」，请确认地点切换是否合理",
+      "chapter": 5,
+      "related_chapters": [
+        1,
+        5
+      ],
+      "suggestion": "添加地点切换的过渡描写",
+      "resolved": false
+    },
+    {
+      "issue_id": "power_23",
+      "category": "实力体系",
+      "severity": "严重冲突",
+      "description": "「叶青云」实力倒退: 第20章为「炼气」，但之前已是「筑基」",
+      "chapter": 20,
+      "related_chapters": [],
+      "suggestion": "修正实力描述，保持筑基或更高",
+      "resolved": false
+    }
+  ],
+  "plot_events": [
+    {
+      "id": 1,
+      "chapter": 1,
+      "event": "叶青云加入青云宗",
+      "type": "entry",
+      "characters": [
+        "叶青云"
+      ],
+      "location": "青云宗山门",
+      "tags": [],
+      "timestamp": "2026-05-05T04:24:01.730357"
+    },
+    {
+      "id": 2,
+      "chapter": 1,
+      "event": "叶青云与苏婉儿初次见面",
+      "type": "meeting",
+      "characters": [
+        "叶青云",
+        "苏婉儿"
+      ],
+      "location": "青云宗山门",
+      "tags": [],
+      "timestamp": "2026-05-05T04:24:01.730377"
+    },
+    {
+      "id": 3,
+      "chapter": 5,
+      "event": "叶青云进入秘境",
+      "type": "adventure",
+      "characters": [
+        "叶青云"
+      ],
+      "location": "上古秘境",
+      "tags": [],
+      "timestamp": "2026-05-05T04:24:01.730386"
+    },
+    {
+      "id": 4,
+      "chapter": 1,
+      "event": "叶青云加入青云宗",
+      "type": "entry",
+      "characters": [
+        "叶青云"
+      ],
+      "location": "青云宗山门",
+      "tags": [],
+      "timestamp": "2026-05-05T04:35:46.629813"
+    },
+    {
+      "id": 5,
+      "chapter": 1,
+      "event": "叶青云与苏婉儿初次见面",
+      "type": "meeting",
+      "characters": [
+        "叶青云",
+        "苏婉儿"
+      ],
+      "location": "青云宗山门",
+      "tags": [],
+      "timestamp": "2026-05-05T04:35:46.629828"
+    },
+    {
+      "id": 6,
+      "chapter": 5,
+      "event": "叶青云进入上古秘境",
+      "type": "adventure",
+      "characters": [
+        "叶青云"
+      ],
+      "location": "上古秘境",
+      "tags": [],
+      "timestamp": "2026-05-05T04:35:46.629835"
+    },
+    {
+      "id": 7,
+      "chapter": 10,
+      "event": "测试标题: 测试摘要",
+      "type": "test",
+      "characters": [],
+      "location": "",
+      "tags": [],
+      "timestamp": "2026-05-05T04:35:46.631286"
+    },
+    {
+      "id": 8,
+      "chapter": 1,
+      "event": "测试剧情事件",
+      "type": "general",
+      "characters": [],
+      "location": "",
+      "tags": [
+        "测试"
+      ],
+      "timestamp": "2026-05-05T04:35:46.895695"
+    },
+    {
+      "id": 9,
+      "chapter": 1,
+      "event": "构思: 基于「末世生存」模板的玄幻故事",
+      "type": "idea",
+      "characters": [],
+      "location": "",
+      "tags": [],
+      "timestamp": "2026-05-05T04:35:46.904632"
+    },
+    {
+      "id": 10,
+      "chapter": 1,
+      "event": "平凡世界: 展示主角的日常和内心渴望",
+      "type": "outline",
+      "characters": [],
+      "location": "",
+      "tags": [],
+      "timestamp": "2026-05-05T04:35:46.904939"
+    },
+    {
+      "id": 11,
+      "chapter": 1,
+      "event": "叶青云加入青云宗",
+      "type": "entry",
+      "characters": [
+        "叶青云"
+      ],
+      "location": "青云宗山门",
+      "tags": [],
+      "timestamp": "2026-05-05T04:36:53.872418"
+    },
+    {
+      "id": 12,
+      "chapter": 1,
+      "event": "叶青云与苏婉儿初次见面",
+      "type": "meeting",
+      "characters": [
+        "叶青云",
+        "苏婉儿"
+      ],
+      "location": "青云宗山门",
+      "tags": [],
+      "timestamp": "2026-05-05T04:36:53.872435"
+    },
+    {
+      "id": 13,
+      "chapter": 5,
+      "event": "叶青云进入上古秘境",
+      "type": "adventure",
+      "characters": [
+        "叶青云"
+      ],
+      "location": "上古秘境",
+      "tags": [],
+      "timestamp": "2026-05-05T04:36:53.872443"
+    },
+    {
+      "id": 14,
+      "chapter": 10,
+      "event": "测试标题: 测试摘要",
+      "type": "test",
+      "characters": [],
+      "location": "",
+      "tags": [],
+      "timestamp": "2026-05-05T04:36:53.873426"
+    },
+    {
+      "id": 15,
+      "chapter": 1,
+      "event": "测试剧情事件",
+      "type": "general",
+      "characters": [],
+      "location": "",
+      "tags": [
+        "测试"
+      ],
+      "timestamp": "2026-05-05T04:36:54.112332"
+    },
+    {
+      "id": 16,
+      "chapter": 1,
+      "event": "构思: 基于「扮猪吃虎」模板的玄幻故事",
+      "type": "idea",
+      "characters": [],
+      "location": "",
+      "tags": [],
+      "timestamp": "2026-05-05T04:36:54.120165"
+    },
+    {
+      "id": 17,
+      "chapter": 1,
+      "event": "平凡世界: 展示主角的日常和内心渴望",
+      "type": "outline",
+      "characters": [],
+      "location": "",
+      "tags": [],
+      "timestamp": "2026-05-05T04:36:54.120480"
+    },
+    {
+      "id": 18,
+      "chapter": 1,
+      "event": "叶青云加入青云宗",
+      "type": "entry",
+      "characters": [
+        "叶青云"
+      ],
+      "location": "青云宗山门",
+      "tags": [],
+      "timestamp": "2026-05-05T04:42:06.869423"
+    },
+    {
+      "id": 19,
+      "chapter": 1,
+      "event": "叶青云与苏婉儿初次见面",
+      "type": "meeting",
+      "characters": [
+        "叶青云",
+        "苏婉儿"
+      ],
+      "location": "青云宗山门",
+      "tags": [],
+      "timestamp": "2026-05-05T04:42:06.869441"
+    },
+    {
+      "id": 20,
+      "chapter": 5,
+      "event": "叶青云进入上古秘境",
+      "type": "adventure",
+      "characters": [
+        "叶青云"
+      ],
+      "location": "上古秘境",
+      "tags": [],
+      "timestamp": "2026-05-05T04:42:06.869450"
+    },
+    {
+      "id": 21,
+      "chapter": 10,
+      "event": "测试标题: 测试摘要",
+      "type": "test",
+      "characters": [],
+      "location": "",
+      "tags": [],
+      "timestamp": "2026-05-05T04:42:06.870825"
+    },
+    {
+      "id": 22,
+      "chapter": 1,
+      "event": "测试剧情事件",
+      "type": "general",
+      "characters": [],
+      "location": "",
+      "tags": [
+        "测试"
+      ],
+      "timestamp": "2026-05-05T04:42:07.093012"
+    },
+    {
+      "id": 23,
+      "chapter": 1,
+      "event": "构思: 基于「修仙问道」模板的玄幻故事",
+      "type": "idea",
+      "characters": [],
+      "location": "",
+      "tags": [],
+      "timestamp": "2026-05-05T04:42:07.100717"
+    },
+    {
+      "id": 24,
+      "chapter": 1,
+      "event": "平凡世界: 展示主角的日常和内心渴望",
+      "type": "outline",
+      "characters": [],
+      "location": "",
+      "tags": [],
+      "timestamp": "2026-05-05T04:42:07.100996"
+    },
+    {
+      "id": 25,
+      "chapter": 1,
+      "event": "叶青云加入青云宗",
+      "type": "entry",
+      "characters": [
+        "叶青云"
+      ],
+      "location": "青云宗山门",
+      "tags": [],
+      "timestamp": "2026-05-05T12:25:48.362269"
+    },
+    {
+      "id": 26,
+      "chapter": 1,
+      "event": "叶青云与苏婉儿初次见面",
+      "type": "meeting",
+      "characters": [
+        "叶青云",
+        "苏婉儿"
+      ],
+      "location": "青云宗山门",
+      "tags": [],
+      "timestamp": "2026-05-05T12:25:48.362283"
+    },
+    {
+      "id": 27,
+      "chapter": 5,
+      "event": "叶青云进入上古秘境",
+      "type": "adventure",
+      "characters": [
+        "叶青云"
+      ],
+      "location": "上古秘境",
+      "tags": [],
+      "timestamp": "2026-05-05T12:25:48.362290"
+    },
+    {
+      "id": 28,
+      "chapter": 10,
+      "event": "测试标题: 测试摘要",
+      "type": "test",
+      "characters": [],
+      "location": "",
+      "tags": [],
+      "timestamp": "2026-05-05T12:25:48.363650"
+    },
+    {
+      "id": 29,
+      "chapter": 1,
+      "event": "测试剧情事件",
+      "type": "general",
+      "characters": [],
+      "location": "",
+      "tags": [
+        "测试"
+      ],
+      "timestamp": "2026-05-05T12:25:49.185446"
+    },
+    {
+      "id": 30,
+      "chapter": 1,
+      "event": "构思: 基于「修仙问道」模板的玄幻故事",
+      "type": "idea",
+      "characters": [],
+      "location": "",
+      "tags": [],
+      "timestamp": "2026-05-05T12:25:49.198487"
+    },
+    {
+      "id": 31,
+      "chapter": 1,
+      "event": "平凡世界: 展示主角的日常和内心渴望",
+      "type": "outline",
+      "characters": [],
+      "location": "",
+      "tags": [],
+      "timestamp": "2026-05-05T12:25:49.198975"
+    },
+    {
+      "id": 32,
+      "chapter": 1,
+      "event": "叶青云加入青云宗",
+      "type": "entry",
+      "characters": [
+        "叶青云"
+      ],
+      "location": "青云宗山门",
+      "tags": [],
+      "timestamp": "2026-05-05T12:27:10.163627"
+    },
+    {
+      "id": 33,
+      "chapter": 1,
+      "event": "叶青云与苏婉儿初次见面",
+      "type": "meeting",
+      "characters": [
+        "叶青云",
+        "苏婉儿"
+      ],
+      "location": "青云宗山门",
+      "tags": [],
+      "timestamp": "2026-05-05T12:27:10.163638"
+    },
+    {
+      "id": 34,
+      "chapter": 5,
+      "event": "叶青云进入上古秘境",
+      "type": "adventure",
+      "characters": [
+        "叶青云"
+      ],
+      "location": "上古秘境",
+      "tags": [],
+      "timestamp": "2026-05-05T12:27:10.163645"
+    },
+    {
+      "id": 35,
+      "chapter": 10,
+      "event": "测试标题: 测试摘要",
+      "type": "test",
+      "characters": [],
+      "location": "",
+      "tags": [],
+      "timestamp": "2026-05-05T12:27:10.163836"
+    },
+    {
+      "id": 36,
+      "chapter": 1,
+      "event": "测试剧情事件",
+      "type": "general",
+      "characters": [],
+      "location": "",
+      "tags": [
+        "测试"
+      ],
+      "timestamp": "2026-05-05T12:27:10.889670"
+    },
+    {
+      "id": 37,
+      "chapter": 1,
+      "event": "构思: 基于「扮猪吃虎」模板的玄幻故事",
+      "type": "idea",
+      "characters": [],
+      "location": "",
+      "tags": [],
+      "timestamp": "2026-05-05T12:27:10.895481"
+    },
+    {
+      "id": 38,
+      "chapter": 1,
+      "event": "平凡世界: 展示主角的日常和内心渴望",
+      "type": "outline",
+      "characters": [],
+      "location": "",
+      "tags": [],
+      "timestamp": "2026-05-05T12:27:10.895653"
+    }
+  ],
+  "world_settings": {},
+  "conversations": [
+    {
+      "role": "system",
+      "content": "测试消息",
+      "timestamp": "2026-05-05T04:35:46.631583"
+    },
+    {
+      "role": "system",
+      "content": "第1章终稿完成 (0字, AI分数:0)",
+      "timestamp": "2026-05-05T04:35:46.912072"
+    },
+    {
+      "role": "system",
+      "content": "测试消息",
+      "timestamp": "2026-05-05T04:36:53.873595"
+    },
+    {
+      "role": "system",
+      "content": "第1章终稿完成 (0字, AI分数:0)",
+      "timestamp": "2026-05-05T04:36:54.129073"
+    },
+    {
+      "role": "system",
+      "content": "测试消息",
+      "timestamp": "2026-05-05T04:42:06.871073"
+    },
+    {
+      "role": "system",
+      "content": "第1章终稿完成 (0字, AI分数:0)",
+      "timestamp": "2026-05-05T04:42:07.109125"
+    },
+    {
+      "role": "system",
+      "content": "测试消息",
+      "timestamp": "2026-05-05T12:25:48.363884"
+    },
+    {
+      "role": "system",
+      "content": "第1章初稿完成 (2134字)",
+      "timestamp": "2026-05-05T12:26:10.713780"
+    },
+    {
+      "role": "system",
+      "content": "第1章终稿完成 (2140字, AI分数:22)",
+      "timestamp": "2026-05-05T12:26:29.072959"
+    },
+    {
+      "role": "system",
+      "content": "测试消息",
+      "timestamp": "2026-05-05T12:27:10.163848"
+    },
+    {
+      "role": "system",
+      "content": "第1章初稿完成 (2791字)",
+      "timestamp": "2026-05-05T12:27:38.141856"
+    },
+    {
+      "role": "system",
+      "content": "第1章终稿完成 (2748字, AI分数:20)",
+      "timestamp": "2026-05-05T12:28:00.688122"
+    }
+  ],
+  "emotional_arc": [],
+  "pacing_profiles": {},
+  "dialogue_fingerprints": {},
+  "world_rules": {},
+  "chapter_quality_scores": {},
+  "conflict_density": {},
+  "rule_counter": 0,
+  "timeline": {
+    "1": {
+      "events": [
+        "叶青云加入青云宗",
+        "叶青云与苏婉儿初次见面",
+        "叶青云加入青云宗",
+        "叶青云与苏婉儿初次见面",
+        "测试剧情事件",
+        "构思: 基于「末世生存」模板的玄幻故事",
+        "平凡世界: 展示主角的日常和内心渴望",
+        "叶青云加入青云宗",
+        "叶青云与苏婉儿初次见面",
+        "测试剧情事件",
+        "构思: 基于「扮猪吃虎」模板的玄幻故事",
+        "平凡世界: 展示主角的日常和内心渴望",
+        "叶青云加入青云宗",
+        "叶青云与苏婉儿初次见面",
+        "测试剧情事件",
+        "构思: 基于「修仙问道」模板的玄幻故事",
+        "平凡世界: 展示主角的日常和内心渴望",
+        "叶青云加入青云宗",
+        "叶青云与苏婉儿初次见面",
+        "测试剧情事件",
+        "构思: 基于「修仙问道」模板的玄幻故事",
+        "平凡世界: 展示主角的日常和内心渴望",
+        "叶青云加入青云宗",
+        "叶青云与苏婉儿初次见面",
+        "测试剧情事件",
+        "构思: 基于「扮猪吃虎」模板的玄幻故事",
+        "平凡世界: 展示主角的日常和内心渴望"
+      ],
+      "locations": [
+        "青云宗山门"
+      ],
+      "characters": [
+        "苏婉儿",
+        "叶青云"
+      ]
+    },
+    "5": {
+      "events": [
+        "叶青云进入秘境",
+        "叶青云进入上古秘境",
+        "叶青云进入上古秘境",
+        "叶青云进入上古秘境",
+        "叶青云进入上古秘境",
+        "叶青云进入上古秘境"
+      ],
+      "locations": [
+        "上古秘境"
+      ],
+      "characters": [
+        "叶青云"
+      ]
+    },
+    "10": {
+      "events": [
+        "测试标题: 测试摘要",
+        "测试标题: 测试摘要",
+        "测试标题: 测试摘要",
+        "测试标题: 测试摘要",
+        "测试标题: 测试摘要"
+      ],
+      "locations": [],
+      "characters": []
+    }
+  },
+  "saved_at": "2026-05-05T12:28:00.694165"
+}

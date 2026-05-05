@@ -10,7 +10,10 @@ import os
 import json
 from datetime import datetime
 
-sys.stdout.reconfigure(encoding='utf-8')
+try:
+    sys.stdout.reconfigure(encoding='utf-8')
+except (AttributeError, OSError):
+    pass
 
 class BestsellerDeepAnalyzer:
     """NWACS V16 爆款小说深度拆解学习系统"""

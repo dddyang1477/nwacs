@@ -1,4 +1,3 @@
-```json
 {
   "plot_outlines": [
     {
@@ -52,9 +51,18 @@
         }
       },
       "boilerplate_chapters": [
-        {"chapter": 30, "event": "金手指首次显威，秒杀同级"},
-        {"chapter": 50, "event": "打脸退婚未婚妻，震惊全场"},
-        {"chapter": 100, "event": "宗门拜师，被宗主收为关门弟子"}
+        {
+          "chapter": 30,
+          "event": "金手指首次显威，秒杀同级"
+        },
+        {
+          "chapter": 50,
+          "event": "打脸退婚未婚妻，震惊全场"
+        },
+        {
+          "chapter": 100,
+          "event": "宗门拜师，被宗主收为关门弟子"
+        }
       ]
     },
     {
@@ -106,9 +114,18 @@
         }
       },
       "boilerplate_chapters": [
-        {"chapter": 20, "event": "抢先获得前世错过的至宝"},
-        {"chapter": 50, "event": "提前收服未来的绝世强者"},
-        {"chapter": 150, "event": "与前世仇人第一次正面交锋"}
+        {
+          "chapter": 20,
+          "event": "抢先获得前世错过的至宝"
+        },
+        {
+          "chapter": 50,
+          "event": "提前收服未来的绝世强者"
+        },
+        {
+          "chapter": 150,
+          "event": "与前世仇人第一次正面交锋"
+        }
       ]
     },
     {
@@ -159,9 +176,18 @@
         }
       },
       "boilerplate_chapters": [
-        {"chapter": 30, "event": "第一次穿越，获得基础能力"},
-        {"chapter": 80, "event": "用穿越获得的能力震惊宗门"},
-        {"chapter": 200, "event": "首次用多世界能力组合战斗"}
+        {
+          "chapter": 30,
+          "event": "第一次穿越，获得基础能力"
+        },
+        {
+          "chapter": 80,
+          "event": "用穿越获得的能力震惊宗门"
+        },
+        {
+          "chapter": 200,
+          "event": "首次用多世界能力组合战斗"
+        }
       ]
     },
     {
@@ -212,9 +238,18 @@
         }
       },
       "boilerplate_chapters": [
-        {"chapter": 20, "event": "应聘成为总裁保镖"},
-        {"chapter": 50, "event": "暗榜高手来袭，被秒杀"},
-        {"chapter": 150, "event": "与各国兵王的对决"}
+        {
+          "chapter": 20,
+          "event": "应聘成为总裁保镖"
+        },
+        {
+          "chapter": 50,
+          "event": "暗榜高手来袭，被秒杀"
+        },
+        {
+          "chapter": 150,
+          "event": "与各国兵王的对决"
+        }
       ]
     },
     {
@@ -265,11 +300,19 @@
         }
       },
       "boilerplate_chapters": [
-        {"chapter": 15, "event": "救治绝症老人，一战成名"},
-        {"chapter": 40, "event": "中医vs西医的公开比试"},
-        {"chapter": 100, "event": "揭露制药集团的毒药阴谋"}
+        {
+          "chapter": 15,
+          "event": "救治绝症老人，一战成名"
+        },
+        {
+          "chapter": 40,
+          "event": "中医vs西医的公开比试"
+        },
+        {
+          "chapter": 100,
+          "event": "揭露制药集团的毒药阴谋"
+        }
       ]
     }
   ]
 }
-```

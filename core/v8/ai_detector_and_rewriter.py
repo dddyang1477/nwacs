@@ -117,16 +117,14 @@ class AIDetectorAndRewriter:
             if not line:
                 continue
             
-            if random.random() < 0.15:  # 15%概率微调
-                # 稍微改写
-                words = list(line)
+            words = list(line)
+            if random.random() < 0.15:
                 if len(words) > 10:
                     idx = random.randint(3, len(words)-3)
-                    # 插入一个小词
                     if random.random() < 0.5:
                         words.insert(idx, "呢" if "？" in line else "呢")
             
-            new_line = ''.join(words) if len(line) >10 else line
+            new_line = ''.join(words) if len(line) > 10 else line
             new_lines.append(new_line + "。")
         
         result = ''.join(new_lines)

@@ -17,7 +17,10 @@ from datetime import datetime
 from typing import Dict, List, Any, Optional, Tuple
 from pathlib import Path
 
-sys.stdout.reconfigure(encoding='utf-8')
+try:
+    sys.stdout.reconfigure(encoding='utf-8')
+except (AttributeError, OSError):
+    pass
 
 class KnowledgeItem:
     """知识条目"""

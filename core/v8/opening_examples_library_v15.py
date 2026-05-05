@@ -11,7 +11,10 @@ import os
 import json
 from datetime import datetime
 
-sys.stdout.reconfigure(encoding='utf-8')
+try:
+    sys.stdout.reconfigure(encoding='utf-8')
+except (AttributeError, OSError):
+    pass
 
 class OpeningExamplesLibrary:
     """NWACS V15 完整开局示例库"""
@@ -54,12 +57,12 @@ class OpeningExamplesLibrary:
 林辰的声音很轻，却让所有人都愣住了。
 萧战冷笑："就凭你？"
 林辰没有回答，只是在心里默念：三天后，我会让你们知道，什么叫莫欺少年穷。
-当晚，他的脑海里突然亮起一道金光——",
+当晚，他的脑海里突然亮起一道金光——""",
                 "analysis": {
                     "conflict": "退婚羞辱，冲突前置",
                     "golden_hook": "三日后，我会让你亲自来求我收回这句话",
                     "golden_finger": "脑海金光（系统/传承）",
-                    "reader_expectation": "期待打脸"
+                    "reader_expectation": "期待打脸"""
                 }
             },
             {
@@ -73,12 +76,12 @@ class OpeningExamplesLibrary:
 三分钟后，他的人生彻底改变了。
 "从今天起，我不再是废物。"
 林辰攥紧拳头，眼里闪过一丝凌厉的光。
-萧家，你们等着！",
+萧家，你们等着！""",
                 "analysis": {
                     "conflict": "被退婚+系统激活",
                     "golden_hook": "新手大礼包已发放！",
                     "golden_finger": "最强修仙系统",
-                    "reader_expectation": "期待逆袭打脸"
+                    "reader_expectation": "期待逆袭打脸"""
                 }
             },
             {
@@ -93,12 +96,12 @@ class OpeningExamplesLibrary:
 她愣住了——这是，十六岁那年？
 她没有像上一世那样哭闹，而是站起身，嘴角微微上扬：
 "退婚？好啊。让他们在客厅等着。"
-这一世，她要让那些人知道，什么叫真正的王者归来。",
+这一世，她要让那些人知道，什么叫真正的王者归来。""",
                 "analysis": {
                     "conflict": "前世惨死+重生回到过去",
                     "golden_hook": "若有来生，我定要你们血债血偿",
                     "golden_finger": "前世记忆+复仇目标明确",
-                    "reader_expectation": "期待复仇打脸"
+                    "reader_expectation": "期待复仇打脸"""
                 }
             },
             {
@@ -112,12 +115,12 @@ class OpeningExamplesLibrary:
 因为他的脑海里，有一卷神秘功法。
 那是他十年前在一处古迹中得到的东西。
 "既然你们觉得我废物，那我就废物给你们看。"
-林尘低吼一声，踏入了禁地深处。",
+林尘低吼一声，踏入了禁地深处。""",
                 "analysis": {
                     "conflict": "被嘲笑+禁地冒险",
                     "golden_hook": "进去就别想出来",
                     "golden_finger": "神秘功法",
-                    "reader_expectation": "期待禁地逆袭"
+                    "reader_expectation": "期待禁地逆袭"""
                 }
             }
         ]
@@ -138,12 +141,12 @@ class OpeningExamplesLibrary:
 他走上前，手指轻轻搭在小女孩的脉搏上。
 "不过是中了寒毒，我三针就能解决。"
 整个走廊鸦雀无声。
-然后，叶城从怀里掏出银针——",
+然后，叶城从怀里掏出银针——""",
                 "analysis": {
                     "conflict": "绝症+神医出手",
                     "golden_hook": "不过寒毒，我三针就能解决",
                     "golden_finger": "神秘医术",
-                    "reader_expectation": "期待打脸震惊"
+                    "reader_expectation": "期待打脸震惊"""
                 }
             },
             {
@@ -161,12 +164,12 @@ class OpeningExamplesLibrary:
 然后，他笑了。
 "离婚？"
 他将协议书撕成碎片，站起身来。
-"现在，该轮到我不要你们了。"",
+"现在，该轮到我不要你们了。'""",
                 "analysis": {
                     "conflict": "被离婚+身份曝光",
                     "golden_hook": "现在，该轮到我不要你们了",
                     "golden_finger": "豪门继承人身份",
-                    "reader_expectation": "期待强势打脸"
+                    "reader_expectation": "期待强势打脸"""
                 }
             },
             {
@@ -184,12 +187,12 @@ class OpeningExamplesLibrary:
 而墙上贴的那些规则...好像，每一条都在保护什么东西。
 "新来的医生？"
 一个护士突然出现在他身后。
-林七夜的心猛地一紧——",
+林七夜的心猛地一紧——""",
                 "analysis": {
                     "conflict": "规则怪谈+诡异疗养院",
                     "golden_hook": "不要相信任何人的话",
                     "golden_finger": "规则背后的真相",
-                    "reader_expectation": "期待恐怖揭秘"
+                    "reader_expectation": "期待恐怖揭秘"""
                 }
             },
             {
@@ -207,12 +210,12 @@ class OpeningExamplesLibrary:
 "终于...有人来了..."
 陈九愣住了。
 因为他认识这个人。
-这是他失踪三年的弟弟。",
+这是他失踪三年的弟弟。""",
                 "analysis": {
                     "conflict": "捞尸遇到弟弟+恐怖悬疑",
                     "golden_hook": "终于有人来了",
                     "golden_finger": "弟弟的死因真相",
-                    "reader_expectation": "期待恐怖揭秘"
+                    "reader_expectation": "期待恐怖揭秘"""
                 }
             }
         ]
@@ -235,12 +238,12 @@ class OpeningExamplesLibrary:
 "这些年，你过得好吗？"他问。
 温以凡笑了笑，眼眶却有些湿润："挺好的，你呢？"
 他没有回答，只是看着她，目光深沉。
-"以凡，我..."",
+"以凡，我...'""",
                 "analysis": {
                     "conflict": "七年重逢+旧情难忘",
                     "golden_hook": "我...",
                     "golden_finger": "七年前的误会真相",
-                    "reader_expectation": "期待复合"
+                    "reader_expectation": "期待复合"""
                 }
             },
             {
@@ -256,12 +259,12 @@ class OpeningExamplesLibrary:
 她知道他为什么娶她——为了她手里的股份。
 她也知道自己为什么嫁他——为了报复继母。
 两个各怀心思的人，就这样成了夫妻。
-但他们都不知道，命运的齿轮，已经开始转动。",
+但他们都不知道，命运的齿轮，已经开始转动。""",
                 "analysis": {
                     "conflict": "形婚+各怀心思",
                     "golden_hook": "命运的齿轮已经开始转动",
                     "golden_finger": "两人隐藏的秘密",
-                    "reader_expectation": "期待假戏真做"
+                    "reader_expectation": "期待假戏真做"""
                 }
             },
             {
@@ -278,12 +281,12 @@ class OpeningExamplesLibrary:
 就在这时，一辆黑色宾利停在路边。
 车门打开，一个高大的男人走下来——
 苏晚晚愣住了。
-那是...她五年前分手的初恋？",
+那是...她五年前分手的初恋？""",
                 "analysis": {
                     "conflict": "萌宝找妈咪+前男友出现",
                     "golden_hook": "找到妈咪就给我们一百万",
                     "golden_finger": "孩子是谁的？",
-                    "reader_expectation": "期待甜蜜纠葛"
+                    "reader_expectation": "期待甜蜜纠葛"""
                 }
             },
             {
@@ -300,12 +303,12 @@ class OpeningExamplesLibrary:
 陆星河抬起头，看着那个逃跑的背影，嘴角微微上扬。
 他拿起纸条，上面写着：
 "我喜欢你，可以认识你吗？"
-他站起身，朝门口走去——",
+他站起身，朝门口走去——""",
                 "analysis": {
                     "conflict": "暗恋表白+逃跑",
                     "golden_hook": "他站起身，朝门口走去",
                     "golden_finger": "他会接受吗？",
-                    "reader_expectation": "期待甜蜜恋爱"
+                    "reader_expectation": "期待甜蜜恋爱"""
                 }
             }
         ]
@@ -327,12 +330,12 @@ class OpeningExamplesLibrary:
 正好砸在他家的阳台上。
 血溅了一地。
 苏默看清了那张脸。
-那是...他自己。",
+那是...他自己。""",
                 "analysis": {
                     "conflict": "死亡预告+亲眼看到自己死亡",
                     "golden_hook": "那是...他自己",
                     "golden_finger": "如何改变命运？",
-                    "reader_expectation": "期待悬疑揭秘"
+                    "reader_expectation": "期待悬疑揭秘"""
                 }
             },
             {
@@ -347,12 +350,12 @@ class OpeningExamplesLibrary:
 林夏愣住了。
 照片上的人...和她长得一模一样。
 "但这个人，在三年前就已经死了。"
-林夏感觉脑子里有什么东西"嗡"地一声炸开了。",
+林夏感觉脑子里有什么东西"嗡"地一声炸开了。""",
                 "analysis": {
                     "conflict": "被诬陷+双重人格嫌疑",
                     "golden_hook": "这个人，在三年前就已经死了",
                     "golden_finger": "另一个人格的真相",
-                    "reader_expectation": "期待悬疑反转"
+                    "reader_expectation": "期待悬疑反转"""
                 }
             },
             {
@@ -368,12 +371,12 @@ class OpeningExamplesLibrary:
 "这道伤是怎么来的？"他问。
 秘书的脸色瞬间变了。
 就在这时，法医走过来低声说：
-"王警官，死者的胃里发现了大量安眠药。"",
+"王警官，死者的胃里发现了大量安眠药。'""",
                 "analysis": {
                     "conflict": "不可能的犯罪+证据矛盾",
                     "golden_hook": "死者胃里发现了大量安眠药",
                     "golden_finger": "真相是什么？",
-                    "reader_expectation": "期待推理揭秘"
+                    "reader_expectation": "期待推理揭秘"""
                 }
             },
             {
@@ -391,12 +394,12 @@ class OpeningExamplesLibrary:
 我颤抖着翻开第二页——
 上面写着我的名字，还有我的住址。
 以及一行字：
-"她已经开始怀疑了。"",
+"她已经开始怀疑了。'""",
                 "analysis": {
                     "conflict": "日记证明有人冒充自己",
                     "golden_hook": "她已经开始怀疑了",
                     "golden_finger": "谁是幕后黑手？",
-                    "reader_expectation": "期待恐怖揭秘"
+                    "reader_expectation": "期待恐怖揭秘"""
                 }
             }
         ]

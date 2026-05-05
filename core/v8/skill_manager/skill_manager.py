@@ -17,7 +17,10 @@ from datetime import datetime
 from typing import Dict, List, Any, Optional, Callable
 from enum import Enum
 
-sys.stdout.reconfigure(encoding='utf-8')
+try:
+    sys.stdout.reconfigure(encoding='utf-8')
+except (AttributeError, OSError):
+    pass
 
 class SkillType(Enum):
     """Skill类型枚举"""

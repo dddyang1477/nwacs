@@ -10,7 +10,10 @@ import os
 import json
 from datetime import datetime
 
-sys.stdout.reconfigure(encoding='utf-8')
+try:
+    sys.stdout.reconfigure(encoding='utf-8')
+except (AttributeError, OSError):
+    pass
 
 class WritingTemplateLibrary:
     """NWACS V15 写作模板库"""

@@ -1,0 +1,447 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+NWACS Skills文件夹就地清理重组
+- 删除.bak备份文件
+- 删除智能升级记录文件
+- 消除重复编号
+- 移动.py脚本到scripts/
+- 移动.txt参考到references/
+- 移动Master到masters/
+"""
+
+import os
+import shutil
+
+BASE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+SKILLS = os.path.join(BASE, "skills")
+
+def safe_makedirs(path):
+    os.makedirs(path, exist_ok=True)
+
+def safe_move(src, dst):
+    if os.path.exists(src):
+        if os.path.exists(dst):
+            print(f"  ⚠️ 目标已存在，覆盖: {os.path.basename(dst)}")
+        shutil.move(src, dst)
+        return True
+    return False
+
+def safe_delete(path):
+    if os.path.exists(path):
+        os.remove(path)
+        print(f"  🗑️ 删除: {os.path.basename(path)}")
+        return True
+    return False
+
+def main():
+    print("=" * 70)
+    print("NWACS Skills 文件夹就地清理重组")
+    print("=" * 70)
+
+    # ============================================================
+    # 1. 创建新子目录
+    # ============================================================
+    print("\n[1] 创建新子目录...")
+    new_dirs = [
+        os.path.join(SKILLS, "masters"),
+        os.path.join(SKILLS, "scripts"),
+        os.path.join(SKILLS, "references"),
+        os.path.join(SKILLS, "archive", "backups"),
+        os.path.join(SKILLS, "archive", "upgrades"),
+    ]
+    for d in new_dirs:
+        safe_makedirs(d)
+        print(f"  📁 {os.path.relpath(d, SKILLS)}")
+
+    # ============================================================
+    # 2. 移动根目录散落的.py脚本
+    # ============================================================
+    print("\n[2] 移动根目录.py脚本到 scripts/...")
+    py_files = [
+        "deepseek_advanced_learning.py",
+        "deepseek_competitor_analysis.py",
+        "deepseek_learning_engine.py",
+        "deepseek_online_optimize.py",
+        "deepseek_v8_planning.py",
+        "feishu_deepseek_diagnosis.py",
+        "feishu_server_v2.py",
+        "simple_learning.py",
+        "specialized_learning.py",
+        "start_feishu_server.py",
+    ]
+    for f in py_files:
+        src = os.path.join(SKILLS, f)
+        dst = os.path.join(SKILLS, "scripts", f)
+        if safe_move(src, dst):
+            print(f"  ✅ {f}")
+
+    # ============================================================
+    # 3. 移动根目录散落的.txt参考文件
+    # ============================================================
+    print("\n[3] 移动根目录.txt参考文件到 references/...")
+    txt_files = [
+        "anti_ai_detection.txt",
+        "character_building.txt",
+        "plot_design.txt",
+        "scene_rendering.txt",
+        "vocabulary_master.txt",
+        "writing_techniques.txt",
+    ]
+    for f in txt_files:
+        src = os.path.join(SKILLS, f)
+        dst = os.path.join(SKILLS, "references", f)
+        if safe_move(src, dst):
+            print(f"  ✅ {f}")
+
+    # ============================================================
+    # 4. 移动Master文件夹到 masters/
+    # ============================================================
+    print("\n[4] 移动Master文件夹到 masters/...")
+    master_dirs = [
+        "CharacterMaster",
+        "GoldenPhraseMaster",
+        "PlotMaster",
+        "SceneMaster",
+        "WorldBuildingMaster",
+    ]
+    for d in master_dirs:
+        src_dir = os.path.join(SKILLS, d)
+        if os.path.isdir(src_dir):
+            for f in os.listdir(src_dir):
+                src = os.path.join(src_dir, f)
+                dst = os.path.join(SKILLS, "masters", f)
+                if safe_move(src, dst):
+                    print(f"  ✅ {d}/{f}")
+            # 删除空目录
+            try:
+                os.rmdir(src_dir)
+                print(f"  🗑️ 删除空目录: {d}/")
+            except OSError:
+                print(f"  ⚠️ 目录非空: {d}/")
+
+    # ============================================================
+    # 5. 清理 level2 - 删除.bak和智能升级文件
+    # ============================================================
+    print("\n[5] 清理 level2 冗余文件...")
+    level2 = os.path.join(SKILLS, "level2")
+    
+    # 删除 .bak 文件
+    for f in os.listdir(level2):
+        if f.endswith(".bak"):
+            safe_delete(os.path.join(level2, f))
+    
+    # 移动智能升级文件到 archive/upgrades/
+    for f in os.listdir(level2):
+        if f.startswith("skill_") and f.endswith("_智能升级.md"):
+            src = os.path.join(level2, f)
+            dst = os.path.join(SKILLS, "archive", "upgrades", f)
+            if safe_move(src, dst):
+                print(f"  ✅ {f} -> archive/upgrades/")
+
+    # ============================================================
+    # 6. 清理 level2 - 消除重复编号
+    # ============================================================
+    print("\n[6] 消除 level2 重复编号...")
+    
+    # 重复编号处理: 保留主要skill，重命名重复的
+    duplicates = {
+        # 编号: [(文件名, 新文件名)]
+        "11": [
+            ("11_二级Skill_短篇小说爽文大师.md", "30_二级Skill_短篇小说爽文大师.md"),
+        ],
+        "16": [
+            ("16_二级Skill_市场分析师.md", "21_二级Skill_市场分析师.md"),
+        ],
+        "17": [
+            ("17_二级Skill_IP运营师.md", "22_二级Skill_IP运营师.md"),
+        ],
+        "18": [
+            ("18_二级Skill_数据分析师.md", "23_二级Skill_数据分析师.md"),
+        ],
+    }
+    
+    for num, renames in duplicates.items():
+        for old_name, new_name in renames:
+            src = os.path.join(level2, old_name)
+            dst = os.path.join(level2, new_name)
+            if safe_move(src, dst):
+                print(f"  ✅ {old_name} -> {new_name}")
+
+    # ============================================================
+    # 7. 清理 level3 - 消除重复编号
+    # ============================================================
+    print("\n[7] 消除 level3 重复编号...")
+    level3 = os.path.join(SKILLS, "level3")
+    
+    # 19号重复: 游戏竞技 vs 地理环境设计师
+    # 保留游戏竞技为19，地理环境设计师改为34
+    src = os.path.join(level3, "19_三级Skill_地理环境设计师.md")
+    dst = os.path.join(level3, "34_三级Skill_地理环境设计师.md")
+    if safe_move(src, dst):
+        print(f"  ✅ 19_三级Skill_地理环境设计师.md -> 34_三级Skill_地理环境设计师.md")
+    
+    # 32号重复: 空间布局设计师 vs 词汇大师
+    # 保留空间布局设计师为32，词汇大师改为35
+    src = os.path.join(level3, "32_三级Skill_词汇大师.md")
+    dst = os.path.join(level3, "35_三级Skill_词汇大师.md")
+    if safe_move(src, dst):
+        print(f"  ✅ 32_三级Skill_词汇大师.md -> 35_三级Skill_词汇大师.md")
+    
+    # 词汇大师_new 改为 36
+    src = os.path.join(level3, "32_三级Skill_词汇大师_new.md")
+    dst = os.path.join(level3, "36_三级Skill_词汇大师_v2.md")
+    if safe_move(src, dst):
+        print(f"  ✅ 32_三级Skill_词汇大师_new.md -> 36_三级Skill_词汇大师_v2.md")
+
+    # ============================================================
+    # 8. 生成新的 Skill索引
+    # ============================================================
+    print("\n[8] 生成 Skill索引...")
+    
+    index_content = """# NWACS Skill 完整索引 (重组版 v2.0)
+
+> 生成日期: 2026-05-05
+> 总Skill数: 1(一级) + 30(二级) + 36(三级) + 5(大师级) = 72个
+
+---
+
+## 📋 一级Skill - 总调度层 (1个)
+
+| 编号 | Skill名称 | 核心职责 |
+|:----:|-----------|----------|
+| 02 | 小说总调度官 | 全局调度、任务分发、结果整合 |
+
+---
+
+## 📋 二级Skill - 核心创作能力层 (30个)
+
+### 🏗️ 世界观与设定 (03-05)
+| 编号 | Skill名称 | 核心职责 |
+|:----:|-----------|----------|
+| 03 | 世界观构造师 | 构建完整世界观(地理/历史/文化/势力) |
+| 04 | 剧情构造师 | 设计紧凑有趣的故事情节 |
+| 05 | 场景构造师 | 营造沉浸式场景氛围 |
+
+### 👤 角色与对话 (06-08)
+| 编号 | Skill名称 | 核心职责 |
+|:----:|-----------|----------|
+| 06 | 对话设计师 | 创作生动自然的角色对话 |
+| 07 | 角色塑造师 | 设计立体丰满的人物形象 |
+| 08 | 战斗设计师 | 设计精彩刺激的战斗场面 |
+
+### ✍️ 写作技巧 (09-11)
+| 编号 | Skill名称 | 核心职责 |
+|:----:|-----------|----------|
+| 09 | 写作技巧大师 | 提供各类写作技巧指导 |
+| 10 | 去AI痕迹监督官 | 检测并消除AI写作痕迹 |
+| 11 | 质量审计师 | 全面质量检测与评估 |
+
+### 📐 结构与节奏 (12-15)
+| 编号 | Skill名称 | 核心职责 |
+|:----:|-----------|----------|
+| 12 | 选题策划大师 | 市场导向的选题策划 |
+| 13 | 大纲架构师 | 构建完整小说大纲体系 |
+| 14 | 节奏控制大师 | 精准控制叙事节奏 |
+| 15 | 情感共鸣师 | 增强读者情感代入 |
+
+### 🔧 工具与优化 (16-20)
+| 编号 | Skill名称 | 核心职责 |
+|:----:|-----------|----------|
+| 16 | 一键AI消痕师 | 快速批量AI去痕处理 |
+| 17 | AI工作流大师 | 自动化工作流编排 |
+| 18 | 小说拆书师 | 深度拆解爆款小说 |
+| 19 | 描写增强师 | 增强场景/人物描写 |
+| 20 | 版权保护师 | 版权风险评估与保护 |
+
+### 📊 市场与数据 (21-25)
+| 编号 | Skill名称 | 核心职责 |
+|:----:|-----------|----------|
+| 21 | 市场分析师 | 市场趋势与竞品分析 |
+| 22 | IP运营师 | IP全链路开发运营 |
+| 23 | 数据分析师 | 作品数据深度分析 |
+| 24 | 创新灵感生成器 | 激发创新写作灵感 |
+| 25 | 读者心理分析师 | 读者行为与心理分析 |
+
+### 🚀 发布与运营 (26-30)
+| 编号 | Skill名称 | 核心职责 |
+|:----:|-----------|----------|
+| 26 | 发布规划师 | 最优发布策略规划 |
+| 27 | 学习大师 | 持续学习与知识更新 |
+| 28 | 规则掌控者 | 平台规则解读与应对 |
+| 29 | 词汇大师 | 丰富词汇库管理 |
+| 30 | 短篇小说爽文大师 | 短篇爽文专项创作 |
+
+---
+
+## 📋 三级Skill - 细分领域层 (36个)
+
+### 📚 小说类型基类与主要类型 (12-18)
+| 编号 | Skill名称 | 核心职责 |
+|:----:|-----------|----------|
+| 12 | 小说类型基类 | 所有类型小说的基础框架 |
+| 13 | 玄幻仙侠 | 玄幻仙侠类专项创作 |
+| 14 | 都市言情 | 都市言情类专项创作 |
+| 15 | 悬疑推理 | 悬疑推理类专项创作 |
+| 16 | 科幻未来 | 科幻未来类专项创作 |
+| 17 | 历史穿越 | 历史穿越类专项创作 |
+| 18 | 恐怖惊悚 | 恐怖惊悚类专项创作 |
+
+### 🎮 更多类型 (19)
+| 编号 | Skill名称 | 核心职责 |
+|:----:|-----------|----------|
+| 19 | 游戏竞技 | 游戏竞技类专项创作 |
+
+### 🌍 世界观细分 (20-21, 34)
+| 编号 | Skill名称 | 核心职责 |
+|:----:|-----------|----------|
+| 20 | 种族文明设计师 | 多种族/文明体系设计 |
+| 21 | 规则体系设计师 | 世界规则/力量体系设计 |
+| 34 | 地理环境设计师 | 地理环境详细设计 |
+
+### 📖 剧情细分 (22-24)
+| 编号 | Skill名称 | 核心职责 |
+|:----:|-----------|----------|
+| 22 | 主线剧情设计师 | 主线剧情详细设计 |
+| 23 | 支线剧情设计师 | 支线剧情/副本设计 |
+| 24 | 伏笔埋设师 | 伏笔设计与回收管理 |
+
+### 👥 角色细分 (25-27)
+| 编号 | Skill名称 | 核心职责 |
+|:----:|-----------|----------|
+| 25 | 角色背景设计师 | 角色背景故事设计 |
+| 26 | 角色性格塑造师 | 角色性格深度塑造 |
+| 27 | 角色关系网络设计师 | 角色关系图谱设计 |
+
+### ⚔️ 战斗细分 (28-30)
+| 编号 | Skill名称 | 核心职责 |
+|:----:|-----------|----------|
+| 28 | 战斗场景设计师 | 战斗场景详细设计 |
+| 29 | 战斗招式设计师 | 战斗招式/技能设计 |
+| 30 | 战斗节奏控制师 | 战斗节奏精准控制 |
+
+### 🎨 场景与感官 (31-33, 35-36)
+| 编号 | Skill名称 | 核心职责 |
+|:----:|-----------|----------|
+| 31 | 环境氛围营造师 | 环境氛围精细营造 |
+| 32 | 空间布局设计师 | 空间/建筑布局设计 |
+| 33 | 感官细节设计师 | 五感细节描写设计 |
+| 35 | 词汇大师 | 三级词汇库管理 |
+| 36 | 词汇大师 v2 | 词汇大师升级版 |
+
+### 👩 女频专项 (37-40)
+| 编号 | Skill名称 | 核心职责 |
+|:----:|-----------|----------|
+| 37 | 女频总裁文设计师 | 总裁文专项设计 |
+| 38 | 女频年代文设计师 | 年代文专项设计 |
+| 39 | 女频马甲文设计师 | 马甲文专项设计 |
+| 40 | 女频萌宝文设计师 | 萌宝文专项设计 |
+
+### 🎯 特色类型 (41-42)
+| 编号 | Skill名称 | 核心职责 |
+|:----:|-----------|----------|
+| 41 | 风水玄学小说设计师 | 风水玄学类专项 |
+| 42 | 军事小说设计师 | 军事类专项 |
+
+---
+
+## 📋 大师级Skill (5个)
+
+| Skill名称 | 核心能力 |
+|-----------|----------|
+| CharacterMaster | 顶级角色塑造能力 |
+| GoldenPhraseMaster | 金句/名场面创作 |
+| PlotMaster | 顶级剧情设计能力 |
+| SceneMaster | 顶级场景渲染能力 |
+| WorldBuildingMaster | 顶级世界观构建 |
+
+---
+
+## 📁 目录结构
+
+```
+skills/
+├── level1/              # 一级Skill - 总调度 (1个)
+│   └── 02_一级Skill_小说总调度官.md
+├── level2/              # 二级Skill - 核心创作能力 (30个)
+│   ├── 00_Skill协作总览.md
+│   ├── 03~30_二级Skill_*.md
+│   └── learnings/       # 知识库 (50+文件)
+├── level3/              # 三级Skill - 细分领域 (36个)
+│   ├── 12~42_三级Skill_*.md
+│   ├── 41_三级Skill_风水玄学小说/
+│   └── 42_三级Skill_军事小说/
+├── masters/             # 大师级Skill (5个)
+├── system/              # 系统文档
+├── scripts/             # Python脚本 (10个)
+├── references/          # 参考文本 (6个)
+└── archive/             # 归档
+    ├── backups/         # .bak备份
+    └── upgrades/        # 智能升级记录
+```
+
+---
+
+## 🔄 Skill调用层级
+
+```
+一级Skill (总调度官)
+  ├── 接收用户指令
+  ├── 分析任务需求
+  ├── 调度二级Skill
+  │   ├── 世界观构造师 → 三级: 地理/种族/规则
+  │   ├── 剧情构造师   → 三级: 主线/支线/伏笔
+  │   ├── 角色塑造师   → 三级: 背景/性格/关系
+  │   ├── 战斗设计师   → 三级: 场景/招式/节奏
+  │   └── ...
+  └── 整合结果输出
+```
+"""
+    
+    index_path = os.path.join(SKILLS, "system", "Skill完整索引.md")
+    with open(index_path, 'w', encoding='utf-8') as f:
+        f.write(index_content)
+    print(f"  ✅ system/Skill完整索引.md 已更新")
+
+    # ============================================================
+    # 9. 验证结果
+    # ============================================================
+    print("\n[9] 验证结果...")
+    
+    # 统计各级skill数量
+    level1_count = len([f for f in os.listdir(os.path.join(SKILLS, "level1")) 
+                        if f.endswith(".md") and not f.startswith("level")])
+    level2_count = len([f for f in os.listdir(level2) 
+                        if f.startswith(tuple("0123456789")) and f.endswith(".md")])
+    level3_count = len([f for f in os.listdir(level3) 
+                        if f.startswith(tuple("0123456789")) and f.endswith(".md")])
+    # 加上子目录
+    level3_sub = len([d for d in os.listdir(level3) 
+                      if os.path.isdir(os.path.join(level3, d))])
+    masters_count = len([f for f in os.listdir(os.path.join(SKILLS, "masters")) 
+                         if f.endswith(".md")])
+    scripts_count = len([f for f in os.listdir(os.path.join(SKILLS, "scripts")) 
+                         if f.endswith(".py")])
+    refs_count = len(os.listdir(os.path.join(SKILLS, "references")))
+    
+    print(f"  📊 一级Skill: {level1_count}个")
+    print(f"  📊 二级Skill: {level2_count}个")
+    print(f"  📊 三级Skill: {level3_count}个 (+{level3_sub}个子目录)")
+    print(f"  📊 大师级Skill: {masters_count}个")
+    print(f"  📊 Python脚本: {scripts_count}个")
+    print(f"  📊 参考文本: {refs_count}个")
+    
+    # 检查是否还有根目录散落文件
+    root_items = [f for f in os.listdir(SKILLS) 
+                  if os.path.isfile(os.path.join(SKILLS, f))]
+    if root_items:
+        print(f"\n  ⚠️ 根目录仍有散落文件: {root_items}")
+    else:
+        print(f"\n  ✅ 根目录无散落文件")
+
+    print("\n" + "=" * 70)
+    print("✅ Skills 文件夹清理重组完成！")
+    print("=" * 70)
+
+if __name__ == "__main__":
+    main()

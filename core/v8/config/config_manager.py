@@ -16,7 +16,10 @@ from datetime import datetime
 from typing import Dict, Any, Optional, List
 from pathlib import Path
 
-sys.stdout.reconfigure(encoding='utf-8')
+try:
+    sys.stdout.reconfigure(encoding='utf-8')
+except (AttributeError, OSError):
+    pass
 
 class ConfigValidator:
     """配置验证器"""

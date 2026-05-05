@@ -17,7 +17,10 @@ from datetime import datetime
 from typing import Dict, List, Any, Optional
 from abc import ABC, abstractmethod
 
-sys.stdout.reconfigure(encoding='utf-8')
+try:
+    sys.stdout.reconfigure(encoding='utf-8')
+except (AttributeError, OSError):
+    pass
 
 class ModelAdapter(ABC):
     """模型适配器抽象基类"""
