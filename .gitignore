@@ -33,3 +33,9 @@ wheels/
 # OS
 .DS_Store
 Thumbs.db
+
+# Runtime artifacts
+core/sessions/
+exports/
+push_err.txt
+push_out.txt

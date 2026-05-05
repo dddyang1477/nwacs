@@ -2,6 +2,11 @@
   "kid_counter": 1087,
   "total_learned": 1087,
   "last_web_fetch": "2026-05-05T12:23:34.462922",
+  "exercise_counter": 8,
+  "attempt_counter": 1,
+  "feedback_counter": 1,
+  "path_counter": 2,
+  "combo_counter": 5,
   "knowledge_base": {
     "KID_WRITING_TECHNIQUE_0001_13b6592e": {
       "kid": "KID_WRITING_TECHNIQUE_0001_13b6592e",
@@ -18674,10 +18679,10 @@
     "plot_design": {
       "name": "剧情设计",
       "level": "宗师",
-      "experience": 124,
+      "experience": 134,
       "max_experience": 757,
-      "usage_count": 56,
-      "success_count": 56,
+      "usage_count": 57,
+      "success_count": 57,
       "unlocked_at": "2026-05-05T04:24:13.669556",
       "last_level_up": "2026-05-05T12:23:34.433860"
     },
@@ -18714,10 +18719,10 @@
     "pacing_control": {
       "name": "节奏控制",
       "level": "专家",
-      "experience": 0,
+      "experience": 10,
       "max_experience": 337,
-      "usage_count": 14,
-      "success_count": 14,
+      "usage_count": 15,
+      "success_count": 15,
       "unlocked_at": "2026-05-05T04:24:13.669597",
       "last_level_up": "2026-05-05T12:25:24.459089"
     },
@@ -18975,6 +18980,603 @@
       ]
     }
   },
+  "exercises": {
+    "EX_001": {
+      "exercise_id": "EX_001",
+      "title": "黄金三章开篇练习",
+      "description": "为你的小说写一个3000字的开篇，必须包含黄金三章的全部要素",
+      "skill_focus": [
+        "plot_design",
+        "pacing_control"
+      ],
+      "difficulty": "intermediate",
+      "prompt": "主角是一个被家族抛弃的废柴少年，在16岁生日那天，他发现了一个改变命运的秘密...",
+      "constraints": [
+        "前500字必须建立核心冲突",
+        "第一章结尾必须有悬念钩子",
+        "至少出现3个有名字的角色",
+        "展示世界观至少一个独特设定"
+      ],
+      "target_word_count": 3000,
+      "hints": [
+        "用具体场景代替抽象叙述",
+        "让读者在第一段就产生好奇",
+        "主角的欲望要明确且紧迫"
+      ],
+      "evaluation_criteria": {
+        "冲突建立": 0.25,
+        "悬念设置": 0.2,
+        "人物塑造": 0.2,
+        "世界观展示": 0.15,
+        "语言流畅度": 0.2
+      },
+      "tags": [
+        "开篇",
+        "黄金三章",
+        "基础"
+      ]
+    },
+    "EX_002": {
+      "exercise_id": "EX_002",
+      "title": "对话场景专项训练",
+      "description": "写一段500字的纯对话场景，仅通过对话推进剧情和展示人物性格",
+      "skill_focus": [
+        "dialogue_writing",
+        "character_building"
+      ],
+      "difficulty": "intermediate",
+      "prompt": "两个多年未见的老友在茶馆重逢，一人飞黄腾达，一人落魄潦倒...",
+      "constraints": [
+        "不能使用任何叙述性文字",
+        "每人说话风格必须不同",
+        "对话中必须包含潜台词",
+        "通过对话暗示两人的过去"
+      ],
+      "target_word_count": 500,
+      "hints": [
+        "用称呼和语气词区分人物",
+        "每句话都应该推进剧情或揭示性格",
+        "沉默和停顿也是对话的一部分"
+      ],
+      "evaluation_criteria": {
+        "人物区分度": 0.3,
+        "潜台词运用": 0.25,
+        "剧情推进": 0.25,
+        "自然流畅度": 0.2
+      },
+      "tags": [
+        "对话",
+        "人物",
+        "技巧"
+      ]
+    },
+    "EX_003": {
+      "exercise_id": "EX_003",
+      "title": "战斗场景描写",
+      "description": "写一段800字的战斗场景，要求有节奏变化和战术博弈",
+      "skill_focus": [
+        "description",
+        "pacing_control"
+      ],
+      "difficulty": "advanced",
+      "prompt": "主角在秘境中遭遇守护兽，实力相当，必须智取...",
+      "constraints": [
+        "必须有至少一次节奏变化",
+        "使用至少3种感官描写",
+        "战斗结果不能靠蛮力取胜",
+        "要有心理描写穿插"
+      ],
+      "target_word_count": 800,
+      "hints": [
+        "战斗不是回合制，要有攻防转换",
+        "环境可以成为战斗的一部分",
+        "让读者感受到紧张和危险"
+      ],
+      "evaluation_criteria": {
+        "节奏控制": 0.25,
+        "感官描写": 0.2,
+        "战术设计": 0.25,
+        "紧张感营造": 0.3
+      },
+      "tags": [
+        "战斗",
+        "描写",
+        "节奏"
+      ]
+    },
+    "EX_004": {
+      "exercise_id": "EX_004",
+      "title": "情感高潮设计",
+      "description": "写一段1000字的情感高潮场景，让读者产生强烈共鸣",
+      "skill_focus": [
+        "emotional_design",
+        "description"
+      ],
+      "difficulty": "advanced",
+      "prompt": "主角历经千辛万苦终于救回了被囚禁的挚友，但挚友已经...",
+      "constraints": [
+        "必须使用延迟满足技巧",
+        "至少一处细节特写",
+        "情感要有层次递进",
+        "避免直接说「他很伤心」"
+      ],
+      "target_word_count": 1000,
+      "hints": [
+        "用动作和细节代替情感形容词",
+        "对比反差可以增强感染力",
+        "留白比写满更有力量"
+      ],
+      "evaluation_criteria": {
+        "情感层次": 0.3,
+        "细节描写": 0.25,
+        "节奏把控": 0.2,
+        "共鸣强度": 0.25
+      },
+      "tags": [
+        "情感",
+        "高潮",
+        "共鸣"
+      ]
+    },
+    "EX_005": {
+      "exercise_id": "EX_005",
+      "title": "伏笔埋设与回收",
+      "description": "设计一个跨越10章的伏笔，写出埋设章节和回收章节的关键段落",
+      "skill_focus": [
+        "foreshadowing",
+        "plot_design"
+      ],
+      "difficulty": "advanced",
+      "prompt": "主角在第一章捡到一枚看似普通的铜钱，在第十章这枚铜钱成为破局的关键...",
+      "constraints": [
+        "埋设时要自然不刻意",
+        "回收时要有「原来如此」的恍然大悟",
+        "中间章节要有暗示但不明说",
+        "伏笔回收要推动剧情转折"
+      ],
+      "target_word_count": 1500,
+      "hints": [
+        "好伏笔像种子，埋下时不起眼",
+        "回收时机要恰到好处",
+        "一个伏笔可以有多个暗示"
+      ],
+      "evaluation_criteria": {
+        "埋设自然度": 0.25,
+        "回收震撼度": 0.3,
+        "中间暗示": 0.2,
+        "剧情推动": 0.25
+      },
+      "tags": [
+        "伏笔",
+        "结构",
+        "设计"
+      ]
+    },
+    "EX_006": {
+      "exercise_id": "EX_006",
+      "title": "世界观构建练习",
+      "description": "为一个架空世界设计完整的修炼/魔法体系",
+      "skill_focus": [
+        "world_building"
+      ],
+      "difficulty": "intermediate",
+      "prompt": "设计一个以「星辰之力」为核心的修炼体系，包含等级划分、突破条件、特殊能力...",
+      "constraints": [
+        "至少5个修炼等级",
+        "每个等级有明确的突破条件",
+        "体系内部逻辑自洽",
+        "有独特的代价或限制"
+      ],
+      "target_word_count": 1000,
+      "hints": [
+        "好的体系有限制才有张力",
+        "等级之间的差距要合理",
+        "特殊能力要与等级匹配"
+      ],
+      "evaluation_criteria": {
+        "体系完整度": 0.3,
+        "逻辑自洽": 0.3,
+        "创新性": 0.2,
+        "可写性": 0.2
+      },
+      "tags": [
+        "世界观",
+        "设定",
+        "体系"
+      ]
+    },
+    "EX_007": {
+      "exercise_id": "EX_007",
+      "title": "人物弧线设计",
+      "description": "为一个角色设计完整的成长弧线，从登场到结局",
+      "skill_focus": [
+        "character_building",
+        "plot_design"
+      ],
+      "difficulty": "intermediate",
+      "prompt": "设计一个从懦弱到勇敢的角色成长弧线，标注每个阶段的关键事件...",
+      "constraints": [
+        "至少5个成长阶段",
+        "每个阶段有明确的触发事件",
+        "成长要有反复和挫折",
+        "最终形态与初始形态形成鲜明对比"
+      ],
+      "target_word_count": 800,
+      "hints": [
+        "成长不是线性的，要有起伏",
+        "外部事件触发内部变化",
+        "让读者看到角色「选择」的瞬间"
+      ],
+      "evaluation_criteria": {
+        "弧线完整度": 0.3,
+        "转变合理性": 0.3,
+        "阶段设计": 0.2,
+        "对比效果": 0.2
+      },
+      "tags": [
+        "人物",
+        "弧线",
+        "成长"
+      ]
+    },
+    "EX_008": {
+      "exercise_id": "EX_008",
+      "title": "悬念设置练习",
+      "description": "为一个章节写5种不同类型的结尾悬念",
+      "skill_focus": [
+        "plot_design",
+        "pacing_control"
+      ],
+      "difficulty": "beginner",
+      "prompt": "主角刚刚在宗门大比中获胜，但...",
+      "constraints": [
+        "5种悬念类型不能重复",
+        "每种悬念不超过100字",
+        "每种都要让读者产生「然后呢」的冲动"
+      ],
+      "target_word_count": 500,
+      "hints": [
+        "信息差悬念最常用也最有效",
+        "倒计时悬念增加紧迫感",
+        "关系悬念让读者关心人物命运"
+      ],
+      "evaluation_criteria": {
+        "悬念多样性": 0.3,
+        "吸引力": 0.4,
+        "简洁有力": 0.3
+      },
+      "tags": [
+        "悬念",
+        "结尾",
+        "技巧"
+      ]
+    }
+  },
+  "attempts": {
+    "EX_001": [
+      {
+        "attempt_id": "ATT_000001",
+        "exercise_id": "EX_001",
+        "content": "测试内容用于持久化验证。",
+        "word_count": 12,
+        "time_spent_seconds": 0,
+        "self_rating": 0.0,
+        "ai_feedback": "",
+        "scores": {},
+        "strengths": [],
+        "weaknesses": [],
+        "created_at": "2026-05-05T16:33:38.731539"
+      }
+    ]
+  },
+  "feedback_records": {
+    "FB_000001": {
+      "record_id": "FB_000001",
+      "skill_name": "人物塑造",
+      "aspect": "综合",
+      "current_level": "大师",
+      "target_level": "专家",
+      "gap_analysis": "已达到大师水准，继续保持即可",
+      "improvement_plan": [
+        "完成练习: 对话场景专项训练",
+        "完成练习: 人物弧线设计",
+        "当前经验: 143/337"
+      ],
+      "progress_percentage": 42.4,
+      "last_reviewed": "2026-05-05T16:33:38.731609"
+    }
+  },
+  "learning_paths": {
+    "PATH_0001": {
+      "path_id": "PATH_0001",
+      "name": "网文写作入门之路",
+      "description": "从零开始系统学习网文写作的核心技能",
+      "target_genre": "all",
+      "milestones": [
+        {
+          "milestone_id": "MS_001",
+          "name": "基础认知",
+          "description": "了解网文的基本结构和读者期待",
+          "required_skills": {
+            "plot_design": "学徒"
+          },
+          "required_exercises": [
+            "EX_001",
+            "EX_008"
+          ],
+          "rewards": [
+            "解锁「黄金三章」模板",
+            "获得基础写作提示库"
+          ],
+          "unlocked": false,
+          "completed": false,
+          "completed_at": ""
+        },
+        {
+          "milestone_id": "MS_002",
+          "name": "人物塑造",
+          "description": "学会创造有魅力的角色",
+          "required_skills": {
+            "character_building": "学徒"
+          },
+          "required_exercises": [
+            "EX_002",
+            "EX_007"
+          ],
+          "rewards": [
+            "解锁「人物原型」模板",
+            "获得角色设计工具箱"
+          ],
+          "unlocked": false,
+          "completed": false,
+          "completed_at": ""
+        },
+        {
+          "milestone_id": "MS_003",
+          "name": "场景与节奏",
+          "description": "掌握场景描写和节奏控制",
+          "required_skills": {
+            "description": "熟手",
+            "pacing_control": "熟手"
+          },
+          "required_exercises": [
+            "EX_003"
+          ],
+          "rewards": [
+            "解锁「战斗场景」模板",
+            "获得节奏分析工具"
+          ],
+          "unlocked": false,
+          "completed": false,
+          "completed_at": ""
+        },
+        {
+          "milestone_id": "MS_004",
+          "name": "情感与伏笔",
+          "description": "学会设计情感高潮和伏笔系统",
+          "required_skills": {
+            "emotional_design": "熟手",
+            "foreshadowing": "熟手"
+          },
+          "required_exercises": [
+            "EX_004",
+            "EX_005"
+          ],
+          "rewards": [
+            "解锁「情感曲线」工具",
+            "获得伏笔管理模板"
+          ],
+          "unlocked": false,
+          "completed": false,
+          "completed_at": ""
+        },
+        {
+          "milestone_id": "MS_005",
+          "name": "世界观构建",
+          "description": "构建完整自洽的世界观体系",
+          "required_skills": {
+            "world_building": "专家"
+          },
+          "required_exercises": [
+            "EX_006"
+          ],
+          "rewards": [
+            "解锁「世界观」完整模板",
+            "获得设定一致性检查工具"
+          ],
+          "unlocked": false,
+          "completed": false,
+          "completed_at": ""
+        }
+      ],
+      "current_milestone_index": 0,
+      "total_exercises_completed": 0,
+      "started_at": "2026-05-05T16:33:38.702845",
+      "last_activity": "2026-05-05T16:33:38.702851"
+    },
+    "PATH_0002": {
+      "path_id": "PATH_0002",
+      "name": "玄幻小说大师之路",
+      "description": "专为玄幻/仙侠题材设计的进阶学习路径",
+      "target_genre": "玄幻",
+      "milestones": [
+        {
+          "milestone_id": "MS_101",
+          "name": "修炼体系设计",
+          "description": "设计独特且逻辑自洽的修炼体系",
+          "required_skills": {
+            "world_building": "专家"
+          },
+          "required_exercises": [
+            "EX_006"
+          ],
+          "rewards": [
+            "解锁「修炼体系」完整模板"
+          ],
+          "unlocked": false,
+          "completed": false,
+          "completed_at": ""
+        },
+        {
+          "milestone_id": "MS_102",
+          "name": "战斗场景精通",
+          "description": "写出让读者热血沸腾的战斗场景",
+          "required_skills": {
+            "description": "专家",
+            "pacing_control": "专家"
+          },
+          "required_exercises": [
+            "EX_003"
+          ],
+          "rewards": [
+            "解锁「战斗场景」高级模板"
+          ],
+          "unlocked": false,
+          "completed": false,
+          "completed_at": ""
+        },
+        {
+          "milestone_id": "MS_103",
+          "name": "长篇布局",
+          "description": "掌握百万字长篇的伏笔和结构设计",
+          "required_skills": {
+            "plot_design": "大师",
+            "foreshadowing": "专家"
+          },
+          "required_exercises": [
+            "EX_005"
+          ],
+          "rewards": [
+            "解锁「长篇结构」完整模板"
+          ],
+          "unlocked": false,
+          "completed": false,
+          "completed_at": ""
+        }
+      ],
+      "current_milestone_index": 0,
+      "total_exercises_completed": 0,
+      "started_at": "2026-05-05T16:33:38.702873",
+      "last_activity": "2026-05-05T16:33:38.702878"
+    }
+  },
+  "skill_combos": {
+    "COMBO_001": {
+      "combo_id": "COMBO_001",
+      "name": "高潮设计组合",
+      "description": "将剧情设计、节奏控制和情绪设计结合，创造震撼的高潮场景",
+      "skills_required": [
+        "plot_design",
+        "pacing_control",
+        "emotional_design"
+      ],
+      "synergy_score": 0.85,
+      "use_cases": [
+        "章节高潮设计",
+        "卷末大高潮",
+        "全书终极高潮"
+      ],
+      "techniques": [
+        "三波递进: 小高潮→中高潮→大高潮",
+        "情绪曲线: 压抑→释放→震撼",
+        "节奏切换: 慢→快→极快→静止",
+        "多线汇聚: 所有支线在高潮点交汇"
+      ],
+      "discovered_at": "2026-05-05T16:33:38.702889"
+    },
+    "COMBO_002": {
+      "combo_id": "COMBO_002",
+      "name": "人物深度塑造",
+      "description": "结合人物塑造、对话写作和场景描写，创造立体角色",
+      "skills_required": [
+        "character_building",
+        "dialogue_writing",
+        "description"
+      ],
+      "synergy_score": 0.8,
+      "use_cases": [
+        "主角深度塑造",
+        "反派魅力塑造",
+        "配角功能最大化"
+      ],
+      "techniques": [
+        "对话展示性格: 每人说话方式不同",
+        "场景烘托人物: 环境反映内心",
+        "行动定义角色: 关键时刻的选择",
+        "对比强化印象: 与其他角色的反差"
+      ],
+      "discovered_at": "2026-05-05T16:33:38.702899"
+    },
+    "COMBO_003": {
+      "combo_id": "COMBO_003",
+      "name": "长篇布局系统",
+      "description": "结合剧情设计、伏笔设计和世界观构建，驾驭百万字长篇",
+      "skills_required": [
+        "plot_design",
+        "foreshadowing",
+        "world_building"
+      ],
+      "synergy_score": 0.9,
+      "use_cases": [
+        "百万字以上长篇布局",
+        "多卷本系列规划",
+        "复杂世界观展开"
+      ],
+      "techniques": [
+        "主线+支线: 主剧情推进，支线丰富世界",
+        "伏笔网络: 短中长三期伏笔交织",
+        "世界观分层: 逐步揭示更深层的设定",
+        "节奏地图: 全书高低潮分布规划"
+      ],
+      "discovered_at": "2026-05-05T16:33:38.702908"
+    },
+    "COMBO_004": {
+      "combo_id": "COMBO_004",
+      "name": "爽点流水线",
+      "description": "结合节奏控制、情绪设计和剧情设计，持续制造爽点",
+      "skills_required": [
+        "pacing_control",
+        "emotional_design",
+        "plot_design"
+      ],
+      "synergy_score": 0.75,
+      "use_cases": [
+        "日常章节爽点设计",
+        "打脸场景优化",
+        "升级突破场景"
+      ],
+      "techniques": [
+        "铺垫→爆发→反应: 标准爽点三段式",
+        "情绪递进: 压抑→期待→满足",
+        "节奏加速: 短句+动作+震惊反应",
+        "连锁爽点: 一个小爽点引出更大的"
+      ],
+      "discovered_at": "2026-05-05T16:33:38.702916"
+    },
+    "COMBO_005": {
+      "combo_id": "COMBO_005",
+      "name": "沉浸式世界构建",
+      "description": "结合世界观构建、场景描写和对话写作，创造让读者沉浸的世界",
+      "skills_required": [
+        "world_building",
+        "description",
+        "dialogue_writing"
+      ],
+      "synergy_score": 0.82,
+      "use_cases": [
+        "异世界/架空世界构建",
+        "独特文化体系设计",
+        "让设定「活」起来"
+      ],
+      "techniques": [
+        "展示而非告知: 通过角色互动展示设定",
+        "日常融入: 在普通场景中体现世界观",
+        "对话传递: 角色对话自然带出设定信息",
+        "感官沉浸: 五感描写让世界可感知"
+      ],
+      "discovered_at": "2026-05-05T16:33:38.702926"
+    }
+  },
   "learning_log": [
     {
       "time": "2026-05-05T04:24:14.146622",
@@ -18998,5 +19600,5 @@
       ]
     }
   ],
-  "saved_at": "2026-05-05T12:27:10.785428"
+  "saved_at": "2026-05-05T16:33:38.733017"
 }

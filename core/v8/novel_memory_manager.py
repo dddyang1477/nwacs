@@ -198,6 +198,73 @@ class ConsistencyIssue:
     resolved: bool = False
 
 
+@dataclass
+class RetrievalResult:
+    """智能检索结果"""
+    result_id: str
+    content_type: str
+    chapter: int
+    content: str
+    relevance_score: float = 0.0
+    matched_keywords: List[str] = field(default_factory=list)
+    context_before: str = ""
+    context_after: str = ""
+    source_section: str = ""
+
+
+@dataclass
+class CausalLink:
+    """因果链节点"""
+    link_id: str
+    cause_event: str
+    effect_event: str
+    cause_chapter: int
+    effect_chapter: int
+    confidence: float = 0.5
+    evidence: List[str] = field(default_factory=list)
+    link_type: str = "direct"
+
+
+@dataclass
+class CharacterArcPoint:
+    """角色弧线节点"""
+    character_name: str
+    chapter: int
+    arc_stage: str = "exposition"
+    trait_changes: Dict[str, Any] = field(default_factory=dict)
+    key_events: List[str] = field(default_factory=list)
+    growth_score: float = 0.0
+
+
+@dataclass
+class MemorySnapshot:
+    """记忆快照（用于压缩）"""
+    snapshot_id: str
+    chapter_range: Tuple[int, int]
+    summary: str = ""
+    key_characters: List[str] = field(default_factory=list)
+    key_events: List[str] = field(default_factory=list)
+    key_settings: List[str] = field(default_factory=list)
+    unresolved_threads: List[str] = field(default_factory=list)
+    word_count: int = 0
+    compression_ratio: float = 0.0
+    created_at: str = ""
+
+
+@dataclass
+class AutoCheckRule:
+    """自动检查规则"""
+    rule_id: str
+    name: str
+    category: str
+    check_function: str
+    severity_threshold: ConsistencyLevel = ConsistencyLevel.MINOR_DRIFT
+    enabled: bool = True
+    schedule: str = "on_chapter"
+    last_run_chapter: int = 0
+    total_issues_found: int = 0
+
+
 class NovelMemoryManager:
     """长篇小说记忆一致性验证管理器"""
 
@@ -232,6 +299,16 @@ class NovelMemoryManager:
         self.conflict_density: Dict[int, float] = {}
         self.rule_counter = 0
 
+        self.causal_links: Dict[str, CausalLink] = {}
+        self.character_arcs: Dict[str, List[CharacterArcPoint]] = {}
+        self.memory_snapshots: Dict[str, MemorySnapshot] = {}
+        self.auto_check_rules: Dict[str, AutoCheckRule] = {}
+        self.chapter_texts: Dict[int, str] = {}
+        self.link_counter = 0
+        self.snapshot_counter = 0
+        self.retrieval_counter = 0
+
+        self._init_auto_check_rules()
         self._load_all()
 
     # ================================================================
@@ -1301,6 +1378,1165 @@ class NovelMemoryManager:
         ]
 
     # ================================================================
+    # 智能检索系统 (Intelligent Retrieval)
+    # ================================================================
+
+    def store_chapter_text(self, chapter: int, text: str):
+        """存储章节原文用于检索"""
+        self.chapter_texts[chapter] = text
+
+    def intelligent_search(self, query: str,
+                           search_types: List[str] = None,
+                           chapters: List[int] = None,
+                           min_relevance: float = 0.2,
+                           max_results: int = 20,
+                           include_context: bool = True) -> List[RetrievalResult]:
+        """智能检索 - 跨所有记忆维度搜索
+
+        支持搜索类型:
+        - 'character': 人物信息
+        - 'plot': 剧情事件
+        - 'setting': 世界观设定
+        - 'foreshadowing': 伏笔
+        - 'dialogue': 对话内容
+        - 'text': 原文内容
+        - 'rule': 世界观规则
+        """
+        if search_types is None:
+            search_types = ['character', 'plot', 'setting', 'foreshadowing', 'text', 'rule']
+
+        results: List[RetrievalResult] = []
+        query_terms = self._tokenize_query(query)
+
+        if 'character' in search_types:
+            results.extend(self._search_characters(query, query_terms, chapters))
+
+        if 'plot' in search_types:
+            results.extend(self._search_plot_events(query, query_terms, chapters))
+
+        if 'setting' in search_types:
+            results.extend(self._search_settings(query, query_terms))
+
+        if 'foreshadowing' in search_types:
+            results.extend(self._search_foreshadowings(query, query_terms, chapters))
+
+        if 'text' in search_types and self.chapter_texts:
+            results.extend(self._search_chapter_texts(query, query_terms, chapters,
+                                                       include_context))
+
+        if 'rule' in search_types:
+            results.extend(self._search_world_rules(query, query_terms))
+
+        results = [r for r in results if r.relevance_score >= min_relevance]
+        results.sort(key=lambda r: r.relevance_score, reverse=True)
+        return results[:max_results]
+
+    def _tokenize_query(self, query: str) -> List[str]:
+        """分词查询"""
+        tokens = []
+        for i in range(len(query)):
+            if i + 2 <= len(query):
+                tokens.append(query[i:i + 2])
+            if i + 3 <= len(query):
+                tokens.append(query[i:i + 3])
+        tokens.append(query)
+        return list(set(tokens))
+
+    def _search_characters(self, query: str, terms: List[str],
+                           chapters: List[int] = None) -> List[RetrievalResult]:
+        """搜索人物信息"""
+        results = []
+        for name, profile in self.characters.items():
+            if chapters and profile.first_appearance_chapter not in chapters:
+                continue
+
+            score = 0.0
+            matched = []
+
+            if query in name:
+                score += 1.0
+                matched.append(name)
+            for alias in profile.aliases:
+                if query in alias:
+                    score += 0.8
+                    matched.append(alias)
+
+            search_text = f"{profile.role} {' '.join(profile.personality)} "
+            search_text += f"{' '.join(profile.catchphrases)} {profile.notes}"
+            for term in terms:
+                if term in search_text:
+                    score += 0.3
+                    matched.append(term)
+
+            if score > 0:
+                content = (f"【{name}】角色: {profile.role}, "
+                           f"性格: {'/'.join(profile.personality[:5])}, "
+                           f"首登场: 第{profile.first_appearance_chapter}章, "
+                           f"状态: {profile.status}")
+                self.retrieval_counter += 1
+                results.append(RetrievalResult(
+                    result_id=f"RET_{self.retrieval_counter:06d}",
+                    content_type="character",
+                    chapter=profile.first_appearance_chapter,
+                    content=content,
+                    relevance_score=min(score, 1.0),
+                    matched_keywords=matched,
+                    source_section="人物档案",
+                ))
+        return results
+
+    def _search_plot_events(self, query: str, terms: List[str],
+                            chapters: List[int] = None) -> List[RetrievalResult]:
+        """搜索剧情事件"""
+        results = []
+        for event in self.plot_events:
+            if chapters and event['chapter'] not in chapters:
+                continue
+
+            score = 0.0
+            matched = []
+            event_text = f"{event['event']} {event.get('type', '')} "
+            event_text += f"{' '.join(event.get('characters', []))} "
+            event_text += f"{event.get('location', '')} {' '.join(event.get('tags', []))}"
+
+            for term in terms:
+                if term in event_text:
+                    score += 0.4
+                    matched.append(term)
+
+            if query in event['event']:
+                score += 0.8
+                matched.append(query)
+
+            if score > 0:
+                self.retrieval_counter += 1
+                results.append(RetrievalResult(
+                    result_id=f"RET_{self.retrieval_counter:06d}",
+                    content_type="plot",
+                    chapter=event['chapter'],
+                    content=event['event'],
+                    relevance_score=min(score, 1.0),
+                    matched_keywords=matched,
+                    source_section="剧情事件",
+                ))
+        return results
+
+    def _search_settings(self, query: str, terms: List[str]) -> List[RetrievalResult]:
+        """搜索世界观设定"""
+        results = []
+        for key, value in self.world_settings.items():
+            score = 0.0
+            matched = []
+            search_text = f"{key} {str(value)}"
+
+            for term in terms:
+                if term in search_text:
+                    score += 0.4
+                    matched.append(term)
+
+            if query in key:
+                score += 0.8
+                matched.append(key)
+
+            if score > 0:
+                self.retrieval_counter += 1
+                results.append(RetrievalResult(
+                    result_id=f"RET_{self.retrieval_counter:06d}",
+                    content_type="setting",
+                    chapter=0,
+                    content=f"{key}: {str(value)[:200]}",
+                    relevance_score=min(score, 1.0),
+                    matched_keywords=matched,
+                    source_section="世界观设定",
+                ))
+        return results
+
+    def _search_foreshadowings(self, query: str, terms: List[str],
+                               chapters: List[int] = None) -> List[RetrievalResult]:
+        """搜索伏笔"""
+        results = []
+        for fs in self.foreshadowings.values():
+            if chapters and fs.planted_chapter not in chapters:
+                continue
+
+            score = 0.0
+            matched = []
+            search_text = (f"{fs.description} {fs.type} "
+                           f"{' '.join(fs.related_characters)} "
+                           f"{' '.join(fs.tags)}")
+
+            for term in terms:
+                if term in search_text:
+                    score += 0.4
+                    matched.append(term)
+
+            if query in fs.description:
+                score += 0.8
+                matched.append(query)
+
+            if score > 0:
+                self.retrieval_counter += 1
+                results.append(RetrievalResult(
+                    result_id=f"RET_{self.retrieval_counter:06d}",
+                    content_type="foreshadowing",
+                    chapter=fs.planted_chapter,
+                    content=f"[{fs.status.value}] {fs.description} "
+                            f"(埋设第{fs.planted_chapter}章, 预期回收第{fs.expected_payoff_chapter}章)",
+                    relevance_score=min(score, 1.0),
+                    matched_keywords=matched,
+                    source_section="伏笔管理",
+                ))
+        return results
+
+    def _search_chapter_texts(self, query: str, terms: List[str],
+                              chapters: List[int] = None,
+                              include_context: bool = True) -> List[RetrievalResult]:
+        """搜索原文内容"""
+        results = []
+        target_chapters = chapters if chapters else sorted(self.chapter_texts.keys())
+
+        for ch in target_chapters:
+            if ch not in self.chapter_texts:
+                continue
+            text = self.chapter_texts[ch]
+
+            idx = text.find(query)
+            if idx >= 0:
+                context_before = text[max(0, idx - 50):idx] if include_context else ""
+                context_after = text[idx + len(query):idx + len(query) + 50] if include_context else ""
+
+                self.retrieval_counter += 1
+                results.append(RetrievalResult(
+                    result_id=f"RET_{self.retrieval_counter:06d}",
+                    content_type="text",
+                    chapter=ch,
+                    content=text[max(0, idx - 20):idx + len(query) + 20],
+                    relevance_score=0.9,
+                    matched_keywords=[query],
+                    context_before=context_before,
+                    context_after=context_after,
+                    source_section="原文内容",
+                ))
+            else:
+                score = 0.0
+                matched = []
+                for term in terms:
+                    if term in text:
+                        score += 0.2
+                        matched.append(term)
+                if score >= 0.4:
+                    first_idx = text.find(matched[0]) if matched else 0
+                    self.retrieval_counter += 1
+                    results.append(RetrievalResult(
+                        result_id=f"RET_{self.retrieval_counter:06d}",
+                        content_type="text",
+                        chapter=ch,
+                        content=text[max(0, first_idx - 20):first_idx + 80],
+                        relevance_score=min(score, 0.7),
+                        matched_keywords=matched,
+                        source_section="原文内容",
+                    ))
+        return results
+
+    def _search_world_rules(self, query: str, terms: List[str]) -> List[RetrievalResult]:
+        """搜索世界观规则"""
+        results = []
+        for rule in self.world_rules.values():
+            score = 0.0
+            matched = []
+            search_text = f"{rule.category} {rule.rule} {' '.join(rule.exceptions)}"
+
+            for term in terms:
+                if term in search_text:
+                    score += 0.4
+                    matched.append(term)
+
+            if query in rule.rule:
+                score += 0.8
+                matched.append(query)
+
+            if score > 0:
+                self.retrieval_counter += 1
+                results.append(RetrievalResult(
+                    result_id=f"RET_{self.retrieval_counter:06d}",
+                    content_type="rule",
+                    chapter=rule.established_chapter,
+                    content=f"[{rule.category}] {rule.rule}",
+                    relevance_score=min(score, 1.0),
+                    matched_keywords=matched,
+                    source_section="世界观规则",
+                ))
+        return results
+
+    def context_aware_retrieval(self, current_chapter: int,
+                                query: str,
+                                context_window: int = 10) -> Dict:
+        """上下文感知检索 - 基于当前写作位置智能检索相关信息
+
+        自动识别当前章节附近最相关的人物、伏笔、设定
+        """
+        nearby_chapters = list(range(
+            max(1, current_chapter - context_window),
+            current_chapter + 1
+        ))
+
+        results = self.intelligent_search(
+            query=query,
+            chapters=nearby_chapters,
+            max_results=15,
+            include_context=True,
+        )
+
+        active_characters = []
+        for name, profile in self.characters.items():
+            if (profile.last_appearance_chapter >= current_chapter - context_window
+                    and profile.status == "存活"):
+                active_characters.append({
+                    "name": name,
+                    "role": profile.role,
+                    "last_seen": profile.last_appearance_chapter,
+                })
+
+        pending_foreshadowing = []
+        for fs in self.foreshadowings.values():
+            if fs.status in [ForeshadowStatus.PLANTED, ForeshadowStatus.HINTED]:
+                if (fs.expected_payoff_chapter <= current_chapter + context_window
+                        and fs.expected_payoff_chapter >= current_chapter - 5):
+                    pending_foreshadowing.append({
+                        "id": fs.fs_id,
+                        "description": fs.description,
+                        "expected_chapter": fs.expected_payoff_chapter,
+                        "urgency": "高" if fs.expected_payoff_chapter <= current_chapter else "中",
+                    })
+
+        return {
+            "query": query,
+            "current_chapter": current_chapter,
+            "context_window": context_window,
+            "search_results": [
+                {
+                    "type": r.content_type,
+                    "chapter": r.chapter,
+                    "content": r.content,
+                    "score": r.relevance_score,
+                }
+                for r in results
+            ],
+            "active_characters": active_characters,
+            "pending_foreshadowing": pending_foreshadowing,
+            "nearby_issues": [
+                {
+                    "category": i.category,
+                    "description": i.description,
+                    "chapter": i.chapter,
+                }
+                for i in self.issues
+                if i.chapter in nearby_chapters and not i.resolved
+            ],
+        }
+
+    # ================================================================
+    # 关联推理引擎 (Association Reasoning)
+    # ================================================================
+
+    def discover_causal_links(self, start_chapter: int = 1,
+                              end_chapter: int = None) -> List[CausalLink]:
+        """自动发现因果链 - 分析剧情事件间的因果关系"""
+        if end_chapter is None:
+            end_chapter = max(self.chapter_texts.keys()) if self.chapter_texts else start_chapter
+
+        new_links = []
+        events_in_range = [
+            e for e in self.plot_events
+            if start_chapter <= e['chapter'] <= end_chapter
+        ]
+        events_in_range.sort(key=lambda e: e['chapter'])
+
+        causal_patterns = [
+            (["获得", "发现", "得到", "觉醒", "突破"], ["使用", "展示", "击败", "解决", "进入"]),
+            (["遭遇", "遇到", "碰见"], ["结识", "同行", "合作", "对抗"]),
+            (["受伤", "中毒", "被困"], ["治疗", "解毒", "逃脱", "突破"]),
+            (["威胁", "挑衅", "宣战"], ["反击", "战斗", "对决", "报复"]),
+            (["失踪", "消失", "离开"], ["寻找", "追踪", "发现", "重逢"]),
+            (["承诺", "约定", "誓言"], ["履行", "兑现", "赴约", "完成"]),
+        ]
+
+        for i, cause_event in enumerate(events_in_range):
+            for j in range(i + 1, min(i + 10, len(events_in_range))):
+                effect_event = events_in_range[j]
+                chapter_gap = effect_event['chapter'] - cause_event['chapter']
+
+                if chapter_gap > 50:
+                    continue
+
+                confidence = 0.0
+                evidence = []
+                link_type = "direct"
+
+                for cause_patterns, effect_patterns in causal_patterns:
+                    cause_match = any(p in cause_event['event'] for p in cause_patterns)
+                    effect_match = any(p in effect_event['event'] for p in effect_patterns)
+                    if cause_match and effect_match:
+                        confidence += 0.4
+                        evidence.append(
+                            f"模式匹配: {cause_event['event'][:30]} → {effect_event['event'][:30]}"
+                        )
+
+                shared_characters = (
+                    set(cause_event.get('characters', []))
+                    & set(effect_event.get('characters', []))
+                )
+                if shared_characters:
+                    confidence += 0.3
+                    evidence.append(f"共享角色: {', '.join(shared_characters)}")
+
+                if cause_event.get('location') == effect_event.get('location'):
+                    confidence += 0.15
+                    evidence.append(f"同地点: {cause_event['location']}")
+
+                if chapter_gap <= 3:
+                    confidence += 0.15
+                    evidence.append(f"时间邻近(间隔{chapter_gap}章)")
+
+                confidence = min(confidence, 1.0)
+
+                if confidence >= 0.4:
+                    self.link_counter += 1
+                    link = CausalLink(
+                        link_id=f"LINK_{self.link_counter:06d}",
+                        cause_event=cause_event['event'][:100],
+                        effect_event=effect_event['event'][:100],
+                        cause_chapter=cause_event['chapter'],
+                        effect_chapter=effect_event['chapter'],
+                        confidence=round(confidence, 2),
+                        evidence=evidence,
+                        link_type=link_type,
+                    )
+                    self.causal_links[link.link_id] = link
+                    new_links.append(link)
+
+        return new_links
+
+    def get_causal_chain(self, event_text: str,
+                         direction: str = "both",
+                         max_depth: int = 5) -> Dict:
+        """获取事件的因果链
+
+        direction: 'forward'(结果), 'backward'(原因), 'both'(双向)
+        """
+        chain = {
+            "event": event_text,
+            "causes": [],
+            "effects": [],
+            "full_chain": [],
+        }
+
+        for link in self.causal_links.values():
+            if event_text[:30] in link.effect_event:
+                chain["causes"].append({
+                    "event": link.cause_event,
+                    "chapter": link.cause_chapter,
+                    "confidence": link.confidence,
+                })
+            if event_text[:30] in link.cause_event:
+                chain["effects"].append({
+                    "event": link.effect_event,
+                    "chapter": link.effect_chapter,
+                    "confidence": link.confidence,
+                })
+
+        visited = set()
+        queue = [(event_text, 0, "root")]
+        while queue and len(chain["full_chain"]) < max_depth * 2:
+            current, depth, direction_tag = queue.pop(0)
+            if current[:30] in visited or depth >= max_depth:
+                continue
+            visited.add(current[:30])
+
+            chain["full_chain"].append({
+                "event": current[:80],
+                "depth": depth,
+                "direction": direction_tag,
+            })
+
+            for link in self.causal_links.values():
+                if current[:30] in link.cause_event:
+                    queue.append((link.effect_event, depth + 1, "forward"))
+                if current[:30] in link.effect_event:
+                    queue.append((link.cause_event, depth + 1, "backward"))
+
+        return chain
+
+    def analyze_character_arc(self, character_name: str) -> Dict:
+        """分析角色弧线 - 追踪角色在整本书中的成长轨迹"""
+        profile = self.characters.get(character_name)
+        if not profile:
+            return {"error": f"未找到角色: {character_name}"}
+
+        arc_points = []
+        appearances = [
+            e for e in self.plot_events
+            if character_name in e.get('characters', [])
+        ]
+        appearances.sort(key=lambda e: e['chapter'])
+
+        arc_stages = [
+            (0, 0.1, "exposition", "登场亮相"),
+            (0.1, 0.25, "setup", "建立目标"),
+            (0.25, 0.4, "growth", "成长历练"),
+            (0.4, 0.55, "crisis", "遭遇危机"),
+            (0.55, 0.7, "transformation", "蜕变转折"),
+            (0.7, 0.85, "mastery", "掌握力量"),
+            (0.85, 1.0, "resolution", "结局归宿"),
+        ]
+
+        total_chapters = max(self.chapter_texts.keys()) if self.chapter_texts else 100
+
+        for event in appearances:
+            progress = event['chapter'] / max(total_chapters, 1)
+            stage = "exposition"
+            stage_label = "登场亮相"
+            for low, high, s, label in arc_stages:
+                if low <= progress < high:
+                    stage = s
+                    stage_label = label
+                    break
+
+            growth_score = progress * 100
+
+            trait_changes = {}
+            if profile.personality:
+                trait_changes["personality"] = profile.personality[:3]
+            if profile.abilities:
+                trait_changes["abilities_count"] = len(profile.abilities)
+
+            arc_point = CharacterArcPoint(
+                character_name=character_name,
+                chapter=event['chapter'],
+                arc_stage=stage,
+                trait_changes=trait_changes,
+                key_events=[event['event'][:80]],
+                growth_score=round(growth_score, 1),
+            )
+            arc_points.append(arc_point)
+
+        if character_name not in self.character_arcs:
+            self.character_arcs[character_name] = []
+        self.character_arcs[character_name].extend(arc_points)
+
+        return {
+            "character": character_name,
+            "role": profile.role,
+            "total_appearances": len(appearances),
+            "first_appearance": profile.first_appearance_chapter,
+            "last_appearance": profile.last_appearance_chapter,
+            "arc_stages": [
+                {
+                    "chapter": p.chapter,
+                    "stage": p.arc_stage,
+                    "growth": p.growth_score,
+                    "events": p.key_events,
+                }
+                for p in arc_points
+            ],
+            "arc_completeness": self._evaluate_arc_completeness(arc_points),
+        }
+
+    def _evaluate_arc_completeness(self,
+                                    arc_points: List[CharacterArcPoint]) -> str:
+        """评估角色弧线完整度"""
+        if not arc_points:
+            return "无数据"
+
+        stages_seen = set(p.arc_stage for p in arc_points)
+        total_stages = 7
+
+        if len(stages_seen) >= 6:
+            return "完整"
+        elif len(stages_seen) >= 4:
+            return "较完整"
+        elif len(stages_seen) >= 2:
+            return "发展中"
+        return "初始阶段"
+
+    def detect_cross_chapter_patterns(self) -> Dict:
+        """跨章节模式检测 - 发现重复使用的叙事模式"""
+        patterns = {
+            "repeated_phrases": defaultdict(list),
+            "structure_patterns": defaultdict(list),
+            "emotional_cycles": [],
+            "pacing_cycles": [],
+        }
+
+        for ch, text in self.chapter_texts.items():
+            phrases = re.findall(r'[\u4e00-\u9fff]{4,8}', text)
+            phrase_counts = Counter(phrases)
+            for phrase, count in phrase_counts.most_common(10):
+                if count >= 3:
+                    patterns["repeated_phrases"][phrase].append(ch)
+
+        for ch, fp in self.style_fingerprints.items():
+            if fp.dialogue_ratio > 0.4:
+                patterns["structure_patterns"]["对话为主"].append(ch)
+            elif fp.action_ratio > 0.3:
+                patterns["structure_patterns"]["动作为主"].append(ch)
+            elif fp.description_ratio > 0.3:
+                patterns["structure_patterns"]["描写为主"].append(ch)
+
+        if len(self.emotional_arc) >= 5:
+            for i in range(len(self.emotional_arc) - 4):
+                window = self.emotional_arc[i:i + 5]
+                emotions = [p.dominant_emotion for p in window]
+                if emotions == emotions[::-1]:
+                    patterns["emotional_cycles"].append({
+                        "start_chapter": window[0].chapter,
+                        "end_chapter": window[-1].chapter,
+                        "pattern": " → ".join(emotions),
+                    })
+
+        sorted_pacing = sorted(self.pacing_profiles.items())
+        if len(sorted_pacing) >= 4:
+            for i in range(len(sorted_pacing) - 3):
+                window = sorted_pacing[i:i + 4]
+                types = [p[1].pacing_type.value for p in window]
+                if types[0] == types[2] and types[1] == types[3]:
+                    patterns["pacing_cycles"].append({
+                        "start_chapter": window[0][0],
+                        "end_chapter": window[-1][0],
+                        "pattern": " → ".join(types),
+                    })
+
+        return {
+            "repeated_phrases": {
+                phrase: {"count": len(chapters), "chapters": chapters[:5]}
+                for phrase, chapters in patterns["repeated_phrases"].items()
+                if len(chapters) >= 3
+            },
+            "structure_patterns": dict(patterns["structure_patterns"]),
+            "emotional_cycles": patterns["emotional_cycles"][:5],
+            "pacing_cycles": patterns["pacing_cycles"][:5],
+        }
+
+    # ================================================================
+    # 自动检查系统 (Automatic Checking)
+    # ================================================================
+
+    def _init_auto_check_rules(self):
+        """初始化自动检查规则"""
+        default_rules = [
+            ("ACR_001", "风格漂移检查", "style", "check_style_drift",
+             ConsistencyLevel.NOTICEABLE_DRIFT, "on_chapter"),
+            ("ACR_002", "时间线验证", "timeline", "verify_timeline",
+             ConsistencyLevel.MINOR_DRIFT, "on_chapter"),
+            ("ACR_003", "伏笔超期检查", "foreshadowing", "check_overdue_foreshadowing",
+             ConsistencyLevel.NOTICEABLE_DRIFT, "on_chapter"),
+            ("ACR_004", "节奏平衡检查", "pacing", "verify_pacing_balance",
+             ConsistencyLevel.MINOR_DRIFT, "every_3_chapters"),
+            ("ACR_005", "情感弧线检查", "emotional", "verify_emotional_consistency",
+             ConsistencyLevel.MINOR_DRIFT, "every_5_chapters"),
+            ("ACR_006", "冲突密度检查", "conflict", "verify_conflict_requirements",
+             ConsistencyLevel.MINOR_DRIFT, "every_5_chapters"),
+            ("ACR_007", "人物一致性扫描", "character", "find_character_inconsistencies",
+             ConsistencyLevel.MINOR_DRIFT, "every_10_chapters"),
+            ("ACR_008", "世界观规则验证", "world", "verify_all_world_rules",
+             ConsistencyLevel.MAJOR_CONFLICT, "every_10_chapters"),
+        ]
+
+        for rule_id, name, category, func, threshold, schedule in default_rules:
+            self.auto_check_rules[rule_id] = AutoCheckRule(
+                rule_id=rule_id,
+                name=name,
+                category=category,
+                check_function=func,
+                severity_threshold=threshold,
+                schedule=schedule,
+            )
+
+    def run_auto_checks(self, chapter: int,
+                        rules: List[str] = None) -> Dict:
+        """运行自动检查
+
+        根据规则调度自动决定哪些检查需要执行
+        """
+        results = {
+            "chapter": chapter,
+            "timestamp": datetime.now().isoformat(),
+            "checks_run": [],
+            "total_issues_found": 0,
+            "issues_by_severity": defaultdict(int),
+        }
+
+        target_rules = (
+            [self.auto_check_rules[r] for r in rules if r in self.auto_check_rules]
+            if rules
+            else list(self.auto_check_rules.values())
+        )
+
+        for rule in target_rules:
+            if not rule.enabled:
+                continue
+
+            should_run = False
+            if rule.schedule == "on_chapter":
+                should_run = True
+            elif rule.schedule == "every_3_chapters":
+                should_run = (chapter % 3 == 0)
+            elif rule.schedule == "every_5_chapters":
+                should_run = (chapter % 5 == 0)
+            elif rule.schedule == "every_10_chapters":
+                should_run = (chapter % 10 == 0)
+
+            if not should_run:
+                continue
+
+            issues_before = len(self.issues)
+            check_result = self._execute_check(rule, chapter)
+            new_issues = len(self.issues) - issues_before
+
+            rule.last_run_chapter = chapter
+            rule.total_issues_found += new_issues
+
+            results["checks_run"].append({
+                "rule_id": rule.rule_id,
+                "name": rule.name,
+                "issues_found": new_issues,
+                "details": check_result,
+            })
+            results["total_issues_found"] += new_issues
+
+            for issue in self.issues[issues_before:]:
+                results["issues_by_severity"][issue.severity.value] += 1
+
+        return results
+
+    def _execute_check(self, rule: AutoCheckRule, chapter: int) -> Any:
+        """执行具体检查"""
+        func_map = {
+            "check_style_drift": lambda: self.check_style_drift(chapter),
+            "verify_timeline": lambda: self.verify_timeline(),
+            "check_overdue_foreshadowing": lambda: self.get_overdue_foreshadowing(chapter),
+            "verify_pacing_balance": lambda: self.verify_pacing_balance(),
+            "verify_emotional_consistency": lambda: self.verify_emotional_consistency(),
+            "verify_conflict_requirements": lambda: self.verify_conflict_requirements(),
+            "find_character_inconsistencies": lambda: self.find_character_inconsistencies(),
+            "verify_all_world_rules": lambda: self._verify_all_world_rules(),
+        }
+
+        func = func_map.get(rule.check_function)
+        if func:
+            return func()
+        return None
+
+    def _verify_all_world_rules(self) -> List[ConsistencyIssue]:
+        """验证所有世界观规则"""
+        issues = []
+        for rule in self.world_rules.values():
+            if rule.last_verified_chapter < rule.established_chapter:
+                issues.append(ConsistencyIssue(
+                    issue_id=f"world_{self.issue_counter + 1}",
+                    category="世界观一致性",
+                    severity=ConsistencyLevel.MINOR_DRIFT,
+                    description=f"规则「{rule.rule}」自第{rule.established_chapter}章建立后未再验证",
+                    chapter=rule.established_chapter,
+                    suggestion="在近期章节中确认此规则仍然有效",
+                ))
+                self.issue_counter += 1
+        self.issues.extend(issues)
+        return issues
+
+    def batch_validate(self, chapters: List[int]) -> Dict:
+        """批量验证 - 对多个章节一次性运行全部检查"""
+        results = {
+            "chapters": chapters,
+            "timestamp": datetime.now().isoformat(),
+            "per_chapter": {},
+            "summary": {
+                "total_issues": 0,
+                "critical_issues": 0,
+                "chapters_with_issues": 0,
+            },
+        }
+
+        for ch in sorted(chapters):
+            ch_result = self.run_auto_checks(ch)
+            results["per_chapter"][ch] = ch_result
+            results["summary"]["total_issues"] += ch_result["total_issues_found"]
+            if ch_result["total_issues_found"] > 0:
+                results["summary"]["chapters_with_issues"] += 1
+
+        results["summary"]["critical_issues"] = sum(
+            1 for i in self.issues
+            if i.severity == ConsistencyLevel.MAJOR_CONFLICT and not i.resolved
+        )
+
+        return results
+
+    def auto_fix_suggestions(self, issue_id: str) -> Dict:
+        """为指定问题生成自动修复建议"""
+        issue = None
+        for i in self.issues:
+            if i.issue_id == issue_id:
+                issue = i
+                break
+
+        if not issue:
+            return {"error": f"未找到问题: {issue_id}"}
+
+        suggestions = {
+            "issue": issue.description,
+            "category": issue.category,
+            "auto_fixable": False,
+            "fix_suggestions": [],
+            "related_data": {},
+        }
+
+        if issue.category == "人物一致性":
+            suggestions["auto_fixable"] = True
+            suggestions["fix_suggestions"].append(
+                "自动统一外貌描述为最近一次出现的版本"
+            )
+            suggestions["fix_suggestions"].append(
+                "在人物档案中标记此特征为「可变」"
+            )
+
+        elif issue.category == "风格漂移":
+            suggestions["auto_fixable"] = False
+            suggestions["fix_suggestions"].append(
+                f"建议重写第{issue.chapter}章中偏离风格的部分"
+            )
+            suggestions["fix_suggestions"].append(
+                "参考前5章的风格参数进行调整"
+            )
+            if issue.chapter in self.style_fingerprints:
+                fp = self.style_fingerprints[issue.chapter]
+                suggestions["related_data"]["current_style"] = {
+                    "dialogue_ratio": fp.dialogue_ratio,
+                    "avg_sentence_length": fp.avg_sentence_length,
+                }
+
+        elif issue.category == "时间线":
+            suggestions["auto_fixable"] = True
+            suggestions["fix_suggestions"].append(
+                "自动添加地点切换过渡段落模板"
+            )
+            suggestions["fix_suggestions"].append(
+                "在章节开头插入时间/地点标记"
+            )
+
+        elif issue.category == "实力体系":
+            suggestions["auto_fixable"] = True
+            suggestions["fix_suggestions"].append(
+                "自动将实力描述修正为历史最高等级"
+            )
+
+        elif issue.category == "冲突密度":
+            suggestions["auto_fixable"] = False
+            suggestions["fix_suggestions"].append(
+                "建议在章节中插入小型冲突或悬念"
+            )
+            suggestions["fix_suggestions"].append(
+                "可添加: 新对手出现 / 意外消息 / 能力限制 / 时间压力"
+            )
+
+        return suggestions
+
+    def resolve_issue(self, issue_id: str) -> bool:
+        """标记问题为已解决"""
+        for issue in self.issues:
+            if issue.issue_id == issue_id:
+                issue.resolved = True
+                return True
+        return False
+
+    def get_check_schedule_status(self) -> Dict:
+        """获取检查调度状态"""
+        return {
+            "total_rules": len(self.auto_check_rules),
+            "enabled_rules": sum(1 for r in self.auto_check_rules.values() if r.enabled),
+            "rules": [
+                {
+                    "id": r.rule_id,
+                    "name": r.name,
+                    "schedule": r.schedule,
+                    "enabled": r.enabled,
+                    "last_run": r.last_run_chapter,
+                    "total_issues": r.total_issues_found,
+                }
+                for r in self.auto_check_rules.values()
+            ],
+        }
+
+    # ================================================================
+    # 记忆压缩系统 (Memory Compression)
+    # ================================================================
+
+    def compress_chapter_range(self, start_chapter: int,
+                               end_chapter: int,
+                               compression_level: str = "medium") -> MemorySnapshot:
+        """压缩章节范围 - 将多章内容压缩为结构化摘要
+
+        compression_level: 'light'(保留50%), 'medium'(保留25%), 'deep'(保留10%)
+        """
+        self.snapshot_counter += 1
+        snapshot_id = f"SNAP_{self.snapshot_counter:06d}"
+
+        chapters_in_range = [
+            ch for ch in sorted(self.chapter_texts.keys())
+            if start_chapter <= ch <= end_chapter
+        ]
+
+        total_words = sum(
+            len(self.chapter_texts.get(ch, "")) for ch in chapters_in_range
+        )
+
+        key_characters = []
+        for name, profile in self.characters.items():
+            if start_chapter <= profile.first_appearance_chapter <= end_chapter:
+                key_characters.append(f"{name}({profile.role})")
+            elif (profile.last_appearance_chapter >= start_chapter
+                  and profile.first_appearance_chapter <= end_chapter):
+                if name not in [kc.split("(")[0] for kc in key_characters]:
+                    key_characters.append(f"{name}({profile.role})")
+
+        key_events = []
+        for event in self.plot_events:
+            if start_chapter <= event['chapter'] <= end_chapter:
+                key_events.append(
+                    f"第{event['chapter']}章: {event['event'][:80]}"
+                )
+
+        key_settings = []
+        for ch in chapters_in_range:
+            if ch in self.timeline:
+                for loc in self.timeline[ch].get("locations", set()):
+                    if loc not in key_settings:
+                        key_settings.append(loc)
+
+        unresolved_threads = []
+        for fs in self.foreshadowings.values():
+            if (fs.planted_chapter <= end_chapter
+                    and fs.status in [ForeshadowStatus.PLANTED, ForeshadowStatus.HINTED]):
+                unresolved_threads.append(
+                    f"[{fs.type}] {fs.description[:80]} (埋设第{fs.planted_chapter}章)"
+                )
+
+        summary = self._generate_range_summary(
+            start_chapter, end_chapter, chapters_in_range,
+            key_characters, key_events, compression_level
+        )
+
+        compression_ratios = {"light": 0.5, "medium": 0.25, "deep": 0.1}
+        ratio = compression_ratios.get(compression_level, 0.25)
+
+        snapshot = MemorySnapshot(
+            snapshot_id=snapshot_id,
+            chapter_range=(start_chapter, end_chapter),
+            summary=summary,
+            key_characters=key_characters[:15],
+            key_events=key_events[:20],
+            key_settings=key_settings[:10],
+            unresolved_threads=unresolved_threads[:10],
+            word_count=total_words,
+            compression_ratio=ratio,
+            created_at=datetime.now().isoformat(),
+        )
+
+        self.memory_snapshots[snapshot_id] = snapshot
+        return snapshot
+
+    def _generate_range_summary(self, start: int, end: int,
+                                 chapters: List[int],
+                                 characters: List[str],
+                                 events: List[str],
+                                 level: str) -> str:
+        """生成章节范围摘要"""
+        parts = [f"第{start}-{end}章摘要 (共{len(chapters)}章)"]
+
+        if characters:
+            parts.append(f"主要人物: {', '.join(characters[:8])}")
+
+        if events:
+            level_limits = {"light": 10, "medium": 6, "deep": 3}
+            limit = level_limits.get(level, 6)
+            parts.append("关键事件:")
+            for event in events[:limit]:
+                parts.append(f"  • {event}")
+
+        style_info = []
+        for ch in chapters:
+            if ch in self.style_fingerprints:
+                fp = self.style_fingerprints[ch]
+                style_info.append(fp)
+        if style_info:
+            avg_dialogue = sum(s.dialogue_ratio for s in style_info) / len(style_info)
+            avg_action = sum(s.action_ratio for s in style_info) / len(style_info)
+            parts.append(f"风格特征: 对话占比{avg_dialogue:.1%}, 动作密度{avg_action:.1%}")
+
+        return "\n".join(parts)
+
+    def progressive_summarize(self, chapter: int,
+                              levels: List[str] = None) -> Dict:
+        """渐进式总结 - 对内容进行多层压缩
+
+        层级:
+        - L1: 详细摘要 (保留80%关键信息)
+        - L2: 中等摘要 (保留50%)
+        - L3: 核心摘要 (保留20%)
+        - L4: 一句话总结
+        """
+        if levels is None:
+            levels = ["L1", "L2", "L3", "L4"]
+
+        text = self.chapter_texts.get(chapter, "")
+        if not text:
+            return {"error": f"第{chapter}章无原文数据"}
+
+        sentences = re.split(r'[。！？\n]+', text)
+        sentences = [s.strip() for s in sentences if s.strip() and len(s.strip()) > 5]
+
+        summaries = {}
+
+        if "L1" in levels:
+            key_sentences = self._extract_key_sentences(sentences, top_n=15)
+            summaries["L1_详细摘要"] = "。".join(key_sentences) + "。"
+
+        if "L2" in levels:
+            key_sentences = self._extract_key_sentences(sentences, top_n=8)
+            summaries["L2_中等摘要"] = "。".join(key_sentences) + "。"
+
+        if "L3" in levels:
+            key_sentences = self._extract_key_sentences(sentences, top_n=3)
+            summaries["L3_核心摘要"] = "。".join(key_sentences) + "。"
+
+        if "L4" in levels:
+            one_liner = self._generate_one_liner(chapter, sentences)
+            summaries["L4_一句话"] = one_liner
+
+        return {
+            "chapter": chapter,
+            "original_length": len(text),
+            "sentence_count": len(sentences),
+            "summaries": summaries,
+        }
+
+    def _extract_key_sentences(self, sentences: List[str],
+                                top_n: int = 10) -> List[str]:
+        """提取关键句子"""
+        important_markers = [
+            "突然", "然而", "但是", "终于", "竟然", "原来",
+            "发现", "决定", "突破", "觉醒", "获得", "失去",
+            "战斗", "对决", "危机", "秘密", "真相",
+        ]
+
+        dialogue_pattern = re.compile(r'[""「」『』]')
+
+        scored = []
+        for sent in sentences:
+            score = 0.0
+            for marker in important_markers:
+                if marker in sent:
+                    score += 1.0
+            if dialogue_pattern.search(sent):
+                score += 0.5
+            if len(sent) > 30:
+                score += 0.3
+            scored.append((score, sent))
+
+        scored.sort(key=lambda x: x[0], reverse=True)
+        return [s for _, s in scored[:top_n]]
+
+    def _generate_one_liner(self, chapter: int,
+                            sentences: List[str]) -> str:
+        """生成一句话总结"""
+        characters_in_chapter = set()
+        for event in self.plot_events:
+            if event['chapter'] == chapter:
+                for char in event.get('characters', []):
+                    characters_in_chapter.add(char)
+
+        char_str = "、".join(list(characters_in_chapter)[:3]) if characters_in_chapter else "主角"
+
+        if chapter in self.style_fingerprints:
+            fp = self.style_fingerprints[chapter]
+            if fp.action_ratio > 0.3:
+                action_type = "战斗/行动"
+            elif fp.dialogue_ratio > 0.3:
+                action_type = "对话/交流"
+            elif fp.description_ratio > 0.2:
+                action_type = "探索/观察"
+            else:
+                action_type = "推进剧情"
+        else:
+            action_type = "推进剧情"
+
+        key_sents = self._extract_key_sentences(sentences, top_n=1)
+        core_event = key_sents[0][:60] if key_sents else "剧情发展"
+
+        return f"第{chapter}章: {char_str}在{action_type}中, {core_event}"
+
+    def get_memory_snapshot(self, snapshot_id: str) -> Optional[MemorySnapshot]:
+        """获取记忆快照"""
+        return self.memory_snapshots.get(snapshot_id)
+
+    def get_all_snapshots(self) -> List[Dict]:
+        """获取所有记忆快照"""
+        return [
+            {
+                "id": s.snapshot_id,
+                "range": f"第{s.chapter_range[0]}-{s.chapter_range[1]}章",
+                "word_count": s.word_count,
+                "compression": f"{s.compression_ratio:.0%}",
+                "characters": len(s.key_characters),
+                "events": len(s.key_events),
+                "created": s.created_at,
+            }
+            for s in sorted(
+                self.memory_snapshots.values(),
+                key=lambda x: x.chapter_range[0]
+            )
+        ]
+
+    def recall_from_snapshots(self, query: str,
+                              max_snapshots: int = 5) -> List[Dict]:
+        """从压缩快照中召回相关信息"""
+        results = []
+        for snap in self.memory_snapshots.values():
+            score = 0.0
+            matched = []
+
+            if query in snap.summary:
+                score += 1.0
+                matched.append("摘要匹配")
+
+            for char in snap.key_characters:
+                if query in char:
+                    score += 0.6
+                    matched.append(f"人物: {char}")
+
+            for event in snap.key_events:
+                if query in event:
+                    score += 0.5
+                    matched.append(f"事件: {event[:50]}")
+
+            for thread in snap.unresolved_threads:
+                if query in thread:
+                    score += 0.4
+                    matched.append(f"线索: {thread[:50]}")
+
+            if score > 0:
+                results.append({
+                    "snapshot_id": snap.snapshot_id,
+                    "range": f"第{snap.chapter_range[0]}-{snap.chapter_range[1]}章",
+                    "score": min(score, 2.0),
+                    "matched": matched[:5],
+                    "summary": snap.summary[:300],
+                    "key_events": snap.key_events[:5],
+                })
+
+        results.sort(key=lambda r: r["score"], reverse=True)
+        return results[:max_snapshots]
+
+    # ================================================================
     # 持久化
     # ================================================================
 
@@ -1441,6 +2677,71 @@ class NovelMemoryManager:
             "saved_at": datetime.now().isoformat(),
         }
 
+        data["causal_links"] = {
+            lid: {
+                "link_id": l.link_id,
+                "cause_event": l.cause_event,
+                "effect_event": l.effect_event,
+                "cause_chapter": l.cause_chapter,
+                "effect_chapter": l.effect_chapter,
+                "confidence": l.confidence,
+                "evidence": l.evidence,
+                "link_type": l.link_type,
+            }
+            for lid, l in self.causal_links.items()
+        }
+
+        data["character_arcs"] = {
+            name: [
+                {
+                    "character_name": p.character_name,
+                    "chapter": p.chapter,
+                    "arc_stage": p.arc_stage,
+                    "trait_changes": p.trait_changes,
+                    "key_events": p.key_events,
+                    "growth_score": p.growth_score,
+                }
+                for p in points
+            ]
+            for name, points in self.character_arcs.items()
+        }
+
+        data["memory_snapshots"] = {
+            sid: {
+                "snapshot_id": s.snapshot_id,
+                "chapter_range": list(s.chapter_range),
+                "summary": s.summary,
+                "key_characters": s.key_characters,
+                "key_events": s.key_events,
+                "key_settings": s.key_settings,
+                "unresolved_threads": s.unresolved_threads,
+                "word_count": s.word_count,
+                "compression_ratio": s.compression_ratio,
+                "created_at": s.created_at,
+            }
+            for sid, s in self.memory_snapshots.items()
+        }
+
+        data["auto_check_rules"] = {
+            rid: {
+                "rule_id": r.rule_id,
+                "name": r.name,
+                "category": r.category,
+                "check_function": r.check_function,
+                "severity_threshold": r.severity_threshold.value,
+                "enabled": r.enabled,
+                "schedule": r.schedule,
+                "last_run_chapter": r.last_run_chapter,
+                "total_issues_found": r.total_issues_found,
+            }
+            for rid, r in self.auto_check_rules.items()
+        }
+
+        data["chapter_texts"] = self.chapter_texts
+        data["link_counter"] = self.link_counter
+        data["snapshot_counter"] = self.snapshot_counter
+        data["retrieval_counter"] = self.retrieval_counter
+
         filepath = os.path.join(self.storage_dir, "novel_memory.json")
         with open(filepath, "w", encoding="utf-8") as f:
             json.dump(data, f, ensure_ascii=False, indent=2)
@@ -1495,6 +2796,30 @@ class NovelMemoryManager:
             self.chapter_quality_scores = data.get("chapter_quality_scores", {})
             self.conflict_density = data.get("conflict_density", {})
             self.rule_counter = data.get("rule_counter", 0)
+
+            for lid, ld in data.get("causal_links", {}).items():
+                self.causal_links[lid] = CausalLink(**ld)
+
+            for name, points in data.get("character_arcs", {}).items():
+                self.character_arcs[name] = [
+                    CharacterArcPoint(**p) for p in points
+                ]
+
+            for sid, sd in data.get("memory_snapshots", {}).items():
+                sd["chapter_range"] = tuple(sd["chapter_range"])
+                self.memory_snapshots[sid] = MemorySnapshot(**sd)
+
+            for rid, rd in data.get("auto_check_rules", {}).items():
+                rd["severity_threshold"] = ConsistencyLevel(rd["severity_threshold"])
+                self.auto_check_rules[rid] = AutoCheckRule(**rd)
+
+            self.chapter_texts = data.get("chapter_texts", {})
+            self.chapter_texts = {
+                int(k): v for k, v in self.chapter_texts.items()
+            }
+            self.link_counter = data.get("link_counter", 0)
+            self.snapshot_counter = data.get("snapshot_counter", 0)
+            self.retrieval_counter = data.get("retrieval_counter", 0)
 
             for ch_str, td in data.get("timeline", {}).items():
                 self.timeline[int(ch_str)] = {

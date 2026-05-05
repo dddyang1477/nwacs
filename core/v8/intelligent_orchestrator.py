@@ -16,8 +16,10 @@ NWACS 智能编排层 - IntelligentOrchestrator
 - 所有模块懒加载，按需激活
 """
 
+import os
 import time
 import json
+from collections import Counter
 from datetime import datetime
 from typing import Dict, List, Any, Optional, Callable
 from dataclasses import dataclass, field
@@ -67,6 +69,67 @@ class EventBus:
         self._listeners.clear()
 
 
+class TaskPriority(Enum):
+    LOW = 0
+    NORMAL = 1
+    HIGH = 2
+    CRITICAL = 3
+
+
+class TaskStatus(Enum):
+    PENDING = "等待中"
+    RUNNING = "执行中"
+    COMPLETED = "已完成"
+    FAILED = "失败"
+    RETRYING = "重试中"
+    CANCELLED = "已取消"
+
+
+@dataclass
+class ScheduledTask:
+    task_id: str
+    command: str
+    kwargs: Dict[str, Any] = field(default_factory=dict)
+    priority: TaskPriority = TaskPriority.NORMAL
+    status: TaskStatus = TaskStatus.PENDING
+    created_at: str = ""
+    started_at: str = ""
+    completed_at: str = ""
+    result: Any = None
+    error: str = ""
+    retry_count: int = 0
+    max_retries: int = 3
+    retry_delay: float = 1.0
+    dependencies: List[str] = field(default_factory=list)
+    timeout_seconds: float = 300
+
+
+@dataclass
+class HealthReport:
+    module_name: str
+    status: str
+    uptime_seconds: float = 0
+    last_heartbeat: str = ""
+    error_count: int = 0
+    avg_response_ms: float = 0
+    memory_usage_mb: float = 0
+    health_score: float = 100
+    warnings: List[str] = field(default_factory=list)
+
+
+@dataclass
+class PluginInfo:
+    plugin_id: str
+    name: str
+    version: str
+    description: str
+    author: str = ""
+    enabled: bool = True
+    hooks: List[str] = field(default_factory=list)
+    config: Dict[str, Any] = field(default_factory=dict)
+    loaded_at: str = ""
+
+
 class IntelligentOrchestrator:
     """智能编排器"""
 
@@ -81,6 +144,19 @@ class IntelligentOrchestrator:
             "total_tokens_used": 0,
         }
         self.command_history: List[Dict] = []
+
+        self.task_queue: List[ScheduledTask] = []
+        self._task_counter = 0
+        self._task_results: Dict[str, Any] = {}
+
+        self.plugins: Dict[str, PluginInfo] = {}
+        self._plugin_hooks: Dict[str, List[Callable]] = {}
+        self._plugin_counter = 0
+
+        self.health_reports: Dict[str, HealthReport] = {}
+        self._session_start_time = datetime.now()
+        self._error_counts: Dict[str, int] = {}
+        self._response_times: Dict[str, List[float]] = {}
 
         self._register_builtin_modules()
 
@@ -138,15 +214,15 @@ class IntelligentOrchestrator:
     def _create_module_instance(self, name: str):
         """创建模块实例"""
         if name == "novel_memory":
-            from novel_memory_manager import NovelMemoryManager
+            from .novel_memory_manager import NovelMemoryManager
             return NovelMemoryManager()
 
         elif name == "namer":
-            from chinese_traditional_namer import ChineseTraditionalNamer
+            from .chinese_traditional_namer import ChineseTraditionalNamer
             return ChineseTraditionalNamer()
 
         elif name == "plotter":
-            from plot_brainstorm_engine import PlotBrainstormEngine
+            from .plot_brainstorm_engine import PlotBrainstormEngine
             memory = self.modules.get("novel_memory")
             engine = self.modules.get("engine")
             return PlotBrainstormEngine(
@@ -155,11 +231,11 @@ class IntelligentOrchestrator:
             )
 
         elif name == "detector":
-            from ai_detector_and_rewriter import AIDetectorAndRewriter
+            from .ai_detector_and_rewriter import AIDetectorAndRewriter
             return AIDetectorAndRewriter()
 
         elif name == "enhanced_detector":
-            from enhanced_ai_detector import EnhancedAIDetector
+            from .enhanced_ai_detector import EnhancedAIDetector
             return EnhancedAIDetector()
 
         elif name == "engine":
@@ -167,11 +243,11 @@ class IntelligentOrchestrator:
             return SmartCreativeEngine()
 
         elif name == "learning_engine":
-            from self_learning_engine import SelfLearningEngine
+            from .self_learning_engine import SelfLearningEngine
             return SelfLearningEngine()
 
         elif name == "pipeline":
-            from collaborative_pipeline import CollaborativeWritingPipeline
+            from .collaborative_pipeline import CollaborativeWritingPipeline
             return CollaborativeWritingPipeline(
                 memory_manager=self._get_instance("novel_memory"),
                 creative_engine=self._get_instance("engine"),
@@ -190,23 +266,23 @@ class IntelligentOrchestrator:
             return manager
 
         elif name == "lorebook":
-            from lorebook import Lorebook
+            from .lorebook import Lorebook
             return Lorebook()
 
         elif name == "story_bible":
-            from story_bible import StoryBible
+            from .story_bible import StoryBible
             return StoryBible()
 
         elif name == "style_manager":
-            from style_module_manager import StyleModuleManager
+            from .style_module_manager import StyleModuleManager
             return StyleModuleManager()
 
         elif name == "version_manager":
-            from version_manager import VersionManager
+            from .version_manager import VersionManager
             return VersionManager()
 
         elif name == "platform_exporter":
-            from platform_exporter import PlatformExporter
+            from .platform_exporter import PlatformExporter
             return PlatformExporter()
 
         return None
@@ -732,6 +808,480 @@ class IntelligentOrchestrator:
                 "error": info.last_error,
             }
             for name, info in self.modules.items()
+        }
+
+    def enqueue_task(self, command: str, priority: TaskPriority = TaskPriority.NORMAL,
+                     max_retries: int = 3, retry_delay: float = 1.0,
+                     dependencies: List[str] = None,
+                     timeout_seconds: float = 300, **kwargs) -> str:
+        self._task_counter += 1
+        task_id = f"TASK_{self._task_counter:06d}"
+
+        task = ScheduledTask(
+            task_id=task_id,
+            command=command,
+            kwargs=kwargs,
+            priority=priority,
+            created_at=datetime.now().isoformat(),
+            max_retries=max_retries,
+            retry_delay=retry_delay,
+            dependencies=dependencies or [],
+            timeout_seconds=timeout_seconds,
+        )
+
+        self.task_queue.append(task)
+        self.task_queue.sort(key=lambda t: t.priority.value, reverse=True)
+        self.events.emit("task_enqueued", task_id=task_id, command=command)
+        return task_id
+
+    def execute_task(self, task: ScheduledTask) -> Any:
+        task.status = TaskStatus.RUNNING
+        task.started_at = datetime.now().isoformat()
+
+        try:
+            result = self.execute(task.command, **task.kwargs)
+            if result.get("success"):
+                task.status = TaskStatus.COMPLETED
+                task.result = result
+            else:
+                if task.retry_count < task.max_retries:
+                    task.status = TaskStatus.RETRYING
+                    task.retry_count += 1
+                    task.error = result.get("error", "未知错误")
+                    import time as _time
+                    _time.sleep(task.retry_delay * (2 ** (task.retry_count - 1)))
+                    return self.execute_task(task)
+                else:
+                    task.status = TaskStatus.FAILED
+                    task.error = result.get("error", "未知错误")
+        except Exception as e:
+            if task.retry_count < task.max_retries:
+                task.status = TaskStatus.RETRYING
+                task.retry_count += 1
+                task.error = str(e)
+                import time as _time
+                _time.sleep(task.retry_delay * (2 ** (task.retry_count - 1)))
+                return self.execute_task(task)
+            else:
+                task.status = TaskStatus.FAILED
+                task.error = str(e)
+
+        task.completed_at = datetime.now().isoformat()
+        self._task_results[task.task_id] = task.result
+        self.events.emit("task_completed", task_id=task.task_id,
+                         status=task.status.value)
+        return task.result
+
+    def process_queue(self, max_tasks: int = 10) -> List[Dict]:
+        results = []
+        processed = 0
+
+        pending = [t for t in self.task_queue
+                   if t.status == TaskStatus.PENDING]
+
+        for task in pending:
+            if processed >= max_tasks:
+                break
+
+            deps_met = all(
+                dep in self._task_results
+                for dep in task.dependencies
+            )
+            if not deps_met:
+                continue
+
+            result = self.execute_task(task)
+            results.append({
+                "task_id": task.task_id,
+                "command": task.command,
+                "status": task.status.value,
+                "result": result,
+            })
+            processed += 1
+
+        return results
+
+    def cancel_task(self, task_id: str) -> bool:
+        for task in self.task_queue:
+            if task.task_id == task_id:
+                if task.status in [TaskStatus.PENDING, TaskStatus.RETRYING]:
+                    task.status = TaskStatus.CANCELLED
+                    task.completed_at = datetime.now().isoformat()
+                    return True
+        return False
+
+    def get_task_status(self, task_id: str) -> Optional[Dict]:
+        for task in self.task_queue:
+            if task.task_id == task_id:
+                return {
+                    "task_id": task.task_id,
+                    "command": task.command,
+                    "priority": task.priority.name,
+                    "status": task.status.value,
+                    "retry_count": task.retry_count,
+                    "error": task.error,
+                    "created_at": task.created_at,
+                    "completed_at": task.completed_at,
+                }
+        return None
+
+    def get_queue_stats(self) -> Dict:
+        status_counts = Counter(t.status.value for t in self.task_queue)
+        priority_counts = Counter(t.priority.name for t in self.task_queue)
+        return {
+            "total_tasks": len(self.task_queue),
+            "by_status": dict(status_counts),
+            "by_priority": dict(priority_counts),
+            "pending": sum(1 for t in self.task_queue
+                          if t.status == TaskStatus.PENDING),
+            "failed": sum(1 for t in self.task_queue
+                         if t.status == TaskStatus.FAILED),
+            "completed": sum(1 for t in self.task_queue
+                            if t.status == TaskStatus.COMPLETED),
+        }
+
+    def execute_with_retry(self, command: str, max_retries: int = 3,
+                           base_delay: float = 1.0, **kwargs) -> Dict:
+        last_error = None
+        for attempt in range(max_retries + 1):
+            try:
+                result = self.execute(command, **kwargs)
+                if result.get("success"):
+                    result["attempts"] = attempt + 1
+                    return result
+                last_error = result.get("error", "未知错误")
+            except Exception as e:
+                last_error = str(e)
+
+            if attempt < max_retries:
+                delay = base_delay * (2 ** attempt)
+                import time as _time
+                _time.sleep(delay)
+
+        return {
+            "success": False,
+            "command": command,
+            "error": last_error,
+            "attempts": max_retries + 1,
+        }
+
+    def execute_pipeline(self, steps: List[Dict]) -> List[Dict]:
+        results = []
+        context = {}
+
+        for i, step in enumerate(steps):
+            command = step.get("command", "")
+            kwargs = {**step.get("kwargs", {}), **context}
+            on_failure = step.get("on_failure", "stop")
+
+            result = self.execute(command, **kwargs)
+            results.append({
+                "step": i + 1,
+                "command": command,
+                "success": result.get("success", False),
+                "data": result.get("data"),
+                "error": result.get("error"),
+            })
+
+            if result.get("success"):
+                if result.get("data"):
+                    context.update(result["data"]
+                                   if isinstance(result["data"], dict)
+                                   else {"_last_result": result["data"]})
+            else:
+                if on_failure == "stop":
+                    break
+                elif on_failure == "continue":
+                    continue
+
+        return results
+
+    def record_response_time(self, module_name: str, duration_ms: float):
+        if module_name not in self._response_times:
+            self._response_times[module_name] = []
+        self._response_times[module_name].append(duration_ms)
+        if len(self._response_times[module_name]) > 100:
+            self._response_times[module_name] = \
+                self._response_times[module_name][-100:]
+
+    def record_error(self, module_name: str):
+        self._error_counts[module_name] = \
+            self._error_counts.get(module_name, 0) + 1
+
+    def check_health(self, module_name: str = None) -> Dict:
+        if module_name:
+            return self._check_module_health(module_name)
+
+        results = {}
+        for name in self.modules:
+            results[name] = self._check_module_health(name)
+        return results
+
+    def _check_module_health(self, module_name: str) -> Dict:
+        info = self.modules.get(module_name)
+        if not info:
+            return {"error": f"模块不存在: {module_name}"}
+
+        uptime = (datetime.now() - self._session_start_time).total_seconds()
+        error_count = self._error_counts.get(module_name, 0)
+        response_times = self._response_times.get(module_name, [])
+        avg_response = (sum(response_times) / len(response_times)
+                        if response_times else 0)
+
+        health_score = 100.0
+        warnings = []
+
+        if info.status == ModuleStatus.ERROR:
+            health_score -= 50
+            warnings.append("模块处于错误状态")
+        if error_count > 10:
+            health_score -= 20
+            warnings.append(f"错误次数过多({error_count})")
+        if avg_response > 5000:
+            health_score -= 15
+            warnings.append(f"平均响应时间过长({avg_response:.0f}ms)")
+        if info.status == ModuleStatus.UNLOADED:
+            health_score -= 10
+            warnings.append("模块未加载")
+
+        health_score = max(0, health_score)
+
+        report = HealthReport(
+            module_name=module_name,
+            status=info.status.value,
+            uptime_seconds=uptime,
+            last_heartbeat=datetime.now().isoformat(),
+            error_count=error_count,
+            avg_response_ms=round(avg_response, 2),
+            health_score=health_score,
+            warnings=warnings,
+        )
+        self.health_reports[module_name] = report
+
+        return {
+            "module": module_name,
+            "status": info.status.value,
+            "health_score": health_score,
+            "error_count": error_count,
+            "avg_response_ms": round(avg_response, 2),
+            "warnings": warnings,
+        }
+
+    def get_health_dashboard(self) -> Dict:
+        all_health = self.check_health()
+        modules_healthy = sum(
+            1 for h in all_health.values()
+            if isinstance(h, dict) and h.get("health_score", 0) >= 80
+        )
+        modules_warning = sum(
+            1 for h in all_health.values()
+            if isinstance(h, dict) and 50 <= h.get("health_score", 0) < 80
+        )
+        modules_critical = sum(
+            1 for h in all_health.values()
+            if isinstance(h, dict) and h.get("health_score", 0) < 50
+        )
+
+        return {
+            "timestamp": datetime.now().isoformat(),
+            "session_uptime_seconds": (
+                datetime.now() - self._session_start_time
+            ).total_seconds(),
+            "total_modules": len(self.modules),
+            "healthy": modules_healthy,
+            "warning": modules_warning,
+            "critical": modules_critical,
+            "overall_health": "healthy" if modules_critical == 0 else (
+                "warning" if modules_critical <= 2 else "critical"
+            ),
+            "modules": all_health,
+            "queue_stats": self.get_queue_stats(),
+        }
+
+    def get_performance_report(self) -> Dict:
+        report = {
+            "timestamp": datetime.now().isoformat(),
+            "session_duration_seconds": (
+                datetime.now() - self._session_start_time
+            ).total_seconds(),
+            "total_commands": len(self.command_history),
+            "modules": {},
+        }
+
+        for name, info in self.modules.items():
+            response_times = self._response_times.get(name, [])
+            report["modules"][name] = {
+                "status": info.status.value,
+                "call_count": info.call_count,
+                "total_time_ms": info.total_time_ms,
+                "avg_response_ms": (
+                    sum(response_times) / len(response_times)
+                    if response_times else 0
+                ),
+                "min_response_ms": min(response_times) if response_times else 0,
+                "max_response_ms": max(response_times) if response_times else 0,
+                "error_count": self._error_counts.get(name, 0),
+            }
+
+        return report
+
+    def register_plugin(self, name: str, version: str, description: str,
+                        author: str = "", hooks: List[str] = None,
+                        config: Dict[str, Any] = None) -> str:
+        self._plugin_counter += 1
+        plugin_id = f"PLUGIN_{self._plugin_counter:04d}"
+
+        self.plugins[plugin_id] = PluginInfo(
+            plugin_id=plugin_id,
+            name=name,
+            version=version,
+            description=description,
+            author=author,
+            hooks=hooks or [],
+            config=config or {},
+            loaded_at=datetime.now().isoformat(),
+        )
+
+        for hook in (hooks or []):
+            if hook not in self._plugin_hooks:
+                self._plugin_hooks[hook] = []
+
+        self.events.emit("plugin_registered", plugin_id=plugin_id, name=name)
+        return plugin_id
+
+    def unregister_plugin(self, plugin_id: str) -> bool:
+        if plugin_id in self.plugins:
+            plugin = self.plugins[plugin_id]
+            for hook in plugin.hooks:
+                if hook in self._plugin_hooks:
+                    self._plugin_hooks[hook] = [
+                        h for h in self._plugin_hooks[hook]
+                        if getattr(h, '__plugin_id__', '') != plugin_id
+                    ]
+            del self.plugins[plugin_id]
+            self.events.emit("plugin_unregistered", plugin_id=plugin_id)
+            return True
+        return False
+
+    def register_hook(self, hook_name: str, callback: Callable,
+                      plugin_id: str = None):
+        if hook_name not in self._plugin_hooks:
+            self._plugin_hooks[hook_name] = []
+        if plugin_id:
+            callback.__plugin_id__ = plugin_id
+        self._plugin_hooks[hook_name].append(callback)
+
+    def trigger_hook(self, hook_name: str, **data) -> List[Any]:
+        results = []
+        for callback in self._plugin_hooks.get(hook_name, []):
+            try:
+                result = callback(data)
+                results.append(result)
+            except Exception as e:
+                results.append({"error": str(e)})
+        return results
+
+    def get_plugins(self) -> List[Dict]:
+        return [
+            {
+                "plugin_id": p.plugin_id,
+                "name": p.name,
+                "version": p.version,
+                "description": p.description,
+                "author": p.author,
+                "enabled": p.enabled,
+                "hooks": p.hooks,
+            }
+            for p in self.plugins.values()
+        ]
+
+    def save_session(self, filepath: str = None) -> str:
+        if filepath is None:
+            filepath = os.path.join(
+                os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
+                "sessions",
+                f"session_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json"
+            )
+        os.makedirs(os.path.dirname(filepath), exist_ok=True)
+
+        session_data = {
+            "global_state": self.global_state,
+            "command_history": self.command_history[-500:],
+            "module_status": {
+                name: {
+                    "status": info.status.value,
+                    "call_count": info.call_count,
+                    "total_time_ms": info.total_time_ms,
+                }
+                for name, info in self.modules.items()
+            },
+            "task_queue": [
+                {
+                    "task_id": t.task_id,
+                    "command": t.command,
+                    "priority": t.priority.name,
+                    "status": t.status.value,
+                }
+                for t in self.task_queue
+            ],
+            "plugins": [
+                {
+                    "plugin_id": p.plugin_id,
+                    "name": p.name,
+                    "version": p.version,
+                    "enabled": p.enabled,
+                }
+                for p in self.plugins.values()
+            ],
+            "saved_at": datetime.now().isoformat(),
+        }
+
+        with open(filepath, "w", encoding="utf-8") as f:
+            json.dump(session_data, f, ensure_ascii=False, indent=2)
+
+        return filepath
+
+    def load_session(self, filepath: str) -> bool:
+        if not os.path.exists(filepath):
+            return False
+
+        try:
+            with open(filepath, "r", encoding="utf-8") as f:
+                data = json.load(f)
+
+            self.global_state.update(data.get("global_state", {}))
+            self.command_history = data.get("command_history", [])
+
+            for name, status_data in data.get("module_status", {}).items():
+                if name in self.modules:
+                    self.modules[name].call_count = status_data.get("call_count", 0)
+                    self.modules[name].total_time_ms = status_data.get("total_time_ms", 0)
+
+            return True
+        except (json.JSONDecodeError, KeyError) as e:
+            print(f"  ⚠️ 会话加载失败: {e}")
+            return False
+
+    def get_session_info(self) -> Dict:
+        return {
+            "session_start": self.global_state.get("session_start"),
+            "uptime_seconds": (
+                datetime.now() - self._session_start_time
+            ).total_seconds(),
+            "active_novel": self.global_state.get("active_novel"),
+            "current_chapter": self.global_state.get("current_chapter", 0),
+            "total_api_calls": self.global_state.get("total_api_calls", 0),
+            "total_tokens_used": self.global_state.get("total_tokens_used", 0),
+            "commands_executed": len(self.command_history),
+            "modules_loaded": sum(
+                1 for info in self.modules.values()
+                if info.status == ModuleStatus.ACTIVE
+            ),
+            "plugins_registered": len(self.plugins),
+            "tasks_pending": sum(
+                1 for t in self.task_queue
+                if t.status == TaskStatus.PENDING
+            ),
         }
 
     def shutdown(self):
