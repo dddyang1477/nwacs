@@ -17,6 +17,7 @@ NWACS 智能编排层 - IntelligentOrchestrator
 """
 
 import os
+import re
 import time
 import json
 from collections import Counter
@@ -158,6 +159,9 @@ class IntelligentOrchestrator:
         self._error_counts: Dict[str, int] = {}
         self._response_times: Dict[str, List[float]] = {}
 
+        self._detection_cache: Dict[str, Dict] = {}
+        self._max_cache_size = 50
+
         self._register_builtin_modules()
 
     def _register_builtin_modules(self):
@@ -170,13 +174,22 @@ class IntelligentOrchestrator:
             ("enhanced_detector", "AI检测器(增强)", []),
             ("engine", "创作引擎(DeepSeek)", []),
             ("learning_engine", "自学习进化引擎", []),
-            ("pipeline", "写作协作流水线", ["novel_memory", "engine", "plotter", "detector"]),
+            ("pipeline", "写作协作流水线(多阶段)", ["novel_memory", "engine", "plotter", "detector"]),
+            ("simple_pipeline", "简洁直出管线(推荐-1次API/章)", ["engine", "novel_memory", "knowledge_engine", "beat_analyzer"]),
             ("skill_manager", "Skill管理器", ["engine"]),
             ("lorebook", "触发式设定注入系统(Lorebook)", []),
             ("story_bible", "集中式创作圣经(Story Bible)", []),
             ("style_manager", "AI风格模块化切换系统", []),
             ("version_manager", "版本管理与历史回溯", []),
             ("platform_exporter", "多平台格式化导出", ["novel_memory"]),
+            ("genre_manager", "题材特化生成配置", []),
+            ("voice_injector", "角色语音注入系统", []),
+            ("consistency_pipeline", "自动后生成一致性检查", ["novel_memory"]),
+            ("model_router", "多模型协同路由系统", []),
+            ("beat_analyzer", "爽点节奏分析器", []),
+            ("deconstruction_engine", "AI拆书/爆款分析引擎", []),
+            ("style_tuner", "风格参数精细调节器", []),
+            ("knowledge_engine", "写作知识引擎(AI特征诊断/技法推荐/去痕策略)", []),
         ]
 
         for name, desc, deps in builtins:
@@ -231,11 +244,17 @@ class IntelligentOrchestrator:
             )
 
         elif name == "detector":
-            from .ai_detector_and_rewriter import AIDetectorAndRewriter
+            try:
+                from .ai_detector_and_rewriter import AIDetectorAndRewriter
+            except ImportError:
+                from ai_detector_and_rewriter import AIDetectorAndRewriter
             return AIDetectorAndRewriter()
 
         elif name == "enhanced_detector":
-            from .enhanced_ai_detector import EnhancedAIDetector
+            try:
+                from .enhanced_ai_detector import EnhancedAIDetector
+            except ImportError:
+                from enhanced_ai_detector import EnhancedAIDetector
             return EnhancedAIDetector()
 
         elif name == "engine":
@@ -256,6 +275,57 @@ class IntelligentOrchestrator:
                 ai_detector=self._get_instance("detector"),
                 enhanced_detector=self._get_instance("enhanced_detector"),
             )
+
+        elif name == "simple_pipeline":
+            from .simple_direct_pipeline import SimpleDirectPipeline
+            return SimpleDirectPipeline(
+                creative_engine=self._get_instance("engine"),
+                memory_manager=self._get_instance("novel_memory"),
+                genre_manager=self._get_instance("genre_manager"),
+                voice_injector=self._get_instance("voice_injector"),
+                consistency_pipeline=self._get_instance("consistency_pipeline"),
+                knowledge_engine=self._get_instance("knowledge_engine"),
+                beat_analyzer=self._get_instance("beat_analyzer"),
+            )
+
+        elif name == "genre_manager":
+            from .genre_profile_manager import GenreProfileManager
+            return GenreProfileManager()
+
+        elif name == "voice_injector":
+            from .character_voice_injector import CharacterVoiceInjector
+            return CharacterVoiceInjector()
+
+        elif name == "consistency_pipeline":
+            from .auto_consistency_pipeline import AutoConsistencyPipeline
+            return AutoConsistencyPipeline(
+                memory_manager=self._get_instance("novel_memory"),
+                voice_injector=self._get_instance("voice_injector"),
+                rag_memory=self._get_instance("rag_memory"),
+            )
+
+        elif name == "model_router":
+            from .model_router import ModelRouter
+            return ModelRouter()
+
+        elif name == "beat_analyzer":
+            from .pleasure_beat_analyzer import PleasureBeatAnalyzer
+            return PleasureBeatAnalyzer()
+
+        elif name == "deconstruction_engine":
+            from .deconstruction_engine import DeconstructionEngine
+            return DeconstructionEngine()
+
+        elif name == "style_tuner":
+            from .style_parameter_tuner import StyleParameterTuner
+            return StyleParameterTuner()
+
+        elif name == "knowledge_engine":
+            try:
+                from .writing_knowledge_engine import WritingKnowledgeEngine
+            except ImportError:
+                from writing_knowledge_engine import WritingKnowledgeEngine
+            return WritingKnowledgeEngine()
 
         elif name == "skill_manager":
             from skill_manager.skill_manager import SkillManagerBuilder
@@ -322,6 +392,27 @@ class IntelligentOrchestrator:
             elif command == "run_pipeline":
                 result = self._cmd_run_pipeline(**kwargs)
 
+            elif command == "run_direct_pipeline":
+                result = self._cmd_run_direct_pipeline(**kwargs)
+
+            elif command == "save_pipeline_config":
+                result = self._cmd_save_pipeline_config(**kwargs)
+
+            elif command == "load_pipeline_config":
+                result = self._cmd_load_pipeline_config(**kwargs)
+
+            elif command == "analyze_beats":
+                result = self._cmd_analyze_beats(**kwargs)
+
+            elif command == "deconstruct_novel":
+                result = self._cmd_deconstruct_novel(**kwargs)
+
+            elif command == "tune_style":
+                result = self._cmd_tune_style(**kwargs)
+
+            elif command == "model_status":
+                result = self._cmd_model_status(**kwargs)
+
             elif command == "save_memory":
                 result = self._cmd_save_memory(**kwargs)
 
@@ -363,6 +454,18 @@ class IntelligentOrchestrator:
 
             elif command == "export_platform":
                 result = self._cmd_export_platform(**kwargs)
+
+            elif command == "diagnose_ai_traits":
+                result = self._cmd_diagnose_ai_traits(**kwargs)
+
+            elif command == "recommend_techniques":
+                result = self._cmd_recommend_techniques(**kwargs)
+
+            elif command == "generate_deai_pipeline":
+                result = self._cmd_generate_deai_pipeline(**kwargs)
+
+            elif command == "inject_knowledge":
+                result = self._cmd_inject_knowledge(**kwargs)
 
             else:
                 result["error"] = f"未知命令: {command}"
@@ -438,6 +541,22 @@ class IntelligentOrchestrator:
         return {"success": True, "data": exported}
 
     def _cmd_detect_ai(self, **kwargs) -> Dict:
+        text = kwargs.get("text", "")
+        deep_mode = kwargs.get("deep", False)
+
+        if deep_mode:
+            self.load_module("enhanced_detector")
+            detector = self._get_instance("enhanced_detector")
+            if detector and hasattr(detector, 'diagnose_deep'):
+                deep_result = detector.diagnose_deep(text)
+                return {"success": True, "data": deep_result, "mode": "deep"}
+
+        text_hash = self._get_text_hash(text)
+
+        if text_hash in self._detection_cache:
+            cached = self._detection_cache[text_hash]
+            return {"success": True, "data": cached, "cached": True}
+
         self.load_module("enhanced_detector")
         detector = self._get_instance("enhanced_detector")
         if not detector:
@@ -447,20 +566,32 @@ class IntelligentOrchestrator:
         if not detector:
             return {"success": False, "error": "检测模块未加载"}
 
-        text = kwargs.get("text", "")
         if hasattr(detector, 'detect'):
             report = detector.detect(text)
-            return {
-                "success": True,
-                "data": {
-                    "score": report.overall_score,
-                    "level": report.level,
-                    "suggestions": report.suggestions,
-                },
+            data = {
+                "score": report.overall_score,
+                "level": report.level,
+                "suggestions": report.suggestions,
             }
+        else:
+            score = detector.detect_ai_score(text)
+            data = {"score": score}
 
-        score = detector.detect_ai_score(text)
-        return {"success": True, "data": {"score": score}}
+        self._cache_detection_result(text_hash, data)
+        return {"success": True, "data": data}
+
+    def _get_text_hash(self, text: str) -> str:
+        import hashlib
+        return hashlib.md5(text.encode('utf-8')).hexdigest()
+
+    def _cache_detection_result(self, text_hash: str, data: Dict):
+        if len(self._detection_cache) >= self._max_cache_size:
+            oldest_key = next(iter(self._detection_cache))
+            del self._detection_cache[oldest_key]
+        self._detection_cache[text_hash] = data
+
+    def clear_detection_cache(self):
+        self._detection_cache.clear()
 
     def _cmd_rewrite_text(self, **kwargs) -> Dict:
         self.load_module("enhanced_detector")
@@ -505,6 +636,172 @@ class IntelligentOrchestrator:
         )
 
         return {"success": True, "data": summary}
+
+    def _cmd_run_direct_pipeline(self, **kwargs) -> Dict:
+        self.load_module("simple_pipeline")
+        pipeline = self._get_instance("simple_pipeline")
+        if not pipeline:
+            return {"success": False, "error": "直出管线模块未加载"}
+
+        pipeline.novel_title = kwargs.get("title", "未命名作品")
+        pipeline.configure(
+            genre=kwargs.get("genre", "玄幻"),
+            theme=kwargs.get("theme", ""),
+            target_words_per_chapter=kwargs.get("target_words", 3000),
+            temperature=kwargs.get("temperature", 0.85),
+            auto_save=kwargs.get("auto_save", True),
+            save_dir=kwargs.get("save_dir", ""),
+        )
+
+        summary = pipeline.run(
+            genre=kwargs.get("genre"),
+            theme=kwargs.get("theme"),
+            chapter_count=kwargs.get("chapter_count", 1),
+            starting_chapter=kwargs.get("starting_chapter", 1),
+            novel_title=kwargs.get("title"),
+        )
+
+        return {"success": True, "data": summary}
+
+    def _cmd_save_pipeline_config(self, **kwargs) -> Dict:
+        self.load_module("simple_pipeline")
+        pipeline = self._get_instance("simple_pipeline")
+        if not pipeline:
+            return {"success": False, "error": "直出管线模块未加载"}
+
+        config = pipeline.export_config()
+        config_path = kwargs.get("path", "")
+        if not config_path:
+            config_dir = os.path.join(os.path.dirname(__file__), "..", "..", "config")
+            os.makedirs(config_dir, exist_ok=True)
+            safe_name = re.sub(r'[<>:"/\\|?*]', '_', pipeline.novel_title)
+            config_path = os.path.join(config_dir, f"{safe_name}_pipeline_config.json")
+
+        with open(config_path, 'w', encoding='utf-8') as f:
+            json.dump(config, f, ensure_ascii=False, indent=2)
+
+        return {"success": True, "data": {"config_path": config_path, "config": config}}
+
+    def _cmd_load_pipeline_config(self, **kwargs) -> Dict:
+        self.load_module("simple_pipeline")
+        pipeline = self._get_instance("simple_pipeline")
+        if not pipeline:
+            return {"success": False, "error": "直出管线模块未加载"}
+
+        config_path = kwargs.get("path", "")
+        if not config_path:
+            return {"success": False, "error": "请提供配置文件路径"}
+
+        if not os.path.exists(config_path):
+            return {"success": False, "error": f"配置文件不存在: {config_path}"}
+
+        with open(config_path, 'r', encoding='utf-8') as f:
+            config = json.load(f)
+
+        pipeline.import_config(config)
+        return {"success": True, "data": {"config_path": config_path, "config": config}}
+
+    def _cmd_analyze_beats(self, **kwargs) -> Dict:
+        self.load_module("beat_analyzer")
+        analyzer = self._get_instance("beat_analyzer")
+        if not analyzer:
+            return {"success": False, "error": "节奏分析器未加载"}
+
+        text = kwargs.get("text", "")
+        chapter_num = kwargs.get("chapter_num", 1)
+        is_opening = kwargs.get("is_opening", False)
+
+        profile = analyzer.analyze(text, chapter_num, is_opening)
+        report = analyzer.get_rhythm_report(profile)
+
+        return {
+            "success": True,
+            "data": {
+                "score": profile.score,
+                "beat_density": profile.beat_density,
+                "hook_strength": profile.hook_strength,
+                "issues": profile.issues,
+                "suggestions": profile.suggestions,
+                "report": report,
+            },
+        }
+
+    def _cmd_deconstruct_novel(self, **kwargs) -> Dict:
+        self.load_module("deconstruction_engine")
+        engine = self._get_instance("deconstruction_engine")
+        if not engine:
+            return {"success": False, "error": "拆书引擎未加载"}
+
+        title = kwargs.get("title", "未命名")
+        chapters = kwargs.get("chapters", {})
+        genre = kwargs.get("genre", "玄幻")
+
+        result = engine.deconstruct(title, chapters, genre)
+
+        return {
+            "success": True,
+            "data": {
+                "structure_score": result.structure_score,
+                "reusable_patterns": result.reusable_patterns,
+                "beat_distribution": result.beat_distribution,
+                "total_chapters": result.total_chapters,
+                "total_words": result.total_words,
+            },
+        }
+
+    def _cmd_tune_style(self, **kwargs) -> Dict:
+        self.load_module("style_tuner")
+        tuner = self._get_instance("style_tuner")
+        if not tuner:
+            return {"success": False, "error": "风格调节器未加载"}
+
+        action = kwargs.get("action", "list")
+
+        if action == "list":
+            presets = tuner.list_presets()
+            return {"success": True, "data": {"presets": presets}}
+
+        elif action == "activate":
+            name = kwargs.get("name", "")
+            ok = tuner.activate_preset(name)
+            if ok:
+                instructions = tuner.to_prompt_instructions()
+                return {"success": True, "data": {"activated": name, "instructions": instructions}}
+            return {"success": False, "error": f"预设不存在: {name}"}
+
+        elif action == "blend":
+            a = kwargs.get("profile_a", "")
+            b = kwargs.get("profile_b", "")
+            ratio = kwargs.get("ratio", 0.5)
+            profile = tuner.blend(a, b, ratio)
+            instructions = tuner.to_prompt_instructions(profile)
+            return {"success": True, "data": {"blended": profile.name, "instructions": instructions}}
+
+        elif action == "adjust":
+            name = kwargs.get("name", "")
+            adjustments = kwargs.get("adjustments", {})
+            profile = tuner.adjust(name, adjustments)
+            instructions = tuner.to_prompt_instructions(profile)
+            return {"success": True, "data": {"adjusted": profile.name, "instructions": instructions}}
+
+        elif action == "compare":
+            a = kwargs.get("profile_a", "")
+            b = kwargs.get("profile_b", "")
+            comparison = tuner.compare_profiles(a, b)
+            return {"success": True, "data": comparison}
+
+        return {"success": False, "error": f"未知操作: {action}"}
+
+    def _cmd_model_status(self, **kwargs) -> Dict:
+        self.load_module("model_router")
+        router = self._get_instance("model_router")
+        if not router:
+            return {"success": False, "error": "模型路由未加载"}
+
+        health = router.health_check()
+        stats = router.get_stats()
+
+        return {"success": True, "data": {"health": health, "stats": stats}}
 
     def _cmd_save_memory(self, **kwargs) -> Dict:
         self.load_module("novel_memory")
@@ -772,7 +1069,10 @@ class IntelligentOrchestrator:
         if not exporter:
             return {"success": False, "error": "导出模块未加载"}
 
-        from platform_exporter import NovelMeta, ChapterData, ExportPlatform
+        from platform_exporter import (
+            NovelMeta, ChapterData, ExportPlatform,
+            QualityCheckFailedException, QualityCheckResult,
+        )
 
         plat_map = {p.label: p for p in ExportPlatform}
         platform = plat_map.get(kwargs.get("platform", "通用TXT"), ExportPlatform.TXT)
@@ -794,8 +1094,149 @@ class IntelligentOrchestrator:
             tags=kwargs.get("tags", []),
         )
 
-        path = exporter.export(meta, chapters, platform)
-        return {"success": True, "data": {"output_path": path}}
+        skip_qc = kwargs.get("skip_quality_check", False)
+
+        quality_result = exporter.check_quality_before_export(meta, chapters)
+
+        if not quality_result.passed and not skip_qc:
+            return {
+                "success": False,
+                "error": "质量检测未通过，拒绝导出",
+                "data": {
+                    "quality_check": {
+                        "passed": quality_result.passed,
+                        "total_chapters": quality_result.total_chapters,
+                        "passed_chapters": quality_result.passed_chapters,
+                        "failed_chapters": quality_result.failed_chapters,
+                        "ai_score": quality_result.ai_score,
+                        "ai_detection_passed": quality_result.ai_detection_passed,
+                        "overall_score": quality_result.overall_score,
+                        "warnings": quality_result.warnings,
+                    }
+                }
+            }
+
+        try:
+            path = exporter.export(meta, chapters, platform, skip_quality_check=skip_qc)
+        except QualityCheckFailedException as e:
+            return {
+                "success": False,
+                "error": str(e),
+                "data": {
+                    "quality_check": {
+                        "passed": quality_result.passed,
+                        "total_chapters": quality_result.total_chapters,
+                        "passed_chapters": quality_result.passed_chapters,
+                        "failed_chapters": quality_result.failed_chapters,
+                        "ai_score": quality_result.ai_score,
+                        "overall_score": quality_result.overall_score,
+                        "warnings": quality_result.warnings,
+                    }
+                }
+            }
+
+        return {
+            "success": True,
+            "data": {
+                "output_path": path,
+                "quality_check": {
+                    "passed": quality_result.passed,
+                    "total_chapters": quality_result.total_chapters,
+                    "passed_chapters": quality_result.passed_chapters,
+                    "ai_score": quality_result.ai_score,
+                    "ai_detection_passed": quality_result.ai_detection_passed,
+                    "overall_score": quality_result.overall_score,
+                    "warnings": quality_result.warnings,
+                }
+            }
+        }
+
+    def _cmd_diagnose_ai_traits(self, **kwargs) -> Dict:
+        self.load_module("knowledge_engine")
+        engine = self._get_instance("knowledge_engine")
+        if not engine:
+            return {"success": False, "error": "知识引擎未加载"}
+
+        text = kwargs.get("text", "")
+        if not text:
+            return {"success": False, "error": "请提供待诊断文本"}
+
+        diagnosis = engine.diagnose_ai_traits(text)
+        return {
+            "success": True,
+            "data": {
+                "overall_ai_score": diagnosis.overall_ai_score,
+                "risk_level": diagnosis.risk_level,
+                "summary": diagnosis.summary,
+                "detected_traits": [
+                    {"name": t[0], "severity": round(t[1], 3)}
+                    for t in diagnosis.detected_traits
+                ],
+                "fix_priority": diagnosis.fix_priority,
+            }
+        }
+
+    def _cmd_recommend_techniques(self, **kwargs) -> Dict:
+        self.load_module("knowledge_engine")
+        engine = self._get_instance("knowledge_engine")
+        if not engine:
+            return {"success": False, "error": "知识引擎未加载"}
+
+        context = kwargs.get("context", {})
+        recommendations = engine.recommend_techniques(context=context)
+        return {
+            "success": True,
+            "data": [
+                {
+                    "name": r.technique_name,
+                    "relevance": r.relevance,
+                    "urgency": r.urgency,
+                }
+                for r in recommendations
+            ]
+        }
+
+    def _cmd_generate_deai_pipeline(self, **kwargs) -> Dict:
+        self.load_module("knowledge_engine")
+        engine = self._get_instance("knowledge_engine")
+        if not engine:
+            return {"success": False, "error": "知识引擎未加载"}
+
+        text = kwargs.get("text", "")
+        target_level = kwargs.get("target_level", "voice")
+
+        pipeline = engine.generate_deai_pipeline(text, target_level)
+        return {
+            "success": True,
+            "data": {
+                "stages": pipeline.stages,
+                "estimated_effectiveness": pipeline.estimated_effectiveness,
+                "total_steps": pipeline.total_steps,
+            }
+        }
+
+    def _cmd_inject_knowledge(self, **kwargs) -> Dict:
+        self.load_module("knowledge_engine")
+        engine = self._get_instance("knowledge_engine")
+        if not engine:
+            return {"success": False, "error": "知识引擎未加载"}
+
+        base_prompt = kwargs.get("base_prompt", "")
+        genre = kwargs.get("genre", "玄幻")
+        chapter_num = kwargs.get("chapter_num", 1)
+        character_count = kwargs.get("character_count", 0)
+
+        enhanced = engine.inject_knowledge_to_prompt(
+            base_prompt, genre, chapter_num, character_count
+        )
+        return {
+            "success": True,
+            "data": {
+                "enhanced_prompt": enhanced,
+                "original_length": len(base_prompt),
+                "enhanced_length": len(enhanced),
+            }
+        }
 
     def get_module_status(self) -> Dict[str, Dict]:
         """获取所有模块状态"""

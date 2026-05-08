@@ -83,10 +83,13 @@ class NWACSFinal:
             
             print("\n【🛠️ 工具】")
             print(" 18. 快速生成开局")
-            print(" 19. 关于与帮助")
+            print(" 19. 🎬 影视感写作引擎（镜头语言+感官矩阵）")
+            print(" 20. 关于与帮助")
+            print("\n【🖊️ 品质提升】")
+            print(" 21. 🧹 去AI痕迹写作技巧（自然文风+人性化表达）")
             print("  0. 退出")
             
-            choice = input(f"\n请输入选项 (0-19): ").strip()
+            choice = input(f"\n请输入选项 (0-21): ").strip()
             
             if choice == "0":
                 self.quit()
@@ -127,7 +130,11 @@ class NWACSFinal:
             elif choice == "18":
                 self.quick_generate()
             elif choice == "19":
+                self.show_cinematic_engine()
+            elif choice == "20":
                 self.show_about()
+            elif choice == "21":
+                self.show_deai_techniques()
             else:
                 print("⚠️ 无效选项，请重新选择")
     
@@ -547,78 +554,55 @@ class NWACSFinal:
         self.save_novel_to_folder(novel_name, selected_template, genre_name_map[genre])
     
     def save_novel_to_folder(self, novel_name, template, genre_name):
-        """保存小说到文件夹 - 增强版：含AI去痕和质量检测"""
+        """保存小说到文件夹 - 每部小说独立文件夹，每批章节独立txt文件"""
         import os
         from datetime import datetime
         
-        # 创建小说主文件夹
-        base_path = os.path.dirname(os.path.abspath(__file__))
-        novels_folder = os.path.join(base_path, "novels")
-        if not os.path.exists(novels_folder):
-            os.makedirs(novels_folder)
+        base_path = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
         
-        # 创建以小说名命名的文件夹
         clean_name = "".join(c for c in novel_name if c.isalnum() or c in (' ', '-', '_')).rstrip()
-        novel_folder = os.path.join(novels_folder, clean_name)
+        novel_folder = os.path.join(base_path, clean_name)
         
-        # 如果文件夹已存在，添加时间戳
         if os.path.exists(novel_folder):
             timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-            novel_folder = os.path.join(novels_folder, f"{clean_name}_{timestamp}")
+            novel_folder = os.path.join(base_path, f"{clean_name}_{timestamp}")
         
         os.makedirs(novel_folder)
         
         print(f"\n✅ 已创建小说文件夹: {novel_folder}")
         
-        # 1. 获取开局内容
         original_opening = template['example_opening']
-        
-        # 2. 集成AI去痕功能
-        print("\n" + "="*60)
-        print("🔍 开始AI检测与去痕...")
-        print("="*60)
-        
-        processed_opening = original_opening
-        try:
-            # 尝试加载AI去痕模块
-            from ai_detector_and_rewriter import AIDetectorAndRewriter
-            detector = AIDetectorAndRewriter()
-            processed_opening = detector.check_and_rewrite(original_opening)
-        except Exception as e:
-            print(f"⚠️ AI去痕模块加载跳过: {e}")
-            processed_opening = original_opening
-        
-        # 3. Integrate three-time quality check process
-        print("\n" + "="*60)
-        print("Starting three-time quality check process...")
-        print("   Up to 3 checks, will reprocess if failed")
-        print("="*60)
+
+        print("\n" + "=" * 60)
+        print("[三级Skill智能编排] 一级检测 → 按需二级润色 → 按需三级兜底")
+        print("=" * 60)
 
         try:
             from three_time_quality_check import call_three_time_quality_check
             processed_opening, quality_passed, quality_report = call_three_time_quality_check(
-                processed_opening,
+                original_opening,
                 chapter_num=1,
-                novel_title=novel_name
+                novel_title=novel_name,
+                output_dir=novel_folder
             )
 
             if quality_passed:
-                print("All three checks passed!")
+                print("\n[OK] 质量检验全部通过")
             else:
-                print("Warning: Not all checks passed, suggest manual review")
+                print("\n[WARN] 部分检验未通过，建议人工复核")
 
         except Exception as e:
-            print(f"Three-time check error: {e}")
-            print("   Falling back to basic quality check...")
+            print(f"[WARN] 三级编排异常: {e}")
+            print("  回退到基础质量检测...")
+            processed_opening = original_opening
             try:
                 from quality_check_and_save_v2 import QualityChecker
                 checker = QualityChecker(processed_opening, 1)
                 passed, report = checker.run_all_checks()
-
                 if not passed:
-                    print("Warning: Quality check suggests manual review")
+                    print("[WARN] 基础检测建议人工复核")
             except Exception as e2:
-                print(f"Quality check module skipped: {e2}")      
+                print(f"[WARN] 基础检测跳过: {e2}")
         # 4. 保存小说信息文件
         info_file = os.path.join(novel_folder, "小说信息.md")
         with open(info_file, "w", encoding="utf-8") as f:
@@ -635,8 +619,8 @@ class NWACSFinal:
         
         print(f"✅ 已保存小说信息: {info_file}")
         
-        # 5. 保存开局文件（原始版和去痕版都保存）
-        opening_file = os.path.join(novel_folder, "第一章_开局_去痕版.txt")
+        # 5. 保存开局文件（规范命名：小说名_第X-Y章.txt）
+        opening_file = os.path.join(novel_folder, f"{clean_name}_第1章.txt")
         with open(opening_file, "w", encoding="utf-8") as f:
             f.write(f"# {novel_name} - 第一章\n\n")
             f.write(f"## 版本说明\n")
@@ -648,16 +632,7 @@ class NWACSFinal:
             f.write(f"\n## 正文\n")
             f.write(processed_opening)
         
-        print(f"✅ 已保存开局(去痕版): {opening_file}")
-        
-        # 保存原始版作为参考
-        original_file = os.path.join(novel_folder, "第一章_开局_参考版.txt")
-        with open(original_file, "w", encoding="utf-8") as f:
-            f.write(f"# {novel_name} - 第一章（原始参考）\n\n")
-            f.write(f"## 正文\n")
-            f.write(original_opening)
-        
-        print(f"✅ 已保存参考版: {original_file}")
+        print(f"✅ 已保存开局: {opening_file}")
         
         # 6. 保存大纲模板文件
         outline_file = os.path.join(novel_folder, "小说大纲.md")
@@ -717,16 +692,815 @@ class NWACSFinal:
         print("\n" + "="*60)
         print(f"🎉 小说《{novel_name}》创建成功！")
         print("="*60)
-        print(f"\n小说文件夹: {novel_folder}")
+        print(f"\n📁 小说文件夹: {novel_folder}")
+        print("\n📝 文件命名规范: [小说名]_第X-Y章.txt")
         print("\n已创建文件:")
-        print("  1. 小说信息.md - 模板信息与核心要素")
-        print("  2. 第一章_开局_去痕版.txt - 推荐使用此版本")
-        print("  3. 第一章_开局_参考版.txt - 原始版对比参考")
-        print("  4. 小说大纲.md - 可编辑的大纲模板")
-        print("  5. AI去痕与优化指南.md - 后续人工优化建议")
+        print(f"  1. {clean_name}_第1章.txt - 开局章节")
+        print("  2. 小说信息.md - 模板信息与核心要素")
+        print("  3. 小说大纲.md - 可编辑的大纲模板")
+        print("  4. AI去痕与优化指南.md - 后续人工优化建议")
+        print("\n💡 后续章节命名示例:")
+        print(f"  {clean_name}_第2-6章.txt")
+        print(f"  {clean_name}_第7-11章.txt")
+        print(f"  ...以此类推")
         
         input("\n按回车返回主菜单...")
-    
+
+    def save_chapter_batch(self, novel_name, start_chapter, end_chapter, content):
+        """保存章节批次 - 规范命名：[小说名]_第X-Y章.txt"""
+        import os
+        
+        base_path = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+        clean_name = "".join(c for c in novel_name if c.isalnum() or c in (' ', '-', '_')).rstrip()
+        novel_folder = os.path.join(base_path, clean_name)
+        
+        if not os.path.exists(novel_folder):
+            os.makedirs(novel_folder)
+            print(f"✅ 已创建小说文件夹: {novel_folder}")
+        
+        filename = f"{clean_name}_第{start_chapter}-{end_chapter}章.txt"
+        filepath = os.path.join(novel_folder, filename)
+        
+        with open(filepath, "w", encoding="utf-8") as f:
+            f.write(content)
+        
+        print(f"✅ 已保存: {filepath}")
+        return filepath
+
+    def show_cinematic_engine(self):
+        """影视感写作引擎"""
+        print("\n" + "=" * 80)
+        print("🎬 影视感写作引擎 - 用镜头语言写小说")
+        print("=" * 80)
+
+        try:
+            from cinematic_writing_engine import (
+                CinematicWritingEngine, get_cinematic_engine,
+                analyze_text_cinematic, enhance_text_cinematic,
+            )
+            engine = get_cinematic_engine()
+        except ImportError as e:
+            print(f"❌ 影视感引擎加载失败: {e}")
+            input("\n按回车返回主菜单...")
+            return
+
+        while True:
+            print("\n" + "=" * 60)
+            print("🎬 影视感写作引擎")
+            print("=" * 60)
+            print("\n  1. 📋 查看全部影视感技法")
+            print("  2. 🔍 分析文本影视感程度")
+            print("  3. ✨ 增强文本影视感（AI改写）")
+            print("  4. 📖 生成影视感章节")
+            print("  5. 🌐 联网学习真实写作技巧")
+            print("  6. 📝 查看技法速查表")
+            print("  0. 返回主菜单")
+
+            choice = input("\n请选择 (0-6): ").strip()
+
+            if choice == "0":
+                break
+            elif choice == "1":
+                self._show_all_techniques(engine)
+            elif choice == "2":
+                self._analyze_text_cinematic(engine)
+            elif choice == "3":
+                self._enhance_text_cinematic(engine)
+            elif choice == "4":
+                self._generate_cinematic_chapter(engine)
+            elif choice == "5":
+                self._web_learn(engine)
+            elif choice == "6":
+                print(engine.get_technique_cheatsheet())
+                input("\n按回车继续...")
+            else:
+                print("⚠️ 无效选项")
+
+    def _show_all_techniques(self, engine):
+        """展示全部技法"""
+        print("\n" + "=" * 60)
+        print("📋 影视感写作技法大全")
+        print("=" * 60)
+
+        for category in engine.get_categories():
+            techniques = engine.get_techniques_by_category(category)
+            print(f"\n{'='*50}")
+            print(f"【{category}】({len(techniques)}个技法)")
+            print(f"{'='*50}")
+
+            for i, t in enumerate(techniques, 1):
+                print(f"\n  {i}. {t.name} [{t.difficulty}]")
+                print(f"     {t.description}")
+                print(f"     ❌ 改写前: {t.example_before[:60]}...")
+                print(f"     ✅ 改写后: {t.example_after[:80]}...")
+                print(f"     适用: {', '.join(t.applicable_scenes[:3])}")
+
+        input("\n按回车返回...")
+
+    def _analyze_text_cinematic(self, engine):
+        """分析文本影视感"""
+        print("\n" + "=" * 60)
+        print("🔍 文本影视感分析")
+        print("=" * 60)
+        print("\n请输入要分析的文本（输入END结束）:")
+        lines = []
+        while True:
+            line = input()
+            if line.strip() == "END":
+                break
+            lines.append(line)
+        text = "\n".join(lines)
+
+        if not text.strip():
+            print("⚠️ 文本为空")
+            return
+
+        analysis = engine.analyze_scene(text)
+        print(f"\n{'='*50}")
+        print(f"📊 分析结果")
+        print(f"{'='*50}")
+        print(f"  影视感评分: {analysis.cinematic_score}/100")
+        print(f"  镜头类型: {', '.join(analysis.shot_types_used) if analysis.shot_types_used else '无'}")
+        print(f"  感官类型: {', '.join(analysis.sense_types_used) if analysis.sense_types_used else '无'}")
+        print(f"  节奏: {analysis.pace}")
+        if analysis.highlight_lines:
+            print(f"\n  ✨ 亮点句子:")
+            for hl in analysis.highlight_lines:
+                print(f"    > {hl}")
+        if analysis.suggestions:
+            print(f"\n  💡 改进建议:")
+            for s in analysis.suggestions:
+                print(f"    - {s}")
+
+        input("\n按回车返回...")
+
+    def _enhance_text_cinematic(self, engine):
+        """AI增强影视感"""
+        print("\n" + "=" * 60)
+        print("✨ AI影视感增强")
+        print("=" * 60)
+        print("\n请输入要增强的文本（输入END结束）:")
+        lines = []
+        while True:
+            line = input()
+            if line.strip() == "END":
+                break
+            lines.append(line)
+        text = "\n".join(lines)
+
+        if not text.strip():
+            print("⚠️ 文本为空")
+            return
+
+        genre = input("\n小说类型 (玄幻/都市/言情/悬疑, 默认玄幻): ").strip() or "玄幻"
+
+        print("\n🔄 正在调用AI增强影视感...")
+        enhanced = engine.enhance_cinematic_quality(text, genre)
+
+        print(f"\n{'='*50}")
+        print(f"✅ 增强完成")
+        print(f"{'='*50}")
+        print(f"\n原文 ({len(text)}字):")
+        print(text[:300] + ("..." if len(text) > 300 else ""))
+        print(f"\n增强版 ({len(enhanced)}字):")
+        print(enhanced[:500] + ("..." if len(enhanced) > 500 else ""))
+
+        save = input("\n是否保存增强版? (y/n): ").strip().lower()
+        if save == "y":
+            filename = input("文件名 (默认: enhanced_cinematic.txt): ").strip() or "enhanced_cinematic.txt"
+            with open(filename, "w", encoding="utf-8") as f:
+                f.write(enhanced)
+            print(f"✅ 已保存: {filename}")
+
+        input("\n按回车返回...")
+
+    def _generate_cinematic_chapter(self, engine):
+        """生成影视感章节"""
+        print("\n" + "=" * 60)
+        print("📖 生成影视感章节")
+        print("=" * 60)
+
+        try:
+            chapter_num = int(input("章节号: ").strip())
+        except ValueError:
+            print("⚠️ 无效章节号")
+            return
+
+        title = input("章节标题: ").strip()
+        summary = input("章节概要: ").strip()
+        genre = input("小说类型 (默认玄幻): ").strip() or "玄幻"
+
+        print("关键情节点 (每行一个，输入END结束):")
+        key_points = []
+        while True:
+            line = input()
+            if line.strip().upper() == "END":
+                break
+            if line.strip():
+                key_points.append(line.strip())
+
+        try:
+            target_words = int(input("目标字数 (默认4000): ").strip() or "4000")
+        except ValueError:
+            target_words = 4000
+
+        print(f"\n🔄 正在生成第{chapter_num}章《{title}》(影视感)...")
+        content = engine.generate_cinematic_chapter(
+            chapter_num, title, summary, key_points, genre, target_words
+        )
+
+        if content:
+            print(f"\n✅ 生成完成 ({len(content)}字)")
+            print(f"\n{'='*50}")
+            print(content[:500] + ("..." if len(content) > 500 else ""))
+
+            save = input("\n是否保存? (y/n): ").strip().lower()
+            if save == "y":
+                filename = input(f"文件名 (默认: 第{chapter_num}章_{title}.txt): ").strip()
+                if not filename:
+                    filename = f"第{chapter_num}章_{title}.txt"
+                with open(filename, "w", encoding="utf-8") as f:
+                    f.write(content)
+                print(f"✅ 已保存: {filename}")
+        else:
+            print("❌ 生成失败")
+
+        input("\n按回车返回...")
+
+    def _web_learn(self, engine):
+        """联网学习"""
+        print("\n" + "=" * 60)
+        print("🌐 联网学习真实写作技巧")
+        print("=" * 60)
+        print("\n正在从以下来源学习...")
+        for src in engine.web_learner.LEARNING_SOURCES:
+            print(f"  - {src['topic']}")
+
+        force = input("\n是否强制刷新缓存? (y/n, 默认n): ").strip().lower() == "y"
+
+        print("\n🔄 正在联网学习...")
+        results = engine.web_learner.learn(force_refresh=force)
+
+        if results:
+            for r in results:
+                print(f"\n{'='*50}")
+                print(f"📚 {r.topic}")
+                print(f"   来源: {r.source_url}")
+                print(f"   获取时间: {r.fetched_at}")
+                print(f"\n   关键技法:")
+                for i, tech in enumerate(r.key_techniques[:5], 1):
+                    print(f"     {i}. {tech}")
+                if r.examples:
+                    print(f"\n   示例:")
+                    for ex in r.examples[:3]:
+                        print(f"     > {ex['text'][:80]}...")
+        else:
+            print("⚠️ 联网学习未获取到有效内容")
+
+        input("\n按回车返回...")
+
+    def show_deai_techniques(self):
+        """去AI痕迹写作技巧 - 让文字更自然、更有人味"""
+        while True:
+            print("\n" + "=" * 80)
+            print("🧹 去AI痕迹写作技巧 — 自然文风 + 人性化表达")
+            print("=" * 80)
+
+            print("\n【核心原则】")
+            print("  AI文本特征：逻辑太规整、情绪太平、视角太空洞、缺乏现场感")
+            print("  目标：让文字像人在说话，有停顿、有节奏、有思考、有瑕疵")
+
+            print("\n" + "-" * 60)
+            print("  1. 📝 短句拆分 — 打破AI长句习惯")
+            print("  2. 🎭 身份锚定 — 给文字一个\"人设\"")
+            print("  3. 🔀 结构多样化 — 拒绝\"总-分-总\"模板")
+            print("  4. 🌊 自然过渡 — 用\"思考式衔接\"代替逻辑词")
+            print("  5. 🎯 精准术语 — 摆脱\"泛化表达\"")
+            print("  6. 🔗 补全推理链 — 结论不能\"直接抛\"")
+            print("  7. ⚡ 加入对立观点 — 让表达更像真实思考")
+            print("  8. 👁️ 感官锚点 — 引入视听嗅味触")
+            print("  9. 💬 对话自然化 — 不完美才是真人")
+            print(" 10. 🧩 注入具象细节 — 只有你能写出的内容")
+            print(" 11. 🎵 语感节奏 — 长短句穿插")
+            print(" 12. 📋 删除模板连接词 — 去掉AI高频词")
+            print(" 13. 🎬 风格切换 — 根据场景调整文风")
+            print(" 14. 📖 小说专用降AI技巧")
+            print(" 15. 🔍 自检清单")
+            print("  0. 返回主菜单")
+
+            choice = input("\n请选择查看 (0-15): ").strip()
+
+            if choice == "0":
+                break
+            elif choice == "1":
+                self._deai_short_sentences()
+            elif choice == "2":
+                self._deai_identity_anchor()
+            elif choice == "3":
+                self._deai_structure_variety()
+            elif choice == "4":
+                self._deai_natural_transition()
+            elif choice == "5":
+                self._deai_precise_terms()
+            elif choice == "6":
+                self._deai_reasoning_chain()
+            elif choice == "7":
+                self._deai_opposing_views()
+            elif choice == "8":
+                self._deai_sensory_anchors()
+            elif choice == "9":
+                self._deai_natural_dialogue()
+            elif choice == "10":
+                self._deai_concrete_details()
+            elif choice == "11":
+                self._deai_rhythm()
+            elif choice == "12":
+                self._deai_delete_connectors()
+            elif choice == "13":
+                self._deai_style_switch()
+            elif choice == "14":
+                self._deai_fiction_specific()
+            elif choice == "15":
+                self._deai_checklist()
+            else:
+                print("⚠️ 无效选项")
+
+    def _deai_short_sentences(self):
+        """技巧1：短句拆分"""
+        print("\n" + "=" * 60)
+        print("📝 技巧1：短句拆分 — 把30字长句拆成25字以内的自然表达")
+        print("=" * 60)
+
+        print("\n【原理】")
+        print("  AI喜欢堆长句，但人类写作更倾向于短句。")
+        print("  25字以内的短句阅读流畅度比长句高42%，更贴近口语逻辑。")
+
+        print("\n【对比示例】")
+        print("  ❌ AI原句：")
+        print("    \"基于对当前行业发展现状的分析以及相关数据的支撑可以得出以下结论。\"")
+        print()
+        print("  ✅ 人类写法：")
+        print("    \"看完行业现状和相关数据，我们大概能得出这样一个结论。\"")
+
+        print("\n【玄幻小说示例】")
+        print("  ❌ AI写法：")
+        print("    \"林锋运转藏锋诀将自身的灵力波动压制到最低限度然后小心翼翼地沿着矿道的阴影边缘向前移动。\"")
+        print()
+        print("  ✅ 人类写法：")
+        print("    \"林锋运转藏锋诀。灵力波动压到最低。他贴着矿道的阴影边缘，一步一步往前挪。\"")
+
+        print("\n【操作要点】")
+        print("  1. 每句控制在25字以内")
+        print("  2. 用句号代替逗号，大胆断句")
+        print("  3. 一段不超过3-4行")
+        print("  4. 动作描写一句一个动作，不要堆叠")
+
+        input("\n按回车返回...")
+
+    def _deai_identity_anchor(self):
+        """技巧2：身份锚定"""
+        print("\n" + "=" * 60)
+        print("🎭 技巧2：身份锚定 — 给文字一个\"人设\"")
+        print("=" * 60)
+
+        print("\n【原理】")
+        print("  AI的句子让人有种\"谁都能说，但谁也不像谁\"的感觉。")
+        print("  因为它没有视角、没有身份、没有个人经验。")
+        print("  带有个人视角表达的内容，推荐量比模板式内容高37%。")
+
+        print("\n【对比示例】")
+        print("  ❌ AI写法：\"很多人在沟通中会遇到问题。\"")
+        print("  ✅ 人类写法：\"我之前在做运营策划时，有一次和产品同事沟通，就遇到过类似状况。\"")
+
+        print("\n【玄幻小说示例】")
+        print("  ❌ AI写法：\"修炼一途充满艰险，需要持之以恒。\"")
+        print("  ✅ 人类写法：\"林锋在矿道里待了三年。三年，够他把这句话嚼烂了——修炼不是比谁天赋高，是比谁活得久。\"")
+
+        print("\n【操作要点】")
+        print("  1. 用角色视角叙述，不要上帝视角")
+        print("  2. 加入角色的主观判断和偏见")
+        print("  3. 让角色有自己的口头禅和思维习惯")
+        print("  4. 不同角色看到同一件事，反应完全不同")
+
+        input("\n按回车返回...")
+
+    def _deai_structure_variety(self):
+        """技巧3：结构多样化"""
+        print("\n" + "=" * 60)
+        print("🔀 技巧3：结构多样化 — 拒绝\"总-分-总\"模板")
+        print("=" * 60)
+
+        print("\n【原理】")
+        print("  AI的默认逻辑是整齐的\"总—分—总\"，看似规范，读起来却很僵硬。")
+        print("  真实的人类写作结构多变，有时先抛结论，有时先讲细节。")
+
+        print("\n【可替换的结构模式】")
+        print("  1. \"细节→观点\" 替代 \"观点→细节\"")
+        print("  2. \"案例→结论→原理\" 替代 \"原理→分析→结论\"")
+        print("  3. \"方法→问题→原因\" 替代 \"问题→原因→方法\"")
+        print("  4. 冷启动问题开场 + 举例 + 归因")
+        print("  5. 故事 → 误解 → 真相反转式")
+        print("  6. 三个场景串联式叙述")
+
+        print("\n【玄幻小说示例】")
+        print("  ❌ AI模板结构：")
+        print("    背景介绍→主角困境→金手指出现→开始逆袭")
+        print()
+        print("  ✅ 人类写法结构：")
+        print("    冲突画面→倒叙原因→主角抉择→意外转折")
+
+        print("\n【操作要点】")
+        print("  1. 每章开头不要用\"话说\"、\"且说\"等套路词")
+        print("  2. 偶尔从中间切入，再回溯前因")
+        print("  3. 章节结尾不一定是悬念，可以是情绪余韵")
+        print("  4. 段落长度刻意不整齐，制造节奏变化")
+
+        input("\n按回车返回...")
+
+    def _deai_natural_transition(self):
+        """技巧4：自然过渡"""
+        print("\n" + "=" * 60)
+        print("🌊 技巧4：自然过渡 — 用\"思考式衔接\"代替模板化逻辑词")
+        print("=" * 60)
+
+        print("\n【原理】")
+        print("  AI过渡常用\"因此\"\"此外\"\"首先\"\"其次\"，像公式。")
+        print("  加入\"思路推进式过渡\"后，文本被判定为人类写作的概率上升58%。")
+
+        print("\n【AI高频连接词 → 替换方案】")
+        print("  ❌ \"首先…其次…最后…\" → ✅ 直接列举，不加序号")
+        print("  ❌ \"综上所述\" → ✅ \"说到底\"、\"一句话\"")
+        print("  ❌ \"因此\"、\"所以\" → ✅ \"这么一来\"、\"结果就是\"")
+        print("  ❌ \"此外\"、\"另外\" → ✅ \"还有个事\"、\"对了\"")
+        print("  ❌ \"然而\"、\"但是\" → ✅ \"可问题是\"、\"不过\"")
+
+        print("\n【思考式衔接示例】")
+        print("  \"说到这，有个细节不得不提……\"")
+        print("  \"这里其实还有一个更关键的点……\"")
+        print("  \"但回过头来看，就能理解为什么……\"")
+        print("  \"扯远了，说回来……\"")
+
+        print("\n【玄幻小说示例】")
+        print("  ❌ AI写法：\"此外，林锋还发现矿道深处有异常灵力波动。\"")
+        print("  ✅ 人类写法：\"不对。林锋停住脚步。刚才那股灵力波动……不是错觉。\"")
+
+        input("\n按回车返回...")
+
+    def _deai_precise_terms(self):
+        """技巧5：精准术语"""
+        print("\n" + "=" * 60)
+        print("🎯 技巧5：精准术语 — 摆脱\"泛化表达\"")
+        print("=" * 60)
+
+        print("\n【原理】")
+        print("  AI为了保险，常用非常宽泛的词：\"影响效率\"\"有一定作用\"\"存在一些问题\"。")
+        print("  精准的术语和具体的描述能大幅提升专业感和真实感。")
+
+        print("\n【泛化词 → 精准词替换表】")
+        print("  ❌ \"很厉害\" → ✅ \"凝气三层巅峰\"、\"剑意入微\"")
+        print("  ❌ \"一种丹药\" → ✅ \"三纹聚灵丹\"、\"碧落回春散\"")
+        print("  ❌ \"某个地方\" → ✅ \"青云宗外门矿道第三岔口\"")
+        print("  ❌ \"过了一段时间\" → ✅ \"三个时辰后\"、\"第七天傍晚\"")
+        print("  ❌ \"有人来了\" → ✅ \"脚步声。三个。练气二层以上。\"")
+
+        print("\n【玄幻小说示例】")
+        print("  ❌ AI写法：\"他服用了一种提升修为的丹药。\"")
+        print("  ✅ 人类写法：\"他吞下那颗三纹聚灵丹。药力化开，丹田里的真气像被点着了一样，烫得他额头冒汗。\"")
+
+        print("\n【操作要点】")
+        print("  1. 给物品起具体的名字，不要用\"一种XX\"")
+        print("  2. 时间用具体数字，不要用\"不久\"\"一会儿\"")
+        print("  3. 地点用具体方位，建立空间感")
+        print("  4. 功法、丹药、法宝都要有专属名称")
+
+        input("\n按回车返回...")
+
+    def _deai_reasoning_chain(self):
+        """技巧6：补全推理链"""
+        print("\n" + "=" * 60)
+        print("🔗 技巧6：补全推理链 — 结论不能\"直接抛\"")
+        print("=" * 60)
+
+        print("\n【原理】")
+        print("  AI喜欢直接说结论，但没有\"为什么\"。")
+        print("  真实的人类写作会给出：观察现象 → 数据支撑 → 原因解释。")
+
+        print("\n【三段式论证模板】")
+        print("  现象：\"连续三晚睡眠不足6小时……\"")
+        print("  原理：\"海马体信息整合能力会下降约30%……\"")
+        print("  结论：\"因此熬夜后记忆能力明显减弱，也就不难理解了。\"")
+
+        print("\n【玄幻小说示例】")
+        print("  ❌ AI写法：\"林锋决定不暴露实力。\"")
+        print()
+        print("  ✅ 人类写法：")
+        print("    \"林锋攥紧拳头，又松开。王虎身后站着外门执事——凝气五层。自己这点底牌，不够人家一只手捏的。忍。现在不是时候。\"")
+
+        print("\n【操作要点】")
+        print("  1. 角色的每个决定都要有内心推理过程")
+        print("  2. 不要直接说\"因为他很谨慎\"，要展示谨慎的思考过程")
+        print("  3. 重大决策前，让角色权衡利弊")
+        print("  4. 偶尔让角色推理错误，增加真实感")
+
+        input("\n按回车返回...")
+
+    def _deai_opposing_views(self):
+        """技巧7：加入对立观点"""
+        print("\n" + "=" * 60)
+        print("⚡ 技巧7：加入对立观点 — 让表达更像真实思考")
+        print("=" * 60)
+
+        print("\n【原理】")
+        print("  AI习惯\"一刀切式赞美\"或\"单向否定\"。")
+        print("  真实的人会犹豫、会矛盾、会自我反驳。")
+
+        print("\n【对比示例】")
+        print("  ❌ AI写法：\"这个方案是最优解。\"")
+        print("  ✅ 人类写法：\"这个方案看起来不错，但有个问题——成本太高。不过话说回来，短期投入换长期收益，也不是不能考虑。\"")
+
+        print("\n【玄幻小说示例】")
+        print("  ❌ AI写法：\"林锋决定冒险进入矿道深处。\"")
+        print()
+        print("  ✅ 人类写法：")
+        print("    \"去，还是不去？林锋在岔道口站了半盏茶的功夫。去了可能死。不去……一辈子待在杂役院，跟死了有什么区别？他咬了咬牙，抬脚迈了进去。\"")
+
+        print("\n【操作要点】")
+        print("  1. 让角色内心有矛盾、有挣扎")
+        print("  2. 重大选择前展示两难处境")
+        print("  3. 不要让角色永远正确，允许他们犯错后悔")
+        print("  4. 不同角色对同一件事有不同解读")
+
+        input("\n按回车返回...")
+
+    def _deai_sensory_anchors(self):
+        """技巧8：感官锚点"""
+        print("\n" + "=" * 60)
+        print("👁️ 技巧8：感官锚点 — 引入视觉、听觉、嗅觉、触觉、味觉")
+        print("=" * 60)
+
+        print("\n【原理】")
+        print("  AI写的场景通常很空泛（比如\"他很生气\"）。")
+        print("  人类写作会自然带入感官细节，让画面立起来。")
+
+        print("\n【五感写作对照】")
+        print("  ❌ AI写法：\"他很愤怒。\"")
+        print("  ✅ 人类写法：\"他攥紧的拳头指节发白，牙关咬得咯吱响，太阳穴上的青筋突突直跳。\"")
+        print()
+        print("  ❌ AI写法：\"房间里很安静。\"")
+        print("  ✅ 人类写法：\"房间里只剩键盘声在响，空气里飘着咖啡的苦味，窗外偶尔传来一声远处的狗叫。\"")
+
+        print("\n【玄幻小说示例】")
+        print("  ❌ AI写法：\"矿道深处很危险。\"")
+        print()
+        print("  ✅ 人类写法：")
+        print("    \"矿道深处黑得像墨汁。光明石的光只能照出三步远。空气里一股铁锈味，混着某种腐烂的甜腥。脚下踩到什么黏糊糊的东西——林锋没敢低头看。\"")
+
+        print("\n【五感速查表】")
+        print("  视觉：颜色、光影、形状、动态")
+        print("  听觉：音量、音色、节奏、远近")
+        print("  嗅觉：香/臭/酸/甜/焦/腥/霉")
+        print("  触觉：温度/湿度/硬度/粗糙度/痛感")
+        print("  味觉：酸甜苦辣咸涩麻")
+
+        input("\n按回车返回...")
+
+    def _deai_natural_dialogue(self):
+        """技巧9：对话自然化"""
+        print("\n" + "=" * 60)
+        print("💬 技巧9：对话自然化 — 不完美才是真人")
+        print("=" * 60)
+
+        print("\n【原理】")
+        print("  AI写的对话永远逻辑闭环、情绪平稳。")
+        print("  可现实里的人说话会有停顿、口误、情绪上头的口不择言。")
+        print("  会说半截话，会口是心非，会词不达意。")
+
+        print("\n【对比示例】")
+        print("  ❌ AI写法：\"她非常愤怒地对他说：你的行为太过分了，我无法接受。\"")
+        print("  ✅ 人类写法：\"她攥着手机的手指都泛白了，张了张嘴，半天只憋出一句：'你是不是有病？'\"")
+
+        print("\n【玄幻小说示例】")
+        print("  ❌ AI写法：")
+        print("    王虎：\"林锋，你最近的行为很可疑，我怀疑你隐藏了实力。\"")
+        print("    林锋：\"王师兄说笑了，我只是一个普通的杂役弟子。\"")
+        print()
+        print("  ✅ 人类写法：")
+        print("    王虎眯着眼：\"林锋，你最近……不太对劲。\"")
+        print("    林锋抬起头，一脸茫然：\"啊？王师兄说什么？\"")
+        print("    王虎盯着他看了三息。林锋的眼神里只有困惑——恰到好处的困惑。")
+        print("    王虎哼了一声，转身走了。")
+        print("    林锋低下头，嘴角动了动。没出声。")
+
+        print("\n【操作要点】")
+        print("  1. 对话要有潜台词，角色说的和想的不一样")
+        print("  2. 加入动作描写打断对话节奏")
+        print("  3. 不同身份的人说话方式完全不同")
+        print("  4. 偶尔让角色说错话、被误解、欲言又止")
+        print("  5. 对话中穿插环境描写，不要让对话\"漂浮\"在空中")
+
+        input("\n按回车返回...")
+
+    def _deai_concrete_details(self):
+        """技巧10：注入具象细节"""
+        print("\n" + "=" * 60)
+        print("🧩 技巧10：注入具象细节 — 只有你能写出的内容")
+        print("=" * 60)
+
+        print("\n【原理】")
+        print("  AI写内容永远用的是全网通用的素材。")
+        print("  没有具体的细节，自然没有灵魂，一眼就是AI拼凑的。")
+        print("  加入专属的、有生活感的小细节，是去AI感的核心。")
+
+        print("\n【对比示例】")
+        print("  ❌ AI写法：\"她很爱自己的孩子。\"")
+        print("  ✅ 人类写法：\"她外套口袋里永远装着孩子的湿巾和哄娃的糖果，手机相册里90%都是孩子的照片，自己的自拍还是半年前拍的。\"")
+
+        print("\n【玄幻小说示例】")
+        print("  ❌ AI写法：\"林锋在矿道里修炼了三年。\"")
+        print()
+        print("  ✅ 人类写法：")
+        print("    \"林锋在矿道里待了三年。他的手掌磨出了老茧——不是握剑磨的，是搬矿石搬的。右肩比左肩低半寸，也是常年扛矿篓压的。但他最得意的不是这些。是他能在矿镐砸在石头上的噪音里，分辨出三丈外监工走近的脚步声。\"")
+
+        print("\n【细节注入模板】")
+        print("  \"我记得哪年哪月，刚好遇上……\"")
+        print("  \"有个细节一直没提……\"")
+        print("  \"说个不起眼的事……\"")
+        print("  \"他身上有个小习惯……\"")
+
+        input("\n按回车返回...")
+
+    def _deai_rhythm(self):
+        """技巧11：语感节奏"""
+        print("\n" + "=" * 60)
+        print("🎵 技巧11：语感节奏 — 长短句穿插，拒绝整齐划一")
+        print("=" * 60)
+
+        print("\n【原理】")
+        print("  AI句子句式整齐划一，缺少节奏破碎感。")
+        print("  人类写作会自然变换句式：长句铺陈，短句爆发。")
+
+        print("\n【节奏模式示例】")
+        print("  长句铺垫 + 短句爆发：")
+        print("  \"他在黑暗中摸索了不知道多久，手指划过粗糙的岩壁，脚下踩着不知名的碎骨，耳边只有自己越来越重的呼吸声。\"")
+        print("  \"然后他看到了光。\"")
+        print()
+        print("  三短句连击：")
+        print("  \"林锋没动。没出声。甚至没呼吸。\"")
+
+        print("\n【玄幻小说节奏示例】")
+        print("  ❌ AI写法（全是中等长度句）：")
+        print("  \"林锋运转藏锋诀将灵力波动压制到最低，然后小心翼翼地沿着矿道边缘前进，同时留意着周围的动静和灵力变化。\"")
+        print()
+        print("  ✅ 人类写法（长短交替）：")
+        print("  \"藏锋诀运转。灵力压到最低。林锋贴着矿道边缘，一步一步往前挪。走了大约半个时辰——不对。他停住。前方有光。不是光明石的光。是暗红色的、有节奏的、像心跳一样的光。\"")
+
+        print("\n【操作要点】")
+        print("  1. 紧张场景用短句，一句一段")
+        print("  2. 抒情场景用长句，娓娓道来")
+        print("  3. 关键信息用极短句单独成段")
+        print("  4. 偶尔用单字成句：\"死。\" \"跑。\" \"杀。\"")
+
+        input("\n按回车返回...")
+
+    def _deai_delete_connectors(self):
+        """技巧12：删除模板连接词"""
+        print("\n" + "=" * 60)
+        print("📋 技巧12：删除模板连接词 — 去掉AI高频词")
+        print("=" * 60)
+
+        print("\n【原理】")
+        print("  AI生成内容常有公式感，大量使用万能连接词。")
+        print("  这些词是AI检测系统的重要识别特征。")
+
+        print("\n【AI高频词黑名单 — 能删就删】")
+        print("  ▸ 综上所述、总而言之、总的说来")
+        print("  ▸ 首先…其次…再次…最后")
+        print("  ▸ 在当今社会、随着…的发展")
+        print("  ▸ 不可否认、毋庸置疑、显而易见")
+        print("  ▸ 众所周知、大家知道")
+        print("  ▸ 从某种角度来说、在一定程度上")
+        print("  ▸ 不仅…而且…、既…又…")
+        print("  ▸ 与此同时、另一方面")
+
+        print("\n【玄幻小说AI高频词】")
+        print("  ▸ \"只见\"、\"只听得\"、\"忽然间\"")
+        print("  ▸ \"心中暗道\"、\"暗想\"、\"不由得\"")
+        print("  ▸ \"一股…的气息\"、\"散发出…的波动\"")
+        print("  ▸ \"眼中闪过…\"、\"嘴角泛起…\"")
+        print("  ▸ \"身形一动\"、\"心念一转\"")
+
+        print("\n【操作要点】")
+        print("  1. 写完一章后，搜索这些词，逐个删除或替换")
+        print("  2. \"只见\"删掉，直接写看到的画面")
+        print("  3. \"心中暗道\"改成直接引语或动作暗示")
+        print("  4. 每删一个模板词，文风就自然一分")
+
+        input("\n按回车返回...")
+
+    def _deai_style_switch(self):
+        """技巧13：风格切换"""
+        print("\n" + "=" * 60)
+        print("🎬 技巧13：风格切换 — 根据场景调整文风")
+        print("=" * 60)
+
+        print("\n【原理】")
+        print("  AI通篇一个语调，但人类写作会根据场景自然切换文风。")
+        print("  战斗场景、日常场景、情感场景的文风应该完全不同。")
+
+        print("\n【场景-文风对照表】")
+        print("  战斗场景 → 短句、快节奏、动词密集、少修饰")
+        print("  日常场景 → 口语化、轻松、可有废话、节奏舒缓")
+        print("  情感场景 → 细腻、长句、内心独白、节奏缓慢")
+        print("  悬疑场景 → 短句+长句交替、信息克制、氛围渲染")
+        print("  装逼打脸 → 节奏明快、对话犀利、爽感直接")
+
+        print("\n【玄幻小说示例】")
+        print("  战斗场景：")
+        print("    \"剑光。三道。林锋侧身，第一道擦着鼻尖过去。第二道——他抬手，金针撞偏了剑锋。第三道来不及躲。他硬扛。肩头一凉，血飙了出来。\"")
+
+        print("\n  日常场景：")
+        print("    \"老周蹲在矿道口啃馒头，看见林锋出来，含糊不清地招呼：'小子，今天挖了多少？'林锋把矿篓往地上一撂，瘫坐下来：'别提了，东边那条道全是硬岩，镐头都崩了两个口子。'\"")
+
+        input("\n按回车返回...")
+
+    def _deai_fiction_specific(self):
+        """技巧14：小说专用降AI技巧"""
+        print("\n" + "=" * 60)
+        print("📖 技巧14：小说专用降AI技巧")
+        print("=" * 60)
+
+        print("\n【网文AI检测的特殊难点】")
+        print("  1. 篇幅超长 → 全文检测困难，抽检为主 → 需要整体风格一致")
+        print("  2. 风格多样 → 不同类型语言差异大 → 需要适配类型特点")
+        print("  3. 更新频繁 → 日更压力大 → 需要高效处理流程")
+        print("  4. 人物对话多 → 对话是原创性体现 → 对话降重需特别小心")
+        print("  5. 情节连贯 → 前后文关联紧密 → 降重需保持连贯性")
+
+        print("\n【核心原则：风格一致性高于一切】")
+        print("  网文读者追更的核心动力是对作者风格的认可。")
+        print("  降重后如果风格突变，读者会立刻察觉。")
+
+        print("\n【风格一致性的三个维度】")
+        print("  1. 叙事节奏 — 长短句搭配、段落长度、场景切换频率")
+        print("  2. 语言习惯 — 用词偏好、修辞风格、口头禅")
+        print("  3. 情感基调 — 幽默/严肃、轻快/沉重、温馨/虐心")
+
+        print("\n【对比示例：轻松吐槽流】")
+        print("  原文风格：")
+        print("    \"林夜看着面前这位自称'修仙界第一美男'的家伙，内心毫无波动，甚至想给他一拳。\"")
+        print("    \"拜托，你那张脸，说是第一美男，那整个修仙界的审美是不是集体下线了？\"")
+        print()
+        print("  ❌ AI改写后（风格断裂）：")
+        print("    \"林夜注视着眼前这位自诩为修仙界第一美男的修士，心中波澜不惊，甚至产生了攻击冲动。\"")
+        print()
+        print("  ✅ 正确改写（保持风格）：")
+        print("    \"林夜盯着那张自称'第一美男'的脸看了三秒。就这？他默默把拳头攥紧了。\"")
+
+        print("\n【各平台AI检测严格程度】")
+        print("  起点中文网 → 算法识别+编辑审核 → 警告/限流/下架/解约 → ★★★★★")
+        print("  晋江文学城 → 系统检测+读者举报 → 锁章/扣分/封禁 → ★★★★★")
+        print("  番茄小说   → AI识别系统       → 限制推荐/下架     → ★★★")
+        print("  七猫小说   → 抽检机制         → 警告/限流         → ★★")
+        print("  刺猬猫     → 编辑人工审核     → 拒稿/解约         → ★★★★")
+
+        input("\n按回车返回...")
+
+    def _deai_checklist(self):
+        """技巧15：自检清单"""
+        print("\n" + "=" * 60)
+        print("🔍 技巧15：自检清单 — 一章写完后的10个检查点")
+        print("=" * 60)
+
+        print("\n【逐项检查】")
+        checks = [
+            ("1. 长句检查", "有没有超过30字的句子？拆掉。"),
+            ("2. 连接词检查", "有没有\"首先/其次/综上所述/此外\"？删掉。"),
+            ("3. 感官检查", "这一章用了几个感官？至少3个（视听嗅触味）。"),
+            ("4. 对话检查", "对话像不像真人在说话？有没有潜台词和动作打断？"),
+            ("5. 细节检查", "有没有只有你能写出的具象细节？至少1处。"),
+            ("6. 节奏检查", "长短句是否交替？有没有单独成段的短句？"),
+            ("7. 视角检查", "是否始终在角色视角内？有没有上帝视角跳脱？"),
+            ("8. 推理检查", "角色的决定有没有内心推理过程？"),
+            ("9. 模板检查", "有没有\"只见/心中暗道/不由得\"等网文AI高频词？"),
+            ("10. 风格检查", "这一章的风格和前后章是否一致？"),
+        ]
+
+        for title, detail in checks:
+            print(f"  ✅ {title}")
+            print(f"     {detail}")
+            print()
+
+        print("【快速自检命令】")
+        print("  写完一章后，用搜索功能查找以下关键词：")
+        print("  \"只见\" \"心中\" \"不由得\" \"一股\" \"眼中闪过\" \"嘴角\"")
+        print("  \"首先\" \"其次\" \"最后\" \"综上所述\" \"总而言之\"")
+        print("  \"不仅…而且\" \"既…又\" \"与此同时\"")
+        print()
+        print("  每找到一个，就问自己：删掉它，句子会变差吗？")
+        print("  如果不会——删。")
+
+        input("\n按回车返回...")
+
     def show_about(self):
         """显示关于"""
         print("\n" + "="*80)
@@ -1108,5 +1882,4 @@ class NWACSFinal:
         sys.exit(0)
 
 if __name__ == "__main__":
-    engine = NWACSFinal()
-    engine.run()
+    NWACSFinal()

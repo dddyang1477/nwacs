@@ -14,14 +14,6 @@ CORE_DIR = os.path.join(ROOT_DIR, "core", "v8")
 sys.path.insert(0, ROOT_DIR)
 sys.path.insert(0, CORE_DIR)
 
-import io
-try:
-    sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
-    sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding='utf-8')
-except Exception:
-    pass
-
-
 def main():
     try:
         from NWACS_FINAL import NWACSFinal

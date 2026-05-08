@@ -116,6 +116,26 @@ class WordCountStats:
     daily_output: Dict[str, int] = field(default_factory=dict)
 
 
+@dataclass
+class QualityCheckResult:
+    passed: bool
+    total_chapters: int
+    passed_chapters: int
+    failed_chapters: List[Dict[str, Any]]
+    ai_score: float = 0.0
+    ai_detection_passed: bool = True
+    overall_score: float = 0.0
+    warnings: List[str] = field(default_factory=list)
+    checked_at: str = ""
+
+
+MIN_CHAPTER_WORDS = 4000
+
+
+class QualityCheckFailedException(Exception):
+    pass
+
+
 class PlatformExporter:
     """多平台格式化导出"""
 
@@ -164,7 +184,22 @@ class PlatformExporter:
             )
 
     def export(self, meta: NovelMeta, chapters: List[ChapterData],
-               platform: ExportPlatform) -> str:
+               platform: ExportPlatform, skip_quality_check: bool = False) -> str:
+        if not skip_quality_check:
+            quality_result = self.check_quality_before_export(meta, chapters)
+            if not quality_result.passed:
+                failed_info = "\n".join(
+                    f"  - 第{ch['chapter_num']}章《{ch['title']}》: {ch['reason']}"
+                    for ch in quality_result.failed_chapters
+                )
+                raise QualityCheckFailedException(
+                    f"质量检测未通过，拒绝导出:\n{failed_info}\n"
+                    f"通过: {quality_result.passed_chapters}/{quality_result.total_chapters} 章"
+                )
+            if (hasattr(quality_result, '_rewritten_chapters')
+                    and quality_result._rewritten_chapters):
+                chapters = quality_result._rewritten_chapters
+
         method_map = {
             ExportPlatform.QIDIAN: self._export_qidian,
             ExportPlatform.FANQIE: self._export_fanqie,
@@ -297,6 +332,138 @@ class PlatformExporter:
             words_by_volume=words_by_volume,
             daily_output=daily_output,
         )
+
+    def check_quality_before_export(self, meta: NovelMeta,
+                                    chapters: List[ChapterData]) -> QualityCheckResult:
+        failed_chapters: List[Dict[str, Any]] = []
+        warnings: List[str] = []
+        total_words = 0
+
+        for ch in chapters:
+            word_count = ch.word_count if ch.word_count > 0 else len(ch.content)
+            total_words += word_count
+
+            if word_count < MIN_CHAPTER_WORDS:
+                failed_chapters.append({
+                    "chapter_num": ch.chapter_num,
+                    "title": ch.title,
+                    "word_count": word_count,
+                    "required": MIN_CHAPTER_WORDS,
+                    "reason": f"字数不足: {word_count}字 < {MIN_CHAPTER_WORDS}字",
+                })
+
+            if not ch.content or not ch.content.strip():
+                failed_chapters.append({
+                    "chapter_num": ch.chapter_num,
+                    "title": ch.title,
+                    "word_count": word_count,
+                    "required": MIN_CHAPTER_WORDS,
+                    "reason": "内容为空",
+                })
+
+            if ch.content and len(ch.content.strip()) < 100:
+                warnings.append(f"第{ch.chapter_num}章《{ch.title}》内容过短({len(ch.content.strip())}字符)")
+
+        if total_words < 10000:
+            warnings.append(f"全书总字数偏低: {total_words}字")
+
+        passed_chapters = len(chapters) - len(failed_chapters)
+        basic_passed = len(failed_chapters) == 0
+
+        ai_score = 0.0
+        ai_detection_passed = True
+        pipeline_result = None
+        rewritten_chapters = None
+
+        if basic_passed and chapters:
+            try:
+                from .quality_detector import (
+                    QualityDetector, PipelineResult, mark_for_manual_review,
+                )
+                detector = QualityDetector()
+
+                rewritten_chapters = []
+                all_pipeline_passed = True
+
+                for ch in chapters:
+                    print(f"\n  📖 检测第{ch.chapter_num}章《{ch.title}》...")
+                    pipeline_result = detector.run_full_pipeline(
+                        ch.content,
+                        title=meta.title,
+                        chapter_num=ch.chapter_num,
+                    )
+
+                    if pipeline_result.passed:
+                        rewritten_chapters.append(ChapterData(
+                            chapter_num=ch.chapter_num,
+                            title=ch.title,
+                            content=pipeline_result.final_text,
+                            word_count=len(pipeline_result.final_text),
+                            volume=ch.volume,
+                            volume_title=ch.volume_title,
+                            summary=ch.summary,
+                            created_at=ch.created_at,
+                        ))
+                    else:
+                        all_pipeline_passed = False
+                        last_round = pipeline_result.rounds[-1] if pipeline_result.rounds else None
+                        if last_round:
+                            ai_score = max(ai_score, last_round.ai_trace_report.score)
+                            if last_round.ai_trace_report.score > 40:
+                                ai_detection_passed = False
+                                warnings.append(
+                                    f"第{ch.chapter_num}章《{ch.title}》AI痕迹{last_round.ai_trace_report.score}分"
+                                )
+                        mark_for_manual_review(meta.title, ch.chapter_num, pipeline_result, self.output_dir)
+                        failed_chapters.append({
+                            "chapter_num": ch.chapter_num,
+                            "title": ch.title,
+                            "word_count": len(ch.content),
+                            "required": MIN_CHAPTER_WORDS,
+                            "reason": f"三轮检测未通过: {pipeline_result.manual_reason}",
+                        })
+
+                if not all_pipeline_passed:
+                    basic_passed = False
+
+            except ImportError:
+                try:
+                    from .ai_detector_and_rewriter import AIDetectorAndRewriter
+                    rule_detector = AIDetectorAndRewriter()
+                    full_text = "\n".join(ch.content for ch in chapters if ch.content)
+                    if full_text.strip():
+                        ai_score = rule_detector.detect_ai_score(full_text)
+                        if ai_score > 70:
+                            ai_detection_passed = False
+                            warnings.append(f"AI痕迹检测分数过高: {ai_score}%，建议人工润色")
+                except Exception as e2:
+                    warnings.append(f"AI检测回退方案异常: {e2}")
+            except Exception as e:
+                warnings.append(f"质量检测流水线异常: {e}")
+
+        overall_score = 100.0
+        if chapters:
+            overall_score -= (len(failed_chapters) / len(chapters)) * 60
+        if not ai_detection_passed:
+            overall_score -= 20
+        overall_score = max(0.0, overall_score)
+
+        result = QualityCheckResult(
+            passed=basic_passed,
+            total_chapters=len(chapters),
+            passed_chapters=passed_chapters,
+            failed_chapters=failed_chapters,
+            ai_score=ai_score,
+            ai_detection_passed=ai_detection_passed,
+            overall_score=overall_score,
+            warnings=warnings,
+            checked_at=datetime.now().isoformat(),
+        )
+
+        result._rewritten_chapters = rewritten_chapters
+        result._pipeline_result = pipeline_result
+
+        return result
 
     def generate_cover_html(self, meta: NovelMeta,
                             chapters: List[ChapterData]) -> str:
@@ -530,8 +697,8 @@ h1 {{ text-align: center; font-size: 28px; margin-bottom: 10px; letter-spacing: 
                     result["warnings"].append("缺少DOCTYPE声明")
                 if "</html>" not in html_content:
                     result["warnings"].append("HTML结构不完整")
-            except Exception:
-                pass
+            except Exception as e:
+                result["warnings"].append(f"HTML验证异常: {e}")
 
         return result
 
@@ -541,7 +708,7 @@ h1 {{ text-align: center; font-size: 28px; margin-bottom: 10px; letter-spacing: 
     def _get_output_path(self, meta: NovelMeta, platform: ExportPlatform,
                          subdir: str = "") -> str:
         safe_title = self._safe_filename(meta.title)
-        dir_path = self.output_dir
+        dir_path = os.path.join(self.output_dir, safe_title)
         if subdir:
             dir_path = os.path.join(dir_path, subdir)
         os.makedirs(dir_path, exist_ok=True)

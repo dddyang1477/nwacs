@@ -242,33 +242,57 @@ class EnhancedAIDetector:
         return suggestions
 
     def rewrite(self, text: str, intensity: str = "medium") -> Tuple[str, RewriteReport]:
-        """智能去痕重写"""
+        """智能去痕重写
+
+        ⚠️ 重要：机械字符串替换已被证明会制造更多AI可检测模式。
+        真正的去痕应该通过AI引擎配合专门的去AI系统提示词来完成。
+        此方法现在只做安全的、非破坏性的预处理。
+        """
         original = self.detect(text)
-        result = text
-        changes = []
-        replaced = []
 
-        if intensity == "light":
-            result = self._light_rewrite(result, replaced)
-        elif intensity == "medium":
-            result = self._medium_rewrite(result, replaced)
-        elif intensity == "heavy":
-            result = self._heavy_rewrite(result, replaced)
-
-        result = self._vary_sentence_structure(result)
-        result = self._add_natural_imperfections(result)
+        result = self._safe_preprocess(text)
 
         final = self.detect(result)
         reduction = original.overall_score - final.overall_score
+
+        if reduction <= 0:
+            print(f"  ⚠️ 本地预处理未降低AI痕迹分数 ({original.overall_score}→{final.overall_score})")
+            print(f"  💡 建议使用AI引擎配合去AI系统提示词进行深度改写")
 
         return result, RewriteReport(
             original_score=original.overall_score,
             final_score=final.overall_score,
             reduction=reduction,
-            changes_made=len(changes),
-            replaced_words=replaced,
-            modified_sentences=len(changes),
+            changes_made=0,
+            replaced_words=[],
+            modified_sentences=0,
         )
+
+    def _safe_preprocess(self, text: str) -> str:
+        """安全预处理 — 只做不破坏文本质量的微调"""
+        result = text
+
+        result = re.sub(r'\.{4,}', '...', result)
+        result = re.sub(r'[！？]{3,}', lambda m: m.group()[:2], result)
+
+        paragraphs = result.split('\n')
+        if len(paragraphs) > 1:
+            lengths = [len(p) for p in paragraphs if p.strip()]
+            if lengths and max(lengths) / (sum(lengths) / len(lengths)) > 4:
+                long_paras = [i for i, p in enumerate(paragraphs)
+                              if len(p) > sum(lengths) / len(lengths) * 2.5]
+                for i in long_paras:
+                    if i < len(paragraphs):
+                        mid = len(paragraphs[i]) // 2
+                        for sep in ['。', '！', '？']:
+                            pos = paragraphs[i].find(sep, mid - 50, mid + 50)
+                            if pos > 0:
+                                paragraphs[i] = (paragraphs[i][:pos + 1] + '\n\n'
+                                                 + paragraphs[i][pos + 1:].lstrip())
+                                break
+
+        result = '\n'.join(paragraphs)
+        return result
 
     def _light_rewrite(self, text: str, replaced: List) -> str:
         """轻度去痕 - 仅替换最高风险词"""
@@ -379,6 +403,73 @@ class EnhancedAIDetector:
             "text_b": {"score": report_b.overall_score, "level": report_b.level},
             "difference": report_a.overall_score - report_b.overall_score,
             "better": "text_a" if report_a.overall_score < report_b.overall_score else "text_b",
+        }
+
+    def diagnose_deep(self, text: str) -> Dict:
+        """
+        深度AI特征诊断 — 使用写作知识引擎进行6层分析
+
+        比 detect() 更深入，覆盖词汇/句式/语义/结构/情感/语用六个层面，
+        提供具体的修复优先级和去痕策略建议。
+
+        Returns:
+            {
+                "overall_ai_score": float,      # 0-1, 越高越像AI
+                "risk_level": str,              # low/medium/high/critical
+                "summary": str,                 # 诊断摘要
+                "detected_traits": [...],       # 检测到的特征列表
+                "fix_priority": [...],          # 修复优先级
+                "deai_pipeline": {...},         # 去痕流水线
+                "recommended_techniques": [...], # 推荐写作技法
+            }
+        """
+        try:
+            from .writing_knowledge_engine import WritingKnowledgeEngine
+            engine = WritingKnowledgeEngine()
+        except ImportError:
+            try:
+                from writing_knowledge_engine import WritingKnowledgeEngine
+                engine = WritingKnowledgeEngine()
+            except ImportError:
+                return {
+                    "overall_ai_score": 0,
+                    "risk_level": "unknown",
+                    "summary": "知识引擎不可用，回退到基础检测",
+                    "detected_traits": [],
+                    "fix_priority": [],
+                    "deai_pipeline": None,
+                    "recommended_techniques": [],
+                }
+
+        diagnosis = engine.diagnose_ai_traits(text)
+
+        pipeline = engine.generate_deai_pipeline(text, "voice")
+
+        context = {
+            "genre": "玄幻",
+            "chapter_num": 1,
+            "ai_score": diagnosis.overall_ai_score,
+        }
+        techniques = engine.recommend_techniques(context=context)
+
+        return {
+            "overall_ai_score": diagnosis.overall_ai_score,
+            "risk_level": diagnosis.risk_level,
+            "summary": diagnosis.summary,
+            "detected_traits": [
+                {"key": t[0], "severity": round(t[1], 3)}
+                for t in diagnosis.detected_traits
+            ],
+            "fix_priority": diagnosis.fix_priority,
+            "deai_pipeline": {
+                "stages": pipeline.stages,
+                "estimated_effectiveness": pipeline.estimated_effectiveness,
+                "total_steps": pipeline.total_steps,
+            },
+            "recommended_techniques": [
+                {"name": t.technique_name, "relevance": t.relevance, "urgency": t.urgency}
+                for t in techniques
+            ],
         }
 
 

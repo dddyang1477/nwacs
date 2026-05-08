@@ -1,0 +1,1292 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NWACS - 智能小说写作系统</title>
+<style>
+:root {
+  --bg-primary: #0a0a14;
+  --bg-secondary: #12122a;
+  --bg-card: #1a1a3e;
+  --bg-card-hover: #222250;
+  --bg-input: #1e1e40;
+  --border: #2a2a55;
+  --border-active: #8b5cf6;
+  --text-primary: #e8e8f5;
+  --text-secondary: #a0a0c8;
+  --text-muted: #6a6a90;
+  --accent: #8b5cf6;
+  --accent-glow: rgba(139, 92, 246, 0.25);
+  --accent2: #06b6d4;
+  --success: #10b981;
+  --warning: #f59e0b;
+  --danger: #ef4444;
+  --radius: 12px;
+  --radius-sm: 8px;
+  --radius-lg: 16px;
+  --shadow: 0 4px 24px rgba(0,0,0,0.4);
+  --shadow-lg: 0 8px 48px rgba(0,0,0,0.6);
+  --transition: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  --font-mono: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', monospace;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  min-height: 100vh;
+  overflow-x: hidden;
+  line-height: 1.6;
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background:
+    radial-gradient(ellipse at 20% 50%, rgba(139, 92, 246, 0.06) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 20%, rgba(6, 182, 212, 0.04) 0%, transparent 50%),
+    radial-gradient(ellipse at 50% 80%, rgba(245, 158, 11, 0.03) 0%, transparent 50%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.app { position: relative; z-index: 1; max-width: 1200px; margin: 0 auto; padding: 0 20px; }
+
+/* Header */
+.header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 20px 0; border-bottom: 1px solid var(--border); margin-bottom: 24px;
+}
+.logo { display: flex; align-items: center; gap: 12px; }
+.logo-icon {
+  width: 40px; height: 40px; background: linear-gradient(135deg, var(--accent), var(--accent2));
+  border-radius: 10px; display: flex; align-items: center; justify-content: center;
+  font-size: 20px; box-shadow: 0 0 20px var(--accent-glow);
+}
+.logo-text { font-size: 1.3rem; font-weight: 700; letter-spacing: -0.5px; }
+.logo-sub { font-size: 0.75rem; color: var(--text-muted); }
+.header-actions { display: flex; gap: 8px; }
+
+/* Progress */
+.progress { display: flex; align-items: center; justify-content: center; gap: 0; margin-bottom: 32px; }
+.progress-step {
+  display: flex; align-items: center; gap: 8px; padding: 8px 16px;
+  border-radius: 20px; font-size: 0.85rem; color: var(--text-muted);
+  cursor: pointer; transition: var(--transition); white-space: nowrap;
+}
+.progress-step .step-num {
+  width: 28px; height: 28px; border-radius: 50%; display: flex;
+  align-items: center; justify-content: center; font-weight: 700;
+  font-size: 0.8rem; background: var(--bg-card); border: 2px solid var(--border);
+  transition: var(--transition);
+}
+.progress-step.active { color: var(--text-primary); }
+.progress-step.active .step-num { background: var(--accent); border-color: var(--accent); color: #fff; box-shadow: 0 0 12px var(--accent-glow); }
+.progress-step.done { color: var(--success); }
+.progress-step.done .step-num { background: var(--success); border-color: var(--success); color: #fff; }
+.progress-line { width: 40px; height: 2px; background: var(--border); border-radius: 1px; }
+.progress-line.done { background: var(--success); }
+
+/* Steps */
+.step { animation: fadeIn 0.4s ease; }
+.step.hidden { display: none; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+/* Cards */
+.card {
+  background: var(--bg-card); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 24px; margin-bottom: 20px;
+  transition: var(--transition);
+}
+.card:hover { border-color: rgba(139, 92, 246, 0.3); }
+.card-header { font-size: 1.1rem; font-weight: 600; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
+
+/* Selection Grid */
+.selection-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 10px; }
+.selection-card {
+  background: var(--bg-input); border: 2px solid var(--border); border-radius: var(--radius-sm);
+  padding: 16px; cursor: pointer; transition: var(--transition); text-align: center;
+}
+.selection-card:hover { border-color: var(--accent); background: var(--bg-card-hover); }
+.selection-card.selected { border-color: var(--accent); background: rgba(139, 92, 246, 0.1); box-shadow: 0 0 16px var(--accent-glow); }
+.selection-card .card-icon { font-size: 1.5rem; display: block; margin-bottom: 6px; }
+.selection-card .card-label { font-weight: 600; font-size: 0.9rem; }
+.selection-card .card-desc { font-size: 0.75rem; color: var(--text-muted); margin-top: 4px; }
+
+/* Form */
+.form-group { margin-bottom: 16px; }
+.form-label { display: block; font-size: 0.85rem; font-weight: 500; color: var(--text-secondary); margin-bottom: 6px; }
+.form-input, .form-textarea {
+  width: 100%; padding: 10px 14px; background: var(--bg-input); border: 1px solid var(--border);
+  border-radius: var(--radius-sm); color: var(--text-primary); font-size: 0.9rem;
+  font-family: inherit; transition: var(--transition); outline: none;
+}
+.form-input:focus, .form-textarea:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-glow); }
+.form-textarea { resize: vertical; min-height: 80px; }
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+
+/* Buttons */
+.btn {
+  display: inline-flex; align-items: center; gap: 6px; padding: 10px 20px;
+  border: none; border-radius: var(--radius-sm); font-size: 0.9rem; font-weight: 600;
+  cursor: pointer; transition: var(--transition); font-family: inherit;
+}
+.btn-primary { background: linear-gradient(135deg, var(--accent), #7c3aed); color: #fff; box-shadow: 0 4px 16px var(--accent-glow); }
+.btn-primary:hover { transform: translateY(-1px); box-shadow: 0 6px 24px var(--accent-glow); }
+.btn-primary:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+.btn-secondary { background: var(--bg-card); color: var(--text-primary); border: 1px solid var(--border); }
+.btn-secondary:hover { border-color: var(--accent); }
+.btn-sm { padding: 6px 12px; font-size: 0.8rem; }
+.btn-icon { width: 36px; height: 36px; padding: 0; display: flex; align-items: center; justify-content: center; border-radius: 50%; }
+.btn-success { background: var(--success); color: #fff; }
+.btn-danger { background: var(--danger); color: #fff; }
+
+/* Plot Cards */
+.plot-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 16px; }
+.plot-card {
+  background: var(--bg-card); border: 2px solid var(--border); border-radius: var(--radius);
+  padding: 24px; cursor: pointer; transition: var(--transition); position: relative; overflow: hidden;
+}
+.plot-card::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+  background: var(--card-color, var(--accent)); opacity: 0; transition: var(--transition);
+}
+.plot-card:hover { border-color: var(--accent); transform: translateY(-2px); box-shadow: var(--shadow); }
+.plot-card:hover::before { opacity: 1; }
+.plot-card.selected { border-color: var(--accent); box-shadow: 0 0 24px var(--accent-glow); }
+.plot-card.selected::before { opacity: 1; }
+.plot-number { font-size: 0.75rem; color: var(--accent); font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
+.plot-name { font-size: 1.2rem; font-weight: 700; margin-bottom: 8px; }
+.plot-tagline { font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 16px; line-height: 1.5; }
+.plot-detail { display: flex; gap: 8px; font-size: 0.8rem; margin-bottom: 6px; }
+.plot-detail .detail-label { color: var(--text-muted); min-width: 60px; flex-shrink: 0; }
+.plot-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px; }
+.tag { font-size: 0.7rem; padding: 3px 8px; border-radius: 10px; background: rgba(139, 92, 246, 0.15); color: var(--accent); }
+
+/* Outline */
+.outline-header { display: flex; justify-content: space-between; align-items: flex-start; padding: 20px 24px; }
+.outline-title { font-size: 1.4rem; font-weight: 700; }
+.outline-meta { font-size: 0.8rem; color: var(--text-muted); }
+.act-section { border: 1px solid var(--border); border-radius: var(--radius-sm); margin-bottom: 12px; overflow: hidden; }
+.act-header {
+  display: flex; align-items: center; gap: 12px; padding: 14px 18px;
+  background: var(--bg-card); cursor: pointer; transition: var(--transition);
+}
+.act-header:hover { background: var(--bg-card-hover); }
+.act-num {
+  width: 32px; height: 32px; border-radius: 50%; display: flex;
+  align-items: center; justify-content: center; font-weight: 700; font-size: 0.85rem;
+  flex-shrink: 0;
+}
+.act-1 { background: rgba(139, 92, 246, 0.2); color: var(--accent); }
+.act-2 { background: rgba(6, 182, 212, 0.2); color: var(--accent2); }
+.act-3 { background: rgba(245, 158, 11, 0.2); color: var(--warning); }
+.act-4 { background: rgba(16, 185, 129, 0.2); color: var(--success); }
+.act-info { flex: 1; }
+.act-name { font-weight: 600; }
+.act-range { font-size: 0.75rem; color: var(--text-muted); }
+.act-arrow { transition: var(--transition); font-size: 0.7rem; color: var(--text-muted); }
+.act-section.open .act-arrow { transform: rotate(90deg); }
+.act-events { display: none; padding: 0 18px 14px; }
+.act-section.open .act-events { display: block; }
+.event-item { display: flex; gap: 12px; padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.03); font-size: 0.85rem; align-items: flex-start; }
+.event-chapter { min-width: 36px; height: 24px; border-radius: 12px; background: var(--bg-input); display: flex; align-items: center; justify-content: center; font-size: 0.7rem; font-weight: 600; color: var(--text-muted); }
+.event-type { font-size: 0.7rem; padding: 2px 8px; border-radius: 8px; font-weight: 600; white-space: nowrap; }
+.event-type.opening { background: rgba(6, 182, 212, 0.15); color: var(--accent2); }
+.event-type.twist { background: rgba(245, 158, 11, 0.15); color: var(--warning); }
+.event-type.climax { background: rgba(239, 68, 68, 0.15); color: var(--danger); }
+.event-type.conflict { background: rgba(139, 92, 246, 0.15); color: var(--accent); }
+.event-type.ending { background: rgba(16, 185, 129, 0.15); color: var(--success); }
+.event-desc { color: var(--text-secondary); }
+.event-foreshadow { font-size: 0.75rem; color: var(--warning); margin-top: 4px; }
+
+/* Markers & Tooltips */
+.marker {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 18px; height: 18px; border-radius: 50%; font-size: 0.6rem;
+  font-weight: 700; cursor: help; position: relative; flex-shrink: 0;
+  transition: var(--transition);
+}
+.marker-main { background: rgba(139, 92, 246, 0.2); color: var(--accent); }
+.marker-sub { background: rgba(6, 182, 212, 0.2); color: var(--accent2); }
+.marker-transition { background: rgba(245, 158, 11, 0.2); color: var(--warning); }
+.marker-cause { background: rgba(16, 185, 129, 0.2); color: var(--success); }
+.marker-effect { background: rgba(239, 68, 68, 0.2); color: var(--danger); }
+.marker:hover { transform: scale(1.2); z-index: 10; }
+
+.tooltip-box {
+  display: none; position: absolute; bottom: calc(100% + 8px); left: 50%;
+  transform: translateX(-50%); background: var(--bg-card); border: 1px solid var(--accent);
+  border-radius: var(--radius-sm); padding: 8px 12px; font-size: 0.75rem;
+  color: var(--text-primary); white-space: nowrap; z-index: 100;
+  box-shadow: var(--shadow-lg); font-weight: 400; max-width: 280px;
+  white-space: normal; word-break: break-word;
+}
+.marker:hover .tooltip-box { display: block; }
+
+/* Notes Column */
+.notes-cell {
+  min-width: 140px; max-width: 200px; flex-shrink: 0;
+}
+.notes-cell textarea {
+  width: 100%; min-height: 36px; padding: 6px 8px;
+  background: var(--bg-input); border: 1px solid var(--border);
+  border-radius: 6px; color: var(--text-primary); font-size: 0.75rem;
+  font-family: inherit; resize: vertical; outline: none;
+  transition: var(--transition);
+}
+.notes-cell textarea:focus { border-color: var(--accent); }
+.notes-cell textarea::placeholder { color: var(--text-muted); }
+
+/* Character Card */
+.char-card {
+  display: flex; align-items: center; gap: 12px; padding: 10px 14px;
+  background: var(--bg-input); border-radius: var(--radius-sm);
+  border-left: 3px solid var(--accent); margin-bottom: 8px;
+  transition: var(--transition);
+}
+.char-card.antagonist { border-left-color: var(--danger); }
+.char-card.supporting { border-left-color: var(--accent2); }
+.char-card .char-avatar {
+  width: 36px; height: 36px; border-radius: 50%; display: flex;
+  align-items: center; justify-content: center; font-size: 1rem;
+  flex-shrink: 0;
+}
+.char-card.protagonist .char-avatar { background: rgba(139, 92, 246, 0.2); }
+.char-card.antagonist .char-avatar { background: rgba(239, 68, 68, 0.2); }
+.char-card.supporting .char-avatar { background: rgba(6, 182, 212, 0.2); }
+.char-name { font-weight: 600; font-size: 0.9rem; }
+.char-meaning { font-size: 0.75rem; color: var(--text-muted); }
+.char-role-tag {
+  font-size: 0.65rem; padding: 2px 8px; border-radius: 8px;
+  font-weight: 600; white-space: nowrap;
+}
+.char-role-tag.protagonist { background: rgba(139, 92, 246, 0.15); color: var(--accent); }
+.char-role-tag.antagonist { background: rgba(239, 68, 68, 0.15); color: var(--danger); }
+.char-role-tag.supporting { background: rgba(6, 182, 212, 0.15); color: var(--accent2); }
+
+/* Plot Lines Section */
+.plot-lines-section { padding: 16px 24px; border-bottom: 1px solid var(--border); }
+.plot-line-item { display: flex; align-items: flex-start; gap: 8px; padding: 6px 0; font-size: 0.85rem; }
+.ce-chain { display: flex; align-items: center; gap: 8px; padding: 6px 0; font-size: 0.8rem; flex-wrap: wrap; }
+.ce-node {
+  padding: 4px 10px; border-radius: 12px; font-size: 0.75rem;
+}
+.ce-node.cause { background: rgba(16, 185, 129, 0.15); color: var(--success); }
+.ce-node.effect { background: rgba(239, 68, 68, 0.15); color: var(--danger); }
+.ce-arrow { color: var(--text-muted); }
+
+/* Workspace */
+.workspace { display: grid; grid-template-columns: 1fr 320px; gap: 20px; }
+.workspace-main { min-width: 0; }
+.workspace-side { display: flex; flex-direction: column; gap: 16px; }
+
+/* Chapter Content */
+.chapter-content {
+  background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius);
+  padding: 32px; min-height: 400px; font-size: 1rem; line-height: 2;
+  white-space: pre-wrap; word-break: break-word;
+}
+.chapter-content.empty { display: flex; align-items: center; justify-content: center; color: var(--text-muted); font-style: italic; }
+
+/* Chapter Nav */
+.chapter-nav { display: flex; align-items: center; gap: 8px; margin-bottom: 16px; }
+.chapter-nav input { width: 60px; text-align: center; }
+
+/* Stats */
+.stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.stat-item { background: var(--bg-input); border-radius: var(--radius-sm); padding: 12px; text-align: center; }
+.stat-value { font-size: 1.2rem; font-weight: 700; }
+.stat-value.good { color: var(--success); }
+.stat-value.warn { color: var(--warning); }
+.stat-value.bad { color: var(--danger); }
+.stat-label { font-size: 0.7rem; color: var(--text-muted); margin-top: 2px; }
+.meter { height: 4px; background: var(--border); border-radius: 2px; margin-top: 8px; overflow: hidden; }
+.meter-fill { height: 100%; border-radius: 2px; transition: width 0.5s ease; }
+.meter-fill.good { background: var(--success); }
+.meter-fill.warn { background: var(--warning); }
+.meter-fill.bad { background: var(--danger); }
+
+/* Info Card */
+.info-card { background: var(--bg-input); border-radius: var(--radius-sm); padding: 14px; }
+.info-card h4 { font-size: 0.8rem; color: var(--text-muted); margin-bottom: 8px; }
+
+/* Loading */
+.loading-overlay {
+  position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(10, 10, 20, 0.85); backdrop-filter: blur(8px);
+  display: flex; align-items: center; justify-content: center; z-index: 1000;
+  opacity: 0; pointer-events: none; transition: opacity 0.3s;
+}
+.loading-overlay.show { opacity: 1; pointer-events: all; }
+.loading-box { text-align: center; }
+.loading-spinner {
+  width: 48px; height: 48px; border: 3px solid var(--border);
+  border-top-color: var(--accent); border-radius: 50%;
+  animation: spin 0.8s linear infinite; margin: 0 auto 16px;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+.loading-text { font-size: 0.95rem; color: var(--text-secondary); margin-bottom: 4px; }
+.loading-time { font-size: 0.8rem; color: var(--text-muted); font-family: var(--font-mono); }
+.loading-progress { width: 200px; height: 3px; background: var(--border); border-radius: 2px; margin: 12px auto 0; overflow: hidden; }
+.loading-progress-bar { height: 100%; background: var(--accent); border-radius: 2px; width: 0%; transition: width 0.3s; }
+
+/* Toast */
+.toast {
+  position: fixed; top: 20px; right: 20px; padding: 12px 20px;
+  border-radius: var(--radius-sm); font-size: 0.85rem; z-index: 2000;
+  animation: slideIn 0.3s ease; max-width: 400px;
+  box-shadow: var(--shadow-lg);
+}
+.toast.info { background: var(--bg-card); border: 1px solid var(--accent); color: var(--text-primary); }
+.toast.success { background: rgba(16, 185, 129, 0.15); border: 1px solid var(--success); color: var(--success); }
+.toast.error { background: rgba(239, 68, 68, 0.15); border: 1px solid var(--danger); color: var(--danger); }
+@keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+
+/* Export Modal */
+.modal-overlay {
+  position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.7); display: flex; align-items: center;
+  justify-content: center; z-index: 1500; opacity: 0; pointer-events: none;
+  transition: opacity 0.3s;
+}
+.modal-overlay.show { opacity: 1; pointer-events: all; }
+.modal {
+  background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-lg);
+  padding: 28px; max-width: 480px; width: 90%; box-shadow: var(--shadow-lg);
+}
+.modal h3 { margin-bottom: 16px; }
+.modal-actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 20px; }
+
+/* Responsive */
+@media (max-width: 768px) {
+  .workspace { grid-template-columns: 1fr; }
+  .plot-cards { grid-template-columns: 1fr; }
+  .form-row { grid-template-columns: 1fr; }
+  .selection-grid { grid-template-columns: repeat(2, 1fr); }
+  .progress-step span:last-child { display: none; }
+}
+</style>
+</head>
+<body>
+
+<div class="app">
+  <!-- Header -->
+  <div class="header">
+    <div class="logo">
+      <div class="logo-icon">✧</div>
+      <div>
+        <div class="logo-text">NWACS</div>
+        <div class="logo-sub">智能小说写作系统 v9.0</div>
+      </div>
+    </div>
+    <div class="header-actions">
+      <button class="btn btn-sm btn-secondary" onclick="toggleTheme()" title="切换主题">🌓</button>
+      <button class="btn btn-sm btn-secondary" onclick="showExportModal()">📥 导出</button>
+      <button class="btn btn-sm btn-secondary" onclick="resetAll()">🔄 重置</button>
+    </div>
+  </div>
+
+  <!-- Progress -->
+  <div class="progress">
+    <div class="progress-step active" data-step="1" onclick="goToStep(1)">
+      <span class="step-num">1</span><span>题材选择</span>
+    </div>
+    <div class="progress-line"></div>
+    <div class="progress-step" data-step="2" onclick="goToStep(2)">
+      <span class="step-num">2</span><span>剧情方案</span>
+    </div>
+    <div class="progress-line"></div>
+    <div class="progress-step" data-step="3" onclick="goToStep(3)">
+      <span class="step-num">3</span><span>大纲规划</span>
+    </div>
+    <div class="progress-line"></div>
+    <div class="progress-step" data-step="4" onclick="goToStep(4)">
+      <span class="step-num">4</span><span>开始写作</span>
+    </div>
+  </div>
+
+  <!-- Step 1: Genre Selection -->
+  <div class="step" id="step1">
+    <div class="card">
+      <div class="card-header">📚 选择题材类型 <span style="font-size:0.75rem;color:var(--text-muted);font-weight:400;">（最多2个）</span></div>
+      <div class="selection-grid" id="genreGrid"></div>
+    </div>
+    <div class="card" id="schoolCard">
+      <div class="card-header">📖 选择写作流派 <span style="font-size:0.75rem;color:var(--text-muted);font-weight:400;">（最多3个，根据题材动态变化）</span></div>
+      <div class="selection-grid" id="schoolGrid"></div>
+    </div>
+    <div class="card">
+      <div class="card-header">🎨 选择写作风格 <span style="font-size:0.75rem;color:var(--text-muted);font-weight:400;">（最多3个）</span></div>
+      <div class="selection-grid" id="styleGrid"></div>
+    </div>
+    <div class="card">
+      <div class="card-header">🎭 选择故事基调 <span style="font-size:0.75rem;color:var(--text-muted);font-weight:400;">（最多3个）</span></div>
+      <div class="selection-grid" id="toneGrid"></div>
+    </div>
+    <div class="card">
+      <div class="card-header">📏 选择篇幅长度 <span style="font-size:0.75rem;color:var(--text-muted);font-weight:400;">（单选）</span></div>
+      <div class="selection-grid" id="lengthGrid"></div>
+    </div>
+    <div class="card">
+      <div class="card-header">✏️ 创作要求</div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">主角设定（可选）</label>
+          <input class="form-input" id="protagonist" placeholder="如：废柴少年、穿越者、重生者...">
+        </div>
+        <div class="form-group">
+          <label class="form-label">核心主题</label>
+          <input class="form-input" id="theme" value="逆境成长" placeholder="如：逆境成长、复仇、守护...">
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">额外要求（可选）</label>
+        <textarea class="form-textarea" id="extraRequirements" placeholder="如：需要系统流、要有金手指、主角开局很弱但成长很快..."></textarea>
+      </div>
+      <button class="btn btn-primary" id="btnGenerate" onclick="generatePlots()" style="width:100%;justify-content:center;padding:14px;font-size:1rem;">
+        ✨ 生成剧情方案
+      </button>
+    </div>
+  </div>
+
+  <!-- Step 2: Plot Selection -->
+  <div class="step hidden" id="step2">
+    <div class="card">
+      <div class="card-header">💡 选择你喜欢的剧情方案</div>
+      <div class="plot-cards" id="plotCards"></div>
+    </div>
+    <div style="display:flex;gap:12px;justify-content:center;margin-top:8px;">
+      <button class="btn btn-secondary" onclick="goToStep(1)">← 返回修改</button>
+      <button class="btn btn-primary" id="btnSelectPlot" disabled onclick="selectPlot()">✅ 选定此方案，生成大纲</button>
+    </div>
+  </div>
+
+  <!-- Step 3: Outline -->
+  <div class="step hidden" id="step3">
+    <div class="card" id="outlineContainer"></div>
+    <div style="display:flex;gap:12px;justify-content:center;margin-top:8px;">
+      <button class="btn btn-secondary" onclick="goToStep(2)">← 重新选择方案</button>
+      <button class="btn btn-primary" onclick="goToStep(4)">🚀 开始写作</button>
+    </div>
+  </div>
+
+  <!-- Step 4: Writing Workspace -->
+  <div class="step hidden" id="step4">
+    <div class="workspace">
+      <div class="workspace-main">
+        <div class="chapter-nav">
+          <button class="btn btn-sm btn-secondary btn-icon" onclick="prevChapter()" title="上一章">◀</button>
+          <input class="form-input" id="chapterNum" value="1" onchange="loadChapter()" onkeydown="if(event.key==='Enter')loadChapter()">
+          <button class="btn btn-sm btn-secondary btn-icon" onclick="nextChapter()" title="下一章">▶</button>
+          <span style="font-size:0.8rem;color:var(--text-muted);margin-left:8px;" id="chapterTitleDisplay"></span>
+          <div style="flex:1"></div>
+          <button class="btn btn-sm btn-primary" id="btnGenChapter" onclick="generateChapter()">🚀 生成本章</button>
+        </div>
+        <div class="chapter-content empty" id="chapterContent">
+          第1章尚未生成，点击「生成本章」开始创作...
+        </div>
+      </div>
+      <div class="workspace-side">
+        <div class="info-card" id="chapterStats" style="display:none;">
+          <h4>📊 章节统计</h4>
+          <div class="stat-grid">
+            <div class="stat-item">
+              <div class="stat-value" id="statWords">-</div>
+              <div class="stat-label">字数</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-value" id="statAI">-</div>
+              <div class="stat-label">AI痕迹</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-value" id="statBeats">-</div>
+              <div class="stat-label">节拍密度</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-value" id="statHook">-</div>
+              <div class="stat-label">钩子强度</div>
+            </div>
+          </div>
+          <div class="meter"><div class="meter-fill" id="meterAI" style="width:0%"></div></div>
+        </div>
+        <div class="info-card" id="chapterOutline" style="display:none;">
+          <h4>📋 本章大纲提示</h4>
+          <div id="chapterOutlineContent" style="font-size:0.85rem;color:var(--text-secondary);"></div>
+        </div>
+        <div class="info-card">
+          <h4>🛠️ 工具</h4>
+          <div style="display:flex;flex-direction:column;gap:6px;">
+            <button class="btn btn-sm btn-secondary" onclick="detectAIForCurrent()">🔍 AI痕迹检测</button>
+            <button class="btn btn-sm btn-secondary" onclick="rewriteCurrent()">✏️ 去AI痕迹重写</button>
+            <button class="btn btn-sm btn-secondary" onclick="exportChapter()">📄 导出本章</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Loading Overlay -->
+<div class="loading-overlay" id="loadingOverlay">
+  <div class="loading-box">
+    <div class="loading-spinner"></div>
+    <div class="loading-text" id="loadingText">正在生成...</div>
+    <div class="loading-time" id="loadingTime"></div>
+    <div class="loading-progress"><div class="loading-progress-bar" id="loadingProgressBar"></div></div>
+  </div>
+</div>
+
+<!-- Export Modal -->
+<div class="modal-overlay" id="exportModal">
+  <div class="modal">
+    <h3>📥 导出作品</h3>
+    <p style="color:var(--text-secondary);font-size:0.85rem;margin-bottom:16px;">选择导出格式，将已生成的章节导出为文件。</p>
+    <div style="display:flex;flex-direction:column;gap:8px;">
+      <button class="btn btn-secondary" onclick="doExport('txt')" style="justify-content:flex-start;">📝 纯文本 (.txt)</button>
+      <button class="btn btn-secondary" onclick="doExport('md')" style="justify-content:flex-start;">📋 Markdown (.md)</button>
+      <button class="btn btn-secondary" onclick="doExport('html')" style="justify-content:flex-start;">🌐 HTML (.html)</button>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-sm btn-secondary" onclick="closeExportModal()">取消</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const API = '';
+let options = {};
+let selectedGenres = ['玄幻'];
+let selectedStyles = ['热血爽文'];
+let selectedTones = ['紧张刺激'];
+let selectedLength = '中长篇';
+let selectedSchools = [];
+let selectedSchoolNames = [];
+const MAX_GENRES = 2;
+const MAX_SCHOOLS = 3;
+const MAX_STYLES = 3;
+const MAX_TONES = 3;
+let selectedPlotId = null;
+let selectedPlotName = '';
+let plots = [];
+let outline = null;
+let chapters = {};
+let loadingStart = 0;
+let loadingTimer = null;
+
+async function api(path, method='GET', body=null) {
+  const opts = { method, headers: {'Content-Type':'application/json'} };
+  if (body) opts.body = JSON.stringify(body);
+  const res = await fetch(API + path, opts);
+  if (!res.ok) {
+    const err = await res.json().catch(()=>({detail:'Unknown error'}));
+    throw new Error(err.detail || err.error || `HTTP ${res.status}`);
+  }
+  return res.json();
+}
+
+function showLoading(text='正在生成...') {
+  loadingStart = Date.now();
+  document.getElementById('loadingText').textContent = text;
+  document.getElementById('loadingTime').textContent = '0:00';
+  document.getElementById('loadingProgressBar').style.width = '0%';
+  document.getElementById('loadingOverlay').classList.add('show');
+  loadingTimer = setInterval(() => {
+    const elapsed = Math.floor((Date.now() - loadingStart) / 1000);
+    const min = Math.floor(elapsed / 60);
+    const sec = elapsed % 60;
+    document.getElementById('loadingTime').textContent = `${min}:${String(sec).padStart(2,'0')}`;
+    const pct = Math.min(90, elapsed / 60 * 100);
+    document.getElementById('loadingProgressBar').style.width = pct + '%';
+  }, 500);
+}
+
+function hideLoading() {
+  document.getElementById('loadingProgressBar').style.width = '100%';
+  setTimeout(() => {
+    document.getElementById('loadingOverlay').classList.remove('show');
+    if (loadingTimer) { clearInterval(loadingTimer); loadingTimer = null; }
+  }, 300);
+}
+
+function toast(msg, type='info') {
+  const t = document.createElement('div');
+  t.className = `toast ${type}`;
+  t.textContent = msg;
+  document.body.appendChild(t);
+  setTimeout(() => { t.style.opacity='0'; t.style.transition='opacity 0.3s';
+    setTimeout(()=>t.remove(),300); }, 4000);
+}
+
+function goToStep(n) {
+  for (let i=1; i<=4; i++) {
+    document.getElementById('step'+i).classList.toggle('hidden', i!==n);
+  }
+  document.querySelectorAll('.progress-step').forEach(el => {
+    const s = parseInt(el.dataset.step);
+    el.classList.remove('active','done');
+    if (s === n) el.classList.add('active');
+    if (s < n) el.classList.add('done');
+  });
+  document.querySelectorAll('.progress-line').forEach((el,i) => {
+    el.classList.toggle('done', i+1 < n);
+  });
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+async function init() {
+  try {
+    const data = await api('/api/options');
+    options = data;
+    renderSelectionGrid('genreGrid', data.genres, 'genre');
+    renderSchoolGrid();
+    renderSelectionGrid('styleGrid', data.styles, 'style');
+    renderSelectionGrid('toneGrid', data.tones, 'tone');
+    renderSelectionGrid('lengthGrid', data.lengths, 'length');
+  } catch(e) {
+    toast('无法连接服务器，请确认服务已启动', 'error');
+  }
+}
+
+function renderSelectionGrid(gridId, items, type) {
+  const grid = document.getElementById(gridId);
+  grid.innerHTML = '';
+
+  const selectedArr = type==='genre'?selectedGenres:type==='style'?selectedStyles:type==='tone'?selectedTones:[selectedLength];
+  const maxSel = type==='genre'?MAX_GENRES:type==='style'?MAX_STYLES:type==='tone'?MAX_TONES:1;
+
+  for (const [key, val] of Object.entries(items)) {
+    const card = document.createElement('div');
+    const isSelected = selectedArr.includes(key);
+    card.className = 'selection-card' + (isSelected?' selected':'');
+    card.innerHTML = `
+      <span class="card-icon">${val.icon||''}</span>
+      <div class="card-label">${key}</div>
+      <div class="card-desc">${val.desc||''}</div>
+    `;
+    card.onclick = () => {
+      if (type === 'length') {
+        grid.querySelectorAll('.selection-card').forEach(c=>c.classList.remove('selected'));
+        card.classList.add('selected');
+        selectedLength = key;
+        return;
+      }
+
+      if (isSelected) {
+        card.classList.remove('selected');
+        const idx = selectedArr.indexOf(key);
+        if (idx >= 0) selectedArr.splice(idx, 1);
+      } else {
+        if (selectedArr.length >= maxSel) {
+          toast(`最多选择 ${maxSel} 个${type==='genre'?'类型':type==='style'?'风格':'基调'}`, 'warning');
+          return;
+        }
+        card.classList.add('selected');
+        selectedArr.push(key);
+      }
+
+      if (type === 'genre') {
+        selectedSchools = [];
+        selectedSchoolNames = [];
+        renderSchoolGrid();
+      }
+    };
+    grid.appendChild(card);
+  }
+}
+
+function renderSchoolGrid() {
+  const grid = document.getElementById('schoolGrid');
+  grid.innerHTML = '';
+
+  const allSchools = [];
+  for (const genre of selectedGenres) {
+    const schools = (options.schools && options.schools[genre]) || [];
+    for (const s of schools) {
+      if (!allSchools.find(x => x.id === s.id)) {
+        allSchools.push({...s, _genre: genre});
+      }
+    }
+  }
+
+  if (allSchools.length === 0) {
+    grid.innerHTML = '<div style="color:var(--text-muted);font-size:0.85rem;padding:12px;">该题材暂无流派选项</div>';
+    return;
+  }
+
+  allSchools.forEach(school => {
+    const card = document.createElement('div');
+    const isSelected = selectedSchools.includes(school.id);
+    card.className = 'selection-card' + (isSelected?' selected':'');
+    card.innerHTML = `
+      <span class="card-icon">📖</span>
+      <div class="card-label">${school.name}</div>
+      <div class="card-desc">${school.desc}</div>
+    `;
+    card.onclick = () => {
+      if (isSelected) {
+        card.classList.remove('selected');
+        const idx = selectedSchools.indexOf(school.id);
+        if (idx >= 0) {
+          selectedSchools.splice(idx, 1);
+          selectedSchoolNames.splice(idx, 1);
+        }
+      } else {
+        if (selectedSchools.length >= MAX_SCHOOLS) {
+          toast(`最多选择 ${MAX_SCHOOLS} 个写作流派`, 'warning');
+          return;
+        }
+        card.classList.add('selected');
+        selectedSchools.push(school.id);
+        selectedSchoolNames.push(school.name);
+      }
+    };
+    grid.appendChild(card);
+  });
+}
+
+async function generatePlots() {
+  const btn = document.getElementById('btnGenerate');
+  btn.disabled = true;
+  btn.textContent = '⏳ 构思中...';
+  showLoading('正在为你构思剧情方案...（约30秒）');
+
+  try {
+    const data = await api('/api/generate_plots', 'POST', {
+      genres: selectedGenres,
+      styles: selectedStyles,
+      tones: selectedTones,
+      length: selectedLength,
+      schools: selectedSchools,
+      school_names: selectedSchoolNames,
+      protagonist: document.getElementById('protagonist').value,
+      theme: document.getElementById('theme').value,
+      extra_requirements: document.getElementById('extraRequirements').value,
+    });
+
+    plots = data.plots;
+    selectedPlotId = null;
+    renderPlotCards();
+    goToStep(2);
+    if (data.note) toast(data.note, 'info');
+  } catch(e) {
+    toast('生成失败: ' + e.message, 'error');
+  } finally {
+    hideLoading();
+    btn.disabled = false;
+    btn.textContent = '✨ 生成剧情方案';
+  }
+}
+
+function renderPlotCards() {
+  const container = document.getElementById('plotCards');
+  container.innerHTML = '';
+
+  plots.forEach((plot, i) => {
+    const card = document.createElement('div');
+    card.className = 'plot-card';
+    card.style.setProperty('--card-color', plot.color || '#8b5cf6');
+    card.onclick = () => {
+      container.querySelectorAll('.plot-card').forEach(c=>c.classList.remove('selected'));
+      card.classList.add('selected');
+      selectedPlotId = plot.id;
+      selectedPlotName = plot.name;
+      document.getElementById('btnSelectPlot').disabled = false;
+    };
+
+    card.innerHTML = `
+      <div class="plot-number">方案 ${i+1}</div>
+      <div class="plot-name">${escHtml(plot.name||'')}</div>
+      <div class="plot-tagline">${escHtml(plot.tagline||'')}</div>
+      <div class="plot-detail">
+        <span class="detail-label">核心创意</span>
+        <span>${escHtml(plot.core_idea||'')}</span>
+      </div>
+      <div class="plot-detail">
+        <span class="detail-label">主角</span>
+        <span>${escHtml(plot.protagonist||'')}</span>
+      </div>
+      <div class="plot-detail">
+        <span class="detail-label">冲突</span>
+        <span>${escHtml(plot.main_conflict||'')}</span>
+      </div>
+      <div class="plot-tags">
+        <span class="tag">${escHtml(plot.expected_beats||'')}</span>
+        <span class="tag">${escHtml(plot.target_readers||'')}</span>
+        ${plot.innovation?`<span class="tag">${escHtml(plot.innovation)}</span>`:''}
+      </div>
+    `;
+    container.appendChild(card);
+  });
+
+  document.getElementById('btnSelectPlot').disabled = true;
+}
+
+async function selectPlot() {
+  if (!selectedPlotId) return;
+  showLoading('正在生成详细大纲...（约40秒）');
+
+  try {
+    const data = await api('/api/select_plot', 'POST', {
+      plot_id: selectedPlotId,
+      plot_name: selectedPlotName,
+      genres: selectedGenres,
+      styles: selectedStyles,
+      tones: selectedTones,
+      length: selectedLength,
+      schools: selectedSchools,
+      school_names: selectedSchoolNames,
+      theme: document.getElementById('theme').value,
+    });
+    outline = data.outline;
+    renderOutline();
+    goToStep(3);
+    if (data.note) toast(data.note, 'info');
+  } catch(e) {
+    toast('大纲生成失败: ' + e.message, 'error');
+  } finally {
+    hideLoading();
+  }
+}
+
+function renderOutline() {
+  const container = document.getElementById('outlineContainer');
+  if (!outline) return;
+
+  let html = `
+    <div class="outline-header">
+      <div>
+        <div class="outline-title">${escHtml(outline.title||'未命名作品')}</div>
+        <div class="outline-meta">预计 ${outline.total_chapters_estimate||'?'} 章</div>
+      </div>
+    </div>
+    <div style="padding:20px 24px;color:var(--text-secondary);font-size:0.9rem;line-height:1.8;border-bottom:1px solid var(--border);">
+      ${escHtml(outline.synopsis||outline.summary||'')}
+    </div>
+  `;
+
+  if (outline.characters && outline.characters.length > 0) {
+    html += `<div style="padding:16px 24px;border-bottom:1px solid var(--border);">
+      <h4 style="margin-bottom:10px;color:var(--text-secondary);">👥 主要人物</h4>`;
+    outline.characters.forEach(ch => {
+      const roleIcon = ch.role==='protagonist'?'🦸':ch.role==='antagonist'?'🦹':'🧑';
+      html += `
+        <div class="char-card ${ch.role||''}">
+          <div class="char-avatar">${roleIcon}</div>
+          <div style="flex:1;">
+            <div style="display:flex;align-items:center;gap:8px;">
+              <span class="char-name">${escHtml(ch.name||'')}</span>
+              <span class="char-role-tag ${ch.role||''}">${ch.role==='protagonist'?'主角':ch.role==='antagonist'?'反派':'配角'}</span>
+            </div>
+            <div class="char-meaning">💬 寓意：${escHtml(ch.name_meaning||'')}</div>
+            <div style="font-size:0.8rem;color:var(--text-secondary);margin-top:2px;">${escHtml(ch.description||'')}</div>
+          </div>
+        </div>`;
+    });
+    html += `</div>`;
+  }
+
+  if (outline.plot_lines) {
+    const pl = outline.plot_lines;
+    html += `<div class="plot-lines-section">
+      <h4 style="margin-bottom:8px;color:var(--text-secondary);">📊 剧情线索</h4>
+      <div class="plot-line-item">
+        <span class="marker marker-main">主<span class="tooltip-box">主线剧情：故事的核心发展脉络</span></span>
+        <span style="color:var(--text-primary);">${escHtml(pl.main_line||'')}</span>
+      </div>`;
+    (pl.sub_lines||[]).forEach((sl, i) => {
+      html += `<div class="plot-line-item">
+        <span class="marker marker-sub">辅<span class="tooltip-box">辅线${i+1}：丰富故事的支线剧情</span></span>
+        <span style="color:var(--text-secondary);">${escHtml(sl)}</span>
+      </div>`;
+    });
+    if (pl.cause_effect_chains && pl.cause_effect_chains.length > 0) {
+      html += `<div style="margin-top:8px;"><span style="font-size:0.8rem;color:var(--text-muted);">🔗 因果关系链</span></div>`;
+      pl.cause_effect_chains.forEach(ce => {
+        html += `<div class="ce-chain">
+          <span class="ce-node cause">因：${escHtml(ce.cause||'')}</span>
+          <span class="ce-arrow">→</span>
+          <span class="ce-node effect">果：${escHtml(ce.effect||'')}</span>
+          ${ce.chapters_involved?`<span style="font-size:0.7rem;color:var(--text-muted);">(涉及章节: ${ce.chapters_involved.join(', ')})</span>`:''}
+        </div>`;
+      });
+    }
+    html += `</div>`;
+  }
+
+  (outline.acts||[]).forEach((act, ai) => {
+    html += `
+    <div class="act-section open">
+      <div class="act-header" onclick="this.parentElement.classList.toggle('open')">
+        <div class="act-num act-${act.act_num||ai+1}">${act.act_num||ai+1}</div>
+        <div class="act-info">
+          <div class="act-name">${escHtml(act.name||'')}</div>
+          <div class="act-range">${escHtml(act.description||'')}</div>
+        </div>
+        <div class="act-arrow">▶</div>
+      </div>
+      <div class="act-events">
+    `;
+
+    (act.chapters||[]).forEach(ch => {
+      const plt = ch.plot_line_type || 'main';
+      const markerClass = plt==='main'?'marker-main':plt==='sub'?'marker-sub':'marker-transition';
+      const markerLabel = plt==='main'?'主':plt==='sub'?'辅':'转';
+      const markerTip = plt==='main'?'主线章节：推动核心剧情发展':plt==='sub'?'辅线章节：发展支线剧情':'过渡章节：承上启下，连接剧情';
+
+      const ce = ch.cause_effect || {};
+      const ceMarkers = [];
+      if (ce.caused_by) {
+        ceMarkers.push(`<span class="marker marker-cause">因<span class="tooltip-box">前因：${escHtml(ce.caused_by)}</span></span>`);
+      }
+      if (ce.leads_to) {
+        ceMarkers.push(`<span class="marker marker-effect">果<span class="tooltip-box">后果：${escHtml(ce.leads_to)}</span></span>`);
+      }
+
+      html += `
+        <div class="event-item">
+          <div class="event-chapter">${ch.number||'?'}</div>
+          <div style="flex:1;min-width:0;">
+            <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
+              <span style="font-weight:600;font-size:0.85rem;">${escHtml(ch.title||'')}</span>
+              <span class="marker ${markerClass}">${markerLabel}<span class="tooltip-box">${markerTip}</span></span>
+              ${ceMarkers.join('')}
+            </div>
+            <div class="event-desc">${escHtml(ch.summary||'')}</div>
+            ${ch.key_events?`<div style="font-size:0.75rem;color:var(--text-muted);margin-top:2px;">🎯 ${escHtml(Array.isArray(ch.key_events)?ch.key_events.join('、'):ch.key_events)}</div>`:''}
+          </div>
+          <div class="notes-cell">
+            <textarea
+              placeholder="备注：修改建议、转换剧情、标记..."
+              data-chapter="${ch.number||0}"
+              data-act="${ai}"
+              onchange="saveChapterNote(${ai}, ${ch.number||0}, this.value)"
+            >${escHtml(ch.notes||'')}</textarea>
+          </div>
+        </div>
+      `;
+    });
+
+    html += `</div></div>`;
+  });
+
+  container.innerHTML = html;
+}
+
+function saveChapterNote(actIdx, chNum, noteText) {
+  if (!outline || !outline.acts) return;
+  const act = outline.acts[actIdx];
+  if (!act || !act.chapters) return;
+  const ch = act.chapters.find(c => c.number === chNum);
+  if (ch) {
+    ch.notes = noteText;
+  }
+}
+
+async function generateChapter() {
+  const chNum = parseInt(document.getElementById('chapterNum').value) || 1;
+  const btn = document.getElementById('btnGenChapter');
+  btn.disabled = true;
+  btn.textContent = '⏳ 创作中...';
+  showLoading(`正在创作第${chNum}章...（约40秒）`);
+
+  let chTitle = `第${chNum}章`;
+  let chSummary = '';
+
+  if (outline && outline.acts) {
+    for (const act of outline.acts) {
+      for (const ch of (act.chapters||[])) {
+        if (ch.number === chNum) {
+          chTitle = ch.title || chTitle;
+          chSummary = ch.summary || '';
+          break;
+        }
+      }
+    }
+  }
+
+  try {
+    const data = await api('/api/generate_chapter', 'POST', {
+      chapter_number: chNum,
+      chapter_title: chTitle,
+      chapter_summary: chSummary,
+      genres: selectedGenres,
+      styles: selectedStyles,
+      tones: selectedTones,
+      schools: selectedSchools,
+      school_names: selectedSchoolNames,
+      theme: document.getElementById('theme').value,
+    });
+
+    const content = data.content;
+    const wordCount = content.replace(/\s/g, '').length;
+
+    chapters[chNum] = {
+      content: content,
+      word_count: wordCount,
+      title: data.chapter_title || chTitle,
+    };
+
+    displayChapter(chapters[chNum]);
+    updateStats(chapters[chNum]);
+    updateOutlineHint(chNum);
+    document.getElementById('chapterTitleDisplay').textContent = chTitle;
+    toast(`第${chNum}章生成完成 (${wordCount}字)`, 'success');
+  } catch(e) {
+    toast('章节生成失败: ' + e.message, 'error');
+  } finally {
+    hideLoading();
+    btn.disabled = false;
+    btn.textContent = '🚀 生成本章';
+  }
+}
+
+function displayChapter(ch) {
+  const el = document.getElementById('chapterContent');
+  el.classList.remove('empty');
+  el.textContent = ch.content;
+}
+
+function updateStats(ch) {
+  document.getElementById('chapterStats').style.display = 'block';
+  document.getElementById('statWords').textContent = (ch.word_count||0) + '字';
+  document.getElementById('statWords').className = 'stat-value';
+  document.getElementById('statAI').textContent = '-';
+  document.getElementById('statAI').className = 'stat-value';
+  document.getElementById('statBeats').textContent = '-';
+  document.getElementById('statHook').textContent = '-';
+  document.getElementById('meterAI').style.width = '0%';
+}
+
+function updateOutlineHint(chNum) {
+  if (!outline) return;
+  const el = document.getElementById('chapterOutline');
+  const content = document.getElementById('chapterOutlineContent');
+
+  let hints = [];
+  for (const act of (outline.acts||[])) {
+    for (const ch of (act.chapters||[])) {
+      if (ch.number === chNum) {
+        hints.push(`<div style="margin-bottom:6px;"><b>${escHtml(ch.title||'')}</b></div>`);
+        hints.push(`<div style="color:var(--text-secondary);font-size:0.8rem;">${escHtml(ch.summary||'')}</div>`);
+        if (ch.key_events) {
+          const events = Array.isArray(ch.key_events) ? ch.key_events : [ch.key_events];
+          events.forEach(ev => {
+            hints.push(`<div style="color:var(--warning);font-size:0.75rem;margin-top:4px;">🎯 ${escHtml(ev)}</div>`);
+          });
+        }
+      }
+    }
+  }
+
+  if (hints.length > 0) {
+    el.style.display = 'block';
+    content.innerHTML = hints.join('');
+  } else {
+    el.style.display = 'none';
+  }
+}
+
+function loadChapter() {
+  const chNum = parseInt(document.getElementById('chapterNum').value) || 1;
+  const ch = chapters[chNum];
+  if (ch) {
+    displayChapter(ch);
+    updateStats(ch);
+    updateOutlineHint(chNum);
+    document.getElementById('chapterTitleDisplay').textContent = ch.title || `第${chNum}章`;
+  } else {
+    const el = document.getElementById('chapterContent');
+    el.classList.add('empty');
+    el.textContent = `第${chNum}章尚未生成，点击「生成本章」开始创作...`;
+    document.getElementById('chapterStats').style.display = 'none';
+    document.getElementById('chapterOutline').style.display = 'none';
+    document.getElementById('chapterTitleDisplay').textContent = '';
+  }
+}
+
+function prevChapter() {
+  const inp = document.getElementById('chapterNum');
+  const val = Math.max(1, (parseInt(inp.value)||1)-1);
+  inp.value = val;
+  loadChapter();
+}
+
+function nextChapter() {
+  const inp = document.getElementById('chapterNum');
+  const val = (parseInt(inp.value)||1)+1;
+  inp.value = val;
+  loadChapter();
+}
+
+async function detectAIForCurrent() {
+  const el = document.getElementById('chapterContent');
+  if (el.classList.contains('empty')) { toast('请先生成章节内容', 'info'); return; }
+  const text = el.textContent;
+  showLoading('正在深度检测AI痕迹...');
+
+  try {
+    const data = await api('/api/detect_ai', 'POST', {text, deep:true});
+    const result = data.result;
+    const score = result.overall_score || 0;
+    const pct = Math.round(score);
+    const cls = pct < 40 ? 'good' : pct < 60 ? 'warn' : 'bad';
+    const level = result.level || 'unknown';
+
+    document.getElementById('statAI').textContent = pct + '%';
+    document.getElementById('statAI').className = 'stat-value ' + cls;
+    document.getElementById('meterAI').style.width = pct + '%';
+    document.getElementById('meterAI').className = 'meter-fill ' + cls;
+
+    toast(`AI痕迹: ${pct}% (${level})`, cls==='bad'?'error':cls==='warn'?'info':'success');
+  } catch(e) {
+    toast('检测失败: '+e.message, 'error');
+  } finally {
+    hideLoading();
+  }
+}
+
+async function rewriteCurrent() {
+  const el = document.getElementById('chapterContent');
+  if (el.classList.contains('empty')) { toast('请先生成章节内容', 'info'); return; }
+  showLoading('正在去AI痕迹重写...');
+
+  try {
+    const text = el.textContent;
+    const prompt = `Rewrite the following novel chapter to remove all AI-generated traces. Make it sound like natural human writing with varied sentence lengths, sensory details, and authentic voice. Output only the rewritten text:\n\n${text}`;
+
+    const resp = await fetch(API + '/api/rewrite', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({text, style:'deai'})
+    });
+
+    if (resp.ok) {
+      const data = await resp.json();
+      el.textContent = data.content || data.rewritten || text;
+      toast('去AI痕迹重写完成', 'success');
+    } else {
+      toast('重写失败，请稍后重试', 'error');
+    }
+  } catch(e) {
+    toast('重写失败: '+e.message, 'error');
+  } finally {
+    hideLoading();
+  }
+}
+
+function exportChapter() {
+  const el = document.getElementById('chapterContent');
+  if (el.classList.contains('empty')) { toast('请先生成章节内容', 'info'); return; }
+  const chNum = document.getElementById('chapterNum').value;
+  const title = document.getElementById('chapterTitleDisplay').textContent || `第${chNum}章`;
+  const content = title + '\n\n' + el.textContent;
+  downloadFile(`${title}.txt`, content, 'text/plain');
+}
+
+function showExportModal() {
+  document.getElementById('exportModal').classList.add('show');
+}
+
+function closeExportModal() {
+  document.getElementById('exportModal').classList.remove('show');
+}
+
+function doExport(format) {
+  closeExportModal();
+  const chKeys = Object.keys(chapters).map(Number).sort((a,b)=>a-b);
+  if (chKeys.length === 0) { toast('请先生成至少一章内容', 'info'); return; }
+
+  let content = '';
+  const title = outline?.title || '未命名作品';
+
+  if (format === 'txt') {
+    content = `${title}\n\n`;
+    chKeys.forEach(n => {
+      const ch = chapters[n];
+      content += `${ch.title || `第${n}章`}\n\n${ch.content}\n\n`;
+    });
+    downloadFile(`${title}.txt`, content, 'text/plain;charset=utf-8');
+  } else if (format === 'md') {
+    content = `# ${title}\n\n`;
+    chKeys.forEach(n => {
+      const ch = chapters[n];
+      content += `## ${ch.title || `第${n}章`}\n\n${ch.content}\n\n---\n\n`;
+    });
+    downloadFile(`${title}.md`, content, 'text/markdown;charset=utf-8');
+  } else if (format === 'html') {
+    content = `<!DOCTYPE html><html><head><meta charset="UTF-8"><title>${escHtml(title)}</title>
+<style>body{font-family:'PingFang SC','Microsoft YaHei',sans-serif;max-width:800px;margin:0 auto;padding:20px;line-height:2;color:#333;}
+h1{text-align:center;border-bottom:2px solid #8b5cf6;padding-bottom:16px;}
+h2{color:#8b5cf6;margin-top:32px;}
+.chapter{white-space:pre-wrap;margin:20px 0;}</style></head><body>
+<h1>${escHtml(title)}</h1>`;
+    chKeys.forEach(n => {
+      const ch = chapters[n];
+      content += `<h2>${escHtml(ch.title||`第${n}章`)}</h2><div class="chapter">${escHtml(ch.content)}</div>`;
+    });
+    content += '</body></html>';
+    downloadFile(`${title}.html`, content, 'text/html;charset=utf-8');
+  }
+
+  toast(`已导出 ${chKeys.length} 章 (${format.toUpperCase()}格式)`, 'success');
+}
+
+function downloadFile(filename, content, mimeType) {
+  const blob = new Blob(['\uFEFF' + content], {type: mimeType});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = filename;
+  document.body.appendChild(a); a.click();
+  document.body.removeChild(a); URL.revokeObjectURL(url);
+}
+
+function resetAll() {
+  if (confirm('确定要重置所有内容吗？这将清除已生成的章节和大纲。')) {
+    chapters = {};
+    outline = null;
+    plots = [];
+    selectedPlotId = null;
+    goToStep(1);
+    document.getElementById('chapterContent').classList.add('empty');
+    document.getElementById('chapterContent').textContent = '第1章尚未生成，点击「生成本章」开始创作...';
+    document.getElementById('chapterStats').style.display = 'none';
+    document.getElementById('chapterOutline').style.display = 'none';
+    document.getElementById('chapterTitleDisplay').textContent = '';
+    document.getElementById('chapterNum').value = '1';
+    toast('已重置所有内容', 'info');
+  }
+}
+
+function toggleTheme() {
+  toast('主题切换功能开发中...', 'info');
+}
+
+function escHtml(s) {
+  if (!s) return '';
+  const div = document.createElement('div');
+  div.textContent = s;
+  return div.innerHTML;
+}
+
+document.getElementById('chapterNum').addEventListener('keydown', function(e) {
+  if (e.key === 'Enter') loadChapter();
+});
+
+document.addEventListener('keydown', function(e) {
+  if (e.ctrlKey && e.key === 'Enter') {
+    const currentStep = document.querySelector('.progress-step.active');
+    if (currentStep && parseInt(currentStep.dataset.step) === 4) {
+      generateChapter();
+    }
+  }
+});
+
+init();
+</script>
+</body>
+</html>

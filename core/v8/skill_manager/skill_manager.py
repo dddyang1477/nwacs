@@ -143,7 +143,7 @@ class WorldBuildingSkill(Skill):
         
         try:
             return json.loads(result)
-        except:
+        except (json.JSONDecodeError, TypeError, AttributeError):
             return {"world_name": f"{world_type}世界", "description": result}
 
 class CharacterDesignSkill(Skill):
@@ -207,7 +207,7 @@ class CharacterDesignSkill(Skill):
         
         try:
             return json.loads(result)
-        except:
+        except (json.JSONDecodeError, TypeError, AttributeError):
             return {"name": "角色", "description": result}
 
 class PlotDesignSkill(Skill):
@@ -264,7 +264,7 @@ class PlotDesignSkill(Skill):
         
         try:
             return json.loads(result)
-        except:
+        except (json.JSONDecodeError, TypeError, AttributeError):
             return {"title": theme, "description": result}
 
 class SceneDescriptionSkill(Skill):

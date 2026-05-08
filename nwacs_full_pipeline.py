@@ -1,0 +1,153 @@
+#!/usr/bin/env python3
+"""
+NWACS 全引擎串联 - 逐章生成《黑日藏锋》第1-10章
+引擎链路: 影视感引擎 → 朱雀规避引擎 → AI检测重写 → 质量检查 → 保存
+"""
+import os, sys, time, json
+
+CORE_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "core", "v8")
+sys.path.insert(0, CORE_DIR)
+
+OUTPUT_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "黑日藏锋")
+os.makedirs(OUTPUT_DIR, exist_ok=True)
+
+CHAPTERS = [
+    (1, "黑日之下", "林锋穿越醒来后脑勺疼。天上黑色太阳边缘暗红不发热。铁柱（猎户儿子土系下品灵根骨架大）塞半块杂粮饼子硬得刮嗓子。王虎（凝气三层三角眼疤脸）竹鞭催人下矿。草鞋断绳大脚趾露外面。脚踝锁魂环刻矿奴二字。杂役院灰布衣全是瘦骨嶙峋的人。黑日世界初体验。",
+     ["穿越醒来", "黑日世界", "铁柱出场", "王虎压迫", "杂粮饼子", "锁魂环"]),
+    
+    (2, "矿道", "矿道入口半山腰石头凿的口子两米宽三米高。光明石冷光照脸发青。老赵监工铁棍敲洞壁警告岔道多别乱走走丢没人找。丙区岔道废灵石矿脉暗红纹路。铁柱教顺着纹砸省力。手掌磨水泡破了流水。矿道阴冷石粉呛人硫磺味混汗臭。",
+     ["矿道入口", "光明石冷光", "老赵监工", "废灵石矿脉", "手掌磨泡", "矿道环境"]),
+    
+    (3, "废灵石", "矿难塌方轰隆一声气浪冲来碎石堵岔道口。铁柱额头飞石划伤血流进眼睛。外面人喊明天再挖不管里面死活。林锋往矿道深处走发现岩壁温度异常——别的冰凉这块温热。砸开岩壁里面天然岩洞很大看不到顶。",
+     ["矿难塌方", "铁柱受伤", "被放弃", "岩壁异常", "砸开岩洞"]),
+    
+    (4, "暗红色的光", "岩洞中央嵌人头大暗红石头内部光芒像心跳明灭。林锋伸手触碰烫进骨头不是皮肤烫是骨头烫。热流灌入丹田。意识坠暗红漩涡看到黑日碎裂幻象——黑日像蛋壳裂开碎片四散。醒来掌心多道疤。丹田真气种子转动。",
+     ["暗红石头", "触碰碎日残片", "热流灌体", "黑日碎裂幻象", "掌心疤", "真气种子"]),
+    
+    (5, "藏锋诀", "碎日残片灌入功法传承。藏锋诀——真气贴骨走非经脉贴着骨头表面流动外表如凡人谁也看不出来。三天凝气一层。金针术真气凝针刺穴雕刻杀人。铁镐砸岩壁一拳一坑。抹平痕迹。三层：敛息藏脉隐骨。",
+     ["功法传承", "真气贴骨", "凝气一层", "金针术", "隐藏修为", "三层功法"]),
+    
+    (6, "小灰", "废井碎石堆捡暗影狼幼崽左后腿断肋骨凹进去快死了。抱回岩洞金针术接骨真气凝针刺骨缝。真气渡命碎日残片分出一丝。喂泡软饼子。起名小灰暗银眼睛一直看他。三天后能站起来舔他手指。",
+     ["捡到幼崽", "金针接骨", "真气渡命", "起名小灰", "暗银眼睛", "站起来"]),
+    
+    (7, "凝气二层", "突破失败两次。第一次真气逆行吐血嗓子腥甜。第二次丹田差点炸了疼得蜷成虾。悟出引字诀——不灌让碎日残片力量自己渗像水渗沙子。真气液化凝气二层成。一拳岩壁三寸拳印。小灰觉醒暗影潜行融入阴影肉眼看不见。",
+     ["突破失败", "真气逆行", "引字诀", "凝气二层", "拳印三寸", "暗影潜行"]),
+    
+    (8, "杂役院的老鼠", "找瘦猴侯三饼子换信息。散布收信息换食物消息。三天十人七天三十人。建三类信息系统：人物谁是谁、事件发生什么、资源哪里有东西。锁定三月后外门考核——杂役进外门唯一机会。",
+     ["瘦猴侯三", "饼子换信息", "情报网建立", "三十人网络", "三类信息", "外门考核"]),
+    
+    (9, "第一次交易", "厨房老李透露赵师兄找赤阳石。林锋让瘦猴放消息矿道深处有赤阳石矿脉。赵师兄花两块灵石买消息。分瘦猴老李各半块。三方获利源头无人知晓。情报交易模板建立：信息变灵石变分成。",
+     ["老李透露", "赤阳石情报", "赵师兄买消息", "两块灵石", "三方分成", "零暴露"]),
+    
+    (10, "周老", "杂役院角落石洞住周老没人知待多久。手不像干杂活——指节分明虎口有茧握剑的茧。眼睛偶尔锐如刀。让林锋搬酒坛——坛刻三级聚灵阵。说藏得不错。又说别碰太多。林锋决定搞清楚他是谁。",
+     ["神秘周老", "握剑的茧", "三级聚灵阵", "藏得不错", "别碰太多", "决定调查"]),
+]
+
+def main():
+    print("=" * 70)
+    print("  NWACS 全引擎串联 - 《黑日藏锋》第1-10章生成")
+    print("  引擎链路: 影视感引擎 → 朱雀规避引擎 → AI检测 → 保存")
+    print("=" * 70)
+    
+    # 加载引擎
+    print("\n[1/4] 加载NWACS引擎...")
+    try:
+        from cinematic_writing_engine import get_cinematic_engine
+        cine = get_cinematic_engine()
+        print("  ✅ 影视感写作引擎已加载")
+    except Exception as e:
+        print(f"  ❌ 影视感引擎加载失败: {e}")
+        return
+    
+    try:
+        from zhuque_evasion_engine import ZhuqueEvasionEngine, ZhuqueVersion
+        zhuque = ZhuqueEvasionEngine()
+        print("  ✅ 朱雀规避引擎已加载")
+    except Exception as e:
+        print(f"  ⚠️ 朱雀规避引擎加载失败: {e}")
+        zhuque = None
+    
+    try:
+        from ai_detector_and_rewriter import AIDetectorAndRewriter
+        detector = AIDetectorAndRewriter()
+        print("  ✅ AI检测重写器已加载")
+    except Exception as e:
+        print(f"  ⚠️ AI检测重写器加载失败: {e}")
+        detector = None
+    
+    # 逐章生成
+    print(f"\n[2/4] 开始逐章生成 (共10章)...")
+    print("-" * 70)
+    
+    for ch_num, ch_title, ch_summary, ch_points in CHAPTERS:
+        print(f"\n{'='*60}")
+        print(f"  第{ch_num}章: {ch_title}")
+        print(f"{'='*60}")
+        
+        # Step A: 影视感引擎生成初稿
+        print(f"  [A] 影视感引擎生成初稿...")
+        try:
+            draft = cine.generate_cinematic_chapter(
+                ch_num, ch_title, ch_summary, ch_points, "玄幻", 3000
+            )
+            if not draft:
+                print(f"  ❌ 初稿生成失败，跳过")
+                continue
+            print(f"  ✅ 初稿: {len(draft)}字符")
+        except Exception as e:
+            print(f"  ❌ 初稿生成异常: {e}")
+            continue
+        
+        # Step B: 朱雀规避引擎处理
+        processed = draft
+        if zhuque:
+            print(f"  [B] 朱雀规避引擎处理...")
+            try:
+                processed = zhuque.adversarial_refinement_loop(
+                    draft, "玄幻", max_rounds=2, target_version=ZhuqueVersion.NOVEL
+                )
+                if processed and len(processed) > len(draft) * 0.5:
+                    print(f"  ✅ 朱雀处理: {len(processed)}字符")
+                else:
+                    print(f"  ⚠️ 朱雀处理结果异常，使用初稿")
+                    processed = draft
+            except Exception as e:
+                print(f"  ⚠️ 朱雀处理异常: {e}，使用初稿")
+                processed = draft
+        
+        # Step C: AI检测重写
+        if detector:
+            print(f"  [C] AI检测与重写...")
+            try:
+                processed = detector.check_and_rewrite(processed)
+                print(f"  ✅ 重写完成: {len(processed)}字符")
+            except Exception as e:
+                print(f"  ⚠️ 重写异常: {e}")
+        
+        # Step D: 保存
+        outfile = os.path.join(OUTPUT_DIR, f"黑日藏锋_第{ch_num}章.txt")
+        with open(outfile, "w", encoding="utf-8") as f:
+            f.write(f"第{ch_num}章 {ch_title}\n\n")
+            f.write(processed)
+        print(f"  [D] 💾 已保存: {outfile}")
+        
+        time.sleep(2)
+    
+    # 汇总
+    print(f"\n[3/4] 生成完毕，统计...")
+    total = 0
+    for i in range(1, 11):
+        fpath = os.path.join(OUTPUT_DIR, f"黑日藏锋_第{i}章.txt")
+        if os.path.exists(fpath):
+            size = len(open(fpath, encoding="utf-8").read())
+            total += size
+            print(f"  第{i}章: {size}字符")
+    
+    print(f"\n[4/4] ✅ 全部完成！")
+    print(f"  总字符数: {total}")
+    print(f"  保存位置: {OUTPUT_DIR}")
+    print(f"  引擎链路: 影视感引擎 → 朱雀规避引擎 → AI检测重写 → 保存")
+    print("=" * 70)
+
+if __name__ == "__main__":
+    main()

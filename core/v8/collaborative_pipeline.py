@@ -62,8 +62,8 @@ class PipelineConfig:
     """流水线配置"""
     max_retries: int = 3
     enable_detect: bool = True
-    enable_rewrite: bool = True
-    enable_polish: bool = True
+    enable_rewrite: bool = False
+    enable_polish: bool = False
     detect_threshold: int = 40
     rewrite_intensity: str = "medium"
     auto_save: bool = True
@@ -343,38 +343,51 @@ class CollaborativeWritingPipeline:
         )
 
     def _stage_rewrite(self, ctx: Dict) -> StageResult:
-        """去痕阶段"""
+        """去痕阶段 — 使用AI引擎配合去AI系统提示词"""
         t0 = time.time()
         content = ctx.get("current_content", "")
         print(f"  🔄 去痕阶段...")
 
-        detector = self.enhanced_detector or self.detector
-
-        if detector and ctx.get("ai_score", 100) >= self.config.detect_threshold:
+        if ctx.get("ai_score", 100) >= self.config.detect_threshold:
             for attempt in range(1, self.config.max_retries + 1):
-                if hasattr(detector, 'rewrite'):
-                    rewritten, rw_report = detector.rewrite(
-                        content, self.config.rewrite_intensity
-                    )
-                    new_score = rw_report.final_score
-                else:
-                    rewritten = detector.rewrite_remove_ai(content)
-                    new_score = detector.detect_ai_score(rewritten)
+                try:
+                    if self.engine and hasattr(self.engine, 'rewrite'):
+                        rewritten = self.engine.rewrite(content, "deai")
+                    elif self.enhanced_detector and hasattr(self.enhanced_detector, 'rewrite'):
+                        rewritten, _ = self.enhanced_detector.rewrite(
+                            content, self.config.rewrite_intensity
+                        )
+                    elif self.detector and hasattr(self.detector, 'rewrite'):
+                        rewritten, _ = self.detector.rewrite(
+                            content, self.config.rewrite_intensity
+                        )
+                    else:
+                        rewritten = content
 
-                if new_score < self.config.detect_threshold or attempt == self.config.max_retries:
-                    ctx["current_content"] = rewritten
-                    ctx["ai_score"] = new_score
-                    print(f"     去痕后分数: {new_score}/100")
+                    if self.enhanced_detector:
+                        new_score = self.enhanced_detector.detect(rewritten).overall_score
+                    elif self.detector:
+                        new_score = self.detector.detect_ai_score(rewritten)
+                    else:
+                        new_score = ctx.get("ai_score", 0)
 
-                    return StageResult(
-                        stage=PipelineStage.REWRITE,
-                        status=StageStatus.PASSED,
-                        output={"new_score": new_score},
-                        duration_ms=(time.time() - t0) * 1000,
-                        attempt=attempt,
-                    )
+                    if new_score < self.config.detect_threshold or attempt == self.config.max_retries:
+                        ctx["current_content"] = rewritten
+                        ctx["ai_score"] = new_score
+                        print(f"     去痕后分数: {new_score}/100")
+                        return StageResult(
+                            stage=PipelineStage.REWRITE,
+                            status=StageStatus.PASSED,
+                            output={"new_score": new_score},
+                            duration_ms=(time.time() - t0) * 1000,
+                            attempt=attempt,
+                        )
 
-                content = rewritten
+                    content = rewritten
+                except Exception as e:
+                    print(f"     去痕失败(尝试{attempt}): {e}")
+                    if attempt == self.config.max_retries:
+                        break
 
         return StageResult(
             stage=PipelineStage.REWRITE,
@@ -383,18 +396,21 @@ class CollaborativeWritingPipeline:
         )
 
     def _stage_polish(self, ctx: Dict) -> StageResult:
-        """润色阶段"""
+        """润色阶段 — 使用去AI系统提示词"""
         t0 = time.time()
         content = ctx.get("current_content", "")
         print(f"  ✨ 润色阶段...")
 
         if self.engine and len(content) > 100:
             try:
-                polished = self.engine.rewrite(content, "polish")
+                if hasattr(self.engine, 'rewrite'):
+                    polished = self.engine.rewrite(content, "deai")
+                else:
+                    polished = content
                 ctx["current_content"] = polished
                 print(f"     润色完成 ({len(polished)}字)")
-            except Exception:
-                pass
+            except Exception as e:
+                print(f"     润色失败: {e}")
 
         return StageResult(
             stage=PipelineStage.POLISH,

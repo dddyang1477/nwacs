@@ -1,0 +1,160 @@
+[2026-05-08 08:45:43] Importing NWACS modules...
+[2026-05-08 08:45:43] Initializing...
+[2026-05-08 08:45:43] Ready.
+[2026-05-08 08:45:53] Generating plots: genre=玄幻, style=热血爽文, theme=逆境成长
+[2026-05-08 08:45:53] Calling DeepSeek...
+[2026-05-08 08:46:21] Response: 3415 chars
+[2026-05-08 08:46:21] HTTP: POST /api/generate_plots HTTP/1.1
+[2026-05-08 09:14:39] HTTP: GET / HTTP/1.1
+[2026-05-08 09:14:39] HTTP: GET /api/options HTTP/1.1
+[2026-05-08 09:14:39] HTTP: GET /@vite/client HTTP/1.1
+[2026-05-08 09:15:47] HTTP: GET /api/health HTTP/1.1
+[2026-05-08 09:21:07] Importing NWACS modules...
+[2026-05-08 09:21:07] Initializing...
+[2026-05-08 09:21:07] Ready.
+[2026-05-08 09:21:16] HTTP: GET /api/health HTTP/1.1
+[2026-05-08 09:21:16] HTTP: GET /api/options HTTP/1.1
+[2026-05-08 09:21:16] HTTP: GET /api/options HTTP/1.1
+[2026-05-08 09:21:16] Generating plots: genre=玄幻, style=热血爽文, theme=逆境成长
+[2026-05-08 09:21:16] Calling DeepSeek...
+[2026-05-08 09:21:40] Response: 2589 chars
+[2026-05-08 09:21:40] HTTP: POST /api/generate_plots HTTP/1.1
+[2026-05-08 09:21:40] Generating outline for: 九幽铸骨诀
+[2026-05-08 09:21:40] Calling DeepSeek for outline...
+[2026-05-08 09:22:16] Outline response: 6493 chars
+[2026-05-08 09:22:16] HTTP: POST /api/select_plot HTTP/1.1
+[2026-05-08 09:22:16] Generating chapter 1: 废骨弃子
+[2026-05-08 09:22:16] Calling DeepSeek for chapter...
+[2026-05-08 09:22:50] Chapter response: 4042 chars
+[2026-05-08 09:22:50] HTTP: POST /api/generate_chapter HTTP/1.1
+[2026-05-08 09:22:50] Detecting AI traces in 45 chars...
+[2026-05-08 09:22:50] AI detection error: 'EnhancedAIDetector' object has no attribute 'analyze'
+[2026-05-08 09:22:50] HTTP: POST /api/detect_ai HTTP/1.1
+[2026-05-08 09:33:49] Importing NWACS modules...
+[2026-05-08 09:33:49] Initializing...
+[2026-05-08 09:33:49] Ready.
+[2026-05-08 09:34:04] HTTP: GET / HTTP/1.1
+[2026-05-08 09:34:04] HTTP: GET /api/options HTTP/1.1
+[2026-05-08 09:34:04] HTTP: GET /@vite/client HTTP/1.1
+[2026-05-08 09:34:26] HTTP: GET / HTTP/1.1
+[2026-05-08 09:35:37] HTTP: GET /api/health HTTP/1.1
+[2026-05-08 09:35:37] HTTP: GET /api/options HTTP/1.1
+[2026-05-08 09:35:37] HTTP: GET /api/options HTTP/1.1
+[2026-05-08 09:35:37] Generating plots: genre=玄幻, style=热血爽文, theme=逆境成长
+[2026-05-08 09:35:37] Calling DeepSeek...
+[2026-05-08 09:35:57] Response: 2298 chars
+[2026-05-08 09:35:57] HTTP: POST /api/generate_plots HTTP/1.1
+[2026-05-08 09:35:57] Generating outline for: 逆命修神
+[2026-05-08 09:35:57] Calling DeepSeek for outline...
+[2026-05-08 09:36:53] Outline response: 8474 chars
+[2026-05-08 09:36:53] Outline error: Unterminated string starting at: line 246 column 22 (char 8439)
+[2026-05-08 09:36:53] HTTP: POST /api/select_plot HTTP/1.1
+[2026-05-08 09:36:53] Generating chapter 1: 命运的起点
+[2026-05-08 09:36:53] Calling DeepSeek for chapter...
+[2026-05-08 09:37:22] Chapter response: 3279 chars
+[2026-05-08 09:37:22] HTTP: POST /api/generate_chapter HTTP/1.1
+[2026-05-08 09:37:22] Detecting AI traces in 45 chars...
+[2026-05-08 09:37:22] HTTP: POST /api/detect_ai HTTP/1.1
+[2026-05-08 09:40:09] Importing NWACS modules...
+[2026-05-08 09:40:09] Initializing...
+[2026-05-08 09:40:09] Ready.
+[2026-05-08 09:40:19] HTTP: GET /api/health HTTP/1.1
+[2026-05-08 10:05:23] Importing NWACS modules...
+[2026-05-08 10:05:23] Initializing...
+[2026-05-08 10:05:23] Ready.
+[2026-05-08 10:05:35] HTTP: GET /api/options HTTP/1.1
+[2026-05-08 10:05:59] HTTP: GET / HTTP/1.1
+[2026-05-08 10:07:02] Generating plots: genre=玄幻, style=热血爽文, school=签到流, theme=逆境成长
+[2026-05-08 10:07:02] Calling DeepSeek...
+[2026-05-08 10:07:35] Response: 3470 chars
+[2026-05-08 10:07:35] HTTP: POST /api/generate_plots HTTP/1.1
+[2026-05-08 10:10:29] HTTP: GET /api/health HTTP/1.1
+[2026-05-08 10:45:09] HTTP: GET / HTTP/1.1
+[2026-05-08 10:45:09] HTTP: GET /api/options HTTP/1.1
+[2026-05-08 10:45:09] HTTP: GET /@vite/client HTTP/1.1
+[2026-05-08 11:13:54] Generating plots: genre=玄幻, style=热血爽文, school=系统流, theme=逆境成长
+[2026-05-08 11:13:54] Calling DeepSeek...
+[2026-05-08 11:14:20] Response: 2850 chars
+[2026-05-08 11:14:20] Error: Expecting value: line 27 column 14 (char 1844)
+[2026-05-08 11:14:20] HTTP: POST /api/generate_plots HTTP/1.1
+[2026-05-08 12:12:32] Importing NWACS modules...
+[2026-05-08 12:12:32] Initializing...
+[2026-05-08 12:12:32] Knowledge base loaded: 8 genres, 62 schools
+[2026-05-08 12:12:32] Ready.
+[2026-05-08 12:12:54] HTTP: GET /api/health HTTP/1.1
+[2026-05-08 12:13:26] Generating plots: genres=玄幻、仙侠, styles=热血爽文、史诗宏大, schools=签到流、剑修流, theme=逆境成长
+[2026-05-08 12:13:26] Calling DeepSeek...
+[2026-05-08 12:13:58] Response: 3130 chars
+[2026-05-08 12:13:58] HTTP: POST /api/generate_plots HTTP/1.1
+[2026-05-08 12:16:11] Generating plots: genres=玄幻、仙侠, styles=热血爽文, schools=签到流, theme=逆境成长
+[2026-05-08 12:16:11] Calling DeepSeek...
+[2026-05-08 12:16:39] Response: 2943 chars
+[2026-05-08 12:16:39] HTTP: POST /api/generate_plots HTTP/1.1
+[2026-05-08 12:17:33] Generating plots: genres=玄幻、仙侠, styles=热血爽文, schools=签到流, theme=逆境成长
+[2026-05-08 12:17:33] Calling DeepSeek...
+[2026-05-08 12:17:43] Generating plots: genres=玄幻、仙侠, styles=热血爽文, schools=签到流, theme=逆境成长
+[2026-05-08 12:17:43] Calling DeepSeek...
+[2026-05-08 12:18:01] Response: 2848 chars
+[2026-05-08 12:18:01] HTTP: POST /api/generate_plots HTTP/1.1
+[2026-05-08 12:18:21] Response: 4019 chars
+[2026-05-08 12:18:21] HTTP: POST /api/generate_plots HTTP/1.1
+[2026-05-08 12:19:22] Importing NWACS modules...
+[2026-05-08 12:19:22] Initializing...
+[2026-05-08 12:19:22] Knowledge base loaded: 9 genres, 68 schools
+[2026-05-08 12:19:22] Ready.
+[2026-05-08 12:19:30] Generating plots: genres=玄幻、仙侠, styles=热血爽文, schools=签到流, theme=逆境成长
+[2026-05-08 12:19:30] Calling DeepSeek...
+[2026-05-08 12:19:59] HTTP: GET / HTTP/1.1
+[2026-05-08 12:19:59] HTTP: GET /api/options HTTP/1.1
+[2026-05-08 12:19:59] HTTP: GET /@vite/client HTTP/1.1
+[2026-05-08 12:22:06] Generating plots: genres=玄幻、仙侠, styles=热血爽文, schools=签到流, theme=逆境成长
+[2026-05-08 12:22:06] Calling DeepSeek...
+[2026-05-08 12:22:34] Response: 2758 chars
+[2026-05-08 12:22:34] Error: Expecting value: line 22 column 24 (char 1609)
+[2026-05-08 12:22:34] HTTP: POST /api/generate_plots HTTP/1.1
+[2026-05-08 12:22:42] HTTP: GET /api/health HTTP/1.1
+[2026-05-08 12:23:08] Generating plots: genres=??、??, styles=????, schools=???, theme=????
+[2026-05-08 12:23:08] Calling DeepSeek...
+[2026-05-08 12:35:26] Importing NWACS modules...
+[2026-05-08 12:35:26] Initializing...
+[2026-05-08 12:35:26] Knowledge base loaded: 10 genres, 79 schools
+[2026-05-08 12:35:26] Ready.
+[2026-05-08 12:35:59] HTTP: GET /api/health HTTP/1.1
+[2026-05-08 12:35:59] Generating plots: genres=玄幻、仙侠, styles=热血爽文、史诗宏大, schools=签到流、剑修流, theme=逆境成长
+[2026-05-08 12:35:59] Calling DeepSeek...
+[2026-05-08 12:36:38] Response: 3600 chars
+[2026-05-08 12:36:38] HTTP: POST /api/generate_plots HTTP/1.1
+[2026-05-08 12:36:38] Generating outline for: 剑墟签到三千年, schools=签到流、剑修流
+[2026-05-08 12:36:38] Calling DeepSeek for outline...
+[2026-05-08 12:37:52] Outline response: 10273 chars
+[2026-05-08 12:37:52] HTTP: POST /api/select_plot HTTP/1.1
+[2026-05-08 12:37:52] Generating plots: genres=悬疑, styles=黑暗深沉, schools=本格推理流, theme=真相追寻
+[2026-05-08 12:37:52] Calling DeepSeek...
+[2026-05-08 12:38:22] Response: 3131 chars
+[2026-05-08 12:38:22] HTTP: POST /api/generate_plots HTTP/1.1
+[2026-05-08 12:41:41] HTTP: GET /api/health HTTP/1.1
+[2026-05-08 12:41:41] Generating plots: genres=玄幻、仙侠, styles=热血爽文、史诗宏大, schools=签到流、剑修流, theme=逆境成长
+[2026-05-08 12:41:41] Calling DeepSeek...
+[2026-05-08 12:42:26] Response: 4246 chars
+[2026-05-08 12:42:26] JSON parse error: Expecting ',' delimiter: line 35 column 2 (char 4234), attempting recovery...
+[2026-05-08 12:42:26] HTTP: POST /api/generate_plots HTTP/1.1
+[2026-05-08 12:42:26] Generating outline for: 《剑墟签到：我以残碑证道》, schools=签到流、剑修流
+[2026-05-08 12:42:26] Calling DeepSeek for outline...
+[2026-05-08 12:43:38] Outline response: 10552 chars
+[2026-05-08 12:43:38] HTTP: POST /api/select_plot HTTP/1.1
+[2026-05-08 12:43:38] Generating plots: genres=悬疑, styles=黑暗深沉, schools=本格推理流, theme=真相追寻
+[2026-05-08 12:43:38] Calling DeepSeek...
+[2026-05-08 12:44:07] Response: 3027 chars
+[2026-05-08 12:44:07] HTTP: POST /api/generate_plots HTTP/1.1
+[2026-05-08 13:03:28] HTTP: GET /api/health HTTP/1.1
+[2026-05-08 13:06:16] HTTP: GET / HTTP/1.1
+[2026-05-08 13:06:16] HTTP: GET /api/options HTTP/1.1
+[2026-05-08 13:06:16] HTTP: GET /@vite/client HTTP/1.1
+[2026-05-08 13:06:46] HTTP: GET / HTTP/1.1
+[2026-05-08 13:07:03] HTTP: GET / HTTP/1.1
+[2026-05-08 13:07:04] HTTP: GET /api/options HTTP/1.1
+[2026-05-08 13:07:04] HTTP: GET /@vite/client HTTP/1.1
+[2026-05-08 13:07:11] HTTP: GET /api/health HTTP/1.1
+[2026-05-08 13:57:35] HTTP: GET / HTTP/1.1
+[2026-05-08 13:57:36] HTTP: GET /api/options HTTP/1.1
+[2026-05-08 13:57:36] HTTP: GET /@vite/client HTTP/1.1

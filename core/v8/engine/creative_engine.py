@@ -112,7 +112,15 @@ class SmartCreativeEngine:
             "science": "请用科幻风格写作，语言严谨而富有想象力，注重科技细节和世界观构建。",
             "poetic": "请用诗意风格写作，语言优美，富有韵律感和画面感。",
             "humorous": "请用幽默风格写作，语言风趣诙谐，轻松有趣。",
-            "professional": "请用专业风格写作，语言严谨准确，逻辑清晰。"
+            "professional": "请用专业风格写作，语言严谨准确，逻辑清晰。",
+            "cinematic": """请用影视感风格写作。核心要求：
+- 用镜头语言组织文字（远景建立空间→中景推进叙事→特写引爆情绪）
+- 每个场景调动至少3种感官（视觉/听觉/触觉/嗅觉/动觉）
+- 情绪外化为可视动作（不写"他愤怒"，写他掀翻了桌子）
+- 战斗用短句加速，情感用长句沉溺
+- 对话中穿插画面描写，每2-3句对话插入一个画面
+- 关键瞬间使用慢镜头放大细节
+- 光影和色彩传递情绪""",
         }
         return styles.get(style, styles["default"])
     
@@ -202,7 +210,7 @@ class SmartCreativeEngine:
         return self.generate(prompt, system_prompt=system_prompt, temperature=0.8)
     
     def rewrite(self, text: str, style: str = "polish", **kwargs) -> str:
-        """重写文本"""
+        """重写文本 — 内置去AI痕迹系统提示词"""
         style_options = {
             "polish": "请润色以下文本，使其更加流畅优美，保持原意不变。",
             "simplify": "请简化以下文本，使其更加简洁明了。",
@@ -210,13 +218,28 @@ class SmartCreativeEngine:
             "summarize": "请概括以下文本的主要内容，不超过100字。",
             "translate": "请将以下文本翻译成中文，保持原意。",
             "formal": "请将以下文本改为正式文体。",
-            "casual": "请将以下文本改为口语化表达。"
+            "casual": "请将以下文本改为口语化表达。",
+            "deai": "请将以下AI生成的文本改写为自然的人类写作风格，消除所有AI痕迹。",
         }
-        
+
         instruction = style_options.get(style, style_options["polish"])
         prompt = f"{instruction}\n\n原文：\n{text}"
-        
-        return self.generate(prompt, temperature=0.7)
+
+        deai_system_prompt = """你是一位拥有15年写作经验的顶级作家。你的任务是将文本改写为自然的人类写作风格。
+
+【去AI铁律 — 必须严格遵守】
+1. 禁止使用"首先...其次...最后""值得注意的是""综上所述"等AI模板句式
+2. 句长必须剧烈变化：短句3-10字，长句25-50字，交替出现
+3. 禁止情感平滑：情绪要有撕裂感，恨到极致突然温柔
+4. 禁止逻辑过于完美：加入人类的犹豫、自我纠正、思维跳跃
+5. 用动作替代形容词：不写"他愤怒"，写"他一拳砸在桌上"
+6. 加入感官细节：视觉/听觉/触觉/嗅觉至少2种
+7. 加入本土生活细节：烟火气、人情世故
+8. 对话要自然：每个角色说话方式不同，有口语词和停顿
+9. 章末留白：不说完，卡在临界点
+10. 直接输出改写后的文本，不要任何解释"""
+
+        return self.generate(prompt, system_prompt=deai_system_prompt, temperature=0.85)
     
     def continue_writing(self, text: str, length: int = 500, **kwargs) -> str:
         """续写文本"""
