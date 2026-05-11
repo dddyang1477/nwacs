@@ -12,7 +12,7 @@ NWACS 写作知识引擎 - WritingKnowledgeEngine
 
 研究来源:
 - 西湖大学NLP实验室 Fast-DetectGPT 原理
-- Humanizer-zh 21类AI特征识别体系
+- NWACS 21类AI特征识别体系
 - 罗伯特·麦基《故事》核心理论
 - 番茄小说金番作家实战经验
 - 网文圈资深编辑审稿标准
@@ -1275,7 +1275,7 @@ DEAI_STRATEGIES: Dict[str, DeAIStrategy] = {
         name="声音层-个性注入",
         level=DeAILevel.VOICE,
         description="这是去痕的高级阶段——不只是去除AI痕迹，而是注入'人的声音'。"
-                    "对标Humanizer-zh的'注入灵魂'模块。",
+                    "对标NWACS的'注入灵魂'模块。",
         target_traits=["ai_emotion_labeling", "ai_emotion_linear",
                        "ai_empathy_deficit", "ai_tone_inconsistency",
                        "ai_collaborative_traces"],

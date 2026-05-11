@@ -3,556 +3,1021 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>NWACS - 智能小说写作系统</title>
+<title>NWACS — 智能小说写作系统</title>
 <style>
 :root {
-  --bg-primary: #0a0a14;
-  --bg-secondary: #12122a;
-  --bg-card: #1a1a3e;
-  --bg-card-hover: #222250;
-  --bg-input: #1e1e40;
-  --border: #2a2a55;
-  --border-active: #8b5cf6;
-  --text-primary: #e8e8f5;
+  --bg-root: #050510;
+  --bg-base: #0a0a1a;
+  --bg-elevated: #0f0f24;
+  --bg-surface: #141430;
+  --bg-overlay: #1a1a3e;
+  --bg-input: #111128;
+  --border-dim: #1c1c3a;
+  --border-base: #282850;
+  --border-bright: #3d3d70;
+  --border-accent: #7c3aed;
+  --text-primary: #e8e8f4;
   --text-secondary: #a0a0c8;
-  --text-muted: #6a6a90;
+  --text-tertiary: #6a6a98;
+  --text-disabled: #484878;
   --accent: #8b5cf6;
-  --accent-glow: rgba(139, 92, 246, 0.25);
-  --accent2: #06b6d4;
-  --success: #10b981;
-  --warning: #f59e0b;
-  --danger: #ef4444;
-  --radius: 12px;
-  --radius-sm: 8px;
-  --radius-lg: 16px;
-  --shadow: 0 4px 24px rgba(0,0,0,0.4);
-  --shadow-lg: 0 8px 48px rgba(0,0,0,0.6);
-  --transition: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-  --font-mono: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', monospace;
+  --accent-soft: #a78bfa;
+  --accent-glow: rgba(139,92,246,0.18);
+  --accent-intense: rgba(139,92,246,0.32);
+  --cyan: #06b6d4;
+  --cyan-soft: #22d3ee;
+  --cyan-glow: rgba(6,182,212,0.16);
+  --emerald: #10b981;
+  --emerald-soft: #34d399;
+  --emerald-glow: rgba(16,185,129,0.16);
+  --amber: #f59e0b;
+  --amber-soft: #fbbf24;
+  --amber-glow: rgba(245,158,11,0.16);
+  --rose: #f43f5e;
+  --rose-soft: #fb7185;
+  --rose-glow: rgba(244,63,94,0.16);
+  --radius-xs: 6px;
+  --radius-sm: 10px;
+  --radius-md: 14px;
+  --radius-lg: 20px;
+  --radius-xl: 28px;
+  --shadow-xs: 0 1px 4px rgba(0,0,0,0.25);
+  --shadow-sm: 0 2px 12px rgba(0,0,0,0.35);
+  --shadow-md: 0 4px 28px rgba(0,0,0,0.45);
+  --shadow-lg: 0 8px 48px rgba(0,0,0,0.55);
+  --shadow-glow: 0 0 36px var(--accent-glow);
+  --ease-out: cubic-bezier(0.16,1,0.3,1);
+  --ease-in-out: cubic-bezier(0.65,0,0.35,1);
+  --ease-spring: cubic-bezier(0.34,1.56,0.64,1);
+  --font-sans: -apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;
+  --font-mono: 'JetBrains Mono','Fira Code','Cascadia Code','SF Mono',monospace;
 }
 
-* { margin: 0; padding: 0; box-sizing: border-box; }
+*{margin:0;padding:0;box-sizing:border-box}
 
-body {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
-  background: var(--bg-primary);
-  color: var(--text-primary);
-  min-height: 100vh;
-  overflow-x: hidden;
-  line-height: 1.6;
+body{
+  font-family:var(--font-sans);
+  background:var(--bg-root);
+  color:var(--text-primary);
+  min-height:100vh;
+  line-height:1.6;
+  -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
 }
 
-body::before {
-  content: '';
-  position: fixed;
-  top: 0; left: 0; right: 0; bottom: 0;
+body::before{
+  content:'';
+  position:fixed;inset:0;pointer-events:none;z-index:0;
   background:
-    radial-gradient(ellipse at 20% 50%, rgba(139, 92, 246, 0.06) 0%, transparent 50%),
-    radial-gradient(ellipse at 80% 20%, rgba(6, 182, 212, 0.04) 0%, transparent 50%),
-    radial-gradient(ellipse at 50% 80%, rgba(245, 158, 11, 0.03) 0%, transparent 50%);
-  pointer-events: none;
-  z-index: 0;
+    radial-gradient(ellipse 90% 50% at 15% 35%,rgba(139,92,246,0.035),transparent),
+    radial-gradient(ellipse 70% 45% at 85% 15%,rgba(6,182,212,0.025),transparent),
+    radial-gradient(ellipse 60% 40% at 50% 85%,rgba(245,158,11,0.02),transparent);
 }
 
-.app { position: relative; z-index: 1; max-width: 1200px; margin: 0 auto; padding: 0 20px; }
+::-webkit-scrollbar{width:5px;height:5px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--border-base);border-radius:3px}
+::-webkit-scrollbar-thumb:hover{background:var(--border-bright)}
 
-/* Header */
-.header {
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 20px 0; border-bottom: 1px solid var(--border); margin-bottom: 24px;
-}
-.logo { display: flex; align-items: center; gap: 12px; }
-.logo-icon {
-  width: 40px; height: 40px; background: linear-gradient(135deg, var(--accent), var(--accent2));
-  border-radius: 10px; display: flex; align-items: center; justify-content: center;
-  font-size: 20px; box-shadow: 0 0 20px var(--accent-glow);
-}
-.logo-text { font-size: 1.3rem; font-weight: 700; letter-spacing: -0.5px; }
-.logo-sub { font-size: 0.75rem; color: var(--text-muted); }
-.header-actions { display: flex; gap: 8px; }
+::selection{background:rgba(139,92,246,0.3);color:#fff}
 
-/* Progress */
-.progress { display: flex; align-items: center; justify-content: center; gap: 0; margin-bottom: 32px; }
-.progress-step {
-  display: flex; align-items: center; gap: 8px; padding: 8px 16px;
-  border-radius: 20px; font-size: 0.85rem; color: var(--text-muted);
-  cursor: pointer; transition: var(--transition); white-space: nowrap;
-}
-.progress-step .step-num {
-  width: 28px; height: 28px; border-radius: 50%; display: flex;
-  align-items: center; justify-content: center; font-weight: 700;
-  font-size: 0.8rem; background: var(--bg-card); border: 2px solid var(--border);
-  transition: var(--transition);
-}
-.progress-step.active { color: var(--text-primary); }
-.progress-step.active .step-num { background: var(--accent); border-color: var(--accent); color: #fff; box-shadow: 0 0 12px var(--accent-glow); }
-.progress-step.done { color: var(--success); }
-.progress-step.done .step-num { background: var(--success); border-color: var(--success); color: #fff; }
-.progress-line { width: 40px; height: 2px; background: var(--border); border-radius: 1px; }
-.progress-line.done { background: var(--success); }
+.app{position:relative;z-index:1;max-width:1340px;margin:0 auto;padding:0 28px}
 
-/* Steps */
-.step { animation: fadeIn 0.4s ease; }
-.step.hidden { display: none; }
-@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+/* ═══════════════════════ Top Bar ═══════════════════════ */
+.topbar{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:18px 0;border-bottom:1px solid var(--border-dim);margin-bottom:32px;
+  gap:20px;
+}
+.brand{display:flex;align-items:center;gap:14px}
+.brand-mark{
+  width:44px;height:44px;
+  background:linear-gradient(135deg,var(--accent),#6366f1);
+  border-radius:13px;display:flex;align-items:center;justify-content:center;
+  font-size:21px;box-shadow:0 0 28px var(--accent-glow);
+  position:relative;flex-shrink:0;
+}
+.brand-mark::after{
+  content:'';position:absolute;inset:-3px;border-radius:16px;
+  background:linear-gradient(135deg,var(--accent),var(--cyan));
+  opacity:0.25;z-index:-1;filter:blur(10px);
+}
+.brand-name{font-size:1.3rem;font-weight:700;letter-spacing:-0.4px;line-height:1.2}
+.brand-ver{font-size:0.68rem;color:var(--text-tertiary);font-weight:500;letter-spacing:0.3px}
+.topbar-actions{display:flex;gap:6px;align-items:center}
+.status-dot{
+  width:8px;height:8px;border-radius:50%;background:var(--emerald);
+  box-shadow:0 0 8px var(--emerald-glow);margin-right:2px;
+  transition:all 0.4s var(--ease-out);
+}
+.status-dot.busy{background:var(--amber);box-shadow:0 0 8px var(--amber-glow);animation:pulse 1.5s ease-in-out infinite}
+.status-dot.error{background:var(--rose);box-shadow:0 0 8px var(--rose-glow)}
+.status-text{font-size:0.72rem;color:var(--text-tertiary);margin-right:12px;font-weight:500}
 
-/* Cards */
-.card {
-  background: var(--bg-card); border: 1px solid var(--border);
-  border-radius: var(--radius); padding: 24px; margin-bottom: 20px;
-  transition: var(--transition);
+/* ═══════════════════════ Stepper ═══════════════════════ */
+.stepper-wrap{
+  background:var(--bg-elevated);border:1px solid var(--border-dim);
+  border-radius:var(--radius-xl);padding:6px;margin-bottom:36px;
+  display:flex;align-items:center;
 }
-.card:hover { border-color: rgba(139, 92, 246, 0.3); }
-.card-header { font-size: 1.1rem; font-weight: 600; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
+.stepper{display:flex;align-items:center;flex:1;justify-content:center}
+.stepper-step{
+  display:flex;align-items:center;gap:10px;padding:10px 22px;
+  border-radius:20px;font-size:0.88rem;color:var(--text-tertiary);
+  cursor:pointer;transition:all 0.35s var(--ease-out);white-space:nowrap;
+  font-weight:500;position:relative;
+}
+.stepper-step:hover{color:var(--text-secondary);background:var(--bg-surface)}
+.stepper-dot{
+  width:32px;height:32px;border-radius:50%;display:flex;
+  align-items:center;justify-content:center;font-weight:700;
+  font-size:0.82rem;background:var(--bg-overlay);border:2px solid var(--border-base);
+  transition:all 0.35s var(--ease-out);flex-shrink:0;
+}
+.stepper-step.active{color:var(--text-primary)}
+.stepper-step.active .stepper-dot{
+  background:var(--accent);border-color:var(--accent);color:#fff;
+  box-shadow:0 0 20px var(--accent-glow);
+  animation:pulse 2s ease-in-out infinite;
+}
+@keyframes pulse{
+  0%,100%{box-shadow:0 0 20px var(--accent-glow)}
+  50%{box-shadow:0 0 32px var(--accent-intense)}
+}
+.stepper-step.done{color:var(--emerald-soft)}
+.stepper-step.done .stepper-dot{
+  background:var(--emerald);border-color:var(--emerald);color:#fff;
+}
+.stepper-line{width:56px;height:2px;background:var(--border-base);border-radius:1px;margin:0 2px;transition:background 0.4s var(--ease-out)}
+.stepper-line.done{background:var(--emerald)}
 
-/* Selection Grid */
-.selection-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 10px; }
-.selection-card {
-  background: var(--bg-input); border: 2px solid var(--border); border-radius: var(--radius-sm);
-  padding: 16px; cursor: pointer; transition: var(--transition); text-align: center;
-}
-.selection-card:hover { border-color: var(--accent); background: var(--bg-card-hover); }
-.selection-card.selected { border-color: var(--accent); background: rgba(139, 92, 246, 0.1); box-shadow: 0 0 16px var(--accent-glow); }
-.selection-card .card-icon { font-size: 1.5rem; display: block; margin-bottom: 6px; }
-.selection-card .card-label { font-weight: 600; font-size: 0.9rem; }
-.selection-card .card-desc { font-size: 0.75rem; color: var(--text-muted); margin-top: 4px; }
+/* ═══════════════════════ Steps ═══════════════════════ */
+.step{animation:fadeUp 0.5s var(--ease-out)}
+.step.hidden{display:none}
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
 
-/* Form */
-.form-group { margin-bottom: 16px; }
-.form-label { display: block; font-size: 0.85rem; font-weight: 500; color: var(--text-secondary); margin-bottom: 6px; }
-.form-input, .form-textarea {
-  width: 100%; padding: 10px 14px; background: var(--bg-input); border: 1px solid var(--border);
-  border-radius: var(--radius-sm); color: var(--text-primary); font-size: 0.9rem;
-  font-family: inherit; transition: var(--transition); outline: none;
+/* ═══════════════════════ Cards ═══════════════════════ */
+.card{
+  background:var(--bg-elevated);border:1px solid var(--border-dim);
+  border-radius:var(--radius-lg);padding:32px;margin-bottom:22px;
+  transition:all 0.35s var(--ease-out);
+  backdrop-filter:blur(8px);
+  -webkit-backdrop-filter:blur(8px);
 }
-.form-input:focus, .form-textarea:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-glow); }
-.form-textarea { resize: vertical; min-height: 80px; }
-.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.card:hover{border-color:rgba(139,92,246,0.2);box-shadow:0 4px 32px rgba(139,92,246,0.04)}
+.card-head{
+  font-size:1.08rem;font-weight:600;margin-bottom:22px;
+  display:flex;align-items:center;gap:10px;color:var(--text-primary);
+}
+.card-head .icon{font-size:1.25rem}
 
-/* Buttons */
-.btn {
-  display: inline-flex; align-items: center; gap: 6px; padding: 10px 20px;
-  border: none; border-radius: var(--radius-sm); font-size: 0.9rem; font-weight: 600;
-  cursor: pointer; transition: var(--transition); font-family: inherit;
+/* ═══════════════════════ Selection Grid ═══════════════════════ */
+.sel-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(175px,1fr));gap:10px}
+.sel-card{
+  background:var(--bg-input);border:1.5px solid var(--border-base);
+  border-radius:var(--radius-md);padding:20px 16px;cursor:pointer;
+  transition:all 0.3s var(--ease-out);text-align:center;position:relative;
 }
-.btn-primary { background: linear-gradient(135deg, var(--accent), #7c3aed); color: #fff; box-shadow: 0 4px 16px var(--accent-glow); }
-.btn-primary:hover { transform: translateY(-1px); box-shadow: 0 6px 24px var(--accent-glow); }
-.btn-primary:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
-.btn-secondary { background: var(--bg-card); color: var(--text-primary); border: 1px solid var(--border); }
-.btn-secondary:hover { border-color: var(--accent); }
-.btn-sm { padding: 6px 12px; font-size: 0.8rem; }
-.btn-icon { width: 36px; height: 36px; padding: 0; display: flex; align-items: center; justify-content: center; border-radius: 50%; }
-.btn-success { background: var(--success); color: #fff; }
-.btn-danger { background: var(--danger); color: #fff; }
+.sel-card:hover{border-color:var(--accent);background:var(--bg-overlay);transform:translateY(-2px);box-shadow:var(--shadow-sm)}
+.sel-card.selected{
+  border-color:var(--accent);background:rgba(139,92,246,0.06);
+  box-shadow:0 0 24px var(--accent-glow);
+}
+.sel-card .sel-icon{font-size:1.7rem;display:block;margin-bottom:10px}
+.sel-card .sel-label{font-weight:600;font-size:0.92rem}
+.sel-card .sel-desc{font-size:0.73rem;color:var(--text-tertiary);margin-top:5px;line-height:1.5}
 
-/* Plot Cards */
-.plot-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 16px; }
-.plot-card {
-  background: var(--bg-card); border: 2px solid var(--border); border-radius: var(--radius);
-  padding: 24px; cursor: pointer; transition: var(--transition); position: relative; overflow: hidden;
+/* ═══════════════════════ Form ═══════════════════════ */
+.field{margin-bottom:20px}
+.field-label{display:block;font-size:0.82rem;font-weight:500;color:var(--text-secondary);margin-bottom:7px}
+.field-input,.field-area{
+  width:100%;padding:12px 16px;background:var(--bg-input);border:1.5px solid var(--border-base);
+  border-radius:var(--radius-sm);color:var(--text-primary);font-size:0.9rem;
+  font-family:inherit;transition:all 0.3s var(--ease-out);outline:none;
 }
-.plot-card::before {
-  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
-  background: var(--card-color, var(--accent)); opacity: 0; transition: var(--transition);
+.field-input:focus,.field-area:focus{
+  border-color:var(--accent);box-shadow:0 0 0 4px var(--accent-glow);
 }
-.plot-card:hover { border-color: var(--accent); transform: translateY(-2px); box-shadow: var(--shadow); }
-.plot-card:hover::before { opacity: 1; }
-.plot-card.selected { border-color: var(--accent); box-shadow: 0 0 24px var(--accent-glow); }
-.plot-card.selected::before { opacity: 1; }
-.plot-number { font-size: 0.75rem; color: var(--accent); font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
-.plot-name { font-size: 1.2rem; font-weight: 700; margin-bottom: 8px; }
-.plot-tagline { font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 16px; line-height: 1.5; }
-.plot-detail { display: flex; gap: 8px; font-size: 0.8rem; margin-bottom: 6px; }
-.plot-detail .detail-label { color: var(--text-muted); min-width: 60px; flex-shrink: 0; }
-.plot-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px; }
-.tag { font-size: 0.7rem; padding: 3px 8px; border-radius: 10px; background: rgba(139, 92, 246, 0.15); color: var(--accent); }
+.field-area{resize:vertical;min-height:80px;line-height:1.8}
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.field-input::placeholder,.field-area::placeholder{color:var(--text-disabled)}
+select.field-input{cursor:pointer;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236a6a98' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center;padding-right:36px}
 
-/* Outline */
-.outline-header { display: flex; justify-content: space-between; align-items: flex-start; padding: 20px 24px; }
-.outline-title { font-size: 1.4rem; font-weight: 700; }
-.outline-meta { font-size: 0.8rem; color: var(--text-muted); }
-.act-section { border: 1px solid var(--border); border-radius: var(--radius-sm); margin-bottom: 12px; overflow: hidden; }
-.act-header {
-  display: flex; align-items: center; gap: 12px; padding: 14px 18px;
-  background: var(--bg-card); cursor: pointer; transition: var(--transition);
+/* ═══════════════════════ Buttons ═══════════════════════ */
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:8px;
+  padding:11px 24px;border:none;border-radius:var(--radius-sm);font-size:0.88rem;
+  font-weight:600;cursor:pointer;transition:all 0.3s var(--ease-out);font-family:inherit;
+  white-space:nowrap;letter-spacing:0.1px;position:relative;overflow:hidden;
 }
-.act-header:hover { background: var(--bg-card-hover); }
-.act-num {
-  width: 32px; height: 32px; border-radius: 50%; display: flex;
-  align-items: center; justify-content: center; font-weight: 700; font-size: 0.85rem;
-  flex-shrink: 0;
+.btn-primary{
+  background:linear-gradient(135deg,var(--accent),#7c3aed);color:#fff;
+  box-shadow:0 4px 24px var(--accent-glow);
 }
-.act-1 { background: rgba(139, 92, 246, 0.2); color: var(--accent); }
-.act-2 { background: rgba(6, 182, 212, 0.2); color: var(--accent2); }
-.act-3 { background: rgba(245, 158, 11, 0.2); color: var(--warning); }
-.act-4 { background: rgba(16, 185, 129, 0.2); color: var(--success); }
-.act-info { flex: 1; }
-.act-name { font-weight: 600; }
-.act-range { font-size: 0.75rem; color: var(--text-muted); }
-.act-arrow { transition: var(--transition); font-size: 0.7rem; color: var(--text-muted); }
-.act-section.open .act-arrow { transform: rotate(90deg); }
-.act-events { display: none; padding: 0 18px 14px; }
-.act-section.open .act-events { display: block; }
-.event-item { display: flex; gap: 12px; padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.03); font-size: 0.85rem; align-items: flex-start; }
-.event-chapter { min-width: 36px; height: 24px; border-radius: 12px; background: var(--bg-input); display: flex; align-items: center; justify-content: center; font-size: 0.7rem; font-weight: 600; color: var(--text-muted); }
-.event-type { font-size: 0.7rem; padding: 2px 8px; border-radius: 8px; font-weight: 600; white-space: nowrap; }
-.event-type.opening { background: rgba(6, 182, 212, 0.15); color: var(--accent2); }
-.event-type.twist { background: rgba(245, 158, 11, 0.15); color: var(--warning); }
-.event-type.climax { background: rgba(239, 68, 68, 0.15); color: var(--danger); }
-.event-type.conflict { background: rgba(139, 92, 246, 0.15); color: var(--accent); }
-.event-type.ending { background: rgba(16, 185, 129, 0.15); color: var(--success); }
-.event-desc { color: var(--text-secondary); }
-.event-foreshadow { font-size: 0.75rem; color: var(--warning); margin-top: 4px; }
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 8px 32px var(--accent-intense)}
+.btn-primary:active{transform:translateY(0)}
+.btn-primary:disabled{opacity:0.4;cursor:not-allowed;transform:none;box-shadow:none}
+.btn-secondary{
+  background:var(--bg-surface);color:var(--text-primary);
+  border:1.5px solid var(--border-base);
+}
+.btn-secondary:hover{border-color:var(--accent);background:var(--bg-overlay);transform:translateY(-1px)}
+.btn-ghost{
+  background:transparent;color:var(--text-secondary);
+  border:1.5px solid transparent;
+}
+.btn-ghost:hover{color:var(--text-primary);background:var(--bg-surface);border-color:var(--border-dim)}
+.btn-sm{padding:7px 16px;font-size:0.8rem;border-radius:var(--radius-xs)}
+.btn-xs{padding:4px 11px;font-size:0.72rem;border-radius:var(--radius-xs)}
+.btn-icon{width:40px;height:40px;padding:0;border-radius:50%}
+.btn-full{width:100%;justify-content:center}
+.btn-success{background:var(--emerald);color:#fff;box-shadow:0 4px 20px var(--emerald-glow)}
+.btn-danger{background:var(--rose);color:#fff;box-shadow:0 4px 20px var(--rose-glow)}
 
-/* Markers & Tooltips */
-.marker {
-  display: inline-flex; align-items: center; justify-content: center;
-  width: 18px; height: 18px; border-radius: 50%; font-size: 0.6rem;
-  font-weight: 700; cursor: help; position: relative; flex-shrink: 0;
-  transition: var(--transition);
+/* ═══════════════════════ Plot Cards ═══════════════════════ */
+.plot-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(370px,1fr));gap:20px}
+.plot-card{
+  background:var(--bg-elevated);border:1.5px solid var(--border-base);
+  border-radius:var(--radius-lg);padding:30px;cursor:pointer;
+  transition:all 0.35s var(--ease-out);position:relative;overflow:hidden;
 }
-.marker-main { background: rgba(139, 92, 246, 0.2); color: var(--accent); }
-.marker-sub { background: rgba(6, 182, 212, 0.2); color: var(--accent2); }
-.marker-transition { background: rgba(245, 158, 11, 0.2); color: var(--warning); }
-.marker-cause { background: rgba(16, 185, 129, 0.2); color: var(--success); }
-.marker-effect { background: rgba(239, 68, 68, 0.2); color: var(--danger); }
-.marker:hover { transform: scale(1.2); z-index: 10; }
+.plot-card::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:3px;
+  background:var(--card-color,var(--accent));opacity:0;transition:opacity 0.35s var(--ease-out);
+}
+.plot-card:hover{border-color:var(--accent);transform:translateY(-4px);box-shadow:var(--shadow-md)}
+.plot-card:hover::before{opacity:1}
+.plot-card.selected{
+  border-color:var(--accent);box-shadow:0 0 40px var(--accent-glow);
+  background:rgba(139,92,246,0.03);
+}
+.plot-card.selected::before{opacity:1}
+.plot-num{font-size:0.7rem;color:var(--accent-soft);font-weight:700;text-transform:uppercase;letter-spacing:1.8px;margin-bottom:12px}
+.plot-name{font-size:1.25rem;font-weight:700;margin-bottom:12px;line-height:1.35}
+.plot-tagline{font-size:0.86rem;color:var(--text-secondary);margin-bottom:20px;line-height:1.7}
+.plot-detail{display:flex;gap:10px;font-size:0.82rem;margin-bottom:7px}
+.plot-detail .dl{color:var(--text-tertiary);min-width:68px;flex-shrink:0;font-weight:500}
+.plot-tags{display:flex;flex-wrap:wrap;gap:7px;margin-top:16px}
+.tag{
+  font-size:0.7rem;padding:5px 12px;border-radius:14px;
+  background:rgba(139,92,246,0.1);color:var(--accent-soft);font-weight:500;
+}
 
-.tooltip-box {
-  display: none; position: absolute; bottom: calc(100% + 8px); left: 50%;
-  transform: translateX(-50%); background: var(--bg-card); border: 1px solid var(--accent);
-  border-radius: var(--radius-sm); padding: 8px 12px; font-size: 0.75rem;
-  color: var(--text-primary); white-space: nowrap; z-index: 100;
-  box-shadow: var(--shadow-lg); font-weight: 400; max-width: 280px;
-  white-space: normal; word-break: break-word;
+/* ═══════════════════════ Outline ═══════════════════════ */
+.outline-head{display:flex;justify-content:space-between;align-items:flex-start;padding:28px 32px}
+.outline-title{font-size:1.6rem;font-weight:700;letter-spacing:-0.4px}
+.outline-meta{font-size:0.82rem;color:var(--text-tertiary);margin-top:5px}
+.act-block{border:1px solid var(--border-dim);border-radius:var(--radius-md);margin-bottom:16px;overflow:hidden}
+.act-bar{
+  display:flex;align-items:center;gap:16px;padding:18px 22px;
+  background:var(--bg-surface);cursor:pointer;transition:background 0.3s var(--ease-out);
 }
-.marker:hover .tooltip-box { display: block; }
+.act-bar:hover{background:var(--bg-overlay)}
+.act-dot{
+  width:36px;height:36px;border-radius:50%;display:flex;
+  align-items:center;justify-content:center;font-weight:700;font-size:0.88rem;flex-shrink:0;
+}
+.act-dot.a1{background:rgba(139,92,246,0.16);color:var(--accent-soft)}
+.act-dot.a2{background:rgba(6,182,212,0.16);color:var(--cyan-soft)}
+.act-dot.a3{background:rgba(245,158,11,0.16);color:var(--amber-soft)}
+.act-dot.a4{background:rgba(16,185,129,0.16);color:var(--emerald-soft)}
+.act-info{flex:1}
+.act-name{font-weight:600;font-size:0.98rem}
+.act-range{font-size:0.76rem;color:var(--text-tertiary)}
+.act-chevron{transition:transform 0.35s var(--ease-out);color:var(--text-tertiary);font-size:0.7rem}
+.act-block.open .act-chevron{transform:rotate(90deg)}
+.act-body{display:none;padding:0 22px 18px}
+.act-block.open .act-body{display:block}
+.evt-row{
+  display:flex;gap:16px;padding:14px 0;border-bottom:1px solid rgba(255,255,255,0.015);
+  font-size:0.86rem;align-items:flex-start;
+}
+.evt-ch{
+  min-width:40px;height:28px;border-radius:16px;background:var(--bg-input);
+  display:flex;align-items:center;justify-content:center;
+  font-size:0.72rem;font-weight:600;color:var(--text-tertiary);flex-shrink:0;
+}
+.evt-type{
+  font-size:0.68rem;padding:3px 10px;border-radius:12px;font-weight:600;white-space:nowrap;
+}
+.evt-type.opening{background:rgba(6,182,212,0.14);color:var(--cyan-soft)}
+.evt-type.twist{background:rgba(245,158,11,0.14);color:var(--amber-soft)}
+.evt-type.climax{background:rgba(244,63,94,0.14);color:var(--rose-soft)}
+.evt-type.conflict{background:rgba(139,92,246,0.14);color:var(--accent-soft)}
+.evt-type.ending{background:rgba(16,185,129,0.14);color:var(--emerald-soft)}
+.evt-desc{color:var(--text-secondary)}
+.evt-fs{font-size:0.76rem;color:var(--amber-soft);margin-top:5px}
 
-/* Notes Column */
-.notes-cell {
-  min-width: 140px; max-width: 200px; flex-shrink: 0;
+/* ═══════════════════════ Markers ═══════════════════════ */
+.marker{
+  display:inline-flex;align-items:center;justify-content:center;
+  width:20px;height:20px;border-radius:50%;font-size:0.62rem;
+  font-weight:700;cursor:help;position:relative;flex-shrink:0;
+  transition:transform 0.25s var(--ease-out);
 }
-.notes-cell textarea {
-  width: 100%; min-height: 36px; padding: 6px 8px;
-  background: var(--bg-input); border: 1px solid var(--border);
-  border-radius: 6px; color: var(--text-primary); font-size: 0.75rem;
-  font-family: inherit; resize: vertical; outline: none;
-  transition: var(--transition);
+.marker:hover{transform:scale(1.3);z-index:10}
+.marker-main{background:rgba(139,92,246,0.18);color:var(--accent-soft)}
+.marker-sub{background:rgba(6,182,212,0.18);color:var(--cyan-soft)}
+.marker-transition{background:rgba(245,158,11,0.18);color:var(--amber-soft)}
+.marker-cause{background:rgba(16,185,129,0.18);color:var(--emerald-soft)}
+.marker-effect{background:rgba(244,63,94,0.18);color:var(--rose-soft)}
+.tip-pop{
+  display:none;position:absolute;bottom:calc(100% + 10px);left:50%;
+  transform:translateX(-50%);background:var(--bg-overlay);border:1px solid var(--accent);
+  border-radius:var(--radius-sm);padding:10px 14px;font-size:0.74rem;
+  color:var(--text-primary);white-space:normal;z-index:100;
+  box-shadow:var(--shadow-lg);font-weight:400;max-width:280px;word-break:break-word;
 }
-.notes-cell textarea:focus { border-color: var(--accent); }
-.notes-cell textarea::placeholder { color: var(--text-muted); }
+.marker:hover .tip-pop{display:block}
 
-/* Character Card */
-.char-card {
-  display: flex; align-items: center; gap: 12px; padding: 10px 14px;
-  background: var(--bg-input); border-radius: var(--radius-sm);
-  border-left: 3px solid var(--accent); margin-bottom: 8px;
-  transition: var(--transition);
+/* ═══════════════════════ Notes ═══════════════════════ */
+.note-cell{min-width:150px;max-width:220px;flex-shrink:0}
+.note-cell textarea{
+  width:100%;min-height:40px;padding:7px 10px;
+  background:var(--bg-input);border:1px solid var(--border-base);
+  border-radius:7px;color:var(--text-primary);font-size:0.76rem;
+  font-family:inherit;resize:vertical;outline:none;transition:border-color 0.3s var(--ease-out);
 }
-.char-card.antagonist { border-left-color: var(--danger); }
-.char-card.supporting { border-left-color: var(--accent2); }
-.char-card .char-avatar {
-  width: 36px; height: 36px; border-radius: 50%; display: flex;
-  align-items: center; justify-content: center; font-size: 1rem;
-  flex-shrink: 0;
+.note-cell textarea:focus{border-color:var(--accent)}
+.note-cell textarea::placeholder{color:var(--text-disabled)}
+
+/* ═══════════════════════ Character Card ═══════════════════════ */
+.char-card{
+  display:flex;align-items:center;gap:16px;padding:14px 18px;
+  background:var(--bg-input);border-radius:var(--radius-sm);
+  border-left:3px solid var(--accent);margin-bottom:12px;transition:all 0.3s var(--ease-out);
 }
-.char-card.protagonist .char-avatar { background: rgba(139, 92, 246, 0.2); }
-.char-card.antagonist .char-avatar { background: rgba(239, 68, 68, 0.2); }
-.char-card.supporting .char-avatar { background: rgba(6, 182, 212, 0.2); }
-.char-name { font-weight: 600; font-size: 0.9rem; }
-.char-meaning { font-size: 0.75rem; color: var(--text-muted); }
-.char-role-tag {
-  font-size: 0.65rem; padding: 2px 8px; border-radius: 8px;
-  font-weight: 600; white-space: nowrap;
+.char-card:hover{background:var(--bg-overlay)}
+.char-card.antagonist{border-left-color:var(--rose)}
+.char-card.supporting{border-left-color:var(--cyan)}
+.char-avatar{
+  width:42px;height:42px;border-radius:50%;display:flex;
+  align-items:center;justify-content:center;font-size:1.15rem;flex-shrink:0;
 }
-.char-role-tag.protagonist { background: rgba(139, 92, 246, 0.15); color: var(--accent); }
-.char-role-tag.antagonist { background: rgba(239, 68, 68, 0.15); color: var(--danger); }
-.char-role-tag.supporting { background: rgba(6, 182, 212, 0.15); color: var(--accent2); }
-
-/* Plot Lines Section */
-.plot-lines-section { padding: 16px 24px; border-bottom: 1px solid var(--border); }
-.plot-line-item { display: flex; align-items: flex-start; gap: 8px; padding: 6px 0; font-size: 0.85rem; }
-.ce-chain { display: flex; align-items: center; gap: 8px; padding: 6px 0; font-size: 0.8rem; flex-wrap: wrap; }
-.ce-node {
-  padding: 4px 10px; border-radius: 12px; font-size: 0.75rem;
+.char-card.protagonist .char-avatar{background:rgba(139,92,246,0.18)}
+.char-card.antagonist .char-avatar{background:rgba(244,63,94,0.18)}
+.char-card.supporting .char-avatar{background:rgba(6,182,212,0.18)}
+.char-name{font-weight:600;font-size:0.92rem}
+.char-meaning{font-size:0.76rem;color:var(--text-tertiary)}
+.char-role-tag{
+  font-size:0.66rem;padding:3px 10px;border-radius:12px;font-weight:600;white-space:nowrap;
 }
-.ce-node.cause { background: rgba(16, 185, 129, 0.15); color: var(--success); }
-.ce-node.effect { background: rgba(239, 68, 68, 0.15); color: var(--danger); }
-.ce-arrow { color: var(--text-muted); }
+.char-role-tag.protagonist{background:rgba(139,92,246,0.14);color:var(--accent-soft)}
+.char-role-tag.antagonist{background:rgba(244,63,94,0.14);color:var(--rose-soft)}
+.char-role-tag.supporting{background:rgba(6,182,212,0.14);color:var(--cyan-soft)}
 
-/* Workspace */
-.workspace { display: grid; grid-template-columns: 1fr 320px; gap: 20px; }
-.workspace-main { min-width: 0; }
-.workspace-side { display: flex; flex-direction: column; gap: 16px; }
+/* ═══════════════════════ Plot Lines ═══════════════════════ */
+.plot-lines{padding:20px 32px;border-bottom:1px solid var(--border-dim)}
+.pl-item{display:flex;align-items:flex-start;gap:10px;padding:7px 0;font-size:0.86rem}
+.ce-chain{display:flex;align-items:center;gap:10px;padding:7px 0;font-size:0.82rem;flex-wrap:wrap}
+.ce-node{padding:5px 12px;border-radius:14px;font-size:0.76rem}
+.ce-node.cause{background:rgba(16,185,129,0.14);color:var(--emerald-soft)}
+.ce-node.effect{background:rgba(244,63,94,0.14);color:var(--rose-soft)}
+.ce-arrow{color:var(--text-tertiary)}
 
-/* Chapter Content */
-.chapter-content {
-  background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius);
-  padding: 32px; min-height: 400px; font-size: 1rem; line-height: 2;
-  white-space: pre-wrap; word-break: break-word;
+/* ═══════════════════════ Writing Workspace ═══════════════════════ */
+.workspace{display:grid;grid-template-columns:270px 1fr 290px;gap:22px;align-items:start}
+.ws-side{display:flex;flex-direction:column;gap:16px;position:sticky;top:22px}
+.ws-main{min-width:0}
+.ws-panel{display:flex;flex-direction:column;gap:16px;position:sticky;top:22px}
+
+/* ═══════════════════════ Chapter Content ═══════════════════════ */
+.chapter-box{
+  background:var(--bg-elevated);border:1px solid var(--border-dim);
+  border-radius:var(--radius-lg);padding:44px 48px;min-height:480px;
+  font-size:1.05rem;line-height:2.3;white-space:pre-wrap;word-break:break-word;
+  letter-spacing:0.5px;color:var(--text-primary);
+  backdrop-filter:blur(8px);
+  -webkit-backdrop-filter:blur(8px);
+  transition:all 0.35s var(--ease-out);
 }
-.chapter-content.empty { display: flex; align-items: center; justify-content: center; color: var(--text-muted); font-style: italic; }
-
-/* Chapter Nav */
-.chapter-nav { display: flex; align-items: center; gap: 8px; margin-bottom: 16px; }
-.chapter-nav input { width: 60px; text-align: center; }
-
-/* Stats */
-.stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-.stat-item { background: var(--bg-input); border-radius: var(--radius-sm); padding: 12px; text-align: center; }
-.stat-value { font-size: 1.2rem; font-weight: 700; }
-.stat-value.good { color: var(--success); }
-.stat-value.warn { color: var(--warning); }
-.stat-value.bad { color: var(--danger); }
-.stat-label { font-size: 0.7rem; color: var(--text-muted); margin-top: 2px; }
-.meter { height: 4px; background: var(--border); border-radius: 2px; margin-top: 8px; overflow: hidden; }
-.meter-fill { height: 100%; border-radius: 2px; transition: width 0.5s ease; }
-.meter-fill.good { background: var(--success); }
-.meter-fill.warn { background: var(--warning); }
-.meter-fill.bad { background: var(--danger); }
-
-/* Info Card */
-.info-card { background: var(--bg-input); border-radius: var(--radius-sm); padding: 14px; }
-.info-card h4 { font-size: 0.8rem; color: var(--text-muted); margin-bottom: 8px; }
-
-/* Loading */
-.loading-overlay {
-  position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-  background: rgba(10, 10, 20, 0.85); backdrop-filter: blur(8px);
-  display: flex; align-items: center; justify-content: center; z-index: 1000;
-  opacity: 0; pointer-events: none; transition: opacity 0.3s;
+.chapter-box:not(.empty):hover{border-color:rgba(139,92,246,0.15);box-shadow:0 4px 32px rgba(139,92,246,0.03)}
+.chapter-box.empty{
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  color:var(--text-tertiary);font-size:0.96rem;gap:16px;text-align:center;
 }
-.loading-overlay.show { opacity: 1; pointer-events: all; }
-.loading-box { text-align: center; }
-.loading-spinner {
-  width: 48px; height: 48px; border: 3px solid var(--border);
-  border-top-color: var(--accent); border-radius: 50%;
-  animation: spin 0.8s linear infinite; margin: 0 auto 16px;
+.chapter-box.empty::before{
+  content:'📝';font-size:3rem;opacity:0.3;margin-bottom:4px;
 }
-@keyframes spin { to { transform: rotate(360deg); } }
-.loading-text { font-size: 0.95rem; color: var(--text-secondary); margin-bottom: 4px; }
-.loading-time { font-size: 0.8rem; color: var(--text-muted); font-family: var(--font-mono); }
-.loading-progress { width: 200px; height: 3px; background: var(--border); border-radius: 2px; margin: 12px auto 0; overflow: hidden; }
-.loading-progress-bar { height: 100%; background: var(--accent); border-radius: 2px; width: 0%; transition: width 0.3s; }
 
-/* Toast */
-.toast {
-  position: fixed; top: 20px; right: 20px; padding: 12px 20px;
-  border-radius: var(--radius-sm); font-size: 0.85rem; z-index: 2000;
-  animation: slideIn 0.3s ease; max-width: 400px;
-  box-shadow: var(--shadow-lg);
+/* ═══════════════════════ Chapter Nav ═══════════════════════ */
+.ch-nav{display:flex;align-items:center;gap:10px;margin-bottom:18px;flex-wrap:wrap}
+.ch-nav input{
+  width:68px;text-align:center;padding:9px;background:var(--bg-input);
+  border:1.5px solid var(--border-base);border-radius:var(--radius-xs);
+  color:var(--text-primary);font-size:0.92rem;font-family:inherit;outline:none;
+  transition:border-color 0.3s var(--ease-out);
 }
-.toast.info { background: var(--bg-card); border: 1px solid var(--accent); color: var(--text-primary); }
-.toast.success { background: rgba(16, 185, 129, 0.15); border: 1px solid var(--success); color: var(--success); }
-.toast.error { background: rgba(239, 68, 68, 0.15); border: 1px solid var(--danger); color: var(--danger); }
-@keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+.ch-nav input:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-glow)}
+.ch-nav .ch-title{font-size:0.86rem;color:var(--text-tertiary);margin-left:10px;font-weight:500}
+.ch-nav .word-badge{
+  font-size:0.72rem;padding:4px 12px;border-radius:14px;
+  background:var(--bg-input);color:var(--text-tertiary);
+  border:1px solid var(--border-dim);font-family:var(--font-mono);
+  display:none;
+}
+.ch-nav .word-badge.show{display:inline-flex;align-items:center;gap:4px}
 
-/* Export Modal */
-.modal-overlay {
-  position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-  background: rgba(0,0,0,0.7); display: flex; align-items: center;
-  justify-content: center; z-index: 1500; opacity: 0; pointer-events: none;
-  transition: opacity 0.3s;
+/* ═══════════════════════ Stats ═══════════════════════ */
+.stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.stat-item{
+  background:var(--bg-input);border-radius:var(--radius-sm);
+  padding:16px 14px;text-align:center;border:1px solid transparent;
+  transition:border-color 0.3s var(--ease-out);
 }
-.modal-overlay.show { opacity: 1; pointer-events: all; }
-.modal {
-  background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-lg);
-  padding: 28px; max-width: 480px; width: 90%; box-shadow: var(--shadow-lg);
-}
-.modal h3 { margin-bottom: 16px; }
-.modal-actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 20px; }
+.stat-item:hover{border-color:var(--border-base)}
+.stat-val{font-size:1.3rem;font-weight:700;line-height:1.2}
+.stat-val.good{color:var(--emerald-soft)}
+.stat-val.warn{color:var(--amber-soft)}
+.stat-val.bad{color:var(--rose-soft)}
+.stat-lbl{font-size:0.7rem;color:var(--text-tertiary);margin-top:4px}
+.meter{height:5px;background:var(--border-base);border-radius:3px;margin-top:12px;overflow:hidden}
+.meter-bar{height:100%;border-radius:3px;transition:width 0.6s var(--ease-out)}
+.meter-bar.good{background:linear-gradient(90deg,var(--emerald),var(--emerald-soft))}
+.meter-bar.warn{background:linear-gradient(90deg,var(--amber),var(--amber-soft))}
+.meter-bar.bad{background:linear-gradient(90deg,var(--rose),var(--rose-soft))}
 
-/* Responsive */
-@media (max-width: 768px) {
-  .workspace { grid-template-columns: 1fr; }
-  .plot-cards { grid-template-columns: 1fr; }
-  .form-row { grid-template-columns: 1fr; }
-  .selection-grid { grid-template-columns: repeat(2, 1fr); }
-  .progress-step span:last-child { display: none; }
+/* ═══════════════════════ Info Card ═══════════════════════ */
+.info-card{
+  background:var(--bg-surface);border-radius:var(--radius-md);padding:18px;
+  border:1px solid var(--border-dim);
+  backdrop-filter:blur(6px);
+  -webkit-backdrop-filter:blur(6px);
+  transition:all 0.3s var(--ease-out);
+}
+.info-card:hover{border-color:rgba(139,92,246,0.12)}
+.info-card h4{font-size:0.76rem;color:var(--text-tertiary);margin-bottom:12px;font-weight:600;text-transform:uppercase;letter-spacing:0.6px}
+
+/* ═══════════════════════ Tabs ═══════════════════════ */
+.tab-bar{display:flex;gap:0;border-bottom:1px solid var(--border-dim);margin-bottom:16px;overflow-x:auto}
+.tab-btn{
+  padding:9px 16px;font-size:0.8rem;color:var(--text-tertiary);cursor:pointer;
+  border:none;background:none;border-bottom:2px solid transparent;
+  transition:all 0.3s var(--ease-out);font-family:inherit;font-weight:500;white-space:nowrap;
+}
+.tab-btn:hover{color:var(--text-secondary)}
+.tab-btn.active{color:var(--accent-soft);border-bottom-color:var(--accent)}
+.tab-panel{display:none;animation:fadeUp 0.35s var(--ease-out)}
+.tab-panel.active{display:block}
+
+/* ═══════════════════════ Tool Buttons ═══════════════════════ */
+.tool-list{display:flex;flex-direction:column;gap:7px}
+.tool-list .btn{justify-content:flex-start;font-size:0.8rem;padding:9px 16px}
+
+/* ═══════════════════════ Quality Panel ═══════════════════════ */
+.arc-chart{display:flex;align-items:flex-end;gap:3px;height:110px;padding:5px 0}
+.arc-bar{
+  flex:1;border-radius:3px 3px 0 0;min-width:7px;
+  transition:height 0.5s var(--ease-out);cursor:pointer;
+}
+.arc-bar:hover{opacity:0.75}
+.arc-legend{display:flex;gap:16px;justify-content:center;margin-top:10px;font-size:0.72rem;color:var(--text-tertiary)}
+.arc-legend span{display:flex;align-items:center;gap:5px}
+.arc-legend .dot{width:9px;height:9px;border-radius:50%}
+
+/* ═══════════════════════ Review Panel ═══════════════════════ */
+.review-list{max-height:380px;overflow-y:auto}
+.review-issue{
+  display:flex;gap:12px;padding:12px 14px;border-radius:var(--radius-sm);margin-bottom:9px;
+  background:var(--bg-input);border-left:3px solid var(--border-base);
+  transition:background 0.25s var(--ease-out);
+}
+.review-issue:hover{background:var(--bg-overlay)}
+.review-issue.critical{border-left-color:var(--rose);background:rgba(244,63,94,0.03)}
+.review-issue.high{border-left-color:var(--amber);background:rgba(245,158,11,0.03)}
+.review-issue.medium{border-left-color:var(--cyan)}
+.review-issue.low{border-left-color:var(--text-tertiary)}
+.review-issue .iss-sev{
+  font-size:0.62rem;padding:3px 9px;border-radius:10px;font-weight:700;
+  text-transform:uppercase;white-space:nowrap;flex-shrink:0;line-height:1.7;
+}
+.review-issue.critical .iss-sev{background:rgba(244,63,94,0.18);color:var(--rose-soft)}
+.review-issue.high .iss-sev{background:rgba(245,158,11,0.18);color:var(--amber-soft)}
+.review-issue.medium .iss-sev{background:rgba(6,182,212,0.18);color:var(--cyan-soft)}
+.review-issue.low .iss-sev{background:rgba(160,160,200,0.12);color:var(--text-tertiary)}
+.review-issue .iss-body{flex:1;min-width:0}
+.review-issue .iss-desc{font-size:0.84rem;line-height:1.55}
+.review-issue .iss-fix{font-size:0.74rem;color:var(--emerald-soft);margin-top:5px}
+.review-issue .iss-loc{font-size:0.7rem;color:var(--text-tertiary)}
+.review-summary{display:flex;gap:10px;margin-bottom:14px;flex-wrap:wrap}
+.review-stat{text-align:center;padding:10px 14px;background:var(--bg-input);border-radius:var(--radius-sm);min-width:60px}
+.review-stat .rs-num{font-size:1.2rem;font-weight:700}
+.review-stat .rs-lbl{font-size:0.64rem;color:var(--text-tertiary)}
+
+/* ═══════════════════════ Memory Panel ═══════════════════════ */
+.mem-list{max-height:380px;overflow-y:auto}
+.mem-item{
+  display:flex;align-items:flex-start;gap:12px;padding:12px 14px;
+  background:var(--bg-input);border-radius:var(--radius-sm);margin-bottom:9px;
+  border-left:3px solid var(--border-base);transition:all 0.3s var(--ease-out);
+}
+.mem-item:hover{background:var(--bg-overlay)}
+.mem-item.anti{border-left-color:var(--rose)}
+.mem-item.tech{border-left-color:var(--emerald)}
+.mem-item.high{border-left-color:var(--amber)}
+.mem-item .mem-icon{font-size:1.05rem;flex-shrink:0;margin-top:3px}
+.mem-item .mem-body{flex:1;min-width:0}
+.mem-item .mem-desc{font-size:0.84rem;line-height:1.55}
+.mem-item .mem-meta{font-size:0.7rem;color:var(--text-tertiary);margin-top:5px;display:flex;gap:10px;flex-wrap:wrap}
+
+/* ═══════════════════════ Story Panel ═══════════════════════ */
+.story-panel{max-height:420px;overflow-y:auto}
+.story-section{margin-bottom:18px}
+.story-section h5{font-size:0.84rem;color:var(--accent-soft);margin-bottom:10px;display:flex;align-items:center;gap:7px}
+.story-field{display:flex;align-items:center;gap:10px;margin-bottom:7px}
+.story-field label{font-size:0.78rem;color:var(--text-tertiary);min-width:76px;flex-shrink:0}
+.story-field input,.story-field textarea{
+  flex:1;padding:7px 12px;background:var(--bg-input);border:1px solid var(--border-base);
+  border-radius:7px;color:var(--text-primary);font-size:0.78rem;font-family:inherit;
+}
+.story-field textarea{min-height:52px;resize:vertical}
+
+/* ═══════════════════════ Beat Timeline ═══════════════════════ */
+.beat-timeline{position:relative;padding-left:28px}
+.beat-timeline::before{content:'';position:absolute;left:9px;top:0;bottom:0;width:2px;background:var(--border-base)}
+.beat-item{position:relative;padding:10px 0 10px 24px;margin-bottom:5px}
+.beat-item::before{
+  content:'';position:absolute;left:-23px;top:16px;
+  width:12px;height:12px;border-radius:50%;background:var(--border-base);
+  border:2px solid var(--bg-elevated);
+}
+.beat-item.done::before{background:var(--emerald)}
+.beat-item.active::before{background:var(--accent);box-shadow:0 0 10px var(--accent-glow)}
+.beat-item .bt-ch{font-size:0.72rem;color:var(--accent-soft);font-weight:600}
+.beat-item .bt-name{font-size:0.85rem;font-weight:600}
+.beat-item .bt-desc{font-size:0.74rem;color:var(--text-tertiary)}
+
+/* ═══════════════════════ Loading ═══════════════════════ */
+.load-overlay{
+  position:fixed;inset:0;background:rgba(5,5,16,0.9);backdrop-filter:blur(14px);
+  display:flex;align-items:center;justify-content:center;z-index:1000;
+  opacity:0;pointer-events:none;transition:opacity 0.4s var(--ease-out);
+}
+.load-overlay.show{opacity:1;pointer-events:all}
+.load-box{text-align:center}
+.load-spinner{
+  width:52px;height:52px;border:3px solid var(--border-base);
+  border-top-color:var(--accent);border-radius:50%;
+  animation:spin 0.75s linear infinite;margin:0 auto 20px;
+}
+@keyframes spin{to{transform:rotate(360deg)}}
+.load-text{font-size:1rem;color:var(--text-secondary);margin-bottom:4px}
+.load-sub{font-size:0.78rem;color:var(--text-tertiary);margin-bottom:8px}
+.load-time{font-size:0.82rem;color:var(--text-tertiary);font-family:var(--font-mono)}
+.load-progress{width:240px;height:4px;background:var(--border-base);border-radius:2px;margin:16px auto 0;overflow:hidden}
+.load-progress-bar{height:100%;background:linear-gradient(90deg,var(--accent),var(--cyan));border-radius:2px;width:0%;transition:width 0.4s}
+
+/* ═══════════════════════ Toast ═══════════════════════ */
+.toast{
+  position:fixed;top:28px;right:28px;padding:15px 24px;
+  border-radius:var(--radius-sm);font-size:0.86rem;z-index:2000;
+  animation:slideIn 0.4s var(--ease-spring);max-width:440px;
+  box-shadow:var(--shadow-lg);backdrop-filter:blur(16px);font-weight:500;
+  display:flex;align-items:center;gap:10px;
+}
+.toast.info{background:rgba(15,15,36,0.95);border:1px solid var(--accent);color:var(--text-primary)}
+.toast.success{background:rgba(16,185,129,0.1);border:1px solid var(--emerald);color:var(--emerald-soft)}
+.toast.error{background:rgba(244,63,94,0.1);border:1px solid var(--rose);color:var(--rose-soft)}
+.toast.warning{background:rgba(245,158,11,0.1);border:1px solid var(--amber);color:var(--amber-soft)}
+@keyframes slideIn{from{transform:translateX(130%);opacity:0}to{transform:translateX(0);opacity:1}}
+
+/* ═══════════════════════ Modal ═══════════════════════ */
+.modal-overlay{
+  position:fixed;inset:0;background:rgba(0,0,0,0.72);backdrop-filter:blur(6px);
+  display:flex;align-items:center;justify-content:center;z-index:1500;
+  opacity:0;pointer-events:none;transition:opacity 0.35s var(--ease-out);
+}
+.modal-overlay.show{opacity:1;pointer-events:all}
+.modal{
+  background:var(--bg-elevated);border:1px solid var(--border-dim);
+  border-radius:var(--radius-xl);padding:36px;max-width:560px;width:94%;
+  box-shadow:var(--shadow-lg);animation:modalIn 0.4s var(--ease-spring);
+}
+@keyframes modalIn{from{opacity:0;transform:scale(0.94) translateY(20px)}to{opacity:1;transform:scale(1) translateY(0)}}
+.modal h3{margin-bottom:20px;font-size:1.2rem;font-weight:600}
+.modal-actions{display:flex;gap:12px;justify-content:flex-end;margin-top:28px}
+
+/* ═══════════════════════ Name Card ═══════════════════════ */
+.name-card{
+  background:var(--bg-input);border:1px solid var(--border-base);
+  border-radius:var(--radius-md);padding:20px;transition:all 0.3s var(--ease-out);
+}
+.name-card:hover{border-color:var(--accent);box-shadow:var(--shadow-sm)}
+
+/* ═══════════════════════ Keyboard Hint ═══════════════════════ */
+kbd{
+  background:var(--bg-input);border:1px solid var(--border-base);
+  border-radius:5px;padding:2px 7px;font-size:0.72rem;font-family:var(--font-mono);
+  color:var(--text-secondary);
+}
+
+/* ═══════════════════════ Responsive ═══════════════════════ */
+@media(max-width:1200px){
+  .workspace{grid-template-columns:1fr}
+  .ws-side,.ws-panel{position:static}
+  .ws-side{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+}
+@media(max-width:768px){
+  .app{padding:0 16px}
+  .plot-grid{grid-template-columns:1fr}
+  .field-row{grid-template-columns:1fr}
+  .sel-grid{grid-template-columns:repeat(2,1fr)}
+  .stepper-step span:last-child{display:none}
+  .stepper-line{width:28px}
+  .ws-side{grid-template-columns:1fr}
+  .chapter-box{padding:24px;font-size:0.94rem}
+  .topbar-actions .btn span{display:none}
 }
 </style>
 </head>
 <body>
 
 <div class="app">
-  <!-- Header -->
-  <div class="header">
-    <div class="logo">
-      <div class="logo-icon">✧</div>
+  <!-- ═══════════════════════ Top Bar ═══════════════════════ -->
+  <div class="topbar">
+    <div class="brand">
+      <div class="brand-mark">✦</div>
       <div>
-        <div class="logo-text">NWACS</div>
-        <div class="logo-sub">智能小说写作系统 v9.0</div>
+        <div class="brand-name">NWACS</div>
+        <div class="brand-ver">智能小说写作系统 v9.0</div>
       </div>
     </div>
-    <div class="header-actions">
-      <button class="btn btn-sm btn-secondary" onclick="toggleTheme()" title="切换主题">🌓</button>
-      <button class="btn btn-sm btn-secondary" onclick="showExportModal()">📥 导出</button>
-      <button class="btn btn-sm btn-secondary" onclick="resetAll()">🔄 重置</button>
+    <div class="topbar-actions">
+      <span class="status-dot" id="statusDot" title="就绪"></span>
+      <span class="status-text" id="statusText">就绪</span>
+      <button class="btn btn-ghost btn-sm" onclick="showModelConfig()"><span>⚙️</span> 模型配置</button>
+      <button class="btn btn-ghost btn-sm" onclick="showExportModal()"><span>📥</span> 导出作品</button>
+      <button class="btn btn-ghost btn-sm" onclick="resetAll()"><span>🔄</span> 重置</button>
     </div>
   </div>
 
-  <!-- Progress -->
-  <div class="progress">
-    <div class="progress-step active" data-step="1" onclick="goToStep(1)">
-      <span class="step-num">1</span><span>题材选择</span>
-    </div>
-    <div class="progress-line"></div>
-    <div class="progress-step" data-step="2" onclick="goToStep(2)">
-      <span class="step-num">2</span><span>剧情方案</span>
-    </div>
-    <div class="progress-line"></div>
-    <div class="progress-step" data-step="3" onclick="goToStep(3)">
-      <span class="step-num">3</span><span>大纲规划</span>
-    </div>
-    <div class="progress-line"></div>
-    <div class="progress-step" data-step="4" onclick="goToStep(4)">
-      <span class="step-num">4</span><span>开始写作</span>
+  <!-- ═══════════════════════ Stepper ═══════════════════════ -->
+  <div class="stepper-wrap">
+    <div class="stepper">
+      <div class="stepper-step active" data-step="1" onclick="goToStep(1)">
+        <span class="stepper-dot">1</span><span>题材选择</span>
+      </div>
+      <div class="stepper-line"></div>
+      <div class="stepper-step" data-step="2" onclick="goToStep(2)">
+        <span class="stepper-dot">2</span><span>剧情方案</span>
+      </div>
+      <div class="stepper-line"></div>
+      <div class="stepper-step" data-step="3" onclick="goToStep(3)">
+        <span class="stepper-dot">3</span><span>大纲规划</span>
+      </div>
+      <div class="stepper-line"></div>
+      <div class="stepper-step" data-step="4" onclick="goToStep(4)">
+        <span class="stepper-dot">4</span><span>开始写作</span>
+      </div>
     </div>
   </div>
 
-  <!-- Step 1: Genre Selection -->
+  <!-- ═══════════════════════ Step 1: Genre Selection ═══════════════════════ -->
   <div class="step" id="step1">
     <div class="card">
-      <div class="card-header">📚 选择题材类型 <span style="font-size:0.75rem;color:var(--text-muted);font-weight:400;">（最多2个）</span></div>
-      <div class="selection-grid" id="genreGrid"></div>
+      <div class="card-head"><span class="icon">📚</span> 选择题材类型 <span style="font-size:0.74rem;color:var(--text-tertiary);font-weight:400;">（最多2个）</span></div>
+      <div class="sel-grid" id="genreGrid"></div>
     </div>
     <div class="card" id="schoolCard">
-      <div class="card-header">📖 选择写作流派 <span style="font-size:0.75rem;color:var(--text-muted);font-weight:400;">（最多3个，根据题材动态变化）</span></div>
-      <div class="selection-grid" id="schoolGrid"></div>
+      <div class="card-head"><span class="icon">📖</span> 选择写作流派 <span style="font-size:0.74rem;color:var(--text-tertiary);font-weight:400;">（最多3个）</span></div>
+      <div class="sel-grid" id="schoolGrid"></div>
     </div>
     <div class="card">
-      <div class="card-header">🎨 选择写作风格 <span style="font-size:0.75rem;color:var(--text-muted);font-weight:400;">（最多3个）</span></div>
-      <div class="selection-grid" id="styleGrid"></div>
+      <div class="card-head"><span class="icon">🎨</span> 选择写作风格 <span style="font-size:0.74rem;color:var(--text-tertiary);font-weight:400;">（最多3个）</span></div>
+      <div class="sel-grid" id="styleGrid"></div>
     </div>
     <div class="card">
-      <div class="card-header">🎭 选择故事基调 <span style="font-size:0.75rem;color:var(--text-muted);font-weight:400;">（最多3个）</span></div>
-      <div class="selection-grid" id="toneGrid"></div>
+      <div class="card-head"><span class="icon">🎭</span> 选择故事基调 <span style="font-size:0.74rem;color:var(--text-tertiary);font-weight:400;">（最多3个）</span></div>
+      <div class="sel-grid" id="toneGrid"></div>
     </div>
     <div class="card">
-      <div class="card-header">📏 选择篇幅长度 <span style="font-size:0.75rem;color:var(--text-muted);font-weight:400;">（单选）</span></div>
-      <div class="selection-grid" id="lengthGrid"></div>
+      <div class="card-head"><span class="icon">📏</span> 选择篇幅长度 <span style="font-size:0.74rem;color:var(--text-tertiary);font-weight:400;">（单选）</span></div>
+      <div class="sel-grid" id="lengthGrid"></div>
     </div>
     <div class="card">
-      <div class="card-header">✏️ 创作要求</div>
-      <div class="form-row">
-        <div class="form-group">
-          <label class="form-label">主角设定（可选）</label>
-          <input class="form-input" id="protagonist" placeholder="如：废柴少年、穿越者、重生者...">
+      <div class="card-head"><span class="icon">✏️</span> 创作要求</div>
+      <div class="field-row">
+        <div class="field">
+          <label class="field-label">主角设定（可选）</label>
+          <input class="field-input" id="protagonist" placeholder="如：废柴少年、穿越者、重生者...">
         </div>
-        <div class="form-group">
-          <label class="form-label">核心主题</label>
-          <input class="form-input" id="theme" value="逆境成长" placeholder="如：逆境成长、复仇、守护...">
+        <div class="field">
+          <label class="field-label">核心主题</label>
+          <input class="field-input" id="theme" value="逆境成长" placeholder="如：逆境成长、复仇、守护...">
         </div>
       </div>
-      <div class="form-group">
-        <label class="form-label">额外要求（可选）</label>
-        <textarea class="form-textarea" id="extraRequirements" placeholder="如：需要系统流、要有金手指、主角开局很弱但成长很快..."></textarea>
+      <div class="field">
+        <label class="field-label">额外要求（可选）</label>
+        <textarea class="field-area" id="extraRequirements" placeholder="如：需要系统流、要有金手指、主角开局很弱但成长很快..."></textarea>
       </div>
-      <button class="btn btn-primary" id="btnGenerate" onclick="generatePlots()" style="width:100%;justify-content:center;padding:14px;font-size:1rem;">
+      <button class="btn btn-primary btn-full" id="btnGenerate" onclick="generatePlots()" style="padding:16px;font-size:1.02rem;">
         ✨ 生成剧情方案
       </button>
     </div>
   </div>
 
-  <!-- Step 2: Plot Selection -->
+  <!-- ═══════════════════════ Step 2: Plot Selection ═══════════════════════ -->
   <div class="step hidden" id="step2">
     <div class="card">
-      <div class="card-header">💡 选择你喜欢的剧情方案</div>
-      <div class="plot-cards" id="plotCards"></div>
+      <div class="card-head"><span class="icon">💡</span> 选择你喜欢的剧情方案</div>
+      <div class="plot-grid" id="plotCards"></div>
     </div>
-    <div style="display:flex;gap:12px;justify-content:center;margin-top:8px;">
+    <div style="display:flex;gap:14px;justify-content:center;margin-top:10px;">
       <button class="btn btn-secondary" onclick="goToStep(1)">← 返回修改</button>
       <button class="btn btn-primary" id="btnSelectPlot" disabled onclick="selectPlot()">✅ 选定此方案，生成大纲</button>
     </div>
   </div>
 
-  <!-- Step 3: Outline -->
+  <!-- ═══════════════════════ Step 3: Outline ═══════════════════════ -->
   <div class="step hidden" id="step3">
     <div class="card" id="outlineContainer"></div>
-    <div style="display:flex;gap:12px;justify-content:center;margin-top:8px;">
+    <div class="card" id="nameGenPanel" style="display:none;">
+      <div class="card-head"><span class="icon">🏷️</span> 角色命名工坊 <span style="font-size:0.74rem;color:var(--text-tertiary);font-weight:400;">— AI驱动，命运绑定命名</span></div>
+      <div class="field-row">
+        <div class="field">
+          <label class="field-label">角色定位</label>
+          <select class="field-input" id="nameRole">
+            <option value="protagonist">主角</option>
+            <option value="antagonist">反派</option>
+            <option value="supporting">重要配角</option>
+            <option value="mentor">导师/前辈</option>
+            <option value="love_interest">感情线角色</option>
+            <option value="comic_relief">搞笑担当</option>
+          </select>
+        </div>
+        <div class="field">
+          <label class="field-label">性别</label>
+          <select class="field-input" id="nameGender">
+            <option value="male">男</option>
+            <option value="female">女</option>
+          </select>
+        </div>
+      </div>
+      <div class="field-row">
+        <div class="field">
+          <label class="field-label">性格特征</label>
+          <input class="field-input" id="namePersonality" placeholder="如：冷酷无情、热血正义、腹黑狡诈...">
+        </div>
+        <div class="field">
+          <label class="field-label">命运走向</label>
+          <input class="field-input" id="nameFate" placeholder="如：从废柴到巅峰、黑化复仇、牺牲救赎...">
+        </div>
+      </div>
+      <div class="field-row">
+        <div class="field">
+          <label class="field-label">能力特长</label>
+          <input class="field-input" id="nameAbility" placeholder="如：剑道天才、炼丹宗师、阵法大师...">
+        </div>
+        <div class="field">
+          <label class="field-label">性格缺陷</label>
+          <input class="field-input" id="nameWeakness" placeholder="如：过于自负、优柔寡断、嗜杀成性...">
+        </div>
+      </div>
+      <div class="field">
+        <label class="field-label">背景故事</label>
+        <textarea class="field-area" id="nameBackground" placeholder="如：出身寒门，幼年丧父，被宗门收养..." style="min-height:54px;"></textarea>
+      </div>
+      <div style="display:flex;gap:10px;align-items:center;">
+        <button class="btn btn-primary" onclick="generateNames()" style="flex:1;">🎲 生成名字</button>
+        <span style="font-size:0.76rem;color:var(--text-tertiary);">数量:</span>
+        <select class="field-input" id="nameCount" style="width:74px;">
+          <option value="3">3</option>
+          <option value="5" selected>5</option>
+          <option value="8">8</option>
+          <option value="10">10</option>
+        </select>
+      </div>
+      <div id="nameResults" style="margin-top:20px;"></div>
+    </div>
+    <div style="display:flex;gap:14px;justify-content:center;margin-top:10px;">
       <button class="btn btn-secondary" onclick="goToStep(2)">← 重新选择方案</button>
       <button class="btn btn-primary" onclick="goToStep(4)">🚀 开始写作</button>
     </div>
   </div>
 
-  <!-- Step 4: Writing Workspace -->
+  <!-- ═══════════════════════ Step 4: Writing Workspace ═══════════════════════ -->
   <div class="step hidden" id="step4">
     <div class="workspace">
-      <div class="workspace-main">
-        <div class="chapter-nav">
-          <button class="btn btn-sm btn-secondary btn-icon" onclick="prevChapter()" title="上一章">◀</button>
-          <input class="form-input" id="chapterNum" value="1" onchange="loadChapter()" onkeydown="if(event.key==='Enter')loadChapter()">
-          <button class="btn btn-sm btn-secondary btn-icon" onclick="nextChapter()" title="下一章">▶</button>
-          <span style="font-size:0.8rem;color:var(--text-muted);margin-left:8px;" id="chapterTitleDisplay"></span>
-          <div style="flex:1"></div>
-          <button class="btn btn-sm btn-primary" id="btnGenChapter" onclick="generateChapter()">🚀 生成本章</button>
+      <!-- ── Left Sidebar ── -->
+      <div class="ws-side">
+        <div class="info-card">
+          <h4>📊 章节统计</h4>
+          <div class="stat-grid" id="chapterStats" style="display:none;">
+            <div class="stat-item">
+              <div class="stat-val" id="statWords">-</div>
+              <div class="stat-lbl">字数</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-val" id="statAI">-</div>
+              <div class="stat-lbl">AI痕迹</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-val" id="statBeats">-</div>
+              <div class="stat-lbl">节拍密度</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-val" id="statHook">-</div>
+              <div class="stat-lbl">钩子强度</div>
+            </div>
+          </div>
+          <div class="meter" id="meterWrap" style="display:none;"><div class="meter-bar" id="meterAI" style="width:0%"></div></div>
+          <div id="chapterStatsEmpty" style="font-size:0.78rem;color:var(--text-tertiary);text-align:center;padding:10px;">尚未生成章节</div>
         </div>
-        <div class="chapter-content empty" id="chapterContent">
-          第1章尚未生成，点击「生成本章」开始创作...
+
+        <div class="info-card" id="chapterOutline" style="display:none;">
+          <h4>📋 本章大纲</h4>
+          <div id="chapterOutlineContent" style="font-size:0.82rem;color:var(--text-secondary);line-height:1.7;"></div>
+        </div>
+
+        <div class="info-card">
+          <h4>🛠️ 工具箱</h4>
+          <div class="tab-bar" id="toolTabs">
+            <button class="tab-btn active" onclick="switchToolTab('tools')">工具</button>
+            <button class="tab-btn" onclick="switchToolTab('quality')">质量</button>
+            <button class="tab-btn" onclick="switchToolTab('review')">审查</button>
+            <button class="tab-btn" onclick="switchToolTab('memory')">记忆</button>
+            <button class="tab-btn" onclick="switchToolTab('story')">故事</button>
+            <button class="tab-btn" onclick="switchToolTab('planning')">规划</button>
+          </div>
+
+          <div class="tab-panel active" id="tab-tools">
+            <div class="tool-list">
+              <button class="btn btn-secondary btn-sm" onclick="detectAIForCurrent()">🔍 AI痕迹检测</button>
+              <button class="btn btn-secondary btn-sm" onclick="rewriteCurrent()">✏️ 去AI痕迹重写</button>
+              <button class="btn btn-secondary btn-sm" onclick="exportChapter()">📄 导出本章</button>
+              <button class="btn btn-secondary btn-sm" onclick="analyzeArcs()">📈 节奏/情绪弧分析</button>
+            </div>
+          </div>
+
+          <div class="tab-panel" id="tab-quality">
+            <div id="qualityContent" style="font-size:0.78rem;">
+              <div style="color:var(--text-tertiary);text-align:center;padding:14px;">点击「节奏/情绪弧分析」查看结果</div>
+            </div>
+          </div>
+
+          <div class="tab-panel" id="tab-review">
+            <div id="reviewContent" style="font-size:0.78rem;">
+              <div style="color:var(--text-tertiary);text-align:center;padding:14px;">生成章节后自动审查</div>
+            </div>
+          </div>
+
+          <div class="tab-panel" id="tab-memory">
+            <div id="memoryContent" style="font-size:0.78rem;">
+              <div style="color:var(--text-tertiary);text-align:center;padding:14px;">加载记忆中...</div>
+            </div>
+          </div>
+
+          <div class="tab-panel" id="tab-story">
+            <div class="tool-list">
+              <button class="btn btn-secondary btn-sm" onclick="createSnapshot()">📸 创建快照</button>
+              <button class="btn btn-secondary btn-sm" onclick="listSnapshots()">📋 快照列表</button>
+              <button class="btn btn-secondary btn-sm" onclick="checkLock()">🔒 锁状态</button>
+              <button class="btn btn-secondary btn-sm" onclick="acquireLock()">🔐 获取锁</button>
+              <button class="btn btn-secondary btn-sm" onclick="releaseLock()">🔓 释放锁</button>
+            </div>
+            <div id="storyResult" style="margin-top:12px;font-size:0.74rem;color:var(--text-secondary);"></div>
+          </div>
+
+          <div class="tab-panel" id="tab-planning">
+            <div id="planningContent" style="font-size:0.78rem;">
+              <div style="color:var(--text-tertiary);text-align:center;padding:14px;">规划数据加载中...</div>
+            </div>
+          </div>
         </div>
       </div>
-      <div class="workspace-side">
-        <div class="info-card" id="chapterStats" style="display:none;">
-          <h4>📊 章节统计</h4>
-          <div class="stat-grid">
-            <div class="stat-item">
-              <div class="stat-value" id="statWords">-</div>
-              <div class="stat-label">字数</div>
-            </div>
-            <div class="stat-item">
-              <div class="stat-value" id="statAI">-</div>
-              <div class="stat-label">AI痕迹</div>
-            </div>
-            <div class="stat-item">
-              <div class="stat-value" id="statBeats">-</div>
-              <div class="stat-label">节拍密度</div>
-            </div>
-            <div class="stat-item">
-              <div class="stat-value" id="statHook">-</div>
-              <div class="stat-label">钩子强度</div>
-            </div>
-          </div>
-          <div class="meter"><div class="meter-fill" id="meterAI" style="width:0%"></div></div>
+
+      <!-- ── Main Content ── -->
+      <div class="ws-main">
+        <div class="ch-nav">
+          <button class="btn btn-secondary btn-sm btn-icon" onclick="prevChapter()" title="上一章">◀</button>
+          <input id="chapterNum" value="1" onchange="loadChapter()" onkeydown="if(event.key==='Enter')loadChapter()">
+          <button class="btn btn-secondary btn-sm btn-icon" onclick="nextChapter()" title="下一章">▶</button>
+          <span class="ch-title" id="chapterTitleDisplay"></span>
+          <span class="word-badge" id="wordBadge">0 字</span>
+          <div style="flex:1"></div>
+          <button class="btn btn-primary btn-sm" id="btnGenChapter" onclick="generateChapter()">🚀 生成本章</button>
         </div>
-        <div class="info-card" id="chapterOutline" style="display:none;">
-          <h4>📋 本章大纲提示</h4>
-          <div id="chapterOutlineContent" style="font-size:0.85rem;color:var(--text-secondary);"></div>
+        <div class="chapter-box empty" id="chapterContent">
+          第1章尚未生成<br><span style="font-size:0.82rem;opacity:0.6;">点击「生成本章」或按 Ctrl+Enter 开始创作</span>
         </div>
+      </div>
+
+      <!-- ── Right Panel ── -->
+      <div class="ws-panel">
         <div class="info-card">
-          <h4>🛠️ 工具</h4>
-          <div style="display:flex;flex-direction:column;gap:6px;">
-            <button class="btn btn-sm btn-secondary" onclick="detectAIForCurrent()">🔍 AI痕迹检测</button>
-            <button class="btn btn-sm btn-secondary" onclick="rewriteCurrent()">✏️ 去AI痕迹重写</button>
-            <button class="btn btn-sm btn-secondary" onclick="exportChapter()">📄 导出本章</button>
+          <h4>💡 写作助手</h4>
+          <div id="writingTips" style="font-size:0.78rem;color:var(--text-secondary);line-height:1.8;">
+            <div style="margin-bottom:7px;">• 按 <kbd>Ctrl+Enter</kbd> 快速生成</div>
+            <div style="margin-bottom:7px;">• 每章目标 4000+ 字</div>
+            <div style="margin-bottom:7px;">• 生成后自动审查质量</div>
+            <div>• 善用左侧工具箱优化文本</div>
           </div>
+        </div>
+        <div class="info-card" id="quickReview" style="display:none;">
+          <h4>📝 快速审查</h4>
+          <div id="quickReviewContent" style="font-size:0.78rem;color:var(--text-secondary);"></div>
+        </div>
+        <div class="info-card" id="progressCard" style="display:none;">
+          <h4>📊 写作进度</h4>
+          <div id="progressContent" style="font-size:0.78rem;color:var(--text-secondary);"></div>
         </div>
       </div>
     </div>
   </div>
 </div>
 
-<!-- Loading Overlay -->
-<div class="loading-overlay" id="loadingOverlay">
-  <div class="loading-box">
-    <div class="loading-spinner"></div>
-    <div class="loading-text" id="loadingText">正在生成...</div>
-    <div class="loading-time" id="loadingTime"></div>
-    <div class="loading-progress"><div class="loading-progress-bar" id="loadingProgressBar"></div></div>
+<!-- ═══════════════════════ Loading Overlay ═══════════════════════ -->
+<div class="load-overlay" id="loadingOverlay">
+  <div class="load-box">
+    <div class="load-spinner"></div>
+    <div class="load-text" id="loadingText">正在生成...</div>
+    <div class="load-sub" id="loadingSub"></div>
+    <div class="load-time" id="loadingTime"></div>
+    <div class="load-progress"><div class="load-progress-bar" id="loadingProgressBar"></div></div>
   </div>
 </div>
 
-<!-- Export Modal -->
+<!-- ═══════════════════════ Model Config Modal ═══════════════════════ -->
+<div class="modal-overlay" id="modelConfigModal">
+  <div class="modal" style="max-width:600px;">
+    <h3>⚙️ 模型配置</h3>
+    <p style="color:var(--text-secondary);font-size:0.86rem;margin-bottom:20px;">配置AI写作引擎的模型参数，影响生成质量和风格。</p>
+    <div class="field">
+      <label class="field-label">模型提供商</label>
+      <select class="field-input" id="cfgProvider" onchange="onProviderChange()">
+        <option value="deepseek">DeepSeek（推荐）</option>
+        <option value="openai">OpenAI</option>
+        <option value="zhipu">智谱 GLM</option>
+        <option value="moonshot">Moonshot (Kimi)</option>
+        <option value="qwen">通义千问</option>
+        <option value="custom">自定义</option>
+      </select>
+    </div>
+    <div class="field">
+      <label class="field-label">模型名称</label>
+      <input class="field-input" id="cfgModelName" placeholder="deepseek-chat">
+    </div>
+    <div class="field" id="cfgBaseUrlGroup" style="display:none;">
+      <label class="field-label">API Base URL</label>
+      <input class="field-input" id="cfgBaseUrl" placeholder="https://api.deepseek.com/v1">
+    </div>
+    <div class="field" id="cfgApiKeyGroup" style="display:none;">
+      <label class="field-label">API Key（留空使用环境变量）</label>
+      <input class="field-input" id="cfgApiKey" type="password" placeholder="sk-...">
+    </div>
+    <div class="field-row">
+      <div class="field">
+        <label class="field-label">Temperature <span style="color:var(--text-tertiary);">(0-2)</span></label>
+        <input class="field-input" id="cfgTemperature" type="number" step="0.05" min="0" max="2" value="0.8">
+      </div>
+      <div class="field">
+        <label class="field-label">Top P <span style="color:var(--text-tertiary);">(0-1)</span></label>
+        <input class="field-input" id="cfgTopP" type="number" step="0.05" min="0" max="1" value="0.9">
+      </div>
+    </div>
+    <div class="field-row">
+      <div class="field">
+        <label class="field-label">频率惩罚 <span style="color:var(--text-tertiary);">(-2~2)</span></label>
+        <input class="field-input" id="cfgFreqPenalty" type="number" step="0.1" min="-2" max="2" value="0.3">
+      </div>
+      <div class="field">
+        <label class="field-label">存在惩罚 <span style="color:var(--text-tertiary);">(-2~2)</span></label>
+        <input class="field-input" id="cfgPresPenalty" type="number" step="0.1" min="-2" max="2" value="0.1">
+      </div>
+    </div>
+    <div class="field-row">
+      <div class="field">
+        <label class="field-label">最大Token数</label>
+        <input class="field-input" id="cfgMaxTokens" type="number" min="256" max="32768" value="4096">
+      </div>
+      <div class="field">
+        <label class="field-label">超时(秒)</label>
+        <input class="field-input" id="cfgTimeout" type="number" min="10" max="300" value="120">
+      </div>
+    </div>
+    <div class="field">
+      <label class="field-label">最大重试次数</label>
+      <input class="field-input" id="cfgMaxRetries" type="number" min="0" max="5" value="2">
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-secondary btn-sm" onclick="closeModelConfig()">取消</button>
+      <button class="btn btn-primary btn-sm" onclick="saveModelConfig()">💾 保存配置</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════ Export Modal ═══════════════════════ -->
 <div class="modal-overlay" id="exportModal">
   <div class="modal">
     <h3>📥 导出作品</h3>
-    <p style="color:var(--text-secondary);font-size:0.85rem;margin-bottom:16px;">选择导出格式，将已生成的章节导出为文件。</p>
-    <div style="display:flex;flex-direction:column;gap:8px;">
+    <p style="color:var(--text-secondary);font-size:0.86rem;margin-bottom:20px;">选择导出格式，将已生成的章节导出为文件。</p>
+    <div style="display:flex;flex-direction:column;gap:10px;">
       <button class="btn btn-secondary" onclick="doExport('txt')" style="justify-content:flex-start;">📝 纯文本 (.txt)</button>
       <button class="btn btn-secondary" onclick="doExport('md')" style="justify-content:flex-start;">📋 Markdown (.md)</button>
       <button class="btn btn-secondary" onclick="doExport('html')" style="justify-content:flex-start;">🌐 HTML (.html)</button>
     </div>
     <div class="modal-actions">
-      <button class="btn btn-sm btn-secondary" onclick="closeExportModal()">取消</button>
+      <button class="btn btn-secondary btn-sm" onclick="closeExportModal()">取消</button>
     </div>
   </div>
 </div>
@@ -589,11 +1054,20 @@ async function api(path, method='GET', body=null) {
   return res.json();
 }
 
-function showLoading(text='正在生成...') {
+function setStatus(state, text) {
+  const dot = document.getElementById('statusDot');
+  const txt = document.getElementById('statusText');
+  dot.className = 'status-dot ' + state;
+  txt.textContent = text;
+}
+
+function showLoading(text='正在生成...', sub='') {
   loadingStart = Date.now();
   document.getElementById('loadingText').textContent = text;
   document.getElementById('loadingTime').textContent = '0:00';
   document.getElementById('loadingProgressBar').style.width = '0%';
+  const subEl = document.getElementById('loadingSub');
+  if (subEl) subEl.textContent = sub;
   document.getElementById('loadingOverlay').classList.add('show');
   loadingTimer = setInterval(() => {
     const elapsed = Math.floor((Date.now() - loadingStart) / 1000);
@@ -610,29 +1084,30 @@ function hideLoading() {
   setTimeout(() => {
     document.getElementById('loadingOverlay').classList.remove('show');
     if (loadingTimer) { clearInterval(loadingTimer); loadingTimer = null; }
-  }, 300);
+  }, 350);
 }
 
 function toast(msg, type='info') {
+  const icons = {info:'ℹ️',success:'✅',error:'❌',warning:'⚠️'};
   const t = document.createElement('div');
   t.className = `toast ${type}`;
-  t.textContent = msg;
+  t.innerHTML = `<span>${icons[type]||''}</span> ${msg}`;
   document.body.appendChild(t);
-  setTimeout(() => { t.style.opacity='0'; t.style.transition='opacity 0.3s';
-    setTimeout(()=>t.remove(),300); }, 4000);
+  setTimeout(() => { t.style.opacity='0'; t.style.transition='opacity 0.35s';
+    setTimeout(()=>t.remove(),350); }, 4500);
 }
 
 function goToStep(n) {
   for (let i=1; i<=4; i++) {
     document.getElementById('step'+i).classList.toggle('hidden', i!==n);
   }
-  document.querySelectorAll('.progress-step').forEach(el => {
+  document.querySelectorAll('.stepper-step').forEach(el => {
     const s = parseInt(el.dataset.step);
     el.classList.remove('active','done');
     if (s === n) el.classList.add('active');
     if (s < n) el.classList.add('done');
   });
-  document.querySelectorAll('.progress-line').forEach((el,i) => {
+  document.querySelectorAll('.stepper-line').forEach((el,i) => {
     el.classList.toggle('done', i+1 < n);
   });
   window.scrollTo({top:0, behavior:'smooth'});
@@ -655,27 +1130,21 @@ async function init() {
 function renderSelectionGrid(gridId, items, type) {
   const grid = document.getElementById(gridId);
   grid.innerHTML = '';
-
   const selectedArr = type==='genre'?selectedGenres:type==='style'?selectedStyles:type==='tone'?selectedTones:[selectedLength];
   const maxSel = type==='genre'?MAX_GENRES:type==='style'?MAX_STYLES:type==='tone'?MAX_TONES:1;
 
   for (const [key, val] of Object.entries(items)) {
     const card = document.createElement('div');
     const isSelected = selectedArr.includes(key);
-    card.className = 'selection-card' + (isSelected?' selected':'');
-    card.innerHTML = `
-      <span class="card-icon">${val.icon||''}</span>
-      <div class="card-label">${key}</div>
-      <div class="card-desc">${val.desc||''}</div>
-    `;
+    card.className = 'sel-card' + (isSelected?' selected':'');
+    card.innerHTML = `<span class="sel-icon">${val.icon||''}</span><div class="sel-label">${key}</div><div class="sel-desc">${val.desc||''}</div>`;
     card.onclick = () => {
       if (type === 'length') {
-        grid.querySelectorAll('.selection-card').forEach(c=>c.classList.remove('selected'));
+        grid.querySelectorAll('.sel-card').forEach(c=>c.classList.remove('selected'));
         card.classList.add('selected');
         selectedLength = key;
         return;
       }
-
       if (isSelected) {
         card.classList.remove('selected');
         const idx = selectedArr.indexOf(key);
@@ -688,7 +1157,6 @@ function renderSelectionGrid(gridId, items, type) {
         card.classList.add('selected');
         selectedArr.push(key);
       }
-
       if (type === 'genre') {
         selectedSchools = [];
         selectedSchoolNames = [];
@@ -702,39 +1170,27 @@ function renderSelectionGrid(gridId, items, type) {
 function renderSchoolGrid() {
   const grid = document.getElementById('schoolGrid');
   grid.innerHTML = '';
-
   const allSchools = [];
   for (const genre of selectedGenres) {
     const schools = (options.schools && options.schools[genre]) || [];
     for (const s of schools) {
-      if (!allSchools.find(x => x.id === s.id)) {
-        allSchools.push({...s, _genre: genre});
-      }
+      if (!allSchools.find(x => x.id === s.id)) allSchools.push({...s, _genre: genre});
     }
   }
-
   if (allSchools.length === 0) {
-    grid.innerHTML = '<div style="color:var(--text-muted);font-size:0.85rem;padding:12px;">该题材暂无流派选项</div>';
+    grid.innerHTML = '<div style="color:var(--text-tertiary);font-size:0.86rem;padding:16px;">该题材暂无流派选项</div>';
     return;
   }
-
   allSchools.forEach(school => {
     const card = document.createElement('div');
     const isSelected = selectedSchools.includes(school.id);
-    card.className = 'selection-card' + (isSelected?' selected':'');
-    card.innerHTML = `
-      <span class="card-icon">📖</span>
-      <div class="card-label">${school.name}</div>
-      <div class="card-desc">${school.desc}</div>
-    `;
+    card.className = 'sel-card' + (isSelected?' selected':'');
+    card.innerHTML = `<span class="sel-icon">📖</span><div class="sel-label">${school.name}</div><div class="sel-desc">${school.desc}</div>`;
     card.onclick = () => {
       if (isSelected) {
         card.classList.remove('selected');
         const idx = selectedSchools.indexOf(school.id);
-        if (idx >= 0) {
-          selectedSchools.splice(idx, 1);
-          selectedSchoolNames.splice(idx, 1);
-        }
+        if (idx >= 0) { selectedSchools.splice(idx, 1); selectedSchoolNames.splice(idx, 1); }
       } else {
         if (selectedSchools.length >= MAX_SCHOOLS) {
           toast(`最多选择 ${MAX_SCHOOLS} 个写作流派`, 'warning');
@@ -754,20 +1210,14 @@ async function generatePlots() {
   btn.disabled = true;
   btn.textContent = '⏳ 构思中...';
   showLoading('正在为你构思剧情方案...（约30秒）');
-
   try {
     const data = await api('/api/generate_plots', 'POST', {
-      genres: selectedGenres,
-      styles: selectedStyles,
-      tones: selectedTones,
-      length: selectedLength,
-      schools: selectedSchools,
-      school_names: selectedSchoolNames,
+      genres: selectedGenres, styles: selectedStyles, tones: selectedTones,
+      length: selectedLength, schools: selectedSchools, school_names: selectedSchoolNames,
       protagonist: document.getElementById('protagonist').value,
       theme: document.getElementById('theme').value,
       extra_requirements: document.getElementById('extraRequirements').value,
     });
-
     plots = data.plots;
     selectedPlotId = null;
     renderPlotCards();
@@ -785,7 +1235,6 @@ async function generatePlots() {
 function renderPlotCards() {
   const container = document.getElementById('plotCards');
   container.innerHTML = '';
-
   plots.forEach((plot, i) => {
     const card = document.createElement('div');
     card.className = 'plot-card';
@@ -797,54 +1246,37 @@ function renderPlotCards() {
       selectedPlotName = plot.name;
       document.getElementById('btnSelectPlot').disabled = false;
     };
-
     card.innerHTML = `
-      <div class="plot-number">方案 ${i+1}</div>
+      <div class="plot-num">方案 ${i+1}</div>
       <div class="plot-name">${escHtml(plot.name||'')}</div>
       <div class="plot-tagline">${escHtml(plot.tagline||'')}</div>
-      <div class="plot-detail">
-        <span class="detail-label">核心创意</span>
-        <span>${escHtml(plot.core_idea||'')}</span>
-      </div>
-      <div class="plot-detail">
-        <span class="detail-label">主角</span>
-        <span>${escHtml(plot.protagonist||'')}</span>
-      </div>
-      <div class="plot-detail">
-        <span class="detail-label">冲突</span>
-        <span>${escHtml(plot.main_conflict||'')}</span>
-      </div>
+      <div class="plot-detail"><span class="dl">核心创意</span><span>${escHtml(plot.core_idea||'')}</span></div>
+      <div class="plot-detail"><span class="dl">主角</span><span>${escHtml(plot.protagonist||'')}</span></div>
+      <div class="plot-detail"><span class="dl">冲突</span><span>${escHtml(plot.main_conflict||'')}</span></div>
       <div class="plot-tags">
         <span class="tag">${escHtml(plot.expected_beats||'')}</span>
         <span class="tag">${escHtml(plot.target_readers||'')}</span>
         ${plot.innovation?`<span class="tag">${escHtml(plot.innovation)}</span>`:''}
-      </div>
-    `;
+      </div>`;
     container.appendChild(card);
   });
-
   document.getElementById('btnSelectPlot').disabled = true;
 }
 
 async function selectPlot() {
   if (!selectedPlotId) return;
   showLoading('正在生成详细大纲...（约40秒）');
-
   try {
     const data = await api('/api/select_plot', 'POST', {
-      plot_id: selectedPlotId,
-      plot_name: selectedPlotName,
-      genres: selectedGenres,
-      styles: selectedStyles,
-      tones: selectedTones,
-      length: selectedLength,
-      schools: selectedSchools,
-      school_names: selectedSchoolNames,
+      plot_id: selectedPlotId, plot_name: selectedPlotName,
+      genres: selectedGenres, styles: selectedStyles, tones: selectedTones,
+      length: selectedLength, schools: selectedSchools, school_names: selectedSchoolNames,
       theme: document.getElementById('theme').value,
     });
     outline = data.outline;
     renderOutline();
     goToStep(3);
+    document.getElementById('nameGenPanel').style.display = 'block';
     if (data.note) toast(data.note, 'info');
   } catch(e) {
     toast('大纲生成失败: ' + e.message, 'error');
@@ -856,34 +1288,35 @@ async function selectPlot() {
 function renderOutline() {
   const container = document.getElementById('outlineContainer');
   if (!outline) return;
-
   let html = `
-    <div class="outline-header">
+    <div class="outline-head">
       <div>
         <div class="outline-title">${escHtml(outline.title||'未命名作品')}</div>
         <div class="outline-meta">预计 ${outline.total_chapters_estimate||'?'} 章</div>
       </div>
     </div>
-    <div style="padding:20px 24px;color:var(--text-secondary);font-size:0.9rem;line-height:1.8;border-bottom:1px solid var(--border);">
+    <div style="padding:22px 32px;color:var(--text-secondary);font-size:0.9rem;line-height:2;border-bottom:1px solid var(--border-dim);">
       ${escHtml(outline.synopsis||outline.summary||'')}
-    </div>
-  `;
+    </div>`;
 
   if (outline.characters && outline.characters.length > 0) {
-    html += `<div style="padding:16px 24px;border-bottom:1px solid var(--border);">
-      <h4 style="margin-bottom:10px;color:var(--text-secondary);">👥 主要人物</h4>`;
+    html += `<div style="padding:20px 32px;border-bottom:1px solid var(--border-dim);">
+      <h4 style="margin-bottom:14px;color:var(--text-secondary);font-size:0.92rem;">👥 主要人物</h4>`;
     outline.characters.forEach(ch => {
-      const roleIcon = ch.role==='protagonist'?'🦸':ch.role==='antagonist'?'🦹':'🧑';
+      const roleIcon = ch.role==='protagonist'?'🦸':ch.role==='antagonist'?'🦹':ch.role==='mentor'?'🧙':'👤';
+      const roleLabel = ch.role==='protagonist'?'主角':ch.role==='antagonist'?'反派':ch.role==='mentor'?'导师':'配角';
       html += `
         <div class="char-card ${ch.role||''}">
           <div class="char-avatar">${roleIcon}</div>
           <div style="flex:1;">
-            <div style="display:flex;align-items:center;gap:8px;">
+            <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
               <span class="char-name">${escHtml(ch.name||'')}</span>
-              <span class="char-role-tag ${ch.role||''}">${ch.role==='protagonist'?'主角':ch.role==='antagonist'?'反派':'配角'}</span>
+              <span class="char-role-tag ${ch.role||''}">${roleLabel}</span>
             </div>
-            <div class="char-meaning">💬 寓意：${escHtml(ch.name_meaning||'')}</div>
-            <div style="font-size:0.8rem;color:var(--text-secondary);margin-top:2px;">${escHtml(ch.description||'')}</div>
+            <div class="char-meaning">💬 名字寓意：${escHtml(ch.name_meaning||'')}</div>
+            <div style="font-size:0.8rem;color:var(--text-secondary);margin-top:3px;">📝 ${escHtml(ch.description||'')}</div>
+            ${ch.arc?`<div style="font-size:0.76rem;color:var(--cyan-soft);margin-top:3px;">🔄 角色弧光：${escHtml(ch.arc)}</div>`:''}
+            ${ch.core_desire?`<div style="font-size:0.76rem;color:var(--amber-soft);margin-top:3px;">💭 核心欲望：${escHtml(ch.core_desire)}</div>`:''}
           </div>
         </div>`;
     });
@@ -892,26 +1325,20 @@ function renderOutline() {
 
   if (outline.plot_lines) {
     const pl = outline.plot_lines;
-    html += `<div class="plot-lines-section">
-      <h4 style="margin-bottom:8px;color:var(--text-secondary);">📊 剧情线索</h4>
-      <div class="plot-line-item">
-        <span class="marker marker-main">主<span class="tooltip-box">主线剧情：故事的核心发展脉络</span></span>
-        <span style="color:var(--text-primary);">${escHtml(pl.main_line||'')}</span>
-      </div>`;
+    html += `<div class="plot-lines">
+      <h4 style="margin-bottom:12px;color:var(--text-secondary);font-size:0.92rem;">📊 剧情线索</h4>
+      <div class="pl-item"><span class="marker marker-main">主<span class="tip-pop">主线剧情：故事的核心发展脉络</span></span><span style="color:var(--text-primary);">${escHtml(pl.main_line||'')}</span></div>`;
     (pl.sub_lines||[]).forEach((sl, i) => {
-      html += `<div class="plot-line-item">
-        <span class="marker marker-sub">辅<span class="tooltip-box">辅线${i+1}：丰富故事的支线剧情</span></span>
-        <span style="color:var(--text-secondary);">${escHtml(sl)}</span>
-      </div>`;
+      html += `<div class="pl-item"><span class="marker marker-sub">辅<span class="tip-pop">辅线${i+1}：丰富故事的支线剧情</span></span><span style="color:var(--text-secondary);">${escHtml(sl)}</span></div>`;
     });
     if (pl.cause_effect_chains && pl.cause_effect_chains.length > 0) {
-      html += `<div style="margin-top:8px;"><span style="font-size:0.8rem;color:var(--text-muted);">🔗 因果关系链</span></div>`;
+      html += `<div style="margin-top:12px;"><span style="font-size:0.8rem;color:var(--text-tertiary);">🔗 因果关系链</span></div>`;
       pl.cause_effect_chains.forEach(ce => {
         html += `<div class="ce-chain">
           <span class="ce-node cause">因：${escHtml(ce.cause||'')}</span>
           <span class="ce-arrow">→</span>
           <span class="ce-node effect">果：${escHtml(ce.effect||'')}</span>
-          ${ce.chapters_involved?`<span style="font-size:0.7rem;color:var(--text-muted);">(涉及章节: ${ce.chapters_involved.join(', ')})</span>`:''}
+          ${ce.chapters_involved?`<span style="font-size:0.7rem;color:var(--text-tertiary);">(涉及章节: ${ce.chapters_involved.join(', ')})</span>`:''}
         </div>`;
       });
     }
@@ -919,61 +1346,48 @@ function renderOutline() {
   }
 
   (outline.acts||[]).forEach((act, ai) => {
-    html += `
-    <div class="act-section open">
-      <div class="act-header" onclick="this.parentElement.classList.toggle('open')">
-        <div class="act-num act-${act.act_num||ai+1}">${act.act_num||ai+1}</div>
+    html += `<div class="act-block open">
+      <div class="act-bar" onclick="this.parentElement.classList.toggle('open')">
+        <div class="act-dot a${act.act_num||ai+1}">${act.act_num||ai+1}</div>
         <div class="act-info">
           <div class="act-name">${escHtml(act.name||'')}</div>
           <div class="act-range">${escHtml(act.description||'')}</div>
         </div>
-        <div class="act-arrow">▶</div>
+        <div class="act-chevron">▶</div>
       </div>
-      <div class="act-events">
-    `;
-
+      <div class="act-body">`;
     (act.chapters||[]).forEach(ch => {
       const plt = ch.plot_line_type || 'main';
-      const markerClass = plt==='main'?'marker-main':plt==='sub'?'marker-sub':'marker-transition';
-      const markerLabel = plt==='main'?'主':plt==='sub'?'辅':'转';
-      const markerTip = plt==='main'?'主线章节：推动核心剧情发展':plt==='sub'?'辅线章节：发展支线剧情':'过渡章节：承上启下，连接剧情';
-
+      const mkClass = plt==='main'?'marker-main':plt==='sub'?'marker-sub':'marker-transition';
+      const mkLabel = plt==='main'?'主':plt==='sub'?'辅':'转';
+      const mkTip = plt==='main'?'主线章节：推动核心剧情发展':plt==='sub'?'辅线章节：发展支线剧情':'过渡章节：承上启下';
+      const conflictType = ch.conflict_type || '';
       const ce = ch.cause_effect || {};
-      const ceMarkers = [];
-      if (ce.caused_by) {
-        ceMarkers.push(`<span class="marker marker-cause">因<span class="tooltip-box">前因：${escHtml(ce.caused_by)}</span></span>`);
-      }
-      if (ce.leads_to) {
-        ceMarkers.push(`<span class="marker marker-effect">果<span class="tooltip-box">后果：${escHtml(ce.leads_to)}</span></span>`);
-      }
-
-      html += `
-        <div class="event-item">
-          <div class="event-chapter">${ch.number||'?'}</div>
-          <div style="flex:1;min-width:0;">
-            <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
-              <span style="font-weight:600;font-size:0.85rem;">${escHtml(ch.title||'')}</span>
-              <span class="marker ${markerClass}">${markerLabel}<span class="tooltip-box">${markerTip}</span></span>
-              ${ceMarkers.join('')}
-            </div>
-            <div class="event-desc">${escHtml(ch.summary||'')}</div>
-            ${ch.key_events?`<div style="font-size:0.75rem;color:var(--text-muted);margin-top:2px;">🎯 ${escHtml(Array.isArray(ch.key_events)?ch.key_events.join('、'):ch.key_events)}</div>`:''}
+      let ceMarkers = '';
+      if (ce.caused_by) ceMarkers += `<span class="marker marker-cause">因<span class="tip-pop">前因：${escHtml(ce.caused_by)}</span></span>`;
+      if (ce.leads_to) ceMarkers += `<span class="marker marker-effect">果<span class="tip-pop">后果：${escHtml(ce.leads_to)}</span></span>`;
+      html += `<div class="evt-row">
+        <div class="evt-ch">${ch.number||'?'}</div>
+        <div style="flex:1;min-width:0;">
+          <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
+            <span style="font-weight:600;font-size:0.86rem;">${escHtml(ch.title||'')}</span>
+            <span class="marker ${mkClass}">${mkLabel}<span class="tip-pop">${mkTip}</span></span>
+            ${conflictType?`<span class="evt-type conflict">⚔️ ${escHtml(conflictType)}</span>`:''}
+            ${ceMarkers}
           </div>
-          <div class="notes-cell">
-            <textarea
-              placeholder="备注：修改建议、转换剧情、标记..."
-              data-chapter="${ch.number||0}"
-              data-act="${ai}"
-              onchange="saveChapterNote(${ai}, ${ch.number||0}, this.value)"
-            >${escHtml(ch.notes||'')}</textarea>
-          </div>
+          <div class="evt-desc">${escHtml(ch.summary||'')}</div>
+          ${ch.character_change?`<div style="font-size:0.73rem;color:var(--cyan-soft);margin-top:3px;">🔄 ${escHtml(ch.character_change)}</div>`:''}
+          ${ch.key_events?`<div style="font-size:0.76rem;color:var(--text-tertiary);margin-top:3px;">🎯 ${escHtml(Array.isArray(ch.key_events)?ch.key_events.join('、'):ch.key_events)}</div>`:''}
         </div>
-      `;
+        <div class="note-cell">
+          <textarea placeholder="备注：修改建议、转换剧情、标记..."
+            data-chapter="${ch.number||0}" data-act="${ai}"
+            onchange="saveChapterNote(${ai}, ${ch.number||0}, this.value)">${escHtml(ch.notes||'')}</textarea>
+        </div>
+      </div>`;
     });
-
     html += `</div></div>`;
   });
-
   container.innerHTML = html;
 }
 
@@ -982,9 +1396,7 @@ function saveChapterNote(actIdx, chNum, noteText) {
   const act = outline.acts[actIdx];
   if (!act || !act.chapters) return;
   const ch = act.chapters.find(c => c.number === chNum);
-  if (ch) {
-    ch.notes = noteText;
-  }
+  if (ch) ch.notes = noteText;
 }
 
 async function generateChapter() {
@@ -992,103 +1404,175 @@ async function generateChapter() {
   const btn = document.getElementById('btnGenChapter');
   btn.disabled = true;
   btn.textContent = '⏳ 创作中...';
-  showLoading(`正在创作第${chNum}章...（约40秒）`);
-
+  setStatus('busy', '创作中...');
+  showLoading(`正在创作第${chNum}章...`, '目标4000+字，预计60秒');
   let chTitle = `第${chNum}章`;
   let chSummary = '';
-
   if (outline && outline.acts) {
     for (const act of outline.acts) {
       for (const ch of (act.chapters||[])) {
-        if (ch.number === chNum) {
-          chTitle = ch.title || chTitle;
-          chSummary = ch.summary || '';
-          break;
-        }
+        if (ch.number === chNum) { chTitle = ch.title || chTitle; chSummary = ch.summary || ''; break; }
       }
     }
   }
-
+  const prevChNum = chNum - 1;
+  let prevContent = '';
+  if (prevChNum > 0 && chapters[prevChNum]) prevContent = chapters[prevChNum].content || '';
   try {
     const data = await api('/api/generate_chapter', 'POST', {
-      chapter_number: chNum,
-      chapter_title: chTitle,
-      chapter_summary: chSummary,
-      genres: selectedGenres,
-      styles: selectedStyles,
-      tones: selectedTones,
-      schools: selectedSchools,
-      school_names: selectedSchoolNames,
+      chapter_number: chNum, chapter_title: chTitle, chapter_summary: chSummary,
+      genres: selectedGenres, styles: selectedStyles, tones: selectedTones,
+      schools: selectedSchools, school_names: selectedSchoolNames,
       theme: document.getElementById('theme').value,
+      outline: outline || {},
+      previous_chapter_content: prevContent, previous_chapter_num: prevChNum,
     });
-
     const content = data.content;
     const wordCount = content.replace(/\s/g, '').length;
-
-    chapters[chNum] = {
-      content: content,
-      word_count: wordCount,
-      title: data.chapter_title || chTitle,
-    };
-
+    chapters[chNum] = { content: content, word_count: wordCount, title: data.chapter_title || chTitle };
     displayChapter(chapters[chNum]);
     updateStats(chapters[chNum]);
     updateOutlineHint(chNum);
     document.getElementById('chapterTitleDisplay').textContent = chTitle;
-    toast(`第${chNum}章生成完成 (${wordCount}字)`, 'success');
+    toast(`第${chNum}章生成完成 (${wordCount.toLocaleString()}字)`, 'success');
+    autoReviewChapter(chNum);
   } catch(e) {
     toast('章节生成失败: ' + e.message, 'error');
+    setStatus('error', '生成失败');
   } finally {
     hideLoading();
     btn.disabled = false;
     btn.textContent = '🚀 生成本章';
+    setTimeout(() => setStatus('', '就绪'), 2000);
   }
+}
+
+async function autoReviewChapter(chNum) {
+  const ch = chapters[chNum];
+  if (!ch || !ch.content) return;
+  try {
+    const data = await api('/api/review', 'POST', {
+      chapter: chNum, text: ch.content, word_count: ch.word_count
+    });
+    if (data.result) {
+      const r = data.result;
+      const issues = r.issues || [];
+      const criticals = issues.filter(i => i.severity === 'critical').length;
+      const highs = issues.filter(i => i.severity === 'high').length;
+      const el = document.getElementById('quickReview');
+      const content = document.getElementById('quickReviewContent');
+      el.style.display = 'block';
+      let html = '';
+      if (issues.length === 0) {
+        html = '<div style="color:var(--emerald-soft);">✅ 未发现明显问题</div>';
+      } else {
+        if (criticals > 0) html += `<div style="color:var(--rose-soft);margin-bottom:4px;">🔴 ${criticals}个严重问题</div>`;
+        if (highs > 0) html += `<div style="color:var(--amber-soft);margin-bottom:4px;">🟡 ${highs}个重要问题</div>`;
+        html += `<div style="color:var(--text-tertiary);">共${issues.length}个问题</div>`;
+      }
+      if (r.ai_score !== undefined) {
+        const pct = Math.round(r.ai_score);
+        const cls = pct < 40 ? 'good' : pct < 60 ? 'warn' : 'bad';
+        document.getElementById('statAI').textContent = pct + '%';
+        document.getElementById('statAI').className = 'stat-val ' + cls;
+        document.getElementById('meterAI').style.width = pct + '%';
+        document.getElementById('meterAI').className = 'meter-bar ' + cls;
+      }
+      content.innerHTML = html;
+    }
+  } catch(e) {}
 }
 
 function displayChapter(ch) {
   const el = document.getElementById('chapterContent');
   el.classList.remove('empty');
   el.textContent = ch.content;
+  const badge = document.getElementById('wordBadge');
+  badge.textContent = (ch.word_count||0).toLocaleString() + ' 字';
+  badge.classList.add('show');
 }
 
 function updateStats(ch) {
-  document.getElementById('chapterStats').style.display = 'block';
-  document.getElementById('statWords').textContent = (ch.word_count||0) + '字';
-  document.getElementById('statWords').className = 'stat-value';
+  document.getElementById('chapterStats').style.display = 'grid';
+  document.getElementById('chapterStatsEmpty').style.display = 'none';
+  document.getElementById('meterWrap').style.display = 'block';
+  const wc = ch.word_count||0;
+  document.getElementById('statWords').textContent = wc.toLocaleString() + '字';
+  document.getElementById('statWords').className = 'stat-val ' + (wc >= 4000 ? 'good' : wc >= 2000 ? 'warn' : 'bad');
   document.getElementById('statAI').textContent = '-';
-  document.getElementById('statAI').className = 'stat-value';
+  document.getElementById('statAI').className = 'stat-val';
   document.getElementById('statBeats').textContent = '-';
   document.getElementById('statHook').textContent = '-';
   document.getElementById('meterAI').style.width = '0%';
+  document.getElementById('wordBadge').textContent = wc.toLocaleString() + ' 字';
+  document.getElementById('wordBadge').classList.add('show');
+  updateProgressCard();
+  updateWritingTips();
+}
+
+function updateProgressCard() {
+  const card = document.getElementById('progressCard');
+  const content = document.getElementById('progressContent');
+  const totalChapters = Object.keys(chapters).length;
+  if (totalChapters === 0) { card.style.display = 'none'; return; }
+  card.style.display = 'block';
+  let totalWords = 0;
+  for (const ch of Object.values(chapters)) totalWords += (ch.word_count || 0);
+  const targetChapters = outline && outline.acts
+    ? outline.acts.reduce((sum, a) => sum + (a.chapters||[]).length, 0) : 0;
+  content.innerHTML = `
+    <div style="margin-bottom:6px;">📖 已完成 <strong style="color:var(--accent-soft);">${totalChapters}</strong> 章` +
+    (targetChapters > 0 ? ` / ${targetChapters} 章` : '') + `</div>
+    <div style="margin-bottom:6px;">📝 累计 <strong style="color:var(--emerald-soft);">${totalWords.toLocaleString()}</strong> 字</div>
+    <div>⚡ 均章 <strong style="color:var(--amber-soft);">${Math.round(totalWords / totalChapters).toLocaleString()}</strong> 字</div>
+  `;
+}
+
+function updateWritingTips() {
+  const tips = document.getElementById('writingTips');
+  const totalChapters = Object.keys(chapters).length;
+  let tipHtml = '';
+  if (totalChapters === 0) {
+    tipHtml = `
+      <div style="margin-bottom:7px;">• 按 <kbd>Ctrl+Enter</kbd> 快速生成</div>
+      <div style="margin-bottom:7px;">• 每章目标 4000+ 字</div>
+      <div style="margin-bottom:7px;">• 生成后自动审查质量</div>
+      <div>• 善用左侧工具箱优化文本</div>`;
+  } else if (totalChapters < 3) {
+    tipHtml = `
+      <div style="margin-bottom:7px;">• 保持每章节奏一致</div>
+      <div style="margin-bottom:7px;">• 注意人物性格连贯性</div>
+      <div style="margin-bottom:7px;">• 每章结尾留悬念钩子</div>
+      <div>• 善用「去AI痕迹重写」提升文本</div>`;
+  } else {
+    tipHtml = `
+      <div style="margin-bottom:7px;">• 检查前后章节逻辑一致性</div>
+      <div style="margin-bottom:7px;">• 关注情绪弧线起伏</div>
+      <div style="margin-bottom:7px;">• 适时回收伏笔</div>
+      <div>• 使用「节奏分析」检查叙事节奏</div>`;
+  }
+  tips.innerHTML = tipHtml;
 }
 
 function updateOutlineHint(chNum) {
   if (!outline) return;
   const el = document.getElementById('chapterOutline');
   const content = document.getElementById('chapterOutlineContent');
-
   let hints = [];
   for (const act of (outline.acts||[])) {
     for (const ch of (act.chapters||[])) {
       if (ch.number === chNum) {
-        hints.push(`<div style="margin-bottom:6px;"><b>${escHtml(ch.title||'')}</b></div>`);
+        hints.push(`<div style="margin-bottom:7px;"><b>${escHtml(ch.title||'')}</b></div>`);
         hints.push(`<div style="color:var(--text-secondary);font-size:0.8rem;">${escHtml(ch.summary||'')}</div>`);
         if (ch.key_events) {
           const events = Array.isArray(ch.key_events) ? ch.key_events : [ch.key_events];
-          events.forEach(ev => {
-            hints.push(`<div style="color:var(--warning);font-size:0.75rem;margin-top:4px;">🎯 ${escHtml(ev)}</div>`);
-          });
+          events.forEach(ev => { hints.push(`<div style="color:var(--amber-soft);font-size:0.76rem;margin-top:5px;">🎯 ${escHtml(ev)}</div>`); });
         }
       }
     }
   }
-
-  if (hints.length > 0) {
-    el.style.display = 'block';
-    content.innerHTML = hints.join('');
-  } else {
-    el.style.display = 'none';
-  }
+  if (hints.length > 0) { el.style.display = 'block'; content.innerHTML = hints.join(''); }
+  else { el.style.display = 'none'; }
 }
 
 function loadChapter() {
@@ -1102,24 +1586,25 @@ function loadChapter() {
   } else {
     const el = document.getElementById('chapterContent');
     el.classList.add('empty');
-    el.textContent = `第${chNum}章尚未生成，点击「生成本章」开始创作...`;
+    el.innerHTML = `第${chNum}章尚未生成<br><span style="font-size:0.82rem;opacity:0.6;">点击「生成本章」或按 Ctrl+Enter 开始创作</span>`;
     document.getElementById('chapterStats').style.display = 'none';
+    document.getElementById('chapterStatsEmpty').style.display = 'block';
+    document.getElementById('meterWrap').style.display = 'none';
     document.getElementById('chapterOutline').style.display = 'none';
     document.getElementById('chapterTitleDisplay').textContent = '';
+    document.getElementById('wordBadge').classList.remove('show');
   }
 }
 
 function prevChapter() {
   const inp = document.getElementById('chapterNum');
-  const val = Math.max(1, (parseInt(inp.value)||1)-1);
-  inp.value = val;
+  inp.value = Math.max(1, (parseInt(inp.value)||1)-1);
   loadChapter();
 }
 
 function nextChapter() {
   const inp = document.getElementById('chapterNum');
-  const val = (parseInt(inp.value)||1)+1;
-  inp.value = val;
+  inp.value = (parseInt(inp.value)||1)+1;
   loadChapter();
 }
 
@@ -1127,8 +1612,8 @@ async function detectAIForCurrent() {
   const el = document.getElementById('chapterContent');
   if (el.classList.contains('empty')) { toast('请先生成章节内容', 'info'); return; }
   const text = el.textContent;
+  setStatus('busy', '检测中...');
   showLoading('正在深度检测AI痕迹...');
-
   try {
     const data = await api('/api/detect_ai', 'POST', {text, deep:true});
     const result = data.result;
@@ -1136,35 +1621,32 @@ async function detectAIForCurrent() {
     const pct = Math.round(score);
     const cls = pct < 40 ? 'good' : pct < 60 ? 'warn' : 'bad';
     const level = result.level || 'unknown';
-
     document.getElementById('statAI').textContent = pct + '%';
-    document.getElementById('statAI').className = 'stat-value ' + cls;
+    document.getElementById('statAI').className = 'stat-val ' + cls;
     document.getElementById('meterAI').style.width = pct + '%';
-    document.getElementById('meterAI').className = 'meter-fill ' + cls;
-
-    toast(`AI痕迹: ${pct}% (${level})`, cls==='bad'?'error':cls==='warn'?'info':'success');
+    document.getElementById('meterAI').className = 'meter-bar ' + cls;
+    toast(`AI痕迹: ${pct}% (${level})`, cls==='bad'?'error':cls==='warn'?'warning':'success');
   } catch(e) {
     toast('检测失败: '+e.message, 'error');
+    setStatus('error', '检测失败');
   } finally {
     hideLoading();
+    setTimeout(() => setStatus('', '就绪'), 1500);
   }
 }
 
 async function rewriteCurrent() {
   const el = document.getElementById('chapterContent');
   if (el.classList.contains('empty')) { toast('请先生成章节内容', 'info'); return; }
+  setStatus('busy', '重写中...');
   showLoading('正在去AI痕迹重写...');
-
   try {
     const text = el.textContent;
-    const prompt = `Rewrite the following novel chapter to remove all AI-generated traces. Make it sound like natural human writing with varied sentence lengths, sensory details, and authentic voice. Output only the rewritten text:\n\n${text}`;
-
     const resp = await fetch(API + '/api/rewrite', {
       method: 'POST',
       headers: {'Content-Type':'application/json'},
       body: JSON.stringify({text, style:'deai'})
     });
-
     if (resp.ok) {
       const data = await resp.json();
       el.textContent = data.content || data.rewritten || text;
@@ -1174,8 +1656,10 @@ async function rewriteCurrent() {
     }
   } catch(e) {
     toast('重写失败: '+e.message, 'error');
+    setStatus('error', '重写失败');
   } finally {
     hideLoading();
+    setTimeout(() => setStatus('', '就绪'), 1500);
   }
 }
 
@@ -1188,35 +1672,22 @@ function exportChapter() {
   downloadFile(`${title}.txt`, content, 'text/plain');
 }
 
-function showExportModal() {
-  document.getElementById('exportModal').classList.add('show');
-}
-
-function closeExportModal() {
-  document.getElementById('exportModal').classList.remove('show');
-}
+function showExportModal() { document.getElementById('exportModal').classList.add('show'); }
+function closeExportModal() { document.getElementById('exportModal').classList.remove('show'); }
 
 function doExport(format) {
   closeExportModal();
   const chKeys = Object.keys(chapters).map(Number).sort((a,b)=>a-b);
   if (chKeys.length === 0) { toast('请先生成至少一章内容', 'info'); return; }
-
   let content = '';
   const title = outline?.title || '未命名作品';
-
   if (format === 'txt') {
     content = `${title}\n\n`;
-    chKeys.forEach(n => {
-      const ch = chapters[n];
-      content += `${ch.title || `第${n}章`}\n\n${ch.content}\n\n`;
-    });
+    chKeys.forEach(n => { const ch = chapters[n]; content += `${ch.title || `第${n}章`}\n\n${ch.content}\n\n`; });
     downloadFile(`${title}.txt`, content, 'text/plain;charset=utf-8');
   } else if (format === 'md') {
     content = `# ${title}\n\n`;
-    chKeys.forEach(n => {
-      const ch = chapters[n];
-      content += `## ${ch.title || `第${n}章`}\n\n${ch.content}\n\n---\n\n`;
-    });
+    chKeys.forEach(n => { const ch = chapters[n]; content += `## ${ch.title || `第${n}章`}\n\n${ch.content}\n\n---\n\n`; });
     downloadFile(`${title}.md`, content, 'text/markdown;charset=utf-8');
   } else if (format === 'html') {
     content = `<!DOCTYPE html><html><head><meta charset="UTF-8"><title>${escHtml(title)}</title>
@@ -1225,14 +1696,10 @@ h1{text-align:center;border-bottom:2px solid #8b5cf6;padding-bottom:16px;}
 h2{color:#8b5cf6;margin-top:32px;}
 .chapter{white-space:pre-wrap;margin:20px 0;}</style></head><body>
 <h1>${escHtml(title)}</h1>`;
-    chKeys.forEach(n => {
-      const ch = chapters[n];
-      content += `<h2>${escHtml(ch.title||`第${n}章`)}</h2><div class="chapter">${escHtml(ch.content)}</div>`;
-    });
+    chKeys.forEach(n => { const ch = chapters[n]; content += `<h2>${escHtml(ch.title||`第${n}章`)}</h2><div class="chapter">${escHtml(ch.content)}</div>`; });
     content += '</body></html>';
     downloadFile(`${title}.html`, content, 'text/html;charset=utf-8');
   }
-
   toast(`已导出 ${chKeys.length} 章 (${format.toUpperCase()}格式)`, 'success');
 }
 
@@ -1247,23 +1714,329 @@ function downloadFile(filename, content, mimeType) {
 
 function resetAll() {
   if (confirm('确定要重置所有内容吗？这将清除已生成的章节和大纲。')) {
-    chapters = {};
-    outline = null;
-    plots = [];
-    selectedPlotId = null;
+    chapters = {}; outline = null; plots = []; selectedPlotId = null;
     goToStep(1);
     document.getElementById('chapterContent').classList.add('empty');
-    document.getElementById('chapterContent').textContent = '第1章尚未生成，点击「生成本章」开始创作...';
+    document.getElementById('chapterContent').innerHTML = '第1章尚未生成<br><span style="font-size:0.82rem;opacity:0.6;">点击「生成本章」或按 Ctrl+Enter 开始创作</span>';
     document.getElementById('chapterStats').style.display = 'none';
+    document.getElementById('chapterStatsEmpty').style.display = 'block';
+    document.getElementById('meterWrap').style.display = 'none';
     document.getElementById('chapterOutline').style.display = 'none';
     document.getElementById('chapterTitleDisplay').textContent = '';
     document.getElementById('chapterNum').value = '1';
+    document.getElementById('wordBadge').classList.remove('show');
     toast('已重置所有内容', 'info');
   }
 }
 
-function toggleTheme() {
-  toast('主题切换功能开发中...', 'info');
+async function showModelConfig() {
+  document.getElementById('modelConfigModal').classList.add('show');
+  try {
+    const data = await api('/api/config');
+    document.getElementById('cfgProvider').value = data.provider || 'deepseek';
+    document.getElementById('cfgModelName').value = data.model_name || '';
+    document.getElementById('cfgBaseUrl').value = data.base_url || '';
+    document.getElementById('cfgTemperature').value = data.temperature || 0.8;
+    document.getElementById('cfgTopP').value = data.top_p || 0.9;
+    document.getElementById('cfgFreqPenalty').value = data.frequency_penalty || 0.3;
+    document.getElementById('cfgPresPenalty').value = data.presence_penalty || 0.1;
+    document.getElementById('cfgMaxTokens').value = data.max_tokens || 4096;
+    document.getElementById('cfgTimeout').value = data.timeout || 120;
+    document.getElementById('cfgMaxRetries').value = data.max_retries || 2;
+    onProviderChange();
+  } catch(e) { toast('无法获取配置: ' + e.message, 'error'); }
+}
+
+function closeModelConfig() { document.getElementById('modelConfigModal').classList.remove('show'); }
+
+function onProviderChange() {
+  const provider = document.getElementById('cfgProvider').value;
+  const isCustom = provider === 'custom';
+  document.getElementById('cfgBaseUrlGroup').style.display = isCustom ? 'block' : 'none';
+  document.getElementById('cfgApiKeyGroup').style.display = isCustom ? 'block' : 'none';
+  const modelMap = { 'deepseek': 'deepseek-chat', 'openai': 'gpt-4o', 'zhipu': 'glm-4', 'moonshot': 'moonshot-v1-8k', 'qwen': 'qwen-turbo', 'custom': '' };
+  if (!isCustom) document.getElementById('cfgModelName').value = modelMap[provider] || '';
+}
+
+async function saveModelConfig() {
+  const config = {
+    provider: document.getElementById('cfgProvider').value,
+    model_name: document.getElementById('cfgModelName').value,
+    temperature: parseFloat(document.getElementById('cfgTemperature').value),
+    top_p: parseFloat(document.getElementById('cfgTopP').value),
+    frequency_penalty: parseFloat(document.getElementById('cfgFreqPenalty').value),
+    presence_penalty: parseFloat(document.getElementById('cfgPresPenalty').value),
+    max_tokens: parseInt(document.getElementById('cfgMaxTokens').value),
+    timeout: parseInt(document.getElementById('cfgTimeout').value),
+    max_retries: parseInt(document.getElementById('cfgMaxRetries').value),
+  };
+  if (document.getElementById('cfgProvider').value === 'custom') {
+    config.base_url = document.getElementById('cfgBaseUrl').value;
+    const apiKey = document.getElementById('cfgApiKey').value;
+    if (apiKey) config.api_key = apiKey;
+  }
+  try {
+    await api('/api/config', 'POST', config);
+    closeModelConfig();
+    toast('模型配置已保存', 'success');
+  } catch(e) { toast('保存失败: ' + e.message, 'error'); }
+}
+
+async function generateNames() {
+  const btn = event.target;
+  btn.disabled = true;
+  btn.textContent = '⏳ AI构思中...';
+  const genre = selectedGenres[0] || '玄幻';
+  const role = document.getElementById('nameRole').value;
+  const gender = document.getElementById('nameGender').value;
+  const personality = document.getElementById('namePersonality').value;
+  const fate = document.getElementById('nameFate').value;
+  const ability = document.getElementById('nameAbility').value;
+  const weakness = document.getElementById('nameWeakness').value;
+  const background = document.getElementById('nameBackground').value;
+  const count = parseInt(document.getElementById('nameCount').value);
+  let storyContext = '';
+  if (outline) storyContext = `故事标题：${outline.title||''}。${outline.synopsis||outline.summary||''}`;
+  try {
+    const data = await api('/api/generate_names', 'POST', {
+      genre, role, gender, personality, fate, ability, weakness, background, count, story_context: storyContext,
+    });
+    renderNameResults(data.names);
+    if (data.note) toast(data.note, 'info');
+  } catch(e) {
+    toast('名字生成失败: ' + e.message, 'error');
+  } finally {
+    btn.disabled = false;
+    btn.textContent = '🎲 生成名字';
+  }
+}
+
+function renderNameResults(names) {
+  const container = document.getElementById('nameResults');
+  if (!names || names.length === 0) {
+    container.innerHTML = '<div style="color:var(--text-tertiary);text-align:center;padding:28px;">暂无结果</div>';
+    return;
+  }
+  let html = '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(350px,1fr));gap:16px;">';
+  names.forEach((n) => {
+    const scoreColor = n.score >= 85 ? 'var(--emerald-soft)' : n.score >= 70 ? 'var(--amber-soft)' : 'var(--text-tertiary)';
+    const aliases = (n.aliases||[]).map(a => `<span class="tag">${escHtml(a)}</span>`).join('');
+    const titles = (n.titles||[]).map(t => `<span class="tag" style="background:rgba(245,158,11,0.1);color:var(--amber-soft);">${escHtml(t)}</span>`).join('');
+    html += `<div class="name-card">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+        <div style="font-size:1.25rem;font-weight:700;color:var(--accent-soft);">${escHtml(n.full_name||'')}</div>
+        <div style="font-size:0.82rem;font-weight:700;color:${scoreColor};">⭐ ${n.score||'?'}</div>
+      </div>
+      <div style="font-size:0.74rem;color:var(--text-tertiary);margin-bottom:7px;">${n.surname||''} · ${n.given_name||''} · ${escHtml(n.style||'')}</div>
+      <div style="font-size:0.8rem;color:var(--text-secondary);margin-bottom:5px;line-height:1.6;">💡 ${escHtml(n.literal_meaning||'')}</div>
+      <div style="font-size:0.78rem;color:var(--text-secondary);margin-bottom:5px;line-height:1.6;">📖 ${escHtml(n.meaning||'')}</div>
+      <div style="font-size:0.76rem;color:var(--cyan-soft);margin-bottom:5px;">🔮 命运：${escHtml(n.fate_connection||'')}</div>
+      <div style="font-size:0.76rem;color:var(--amber-soft);margin-bottom:7px;">🎭 性格：${escHtml(n.personality_match||'')}</div>
+      ${aliases||titles?`<div style="display:flex;flex-wrap:wrap;gap:5px;margin-top:7px;">${aliases}${titles}</div>`:''}
+    </div>`;
+  });
+  html += '</div>';
+  container.innerHTML = html;
+  container.scrollIntoView({behavior:'smooth',block:'center'});
+}
+
+function switchToolTab(tabName) {
+  document.querySelectorAll('#toolTabs .tab-btn').forEach(b => b.classList.remove('active'));
+  const targetBtn = Array.from(document.querySelectorAll('#toolTabs .tab-btn')).find(b => {
+    return b.onclick && b.onclick.toString().includes("'" + tabName + "'");
+  });
+  if (targetBtn) targetBtn.classList.add('active');
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  const pane = document.getElementById('tab-' + tabName);
+  if (pane) pane.classList.add('active');
+  if (tabName === 'memory') loadMemoryStats();
+  if (tabName === 'planning') loadPlanningData();
+}
+
+async function analyzeArcs() {
+  const el = document.getElementById('chapterContent');
+  if (el.classList.contains('empty')) { toast('请先生成章节内容', 'info'); return; }
+  const text = el.textContent;
+  setStatus('busy', '分析中...');
+  showLoading('正在分析节奏与情绪弧...');
+  try {
+    const data = await api('/api/quality/arcs', 'POST', {text});
+    switchToolTab('quality');
+    renderQualityArcs(data);
+    toast('节奏/情绪弧分析完成', 'success');
+  } catch(e) {
+    toast('分析失败: ' + e.message, 'error');
+    setStatus('error', '分析失败');
+  } finally {
+    hideLoading();
+    setTimeout(() => setStatus('', '就绪'), 1500);
+  }
+}
+
+function renderQualityArcs(data) {
+  const container = document.getElementById('qualityContent');
+  let html = '';
+  if (data.pacing) {
+    const p = data.pacing;
+    html += `<div style="margin-bottom:16px;">
+      <div style="font-weight:600;color:var(--accent-soft);margin-bottom:8px;">📈 节奏弧分析</div>
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:5px;"><span style="font-size:0.72rem;color:var(--text-tertiary);min-width:44px;">节奏分</span><div style="flex:1;height:7px;background:var(--border-base);border-radius:4px;overflow:hidden;"><div style="height:100%;border-radius:4px;width:${(p.pacing_score||0)*10}%;background:var(--accent);"></div></div><span style="font-size:0.72rem;color:var(--text-secondary);">${p.pacing_score||0}/10</span></div>
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:5px;"><span style="font-size:0.72rem;color:var(--text-tertiary);min-width:44px;">变化度</span><div style="flex:1;height:7px;background:var(--border-base);border-radius:4px;overflow:hidden;"><div style="height:100%;border-radius:4px;width:${(p.change_score||0)*10}%;background:var(--cyan);"></div></div><span style="font-size:0.72rem;color:var(--text-secondary);">${p.change_score||0}/10</span></div>
+      <div style="font-size:0.74rem;color:var(--text-tertiary);margin-top:7px;">${escHtml(p.recommendation||'')}</div>
+    </div>`;
+  }
+  if (data.emotional) {
+    const e = data.emotional;
+    html += `<div style="margin-bottom:16px;">
+      <div style="font-weight:600;color:var(--amber-soft);margin-bottom:8px;">🎭 情绪弧分析</div>
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:5px;"><span style="font-size:0.72rem;color:var(--text-tertiary);min-width:44px;">情绪分</span><div style="flex:1;height:7px;background:var(--border-base);border-radius:4px;overflow:hidden;"><div style="height:100%;border-radius:4px;width:${(e.emotional_score||0)*10}%;background:var(--amber);"></div></div><span style="font-size:0.72rem;color:var(--text-secondary);">${e.emotional_score||0}/10</span></div>
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:5px;"><span style="font-size:0.72rem;color:var(--text-tertiary);min-width:44px;">波动度</span><div style="flex:1;height:7px;background:var(--border-base);border-radius:4px;overflow:hidden;"><div style="height:100%;border-radius:4px;width:${(e.volatility||0)*10}%;background:var(--rose);"></div></div><span style="font-size:0.72rem;color:var(--text-secondary);">${e.volatility||0}/10</span></div>
+      <div style="font-size:0.74rem;color:var(--text-tertiary);margin-top:7px;">${escHtml(e.recommendation||'')}</div>
+    </div>`;
+  }
+  if (!html) html = '<div style="color:var(--text-tertiary);text-align:center;padding:14px;">暂无分析数据</div>';
+  container.innerHTML = html;
+}
+
+async function createSnapshot() {
+  const chNum = parseInt(document.getElementById('chapterNum').value) || 1;
+  try {
+    const data = await api('/api/story/snapshot', 'POST', {
+      action: 'create', chapter: chNum,
+      label: `第${chNum}章快照 - ${new Date().toLocaleString('zh-CN')}`,
+    });
+    document.getElementById('storyResult').innerHTML = `<div style="color:var(--emerald-soft);">✅ 快照已创建: ${data.snapshot?.snapshot_id || ''}</div>`;
+    toast('快照创建成功', 'success');
+  } catch(e) {
+    document.getElementById('storyResult').innerHTML = `<div style="color:var(--rose-soft);">❌ ${e.message}</div>`;
+    toast('快照创建失败: ' + e.message, 'error');
+  }
+}
+
+async function listSnapshots() {
+  try {
+    const data = await api('/api/story/snapshot', 'POST', {action: 'list'});
+    const snapshots = data.snapshots || [];
+    let html = '<div style="max-height:220px;overflow-y:auto;">';
+    if (snapshots.length === 0) {
+      html += '<div style="color:var(--text-tertiary);padding:10px;">暂无快照</div>';
+    } else {
+      snapshots.forEach(s => {
+        html += `<div style="padding:7px 0;border-bottom:1px solid var(--border-dim);font-size:0.74rem;">
+          <span style="color:var(--accent-soft);">📸 ${s.snapshot_id}</span>
+          <span style="color:var(--text-tertiary);"> — ${s.label||''} (第${s.chapter||'?'}章)</span>
+          <button class="btn btn-xs btn-secondary" onclick="restoreSnapshot('${s.snapshot_id}')" style="margin-left:10px;">恢复</button>
+        </div>`;
+      });
+    }
+    html += '</div>';
+    document.getElementById('storyResult').innerHTML = html;
+  } catch(e) {
+    document.getElementById('storyResult').innerHTML = `<div style="color:var(--rose-soft);">❌ ${e.message}</div>`;
+  }
+}
+
+async function restoreSnapshot(snapshotId) {
+  if (!confirm('恢复快照将覆盖当前状态，确定继续？')) return;
+  try {
+    const data = await api('/api/story/snapshot', 'POST', {action: 'restore', snapshot_id: snapshotId});
+    if (data.success) { toast('快照恢复成功', 'success'); listSnapshots(); }
+    else { toast('恢复失败: ' + (data.error||'未知错误'), 'error'); }
+  } catch(e) { toast('恢复失败: ' + e.message, 'error'); }
+}
+
+async function checkLock() {
+  try {
+    const data = await api('/api/story/lock');
+    const locked = data.is_locked || data.locked;
+    const html = locked
+      ? `<div style="color:var(--amber-soft);">🔒 已锁定 — 由 ${data.locked_by||'未知'} 于 ${data.locked_at||''} 锁定</div>`
+      : `<div style="color:var(--emerald-soft);">🔓 未锁定 — 可以安全编辑</div>`;
+    document.getElementById('storyResult').innerHTML = html;
+  } catch(e) {
+    document.getElementById('storyResult').innerHTML = `<div style="color:var(--rose-soft);">❌ ${e.message}</div>`;
+  }
+}
+
+async function acquireLock() {
+  try {
+    const data = await api('/api/story/lock', 'POST', {action: 'acquire', locked_by: 'NWACS用户'});
+    if (data.success) {
+      document.getElementById('storyResult').innerHTML = `<div style="color:var(--emerald-soft);">🔐 锁已获取</div>`;
+      toast('锁获取成功', 'success');
+    } else {
+      document.getElementById('storyResult').innerHTML = `<div style="color:var(--rose-soft);">❌ ${data.error||'获取锁失败'}</div>`;
+    }
+  } catch(e) {
+    document.getElementById('storyResult').innerHTML = `<div style="color:var(--rose-soft);">❌ ${e.message}</div>`;
+  }
+}
+
+async function releaseLock() {
+  try {
+    const data = await api('/api/story/lock', 'POST', {action: 'release'});
+    if (data.success) {
+      document.getElementById('storyResult').innerHTML = `<div style="color:var(--emerald-soft);">🔓 锁已释放</div>`;
+      toast('锁释放成功', 'success');
+    } else {
+      document.getElementById('storyResult').innerHTML = `<div style="color:var(--rose-soft);">❌ ${data.error||'释放锁失败'}</div>`;
+    }
+  } catch(e) {
+    document.getElementById('storyResult').innerHTML = `<div style="color:var(--rose-soft);">❌ ${e.message}</div>`;
+  }
+}
+
+async function loadMemoryStats() {
+  try {
+    const data = await api('/api/memory/stats');
+    const stats = data.stats || {};
+    let html = '<div style="font-size:0.78rem;">';
+    html += `<div class="stat-grid" style="margin-bottom:12px;">
+      <div class="stat-item"><div class="stat-val" style="font-size:1.05rem;">${stats.total_patterns||0}</div><div class="stat-lbl">模式总数</div></div>
+      <div class="stat-item"><div class="stat-val" style="font-size:1.05rem;">${stats.total_entities||0}</div><div class="stat-lbl">实体总数</div></div>
+    </div>`;
+    if (stats.recent_patterns && stats.recent_patterns.length > 0) {
+      html += '<div style="font-weight:600;margin-bottom:8px;color:var(--text-secondary);">最近模式</div>';
+      stats.recent_patterns.forEach(p => {
+        const cls = p.type === 'anti' ? 'anti' : 'tech';
+        html += `<div class="mem-item ${cls}">
+          <div class="mem-icon">${cls==='anti'?'⚠️':'💡'}</div>
+          <div class="mem-body">
+            <div class="mem-desc">${escHtml(p.description||'')}</div>
+            <div class="mem-meta">${p.category||''} · 第${p.chapter||'?'}章</div>
+          </div>
+        </div>`;
+      });
+    }
+    html += '</div>';
+    document.getElementById('memoryContent').innerHTML = html || '<div style="color:var(--text-tertiary);text-align:center;padding:14px;">暂无记忆数据</div>';
+  } catch(e) {
+    document.getElementById('memoryContent').innerHTML = '<div style="color:var(--text-tertiary);text-align:center;padding:14px;">记忆加载失败</div>';
+  }
+}
+
+async function loadPlanningData() {
+  try {
+    const data = await api('/api/planning/timeline');
+    const entries = data.entries || [];
+    let html = '';
+    if (entries.length === 0) {
+      html = '<div style="color:var(--text-tertiary);text-align:center;padding:14px;">暂无规划数据</div>';
+    } else {
+      html = '<div class="beat-timeline">';
+      entries.forEach(e => {
+        html += `<div class="beat-item active">
+          <div class="bt-ch">第${e.chapter||'?'}章</div>
+          <div class="bt-name">${escHtml(e.event||'')}</div>
+          <div class="bt-desc">${escHtml(e.time_point||'')} ${e.location ? '· ' + escHtml(e.location) : ''}</div>
+        </div>`;
+      });
+      html += '</div>';
+    }
+    document.getElementById('planningContent').innerHTML = html;
+  } catch(e) {
+    document.getElementById('planningContent').innerHTML = '<div style="color:var(--text-tertiary);text-align:center;padding:14px;">规划加载失败</div>';
+  }
 }
 
 function escHtml(s) {
@@ -1279,10 +2052,8 @@ document.getElementById('chapterNum').addEventListener('keydown', function(e) {
 
 document.addEventListener('keydown', function(e) {
   if (e.ctrlKey && e.key === 'Enter') {
-    const currentStep = document.querySelector('.progress-step.active');
-    if (currentStep && parseInt(currentStep.dataset.step) === 4) {
-      generateChapter();
-    }
+    const currentStep = document.querySelector('.stepper-step.active');
+    if (currentStep && parseInt(currentStep.dataset.step) === 4) generateChapter();
   }
 });
 
