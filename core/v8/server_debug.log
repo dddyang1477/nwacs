@@ -11,3 +11,703 @@
 [2026-05-12 01:59:15] Calling LLM...
 [2026-05-12 01:59:41] Response: 2483 chars
 [2026-05-12 01:59:41] HTTP: POST /api/generate_plots HTTP/1.1
+[2026-05-12 02:01:08] HTTP: GET / HTTP/1.1
+[2026-05-12 02:01:09] HTTP: GET /api/options HTTP/1.1
+[2026-05-12 02:01:09] HTTP: GET /@vite/client HTTP/1.1
+[2026-05-12 02:01:20] HTTP: GET / HTTP/1.1
+[2026-05-12 02:01:20] HTTP: GET /api/options HTTP/1.1
+[2026-05-12 02:01:20] HTTP: GET /@vite/client HTTP/1.1
+[2026-05-12 02:03:05] Generating plots: genres=玄幻、科幻, styles=热血爽文、悬疑烧脑、黑暗深沉, schools=苟道流、智取流、凡人流, theme=逆境成长
+[2026-05-12 02:03:05] Calling LLM...
+[2026-05-12 02:03:39] Response: 3243 chars
+[2026-05-12 02:03:39] HTTP: POST /api/generate_plots HTTP/1.1
+[2026-05-12 02:04:11] Generating outline for: 暗渊修士, schools=苟道流、智取流、凡人流
+[2026-05-12 02:04:11] Calling LLM for outline...
+[2026-05-12 02:05:29] Outline response: 14463 chars
+[2026-05-12 02:05:29] Outline JSON parse error: Expecting value: line 417 column 20 (char 14462), attempting recovery...
+[2026-05-12 02:05:29] Outline recovery failed, using regex extraction...
+[2026-05-12 02:05:29] HTTP: POST /api/select_plot HTTP/1.1
+[2026-05-12 02:07:08] Generating names: genre=玄幻, role=protagonist, gender=male
+[2026-05-12 02:07:29] HTTP: POST /api/generate_names HTTP/1.1
+[2026-05-12 02:09:21] Generating chapter 1: 星域废墟
+[2026-05-12 02:09:21] Calling LLM for chapter...
+[2026-05-12 02:10:18] Chapter response: 4826 chars
+[2026-05-12 02:10:18] HTTP: POST /api/generate_chapter HTTP/1.1
+[2026-05-12 02:10:18] Reviewing chapter 1 (4826 chars)...
+[2026-05-12 02:10:31] HTTP: POST /api/review HTTP/1.1
+[2026-05-12 02:10:59] Detecting AI traces in 4826 chars...
+[2026-05-12 02:10:59] HTTP: POST /api/detect_ai HTTP/1.1
+[2026-05-12 02:11:04] Rewriting 4826 chars with style=deai...
+[2026-05-12 02:11:30] HTTP: POST /api/rewrite HTTP/1.1
+[2026-05-12 02:12:04] Detecting AI traces in 4737 chars...
+[2026-05-12 02:12:04] HTTP: POST /api/detect_ai HTTP/1.1
+[2026-05-12 02:12:12] HTTP: POST /api/quality/arcs HTTP/1.1
+[2026-05-12 02:12:35] HTTP: GET /api/memory/stats HTTP/1.1
+[2026-05-12 02:12:59] Generating chapter 2: 联邦调查组
+[2026-05-12 02:12:59] Calling LLM for chapter...
+[2026-05-12 02:14:40] Chapter response: 9507 chars
+[2026-05-12 02:14:40] HTTP: POST /api/generate_chapter HTTP/1.1
+[2026-05-12 02:14:41] Reviewing chapter 2 (9507 chars)...
+[2026-05-12 02:14:44] Detecting AI traces in 9507 chars...
+[2026-05-12 02:14:44] HTTP: POST /api/detect_ai HTTP/1.1
+[2026-05-12 02:15:01] HTTP: POST /api/review HTTP/1.1
+[2026-05-12 02:16:18] HTTP: GET /api/memory/stats HTTP/1.1
+[2026-05-12 02:16:49] HTTP: POST /api/quality/arcs HTTP/1.1
+[2026-05-12 02:16:53] HTTP: GET /api/memory/stats HTTP/1.1
+[2026-05-12 02:30:48] HTTP: GET / HTTP/1.1
+[2026-05-12 02:30:48] HTTP: GET /api/options HTTP/1.1
+[2026-05-12 02:30:48] HTTP: GET /@vite/client HTTP/1.1
+[2026-05-12 02:40:27] HTTP: GET / HTTP/1.1
+[2026-05-12 02:40:27] HTTP: GET /api/options HTTP/1.1
+[2026-05-12 02:40:27] HTTP: GET /@vite/client HTTP/1.1
+[2026-05-12 04:29:46] HTTP: GET / HTTP/1.1
+[2026-05-12 04:29:46] HTTP: GET /api/options HTTP/1.1
+[2026-05-12 04:29:46] HTTP: GET /@vite/client HTTP/1.1
+[2026-05-12 04:33:32] Generating plots: genres=玄幻、科幻, styles=热血爽文、温馨治愈、悬疑烧脑, schools=智取流、苟道流、凡人流, theme=逆境成长
+[2026-05-12 04:33:32] Calling LLM...
+[2026-05-12 04:34:00] Response: 3181 chars
+[2026-05-12 04:34:00] HTTP: POST /api/generate_plots HTTP/1.1
+[2026-05-12 04:34:16] Generating outline for: 星穹牧者, schools=智取流、苟道流、凡人流
+[2026-05-12 04:34:16] Calling LLM for outline...
+[2026-05-12 04:35:13] Outline response: 13628 chars
+[2026-05-12 04:35:13] Outline JSON parse error: Unterminated string starting at: line 370 column 22 (char 13532), attempting recovery...
+[2026-05-12 04:35:13] Outline recovery failed, using regex extraction...
+[2026-05-12 04:35:13] HTTP: POST /api/select_plot HTTP/1.1
+[2026-05-12 04:36:11] Generating names: genre=玄幻, role=protagonist, gender=male
+[2026-05-12 04:36:27] HTTP: POST /api/generate_names HTTP/1.1
+[2026-05-12 04:37:09] Generating chapter 1: 重生之牧
+[2026-05-12 04:37:09] Calling LLM for chapter...
+[2026-05-12 04:37:55] Chapter response: 5676 chars
+[2026-05-12 04:37:55] HTTP: POST /api/generate_chapter HTTP/1.1
+[2026-05-12 04:37:55] Reviewing chapter 1 (5676 chars)...
+[2026-05-12 04:38:04] HTTP: POST /api/review HTTP/1.1
+[2026-05-12 04:38:04] HTTP: POST /api/quality/arcs HTTP/1.1
+[2026-05-12 04:38:35] HTTP: POST /api/quality/arcs HTTP/1.1
+[2026-05-12 04:38:43] HTTP: POST /api/quality/trend HTTP/1.1
+[2026-05-12 04:38:46] HTTP: POST /api/quality/trend HTTP/1.1
+[2026-05-12 04:38:50] Quality checklist error: name 're' is not defined
+[2026-05-12 04:38:50] HTTP: POST /api/quality/checklist HTTP/1.1
+[2026-05-12 04:39:49] HTTP: POST /api/quality/trend HTTP/1.1
+[2026-05-12 04:41:21] Generating org names: genre=玄幻, type=sect
+[2026-05-12 04:41:25] HTTP: POST /api/generate_org_names HTTP/1.1
+[2026-05-12 04:41:32] Generating power system: genre=玄幻, type=cultivation
+[2026-05-12 04:41:36] HTTP: POST /api/generate_power_system HTTP/1.1
+[2026-05-12 04:44:30] Quality checklist error: name 're' is not defined
+[2026-05-12 04:44:30] HTTP: POST /api/quality/checklist HTTP/1.1
+[2026-05-12 04:45:57] HTTP: POST /api/quality/trend HTTP/1.1
+[2026-05-12 04:46:33] HTTP: GET /api/memory/stats HTTP/1.1
+[2026-05-12 04:46:34] HTTP: GET /api/memory/stats HTTP/1.1
+[2026-05-12 04:46:36] HTTP: GET /api/memory/stats HTTP/1.1
+[2026-05-12 04:46:37] HTTP: POST /api/memory/patterns HTTP/1.1
+[2026-05-12 04:46:43] HTTP: POST /api/memory/context HTTP/1.1
+[2026-05-12 04:46:46] HTTP: POST /api/truth/all HTTP/1.1
+[2026-05-12 04:47:21] HTTP: POST /api/truth/hooks HTTP/1.1
+[2026-05-12 04:47:27] HTTP: POST /api/truth/hooks HTTP/1.1
+[2026-05-12 04:47:41] HTTP: POST /api/memory/patterns HTTP/1.1
+[2026-05-12 04:48:58] HTTP: POST /api/memory/patterns HTTP/1.1
+[2026-05-12 04:49:00] HTTP: GET /api/memory/stats HTTP/1.1
+[2026-05-12 04:49:04] HTTP: GET /api/memory/stats HTTP/1.1
+[2026-05-12 04:49:09] HTTP: GET /api/memory/stats HTTP/1.1
+[2026-05-12 04:49:35] HTTP: POST /api/quality/arcs HTTP/1.1
+[2026-05-12 08:37:58] HTTP: GET / HTTP/1.1
+[2026-05-12 08:37:58] HTTP: GET /api/options HTTP/1.1
+[2026-05-12 08:37:59] HTTP: GET /@vite/client HTTP/1.1
+[2026-05-12 08:38:54] HTTP: POST /api/generate_names_batch HTTP/1.1
+[2026-05-12 08:38:59] HTTP: POST /api/generate_names_batch HTTP/1.1
+[2026-05-12 08:40:30] HTTP: POST /api/generate_names_batch HTTP/1.1
+[2026-05-12 08:59:10] HTTP: GET / HTTP/1.1
+[2026-05-12 08:59:10] HTTP: GET /api/options HTTP/1.1
+[2026-05-12 08:59:10] HTTP: GET /@vite/client HTTP/1.1
+[2026-05-12 09:42:26] HTTP: GET / HTTP/1.1
+[2026-05-12 09:42:26] HTTP: GET /api/options HTTP/1.1
+[2026-05-12 09:42:26] HTTP: GET /@vite/client HTTP/1.1
+[2026-05-12 09:43:01] HTTP: POST /api/generate_names_batch HTTP/1.1
+[2026-05-12 09:43:09] HTTP: POST /api/generate_names_batch HTTP/1.1
+[2026-05-12 09:43:24] Generating titles for: 主角
+[2026-05-12 09:43:25] HTTP: POST /api/generate_titles HTTP/1.1
+[2026-05-12 10:16:45] HTTP: GET / HTTP/1.1
+[2026-05-12 10:16:45] HTTP: GET /api/options HTTP/1.1
+[2026-05-12 10:16:45] HTTP: GET /@vite/client HTTP/1.1
+[2026-05-12 10:17:08] Generating plots: genres=玄幻、科幻, styles=热血爽文、温馨治愈、悬疑烧脑, schools=硬科幻流、幕后黑手流、种田流, theme=逆境成长
+[2026-05-12 10:17:08] Calling LLM...
+[2026-05-12 10:17:29] Response: 2637 chars
+[2026-05-12 10:17:29] HTTP: POST /api/generate_plots HTTP/1.1
+[2026-05-12 10:17:36] Generating titles for: 主角
+[2026-05-12 10:17:37] HTTP: POST /api/generate_titles HTTP/1.1
+[2026-05-12 10:19:40] Generating outline for: 深渊直播主, schools=硬科幻流、幕后黑手流、种田流
+[2026-05-12 10:19:40] Calling LLM for outline...
+[2026-05-12 10:21:13] Outline response: 13621 chars
+[2026-05-12 10:21:13] Outline JSON parse error: Expecting value: line 340 column 20 (char 13620), attempting recovery...
+[2026-05-12 10:21:13] Outline recovery failed, using regex extraction...
+[2026-05-12 10:21:13] HTTP: POST /api/select_plot HTTP/1.1
+[2026-05-12 10:26:07] Generating chapter 1: 绑定深渊直播系统
+[2026-05-12 10:26:07] Calling LLM for chapter...
+[2026-05-12 10:27:36] Chapter response: 8731 chars
+[2026-05-12 10:27:36] HTTP: POST /api/generate_chapter HTTP/1.1
+[2026-05-12 10:27:36] Reviewing chapter 1 (8000 chars)...
+[2026-05-12 10:27:36] Reviewing chapter 1 (8731 chars)...
+[2026-05-12 10:27:47] HTTP: POST /api/review HTTP/1.1
+[2026-05-12 10:27:47] HTTP: POST /api/quality/arcs HTTP/1.1
+[2026-05-12 10:27:49] HTTP: POST /api/review HTTP/1.1
+[2026-05-12 10:27:49] HTTP: POST /api/quality/arcs HTTP/1.1
+[2026-05-12 10:28:29] HTTP: GET /api/memory/stats HTTP/1.1
+[2026-05-12 10:28:33] HTTP: POST /api/truth/hooks HTTP/1.1
+[2026-05-12 10:28:33] HTTP: GET /api/memory/stats HTTP/1.1
+[2026-05-12 10:28:56] Detecting AI traces in 8731 chars...
+[2026-05-12 10:28:56] HTTP: POST /api/detect_ai HTTP/1.1
+[2026-05-12 10:32:13] HTTP: GET /api/memory/stats HTTP/1.1
+[2026-05-12 10:32:15] HTTP: GET /api/memory/stats HTTP/1.1
+[2026-05-12 10:32:15] HTTP: POST /api/truth/all HTTP/1.1
+[2026-05-12 10:32:19] HTTP: POST /api/memory/context HTTP/1.1
+[2026-05-12 10:50:49] HTTP: POST /api/memory/fingerprint HTTP/1.1
+[2026-05-12 10:50:49] HTTP: GET /api/memory/stats HTTP/1.1
+[2026-05-12 11:14:40] HTTP: GET / HTTP/1.1
+[2026-05-12 11:14:40] HTTP: GET /api/options HTTP/1.1
+[2026-05-12 11:14:40] HTTP: GET /@vite/client HTTP/1.1
+[2026-05-12 11:14:49] Generating names: genre=玄幻, role=protagonist, gender=male
+[2026-05-12 11:15:03] HTTP: POST /api/generate_names HTTP/1.1
+[2026-05-12 11:24:40] HTTP: GET / HTTP/1.1
+[2026-05-12 11:24:40] HTTP: GET /api/options HTTP/1.1
+[2026-05-12 11:24:40] HTTP: GET /@vite/client HTTP/1.1
+[2026-05-12 11:27:25] Generating plots: genres=玄幻、悬疑, styles=热血爽文、悬疑烧脑、黑暗深沉, schools=智取流、苟道流、凡人流, theme=逆境成长
+[2026-05-12 11:27:25] Calling LLM...
+[2026-05-12 11:27:57] Response: 2839 chars
+[2026-05-12 11:27:57] HTTP: POST /api/generate_plots HTTP/1.1
+[2026-05-12 11:29:56] Generating outline for: 逆命符师, schools=智取流、苟道流、凡人流
+[2026-05-12 11:29:56] Calling LLM for outline...
+[2026-05-12 11:31:38] Outline response: 12696 chars
+[2026-05-12 11:31:38] Outline JSON parse error: Unterminated string starting at: line 313 column 13 (char 12693), attempting recovery...
+[2026-05-12 11:31:38] Outline recovery failed, using regex extraction...
+[2026-05-12 11:31:38] HTTP: POST /api/select_plot HTTP/1.1
+[2026-05-12 11:37:30] Generating chapter 5: 赌约陷阱
+[2026-05-12 11:37:30] Calling LLM for chapter...
+[2026-05-12 11:38:32] Chapter response: 5659 chars
+[2026-05-12 11:38:32] HTTP: POST /api/generate_chapter HTTP/1.1
+[2026-05-12 11:38:33] Reviewing chapter 5 (5659 chars)...
+[2026-05-12 11:38:33] Reviewing chapter 1 (5659 chars)...
+[2026-05-12 11:38:38] Reviewing chapter 1 (5659 chars)...
+[2026-05-12 11:38:44] Detecting AI traces in 5659 chars...
+[2026-05-12 11:38:44] HTTP: POST /api/detect_ai HTTP/1.1
+[2026-05-12 11:38:49] HTTP: POST /api/review HTTP/1.1
+[2026-05-12 11:38:50] HTTP: POST /api/review HTTP/1.1
+[2026-05-12 11:38:50] HTTP: POST /api/quality/arcs HTTP/1.1
+[2026-05-12 11:38:50] HTTP: POST /api/quality/arcs HTTP/1.1
+[2026-05-12 11:38:57] HTTP: POST /api/review HTTP/1.1
+[2026-05-12 11:38:57] HTTP: POST /api/quality/arcs HTTP/1.1
+[2026-05-12 11:40:12] HTTP: POST /api/quality/arcs HTTP/1.1
+[2026-05-12 11:40:18] HTTP: GET /api/memory/stats HTTP/1.1
+[2026-05-12 13:52:14] Importing NWACS modules...
+[2026-05-12 13:52:14] Initializing core modules...
+[2026-05-12 13:52:14] Initializing new modules (story/reviewer/quality/memory/planning)...
+[2026-05-12 13:53:40] Importing NWACS modules...
+[2026-05-12 13:53:40] Initializing core modules...
+[2026-05-12 13:53:40] Initializing new modules (story/reviewer/quality/memory/planning)...
+[2026-05-12 13:53:40] All modules initialized.
+[2026-05-12 13:53:40] Knowledge base loaded: 10 genres, 79 schools
+[2026-05-12 13:53:40] Ready.
+[2026-05-12 13:54:18] HTTP: GET /api/models HTTP/1.1
+[2026-05-12 13:54:18] HTTP: GET /api/config HTTP/1.1
+[2026-05-12 13:54:18] HTTP: GET /api/options HTTP/1.1
+[2026-05-12 13:54:18] HTTP: GET /api/options HTTP/1.1
+[2026-05-12 13:54:19] Generating names: genre=玄幻, role=protagonist, gender=male
+[2026-05-12 13:54:32] HTTP: POST /api/generate_names HTTP/1.1
+[2026-05-12 13:54:32] Generating plots: genres=玄幻, styles=热血爽文, schools=, theme=逆境成长
+[2026-05-12 13:54:33] Web inspiration fetched: 0 snippets for 玄幻
+[2026-05-12 13:54:33] Calling LLM...
+[2026-05-12 13:54:47] HTTP: POST /api/quality/trend HTTP/1.1
+[2026-05-12 13:54:47] HTTP: POST /api/quality/checklist HTTP/1.1
+[2026-05-12 13:54:47] HTTP: GET /api/memory/stats HTTP/1.1
+[2026-05-12 13:54:47] HTTP: GET /api/planning/timeline HTTP/1.1
+[2026-05-12 13:54:47] HTTP: GET /api/retention/report HTTP/1.1
+[2026-05-12 13:54:47] HTTP: POST /api/fatigue/analyze HTTP/1.1
+[2026-05-12 13:54:47] HTTP: POST /api/gates/evaluate HTTP/1.1
+[2026-05-12 13:54:47] HTTP: POST /api/rag/search HTTP/1.1
+[2026-05-12 13:54:47] HTTP: GET /api/rag/stats HTTP/1.1
+[2026-05-12 13:54:47] HTTP: GET /api/style/list HTTP/1.1
+[2026-05-12 13:54:47] HTTP: GET /api/strand/report HTTP/1.1
+[2026-05-12 13:54:47] HTTP: GET /api/truth/new/status HTTP/1.1
+[2026-05-12 13:54:47] HTTP: GET /api/pipeline/new/status HTTP/1.1
+[2026-05-12 13:55:15] Response: 3107 chars
+[2026-05-12 13:55:15] JSON parse error: Expecting ',' delimiter: line 41 column 3 (char 3104), attempting recovery...
+[2026-05-12 13:55:15] Recovery failed, trying regex extraction...
+[2026-05-12 13:55:15] Error: Expecting ',' delimiter: line 41 column 3 (char 3104)
+[2026-05-12 13:55:15] HTTP: POST /api/generate_plots HTTP/1.1
+[2026-05-12 13:55:18] HTTP: GET /api/models HTTP/1.1
+[2026-05-12 13:55:18] HTTP: GET /api/config HTTP/1.1
+[2026-05-12 13:55:18] HTTP: GET /api/options HTTP/1.1
+[2026-05-12 13:55:18] Generating names: genre=玄幻, role=protagonist, gender=male
+[2026-05-12 13:55:33] HTTP: POST /api/generate_names_batch HTTP/1.1
+[2026-05-12 13:55:33] Generating plots: genres=玄幻, styles=热血爽文, schools=, theme=逆境成长
+[2026-05-12 13:55:33] Web inspiration fetched: 0 snippets for 玄幻
+[2026-05-12 13:55:33] Calling LLM...
+[2026-05-12 13:55:44] HTTP: POST /api/generate_names HTTP/1.1
+[2026-05-12 13:55:44] Name generation error: [WinError 10053] 你的主机中的软件中止了一个已建立的连接。
+[2026-05-12 13:55:44] HTTP: POST /api/generate_names HTTP/1.1
+[2026-05-12 13:55:48] HTTP: POST /api/quality/trend HTTP/1.1
+[2026-05-12 13:55:48] HTTP: POST /api/quality/checklist HTTP/1.1
+[2026-05-12 13:55:48] HTTP: GET /api/memory/stats HTTP/1.1
+[2026-05-12 13:55:48] HTTP: GET /api/planning/timeline HTTP/1.1
+[2026-05-12 13:55:48] HTTP: GET /api/retention/report HTTP/1.1
+[2026-05-12 13:55:48] HTTP: POST /api/fatigue/analyze HTTP/1.1
+[2026-05-12 13:55:48] HTTP: POST /api/gates/evaluate HTTP/1.1
+[2026-05-12 13:55:48] HTTP: POST /api/rag/search HTTP/1.1
+[2026-05-12 13:55:48] HTTP: GET /api/rag/stats HTTP/1.1
+[2026-05-12 13:55:48] HTTP: GET /api/style/list HTTP/1.1
+[2026-05-12 13:55:48] HTTP: GET /api/strand/report HTTP/1.1
+[2026-05-12 13:55:48] HTTP: GET /api/truth/new/status HTTP/1.1
+[2026-05-12 13:55:48] HTTP: GET /api/pipeline/new/status HTTP/1.1
+[2026-05-12 13:55:48] HTTP: POST /api/fragment/save HTTP/1.1
+[2026-05-12 13:55:48] HTTP: POST /api/fragment/list HTTP/1.1
+[2026-05-12 13:55:48] HTTP: POST /api/characters/states HTTP/1.1
+[2026-05-12 13:55:48] HTTP: POST /api/style/analyze HTTP/1.1
+[2026-05-12 13:55:48] HTTP: POST /api/strand/analyze HTTP/1.1
+[2026-05-12 13:56:19] HTTP: GET /api/models HTTP/1.1
+[2026-05-12 13:56:19] HTTP: GET /api/config HTTP/1.1
+[2026-05-12 13:56:19] HTTP: GET /api/options HTTP/1.1
+[2026-05-12 13:56:21] Response: 3259 chars
+[2026-05-12 13:56:21] HTTP: POST /api/generate_plots HTTP/1.1
+[2026-05-12 13:56:21] Error: [WinError 10053] 你的主机中的软件中止了一个已建立的连接。
+[2026-05-12 13:56:21] HTTP: POST /api/generate_plots HTTP/1.1
+[2026-05-12 13:56:31] Importing NWACS modules...
+[2026-05-12 13:56:32] Initializing core modules...
+[2026-05-12 13:56:32] Initializing new modules (story/reviewer/quality/memory/planning)...
+[2026-05-12 13:56:32] All modules initialized.
+[2026-05-12 13:56:32] Knowledge base loaded: 10 genres, 79 schools
+[2026-05-12 13:56:32] Ready.
+[2026-05-12 13:57:11] Generating names: genre=玄幻, role=protagonist, gender=male
+[2026-05-12 13:57:21] HTTP: POST /api/generate_names_batch HTTP/1.1
+[2026-05-12 13:57:21] HTTP: POST /api/quality/trend HTTP/1.1
+[2026-05-12 13:57:21] HTTP: POST /api/quality/checklist HTTP/1.1
+[2026-05-12 13:57:21] HTTP: GET /api/memory/stats HTTP/1.1
+[2026-05-12 13:57:21] HTTP: GET /api/planning/timeline HTTP/1.1
+[2026-05-12 13:57:21] HTTP: GET /api/retention/report HTTP/1.1
+[2026-05-12 13:57:21] HTTP: POST /api/fatigue/analyze HTTP/1.1
+[2026-05-12 13:57:21] HTTP: POST /api/gates/evaluate HTTP/1.1
+[2026-05-12 13:57:21] HTTP: POST /api/rag/search HTTP/1.1
+[2026-05-12 13:57:21] HTTP: GET /api/rag/stats HTTP/1.1
+[2026-05-12 13:57:21] HTTP: GET /api/style/list HTTP/1.1
+[2026-05-12 13:57:21] HTTP: GET /api/strand/report HTTP/1.1
+[2026-05-12 13:57:21] HTTP: GET /api/truth/new/status HTTP/1.1
+[2026-05-12 13:57:21] HTTP: GET /api/pipeline/new/status HTTP/1.1
+[2026-05-12 13:57:21] HTTP: POST /api/fragment/save HTTP/1.1
+[2026-05-12 13:57:21] HTTP: POST /api/fragment/list HTTP/1.1
+[2026-05-12 13:57:21] HTTP: POST /api/characters/states HTTP/1.1
+[2026-05-12 13:57:21] HTTP: POST /api/style/analyze HTTP/1.1
+[2026-05-12 13:57:21] HTTP: POST /api/strand/analyze HTTP/1.1
+[2026-05-12 13:57:33] HTTP: POST /api/generate_names HTTP/1.1
+[2026-05-12 13:57:33] Name generation error: [WinError 10053] 你的主机中的软件中止了一个已建立的连接。
+[2026-05-12 13:57:33] HTTP: POST /api/generate_names HTTP/1.1
+[2026-05-12 13:57:44] Importing NWACS modules...
+[2026-05-12 13:57:44] Initializing core modules...
+[2026-05-12 13:57:44] Initializing new modules (story/reviewer/quality/memory/planning)...
+[2026-05-12 13:57:44] All modules initialized.
+[2026-05-12 13:57:44] Knowledge base loaded: 10 genres, 79 schools
+[2026-05-12 13:57:44] Ready.
+[2026-05-12 13:59:13] Importing NWACS modules...
+[2026-05-12 13:59:13] Initializing core modules...
+[2026-05-12 13:59:13] Initializing new modules (story/reviewer/quality/memory/planning)...
+[2026-05-12 13:59:13] All modules initialized.
+[2026-05-12 13:59:13] Knowledge base loaded: 10 genres, 79 schools
+[2026-05-12 13:59:13] Ready.
+[2026-05-12 13:59:25] Importing NWACS modules...
+[2026-05-12 13:59:25] Initializing core modules...
+[2026-05-12 13:59:25] Initializing new modules (story/reviewer/quality/memory/planning)...
+[2026-05-12 13:59:25] All modules initialized.
+[2026-05-12 13:59:25] Knowledge base loaded: 10 genres, 79 schools
+[2026-05-12 13:59:25] Ready.
+[2026-05-12 13:59:34] HTTP: GET /api/models HTTP/1.1
+[2026-05-12 13:59:34] HTTP: GET /api/config HTTP/1.1
+[2026-05-12 13:59:34] HTTP: GET /api/options HTTP/1.1
+[2026-05-12 13:59:34] Generating names: genre=玄幻, role=protagonist, gender=male
+[2026-05-12 13:59:49] HTTP: POST /api/generate_names_batch HTTP/1.1
+[2026-05-12 13:59:49] Generating plots: genres=玄幻, styles=热血爽文, schools=, theme=逆境成长
+[2026-05-12 13:59:50] Web inspiration fetched: 0 snippets for 玄幻
+[2026-05-12 13:59:50] Calling LLM...
+[2026-05-12 13:59:54] HTTP: POST /api/generate_names HTTP/1.1
+[2026-05-12 13:59:54] Name generation error: [WinError 10053] 你的主机中的软件中止了一个已建立的连接。
+[2026-05-12 13:59:54] HTTP: POST /api/generate_names HTTP/1.1
+[2026-05-12 14:00:04] HTTP: POST /api/quality/trend HTTP/1.1
+[2026-05-12 14:00:04] HTTP: POST /api/quality/checklist HTTP/1.1
+[2026-05-12 14:00:04] HTTP: GET /api/memory/stats HTTP/1.1
+[2026-05-12 14:00:04] HTTP: GET /api/planning/timeline HTTP/1.1
+[2026-05-12 14:00:04] HTTP: GET /api/retention/report HTTP/1.1
+[2026-05-12 14:00:04] HTTP: POST /api/fatigue/analyze HTTP/1.1
+[2026-05-12 14:00:04] HTTP: POST /api/gates/evaluate HTTP/1.1
+[2026-05-12 14:00:04] HTTP: POST /api/rag/search HTTP/1.1
+[2026-05-12 14:00:04] HTTP: GET /api/rag/stats HTTP/1.1
+[2026-05-12 14:00:04] HTTP: GET /api/style/list HTTP/1.1
+[2026-05-12 14:00:04] HTTP: GET /api/strand/report HTTP/1.1
+[2026-05-12 14:00:04] HTTP: GET /api/truth/new/status HTTP/1.1
+[2026-05-12 14:00:04] HTTP: GET /api/pipeline/new/status HTTP/1.1
+[2026-05-12 14:00:04] HTTP: POST /api/fragment/save HTTP/1.1
+[2026-05-12 14:00:04] HTTP: POST /api/fragment/list HTTP/1.1
+[2026-05-12 14:00:04] HTTP: POST /api/characters/states HTTP/1.1
+[2026-05-12 14:00:04] HTTP: POST /api/style/analyze HTTP/1.1
+[2026-05-12 14:00:04] HTTP: POST /api/strand/analyze HTTP/1.1
+[2026-05-12 14:00:14] HTTP: GET /api/models HTTP/1.1
+[2026-05-12 14:00:14] HTTP: GET /api/config HTTP/1.1
+[2026-05-12 14:00:14] HTTP: GET /api/options HTTP/1.1
+[2026-05-12 14:00:14] HTTP: GET /api/memory/stats HTTP/1.1
+[2026-05-12 14:00:14] HTTP: GET /api/planning/timeline HTTP/1.1
+[2026-05-12 14:00:14] HTTP: GET /api/retention/report HTTP/1.1
+[2026-05-12 14:00:14] HTTP: GET /api/rag/stats HTTP/1.1
+[2026-05-12 14:00:16] Importing NWACS modules...
+[2026-05-12 14:00:16] Initializing core modules...
+[2026-05-12 14:00:16] Initializing new modules (story/reviewer/quality/memory/planning)...
+[2026-05-12 14:00:16] All modules initialized.
+[2026-05-12 14:00:16] Knowledge base loaded: 10 genres, 79 schools
+[2026-05-12 14:00:16] Ready.
+[2026-05-12 14:00:21] Response: 2586 chars
+[2026-05-12 14:00:21] HTTP: POST /api/generate_plots HTTP/1.1
+[2026-05-12 14:00:21] Error: [WinError 10053] 你的主机中的软件中止了一个已建立的连接。
+[2026-05-12 14:00:21] HTTP: POST /api/generate_plots HTTP/1.1
+[2026-05-12 14:00:48] HTTP: GET /api/models HTTP/1.1
+[2026-05-12 14:00:48] HTTP: GET /api/config HTTP/1.1
+[2026-05-12 14:00:48] HTTP: GET /api/options HTTP/1.1
+[2026-05-12 14:00:48] HTTP: GET /api/memory/stats HTTP/1.1
+[2026-05-12 14:00:48] HTTP: GET /api/planning/timeline HTTP/1.1
+[2026-05-12 14:00:48] HTTP: GET /api/retention/report HTTP/1.1
+[2026-05-12 14:00:48] HTTP: GET /api/rag/stats HTTP/1.1
+[2026-05-12 14:00:48] HTTP: GET /api/style/list HTTP/1.1
+[2026-05-12 14:00:48] HTTP: GET /api/strand/report HTTP/1.1
+[2026-05-12 14:00:48] HTTP: GET /api/truth/new/status HTTP/1.1
+[2026-05-12 14:00:48] HTTP: GET /api/pipeline/new/status HTTP/1.1
+[2026-05-12 14:00:48] HTTP: POST /api/quality/trend HTTP/1.1
+[2026-05-12 14:00:48] HTTP: POST /api/quality/checklist HTTP/1.1
+[2026-05-12 14:00:48] HTTP: POST /api/fatigue/analyze HTTP/1.1
+[2026-05-12 14:00:48] HTTP: POST /api/fragment/save HTTP/1.1
+[2026-05-12 14:00:48] HTTP: POST /api/fragment/list HTTP/1.1
+[2026-05-12 14:00:48] HTTP: POST /api/characters/states HTTP/1.1
+[2026-05-12 14:00:48] HTTP: POST /api/style/analyze HTTP/1.1
+[2026-05-12 14:00:48] HTTP: POST /api/strand/analyze HTTP/1.1
+[2026-05-12 14:00:48] HTTP: POST /api/rag/search HTTP/1.1
+[2026-05-12 14:00:48] HTTP: POST /api/gates/evaluate HTTP/1.1
+[2026-05-12 14:01:02] Importing NWACS modules...
+[2026-05-12 14:01:02] Initializing core modules...
+[2026-05-12 14:01:02] Initializing new modules (story/reviewer/quality/memory/planning)...
+[2026-05-12 14:01:02] All modules initialized.
+[2026-05-12 14:01:02] Knowledge base loaded: 10 genres, 79 schools
+[2026-05-12 14:01:02] Ready.
+[2026-05-12 14:01:29] Importing NWACS modules...
+[2026-05-12 14:01:30] Initializing core modules...
+[2026-05-12 14:01:30] Initializing new modules (story/reviewer/quality/memory/planning)...
+[2026-05-12 14:01:30] All modules initialized.
+[2026-05-12 14:01:30] Knowledge base loaded: 10 genres, 79 schools
+[2026-05-12 14:01:30] Ready.
+[2026-05-12 14:02:31] Importing NWACS modules...
+[2026-05-12 14:02:32] Initializing core modules...
+[2026-05-12 14:02:32] Initializing new modules (story/reviewer/quality/memory/planning)...
+[2026-05-12 14:02:32] All modules initialized.
+[2026-05-12 14:02:32] Knowledge base loaded: 10 genres, 79 schools
+[2026-05-12 14:02:32] Ready.
+[2026-05-12 14:02:34] Importing NWACS modules...
+[2026-05-12 14:02:34] Initializing core modules...
+[2026-05-12 14:02:34] Initializing new modules (story/reviewer/quality/memory/planning)...
+[2026-05-12 14:02:34] All modules initialized.
+[2026-05-12 14:02:35] Knowledge base loaded: 10 genres, 79 schools
+[2026-05-12 14:02:35] Ready.
+[2026-05-12 14:02:41] HTTP: GET / HTTP/1.1
+[2026-05-12 14:02:43] HTTP: GET /api/models HTTP/1.1
+[2026-05-12 14:02:43] HTTP: GET /api/config HTTP/1.1
+[2026-05-12 14:02:43] HTTP: GET /api/options HTTP/1.1
+[2026-05-12 14:02:43] Generating names: genre=玄幻, role=protagonist, gender=male
+[2026-05-12 14:02:48] HTTP: GET / HTTP/1.1
+[2026-05-12 14:02:48] HTTP: GET /api/options HTTP/1.1
+[2026-05-12 14:02:49] HTTP: GET /@vite/client HTTP/1.1
+[2026-05-12 14:02:58] HTTP: POST /api/generate_names_batch HTTP/1.1
+[2026-05-12 14:02:58] Generating plots: genres=玄幻, styles=热血爽文, schools=, theme=逆境成长
+[2026-05-12 14:02:59] Web inspiration fetched: 0 snippets for 玄幻
+[2026-05-12 14:02:59] Calling LLM...
+[2026-05-12 14:03:08] HTTP: POST /api/generate_names HTTP/1.1
+[2026-05-12 14:03:08] Name generation error: [WinError 10053] 你的主机中的软件中止了一个已建立的连接。
+[2026-05-12 14:03:08] HTTP: POST /api/generate_names HTTP/1.1
+[2026-05-12 14:03:13] HTTP: POST /api/quality/trend HTTP/1.1
+[2026-05-12 14:03:13] HTTP: POST /api/quality/checklist HTTP/1.1
+[2026-05-12 14:03:13] HTTP: GET /api/memory/stats HTTP/1.1
+[2026-05-12 14:03:14] HTTP: GET /api/planning/timeline HTTP/1.1
+[2026-05-12 14:03:14] HTTP: GET /api/retention/report HTTP/1.1
+[2026-05-12 14:03:14] HTTP: POST /api/fatigue/analyze HTTP/1.1
+[2026-05-12 14:03:14] HTTP: POST /api/gates/evaluate HTTP/1.1
+[2026-05-12 14:03:14] HTTP: POST /api/rag/search HTTP/1.1
+[2026-05-12 14:03:14] HTTP: GET /api/rag/stats HTTP/1.1
+[2026-05-12 14:03:14] HTTP: GET /api/style/list HTTP/1.1
+[2026-05-12 14:03:14] HTTP: GET /api/strand/report HTTP/1.1
+[2026-05-12 14:03:14] HTTP: GET /api/truth/new/status HTTP/1.1
+[2026-05-12 14:03:14] HTTP: GET /api/pipeline/new/status HTTP/1.1
+[2026-05-12 14:03:14] HTTP: POST /api/fragment/save HTTP/1.1
+[2026-05-12 14:03:14] HTTP: POST /api/fragment/list HTTP/1.1
+[2026-05-12 14:03:14] HTTP: POST /api/characters/states HTTP/1.1
+[2026-05-12 14:03:14] HTTP: POST /api/style/analyze HTTP/1.1
+[2026-05-12 14:03:14] HTTP: POST /api/strand/analyze HTTP/1.1
+[2026-05-12 14:03:46] Response: 3212 chars
+[2026-05-12 14:03:46] HTTP: POST /api/generate_plots HTTP/1.1
+[2026-05-12 14:03:46] Error: [WinError 10053] 你的主机中的软件中止了一个已建立的连接。
+[2026-05-12 14:03:46] HTTP: POST /api/generate_plots HTTP/1.1
+[2026-05-12 14:04:12] HTTP: GET /api/models HTTP/1.1
+[2026-05-12 14:04:12] HTTP: GET /api/config HTTP/1.1
+[2026-05-12 14:04:12] HTTP: GET /api/options HTTP/1.1
+[2026-05-12 14:04:12] Generating names: genre=玄幻, role=protagonist, gender=male
+[2026-05-12 14:04:27] HTTP: POST /api/generate_names_batch HTTP/1.1
+[2026-05-12 14:04:27] Generating plots: genres=玄幻, styles=热血爽文, schools=, theme=逆境成长
+[2026-05-12 14:04:27] Web inspiration fetched: 0 snippets for 玄幻
+[2026-05-12 14:04:27] Calling LLM...
+[2026-05-12 14:04:38] HTTP: POST /api/generate_names HTTP/1.1
+[2026-05-12 14:04:38] Name generation error: [WinError 10053] 你的主机中的软件中止了一个已建立的连接。
+[2026-05-12 14:04:38] HTTP: POST /api/generate_names HTTP/1.1
+[2026-05-12 14:04:42] HTTP: POST /api/quality/trend HTTP/1.1
+[2026-05-12 14:04:42] HTTP: POST /api/quality/checklist HTTP/1.1
+[2026-05-12 14:04:42] HTTP: GET /api/memory/stats HTTP/1.1
+[2026-05-12 14:04:42] HTTP: GET /api/planning/timeline HTTP/1.1
+[2026-05-12 14:04:42] HTTP: GET /api/retention/report HTTP/1.1
+[2026-05-12 14:04:42] HTTP: POST /api/fatigue/analyze HTTP/1.1
+[2026-05-12 14:04:42] HTTP: POST /api/gates/evaluate HTTP/1.1
+[2026-05-12 14:04:42] HTTP: POST /api/rag/search HTTP/1.1
+[2026-05-12 14:04:42] HTTP: GET /api/rag/stats HTTP/1.1
+[2026-05-12 14:04:42] HTTP: GET /api/style/list HTTP/1.1
+[2026-05-12 14:04:42] HTTP: GET /api/strand/report HTTP/1.1
+[2026-05-12 14:04:42] HTTP: GET /api/truth/new/status HTTP/1.1
+[2026-05-12 14:04:42] HTTP: GET /api/pipeline/new/status HTTP/1.1
+[2026-05-12 14:04:42] HTTP: POST /api/fragment/save HTTP/1.1
+[2026-05-12 14:04:42] HTTP: POST /api/fragment/list HTTP/1.1
+[2026-05-12 14:04:42] HTTP: POST /api/characters/states HTTP/1.1
+[2026-05-12 14:04:42] HTTP: POST /api/style/analyze HTTP/1.1
+[2026-05-12 14:04:42] HTTP: POST /api/strand/analyze HTTP/1.1
+[2026-05-12 14:05:07] Response: 2829 chars
+[2026-05-12 14:05:07] HTTP: POST /api/generate_plots HTTP/1.1
+[2026-05-12 14:05:07] Error: [WinError 10053] 你的主机中的软件中止了一个已建立的连接。
+[2026-05-12 14:05:07] HTTP: POST /api/generate_plots HTTP/1.1
+[2026-05-12 14:10:11] Generating plots: genres=玄幻、科幻, styles=热血爽文、悬疑烧脑、史诗宏大, schools=苟道流、凡人流, theme=逆境成长
+[2026-05-12 14:10:11] Web inspiration fetched: 0 snippets for 玄幻
+[2026-05-12 14:10:11] Calling LLM...
+[2026-05-12 14:10:54] Response: 3148 chars
+[2026-05-12 14:10:54] HTTP: POST /api/generate_plots HTTP/1.1
+[2026-05-12 14:17:39] HTTP: GET /api/health HTTP/1.1
+[2026-05-12 14:17:48] HTTP: POST /api/characters/states HTTP/1.1
+[2026-05-12 14:22:21] Generating outline for: 星骸凡人, schools=苟道流、凡人流
+[2026-05-12 14:22:21] Web inspiration fetched: 0 snippets for 玄幻
+[2026-05-12 14:22:21] Calling LLM for outline...
+[2026-05-12 14:23:52] Outline response: 13706 chars
+[2026-05-12 14:23:52] HTTP: POST /api/select_plot HTTP/1.1
+[2026-05-12 14:24:12] Importing NWACS modules...
+[2026-05-12 14:24:12] Initializing core modules...
+[2026-05-12 14:24:12] Initializing new modules (story/reviewer/quality/memory/planning)...
+[2026-05-12 14:24:12] All modules initialized.
+[2026-05-12 14:24:12] Knowledge base loaded: 10 genres, 79 schools
+[2026-05-12 14:24:12] Ready.
+[2026-05-12 14:24:24] HTTP: GET /api/health HTTP/1.1
+[2026-05-12 14:24:24] HTTP: GET /api/models HTTP/1.1
+[2026-05-12 14:24:24] HTTP: GET /api/config HTTP/1.1
+[2026-05-12 14:24:24] HTTP: GET /api/options HTTP/1.1
+[2026-05-12 14:24:24] HTTP: GET /api/rag/stats HTTP/1.1
+[2026-05-12 14:24:24] HTTP: GET /api/style/list HTTP/1.1
+[2026-05-12 14:24:24] HTTP: GET /api/strand/report HTTP/1.1
+[2026-05-12 14:24:24] HTTP: GET /api/truth/new/status HTTP/1.1
+[2026-05-12 14:24:24] HTTP: GET /api/pipeline/new/status HTTP/1.1
+[2026-05-12 14:24:24] HTTP: GET /api/retention/report HTTP/1.1
+[2026-05-12 14:24:24] HTTP: POST /api/characters/states HTTP/1.1
+[2026-05-12 14:24:24] HTTP: POST /api/fragment/list HTTP/1.1
+[2026-05-12 14:24:24] HTTP: POST /api/quality/trend HTTP/1.1
+[2026-05-12 14:26:33] HTTP: POST /api/characters/states HTTP/1.1
+[2026-05-12 14:26:59] Generating chapter 3: 宗门入门
+[2026-05-12 14:26:59] Calling LLM for chapter...
+[2026-05-12 14:27:54] Importing NWACS modules...
+[2026-05-12 14:27:54] Initializing core modules...
+[2026-05-12 14:27:54] Initializing new modules (story/reviewer/quality/memory/planning)...
+[2026-05-12 14:27:54] All modules initialized.
+[2026-05-12 14:27:54] Knowledge base loaded: 10 genres, 79 schools
+[2026-05-12 14:27:54] Ready.
+[2026-05-12 14:28:11] Chapter response: 6139 chars
+[2026-05-12 14:28:11] Word count 5735 outside range [3400, 4600], adjusting...
+[2026-05-12 14:28:12] HTTP: GET /api/health HTTP/1.1
+[2026-05-12 14:28:12] HTTP: GET /api/models HTTP/1.1
+[2026-05-12 14:28:12] HTTP: GET /api/config HTTP/1.1
+[2026-05-12 14:28:12] HTTP: GET /api/options HTTP/1.1
+[2026-05-12 14:28:12] HTTP: GET /api/rag/stats HTTP/1.1
+[2026-05-12 14:28:12] HTTP: GET /api/style/list HTTP/1.1
+[2026-05-12 14:28:12] HTTP: GET /api/strand/report HTTP/1.1
+[2026-05-12 14:28:12] HTTP: GET /api/truth/new/status HTTP/1.1
+[2026-05-12 14:28:12] HTTP: GET /api/pipeline/new/status HTTP/1.1
+[2026-05-12 14:28:12] HTTP: GET /api/retention/report HTTP/1.1
+[2026-05-12 14:28:12] HTTP: POST /api/characters/states HTTP/1.1
+[2026-05-12 14:28:12] HTTP: POST /api/fragment/list HTTP/1.1
+[2026-05-12 14:28:12] HTTP: POST /api/quality/trend HTTP/1.1
+[2026-05-12 14:28:36] HTTP: GET /api/health HTTP/1.1
+[2026-05-12 14:28:36] HTTP: GET /api/models HTTP/1.1
+[2026-05-12 14:28:37] HTTP: GET /api/config HTTP/1.1
+[2026-05-12 14:28:37] HTTP: GET /api/options HTTP/1.1
+[2026-05-12 14:28:37] HTTP: GET /api/rag/stats HTTP/1.1
+[2026-05-12 14:28:37] HTTP: GET /api/style/list HTTP/1.1
+[2026-05-12 14:28:37] HTTP: GET /api/strand/report HTTP/1.1
+[2026-05-12 14:28:37] HTTP: GET /api/truth/new/status HTTP/1.1
+[2026-05-12 14:28:37] HTTP: GET /api/pipeline/new/status HTTP/1.1
+[2026-05-12 14:28:37] HTTP: GET /api/retention/report HTTP/1.1
+[2026-05-12 14:28:37] HTTP: POST /api/characters/states HTTP/1.1
+[2026-05-12 14:28:37] HTTP: POST /api/fragment/list HTTP/1.1
+[2026-05-12 14:28:37] HTTP: POST /api/quality/trend HTTP/1.1
+[2026-05-12 14:28:41] Adjusted chapter: 5725 chars
+[2026-05-12 14:28:41] Adjusted word count 5725 still outside range, using original
+[2026-05-12 14:28:41] Chapter saved to: D:\Trae CN\github\nwacs\nwacs\core\v8\..\..\output\星骸拾荒者\第3章_宗门入门.txt
+[2026-05-12 14:28:41] Truth files updated for chapter 3
+[2026-05-12 14:28:41] Pipeline advanced to auditing for chapter 3
+[2026-05-12 14:28:41] HTTP: POST /api/generate_chapter HTTP/1.1
+[2026-05-12 14:28:42] Reviewing chapter 1 (6139 chars)...
+[2026-05-12 14:28:42] Reviewing chapter 3 (6139 chars)...
+[2026-05-12 14:28:54] Pipeline audit result: revising
+[2026-05-12 14:28:54] HTTP: POST /api/review HTTP/1.1
+[2026-05-12 14:28:54] HTTP: POST /api/quality/arcs HTTP/1.1
+[2026-05-12 14:28:54] HTTP: POST /api/review HTTP/1.1
+[2026-05-12 14:28:55] HTTP: POST /api/quality/arcs HTTP/1.1
+[2026-05-12 14:30:50] Detecting AI traces in 6139 chars (deep=True)...
+[2026-05-12 14:30:50] Local detection: 12 traces, score=64
+[2026-05-12 14:31:08] HTTP: POST /api/detect_ai HTTP/1.1
+[2026-05-12 14:31:34] Rewriting 6139 chars with style=deai...
+[2026-05-12 14:31:34] Pre-rewrite detection: 12 AI traces found, score=64
+[2026-05-12 14:32:03] Importing NWACS modules...
+[2026-05-12 14:32:03] Initializing core modules...
+[2026-05-12 14:32:03] Initializing new modules (story/reviewer/quality/memory/planning)...
+[2026-05-12 14:32:03] All modules initialized.
+[2026-05-12 14:32:03] Knowledge base loaded: 10 genres, 79 schools
+[2026-05-12 14:32:03] Ready.
+[2026-05-12 14:32:08] Post-rewrite detection: 12 AI traces (was 12), score=64
+[2026-05-12 14:32:08] HTTP: POST /api/rewrite HTTP/1.1
+[2026-05-12 14:33:57] Importing NWACS modules...
+[2026-05-12 14:33:57] Initializing core modules...
+[2026-05-12 14:33:57] Initializing new modules (story/reviewer/quality/memory/planning)...
+[2026-05-12 14:33:57] All modules initialized.
+[2026-05-12 14:33:57] Knowledge base loaded: 10 genres, 79 schools
+[2026-05-12 14:33:57] Ready.
+[2026-05-12 14:34:05] HTTP: GET /api/health HTTP/1.1
+[2026-05-12 14:34:05] HTTP: GET /api/models HTTP/1.1
+[2026-05-12 14:34:05] HTTP: GET /api/config HTTP/1.1
+[2026-05-12 14:34:05] HTTP: GET /api/options HTTP/1.1
+[2026-05-12 14:34:05] HTTP: GET /api/rag/stats HTTP/1.1
+[2026-05-12 14:34:05] HTTP: GET /api/style/list HTTP/1.1
+[2026-05-12 14:34:05] HTTP: GET /api/strand/report HTTP/1.1
+[2026-05-12 14:34:05] HTTP: GET /api/truth/new/status HTTP/1.1
+[2026-05-12 14:34:05] HTTP: GET /api/pipeline/new/status HTTP/1.1
+[2026-05-12 14:34:05] HTTP: GET /api/retention/report HTTP/1.1
+[2026-05-12 14:34:05] HTTP: POST /api/characters/states HTTP/1.1
+[2026-05-12 14:34:05] HTTP: POST /api/fragment/list HTTP/1.1
+[2026-05-12 14:34:05] HTTP: POST /api/quality/trend HTTP/1.1
+[2026-05-12 14:35:20] HTTP: GET /api/health HTTP/1.1
+[2026-05-12 14:38:09] Importing NWACS modules...
+[2026-05-12 14:38:09] Initializing core modules...
+[2026-05-12 14:38:09] Initializing new modules (story/reviewer/quality/memory/planning)...
+[2026-05-12 14:38:09] All modules initialized.
+[2026-05-12 14:38:09] Knowledge base loaded: 10 genres, 79 schools
+[2026-05-12 14:38:09] Ready.
+[2026-05-12 14:38:24] HTTP: GET /api/health HTTP/1.1
+[2026-05-12 14:38:24] HTTP: GET /api/models HTTP/1.1
+[2026-05-12 14:38:24] HTTP: GET /api/config HTTP/1.1
+[2026-05-12 14:38:24] HTTP: GET /api/options HTTP/1.1
+[2026-05-12 14:38:24] HTTP: GET /api/rag/stats HTTP/1.1
+[2026-05-12 14:38:24] HTTP: GET /api/style/list HTTP/1.1
+[2026-05-12 14:38:24] HTTP: GET /api/strand/report HTTP/1.1
+[2026-05-12 14:38:24] HTTP: GET /api/truth/new/status HTTP/1.1
+[2026-05-12 14:38:24] HTTP: GET /api/pipeline/new/status HTTP/1.1
+[2026-05-12 14:38:24] HTTP: GET /api/retention/report HTTP/1.1
+[2026-05-12 14:38:24] HTTP: POST /api/characters/states HTTP/1.1
+[2026-05-12 14:38:24] HTTP: POST /api/fragment/list HTTP/1.1
+[2026-05-12 14:38:24] HTTP: POST /api/quality/trend HTTP/1.1
+[2026-05-12 16:12:44] Importing NWACS modules...
+[2026-05-12 16:12:44] Initializing core modules...
+[2026-05-12 16:12:44] Initializing new modules (story/reviewer/quality/memory/planning)...
+[2026-05-12 16:12:44] All modules initialized.
+[2026-05-12 16:12:44] Knowledge base loaded: 10 genres, 79 schools
+[2026-05-12 16:12:44] Ready.
+[2026-05-12 16:14:11] Importing NWACS modules...
+[2026-05-12 16:14:11] Initializing core modules...
+[2026-05-12 16:14:11] Initializing new modules (story/reviewer/quality/memory/planning)...
+[2026-05-12 16:14:12] All modules initialized.
+[2026-05-12 16:14:12] Knowledge base loaded: 10 genres, 79 schools
+[2026-05-12 16:14:12] Ready.
+[2026-05-12 16:14:25] HTTP: GET /api/status HTTP/1.1
+[2026-05-12 16:14:25] HTTP: GET /api/genres HTTP/1.1
+[2026-05-12 16:14:25] HTTP: GET /api/styles HTTP/1.1
+[2026-05-12 16:14:25] HTTP: GET /api/tones HTTP/1.1
+[2026-05-12 16:14:25] HTTP: GET /api/themes HTTP/1.1
+[2026-05-12 16:14:25] HTTP: GET /api/writing_methods HTTP/1.1
+[2026-05-12 16:14:25] Generating names: genre=玄幻, role=protagonist, gender=male
+[2026-05-12 16:14:25] HTTP: POST /api/generate_names HTTP/1.1
+[2026-05-12 16:14:25] Generating plots: genres=玄幻, styles=热血爽文, schools=, theme=逆境成长
+[2026-05-12 16:14:26] Web inspiration fetched: 0 snippets for 玄幻
+[2026-05-12 16:14:26] Calling LLM...
+[2026-05-12 16:14:56] HTTP: GET /api/health HTTP/1.1
+[2026-05-12 16:14:56] HTTP: GET /api/options HTTP/1.1
+[2026-05-12 16:14:56] HTTP: GET /api/models HTTP/1.1
+[2026-05-12 16:14:56] Generating names: genre=玄幻, role=protagonist, gender=male
+[2026-05-12 16:14:56] HTTP: POST /api/generate_names HTTP/1.1
+[2026-05-12 16:15:18] Response: 3452 chars
+[2026-05-12 16:15:18] HTTP: POST /api/generate_plots HTTP/1.1
+[2026-05-12 16:15:18] Error: [WinError 10053] 你的主机中的软件中止了一个已建立的连接。
+[2026-05-12 16:15:18] HTTP: POST /api/generate_plots HTTP/1.1
+[2026-05-12 18:50:08] Detecting AI traces in 5945 chars (deep=True)...
+[2026-05-12 18:50:08] Local detection: 12 traces, score=64
+[2026-05-12 18:50:25] HTTP: POST /api/detect_ai HTTP/1.1
+[2026-05-12 19:07:24] HTTP: GET / HTTP/1.1
+[2026-05-12 20:19:28] Importing NWACS modules...
+[2026-05-12 20:19:28] Initializing core modules...
+[2026-05-12 20:19:28] Initializing new modules (story/reviewer/quality/memory/planning)...
+[2026-05-12 20:19:29] All modules initialized.
+[2026-05-12 20:19:29] Knowledge base loaded: 10 genres, 79 schools
+[2026-05-12 20:19:29] Ready.
+[2026-05-12 20:20:21] Importing NWACS modules...
+[2026-05-12 20:20:21] Initializing core modules...
+[2026-05-12 20:20:21] Initializing new modules (story/reviewer/quality/memory/planning)...
+[2026-05-12 20:20:21] All modules initialized.
+[2026-05-12 20:20:21] Knowledge base loaded: 10 genres, 79 schools
+[2026-05-12 20:20:21] Ready.
+[2026-05-12 20:21:07] Importing NWACS modules...
+[2026-05-12 20:21:07] Initializing core modules...
+[2026-05-12 20:21:07] Initializing new modules (story/reviewer/quality/memory/planning)...
+[2026-05-12 20:21:07] All modules initialized.
+[2026-05-12 20:21:07] Knowledge base loaded: 10 genres, 79 schools
+[2026-05-12 20:21:07] Ready.
+[2026-05-12 22:47:01] Importing NWACS modules...
+[2026-05-12 22:47:01] Initializing core modules...
+[2026-05-12 22:47:01] Initializing new modules (story/reviewer/quality/memory/planning)...
+[2026-05-12 22:47:01] All modules initialized.
+[2026-05-12 22:47:01] Knowledge base loaded: 10 genres, 79 schools
+[2026-05-12 22:47:01] Ready.
+[2026-05-12 22:47:06] Importing NWACS modules...
+[2026-05-12 22:47:06] Initializing core modules...
+[2026-05-12 22:47:06] Initializing new modules (story/reviewer/quality/memory/planning)...
+[2026-05-12 22:47:06] All modules initialized.
+[2026-05-12 22:47:06] Knowledge base loaded: 10 genres, 79 schools
+[2026-05-12 22:47:06] Ready.
+[2026-05-12 22:47:07] Importing NWACS modules...
+[2026-05-12 22:47:07] Initializing core modules...
+[2026-05-12 22:47:07] Initializing new modules (story/reviewer/quality/memory/planning)...
+[2026-05-12 22:47:07] All modules initialized.
+[2026-05-12 22:47:07] Knowledge base loaded: 10 genres, 79 schools
+[2026-05-12 22:47:07] Ready.
+[2026-05-12 22:47:08] Importing NWACS modules...
+[2026-05-12 22:47:08] Initializing core modules...
+[2026-05-12 22:47:08] Initializing new modules (story/reviewer/quality/memory/planning)...
+[2026-05-12 22:47:08] All modules initialized.
+[2026-05-12 22:47:08] Knowledge base loaded: 10 genres, 79 schools
+[2026-05-12 22:47:08] Ready.
+[2026-05-12 22:47:08] Importing NWACS modules...
+[2026-05-12 22:47:09] Initializing core modules...
+[2026-05-12 22:47:09] Initializing new modules (story/reviewer/quality/memory/planning)...
+[2026-05-12 22:47:09] All modules initialized.
+[2026-05-12 22:47:09] Knowledge base loaded: 10 genres, 79 schools
+[2026-05-12 22:47:09] Ready.
+[2026-05-12 22:47:13] Importing NWACS modules...
+[2026-05-12 22:47:13] Initializing core modules...
+[2026-05-12 22:47:13] Initializing new modules (story/reviewer/quality/memory/planning)...
+[2026-05-12 22:47:13] All modules initialized.
+[2026-05-12 22:47:14] Knowledge base loaded: 10 genres, 79 schools
+[2026-05-12 22:47:14] Ready.
+[2026-05-12 22:47:18] Importing NWACS modules...
+[2026-05-12 22:47:18] Initializing core modules...
+[2026-05-12 22:47:18] Initializing new modules (story/reviewer/quality/memory/planning)...
+[2026-05-12 22:47:18] All modules initialized.
+[2026-05-12 22:47:18] Knowledge base loaded: 10 genres, 79 schools
+[2026-05-12 22:47:18] Ready.
+[2026-05-12 22:47:18] Importing NWACS modules...
+[2026-05-12 22:47:19] Initializing core modules...
+[2026-05-12 22:47:19] Initializing new modules (story/reviewer/quality/memory/planning)...
+[2026-05-12 22:47:19] All modules initialized.
+[2026-05-12 22:47:19] Knowledge base loaded: 10 genres, 79 schools
+[2026-05-12 22:47:19] Ready.

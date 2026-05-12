@@ -162,8 +162,8 @@ class LLMInterface:
         for cb in self._callbacks.get(event, []):
             try:
                 cb(*args, **kwargs)
-            except Exception:
-                pass
+            except Exception as e:
+                logger.warning(f"Callback error for event '{event}': {e}")
 
     def update_config(self, **kwargs):
         for key, value in kwargs.items():
@@ -191,7 +191,9 @@ class LLMInterface:
             {
                 "provider": "deepseek",
                 "models": [
-                    {"id": "deepseek-chat", "name": "DeepSeek Chat", "desc": "通用对话，性价比最高", "max_tokens": 8192},
+                    {"id": "deepseek-v4-flash", "name": "DeepSeek V4 Flash", "desc": "最新快速模型，推荐", "max_tokens": 8192},
+                    {"id": "deepseek-v4-pro", "name": "DeepSeek V4 Pro", "desc": "最强推理能力", "max_tokens": 8192},
+                    {"id": "deepseek-chat", "name": "DeepSeek Chat", "desc": "通用对话，兼容旧版", "max_tokens": 8192},
                     {"id": "deepseek-reasoner", "name": "DeepSeek Reasoner", "desc": "深度推理，适合复杂大纲", "max_tokens": 8192},
                 ]
             },
@@ -253,6 +255,7 @@ class LLMInterface:
     def _call_api(self, messages: List[Dict], params: GenerationParams = None) -> str:
         import urllib.request
         import urllib.error
+        import socket
 
         payload = self._build_payload(messages, params, stream=False)
         data = json.dumps(payload, ensure_ascii=False).encode('utf-8')
@@ -271,8 +274,15 @@ class LLMInterface:
         except urllib.error.HTTPError as e:
             body = e.read().decode('utf-8', errors='replace')
             raise RuntimeError(f"HTTP {e.code}: {body[:500]}")
+        except socket.timeout:
+            raise RuntimeError(f"API call timed out after {self.config.timeout}s")
+        except urllib.error.URLError as e:
+            raise RuntimeError(f"Connection failed: {e.reason}")
         except Exception as e:
-            raise RuntimeError(f"API call failed: {str(e)}")
+            err_str = str(e)
+            if "10053" in err_str or "10054" in err_str or "10060" in err_str:
+                raise RuntimeError(f"Connection aborted (WinError {err_str}), retrying...")
+            raise RuntimeError(f"API call failed: {err_str}")
 
     def _call_api_stream(self, messages: List[Dict], params: GenerationParams = None) -> Generator[str, None, None]:
         import urllib.request

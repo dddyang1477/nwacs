@@ -1,0 +1,160 @@
+{
+  "1": {
+    "chapter": 1,
+    "overall_status": "blocked",
+    "status_label": "🚫 有关卡未通过 — 必须修复",
+    "gates": [
+      {
+        "gate_id": "ai_trace",
+        "name": "AI痕迹检测",
+        "description": "检测文本中的AI写作痕迹，确保内容自然",
+        "category": "quality",
+        "blocking": true,
+        "threshold": 70,
+        "threshold_desc": "AI痕迹分数需 >= 70（满分100，越高越好）",
+        "actual_score": 100,
+        "passed": true,
+        "status": "✅ 通过"
+      },
+      {
+        "gate_id": "vocabulary_fatigue",
+        "name": "词汇疲劳检测",
+        "description": "检测词汇重复使用和陈词滥调",
+        "category": "quality",
+        "blocking": false,
+        "threshold": 60,
+        "threshold_desc": "疲劳分数需 <= 60（满分100，越低越好）",
+        "actual_score": 25.0,
+        "passed": false,
+        "status": "❌ 未通过"
+      },
+      {
+        "gate_id": "retention_power",
+        "name": "追读力检测",
+        "description": "检测钩子、爽点、微兑现等读者留存要素",
+        "category": "engagement",
+        "blocking": false,
+        "threshold": 50,
+        "threshold_desc": "追读力分数需 >= 50（满分100）",
+        "actual_score": 0,
+        "passed": false,
+        "status": "❌ 未通过"
+      },
+      {
+        "gate_id": "word_count",
+        "name": "字数达标",
+        "description": "检查章节字数是否达到设定目标",
+        "category": "basic",
+        "blocking": true,
+        "threshold": 0.85,
+        "threshold_desc": "实际字数需 >= 目标字数的85%",
+        "actual_score": 0.0,
+        "passed": false,
+        "status": "❌ 未通过"
+      },
+      {
+        "gate_id": "consistency",
+        "name": "角色一致性",
+        "description": "检查角色名字、性格、能力是否与设定一致",
+        "category": "consistency",
+        "blocking": true,
+        "threshold": 1,
+        "threshold_desc": "无角色名错误或性格偏离",
+        "actual_score": 1,
+        "passed": true,
+        "status": "✅ 通过"
+      },
+      {
+        "gate_id": "pacing",
+        "name": "节奏检测",
+        "description": "检查章节节奏是否有变化，避免单调",
+        "category": "style",
+        "blocking": false,
+        "threshold": 60,
+        "threshold_desc": "节奏变化分数需 >= 60",
+        "actual_score": 70,
+        "passed": true,
+        "status": "✅ 通过"
+      },
+      {
+        "gate_id": "dialogue_balance",
+        "name": "对话平衡",
+        "description": "检查对话与叙述的比例是否合理",
+        "category": "style",
+        "blocking": false,
+        "threshold": 0.15,
+        "threshold_desc": "对话占比需 >= 15%",
+        "actual_score": 0.2,
+        "passed": true,
+        "status": "✅ 通过"
+      },
+      {
+        "gate_id": "hook_quality",
+        "name": "钩子质量",
+        "description": "检查开篇钩子和章末悬念是否有效",
+        "category": "engagement",
+        "blocking": true,
+        "threshold": 1,
+        "threshold_desc": "至少1个有效钩子",
+        "actual_score": 0.33,
+        "passed": false,
+        "status": "❌ 未通过"
+      }
+    ],
+    "blocking_failed": [
+      {
+        "gate_id": "word_count",
+        "name": "字数达标",
+        "description": "检查章节字数是否达到设定目标",
+        "category": "basic",
+        "blocking": true,
+        "threshold": 0.85,
+        "threshold_desc": "实际字数需 >= 目标字数的85%",
+        "actual_score": 0.0,
+        "passed": false,
+        "status": "❌ 未通过"
+      },
+      {
+        "gate_id": "hook_quality",
+        "name": "钩子质量",
+        "description": "检查开篇钩子和章末悬念是否有效",
+        "category": "engagement",
+        "blocking": true,
+        "threshold": 1,
+        "threshold_desc": "至少1个有效钩子",
+        "actual_score": 0.33,
+        "passed": false,
+        "status": "❌ 未通过"
+      }
+    ],
+    "warning_failed": [
+      {
+        "gate_id": "vocabulary_fatigue",
+        "name": "词汇疲劳检测",
+        "description": "检测词汇重复使用和陈词滥调",
+        "category": "quality",
+        "blocking": false,
+        "threshold": 60,
+        "threshold_desc": "疲劳分数需 <= 60（满分100，越低越好）",
+        "actual_score": 25.0,
+        "passed": false,
+        "status": "❌ 未通过"
+      },
+      {
+        "gate_id": "retention_power",
+        "name": "追读力检测",
+        "description": "检测钩子、爽点、微兑现等读者留存要素",
+        "category": "engagement",
+        "blocking": false,
+        "threshold": 50,
+        "threshold_desc": "追读力分数需 >= 50（满分100）",
+        "actual_score": 0,
+        "passed": false,
+        "status": "❌ 未通过"
+      }
+    ],
+    "passed_count": 4,
+    "total_count": 8,
+    "evaluated_at": "2026-05-12T05:04:42Z"
+  }
+}

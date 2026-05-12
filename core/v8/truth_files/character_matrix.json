@@ -1,0 +1,66 @@
+{
+  "characters": {
+    "叶尘": {
+      "name": "叶尘",
+      "role": "protagonist",
+      "first_appearance": 3,
+      "motivation_history": [
+        {
+          "chapter": 3,
+          "motivation": "活下去，并且活得有尊严，不再让任何人在乎的人因自己的弱小而死",
+          "timestamp": "2026-05-12T05:28:41Z"
+        }
+      ],
+      "ability_changes": [],
+      "current_goal": "",
+      "status": "active"
+    },
+    "墨无痕": {
+      "name": "墨无痕",
+      "role": "antagonist",
+      "first_appearance": 3,
+      "motivation_history": [
+        {
+          "chapter": 3,
+          "motivation": "成为新世界的神，用机械与修真融合的力量重塑宇宙秩序",
+          "timestamp": "2026-05-12T05:28:41Z"
+        }
+      ],
+      "ability_changes": [],
+      "current_goal": "",
+      "status": "active"
+    },
+    "苏棠": {
+      "name": "苏棠",
+      "role": "supporting",
+      "first_appearance": 3,
+      "motivation_history": [
+        {
+          "chapter": 3,
+          "motivation": "守护上古文明的最后火种，并让叶尘活下去",
+          "timestamp": "2026-05-12T05:28:41Z"
+        }
+      ],
+      "ability_changes": [],
+      "current_goal": "",
+      "status": "active"
+    },
+    "铁锤": {
+      "name": "铁锤",
+      "role": "supporting",
+      "first_appearance": 3,
+      "motivation_history": [
+        {
+          "chapter": 3,
+          "motivation": "找到自己作为‘人’而非‘机器’的存在意义",
+          "timestamp": "2026-05-12T05:28:41Z"
+        }
+      ],
+      "ability_changes": [],
+      "current_goal": "",
+      "status": "active"
+    }
+  },
+  "relationships": [],
+  "last_updated_chapter": 3
+}

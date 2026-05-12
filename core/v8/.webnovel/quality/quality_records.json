@@ -1,0 +1,102 @@
+[
+  {
+    "chapter": 1,
+    "overall_score": 73.35,
+    "dimension_scores": {
+      "setting": 82.0,
+      "character": 86.0,
+      "plot": 83.0,
+      "style": 62.0,
+      "pacing": 100,
+      "ai_flavor": 97.0
+    },
+    "severity_counts": {
+      "critical": 0,
+      "high": 3,
+      "medium": 3,
+      "low": 7
+    },
+    "checklist_score": 0.0,
+    "checklist_completion": 0.0,
+    "checklist_required_completion": 0.0,
+    "hook_strength": "",
+    "cool_point_count": 0,
+    "word_count": 5735,
+    "created_at": "2026-05-12T05:28:54Z"
+  },
+  {
+    "chapter": 2,
+    "overall_score": 63.150000000000006,
+    "dimension_scores": {
+      "setting": 79.0,
+      "character": 59.0,
+      "plot": 70.0,
+      "style": 74.0,
+      "pacing": 100,
+      "ai_flavor": 92.0
+    },
+    "severity_counts": {
+      "critical": 0,
+      "high": 4,
+      "medium": 6,
+      "low": 6
+    },
+    "checklist_score": 0.0,
+    "checklist_completion": 0.0,
+    "checklist_required_completion": 0.0,
+    "hook_strength": "",
+    "cool_point_count": 0,
+    "word_count": 8949,
+    "created_at": "2026-05-11T17:15:01Z"
+  },
+  {
+    "chapter": 3,
+    "overall_score": 72.55,
+    "dimension_scores": {
+      "setting": 85.0,
+      "character": 86.0,
+      "plot": 78.0,
+      "style": 62.0,
+      "pacing": 100,
+      "ai_flavor": 97.0
+    },
+    "severity_counts": {
+      "critical": 0,
+      "high": 3,
+      "medium": 4,
+      "low": 5
+    },
+    "checklist_score": 0.0,
+    "checklist_completion": 0.0,
+    "checklist_required_completion": 0.0,
+    "hook_strength": "",
+    "cool_point_count": 0,
+    "word_count": 5735,
+    "created_at": "2026-05-12T05:28:54Z"
+  },
+  {
+    "chapter": 5,
+    "overall_score": 66.9,
+    "dimension_scores": {
+      "setting": 76.0,
+      "character": 74.0,
+      "plot": 78.0,
+      "style": 70.0,
+      "pacing": 100,
+      "ai_flavor": 92.0
+    },
+    "severity_counts": {
+      "critical": 0,
+      "high": 4,
+      "medium": 4,
+      "low": 6
+    },
+    "checklist_score": 0.0,
+    "checklist_completion": 0.0,
+    "checklist_required_completion": 0.0,
+    "hook_strength": "",
+    "cool_point_count": 0,
+    "word_count": 5290,
+    "created_at": "2026-05-12T02:38:49Z"
+  }
+]

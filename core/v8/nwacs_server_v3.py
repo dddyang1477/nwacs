@@ -1,4 +1,5 @@
-import sys, os, json, traceback, threading, time
+import sys, os, json, traceback, threading, time, re, urllib.request, urllib.error
+from datetime import datetime
 from http.server import HTTPServer, BaseHTTPRequestHandler
 from urllib.parse import urlparse
 
@@ -14,15 +15,30 @@ def log(msg):
     with open(LOG_FILE, 'a', encoding='utf-8') as f:
         f.write(line + '\n')
 
+def _safe_filename(name: str) -> str:
+    """将小说名/章节名转换为安全的文件名"""
+    import re
+    safe = re.sub(r'[\\/:*?"<>|]', '_', name)
+    safe = safe.strip().rstrip('.')
+    return safe if safe else 'untitled'
+
 log("Importing NWACS modules...")
 from genre_profile_manager import GenreProfileManager, GenreType
 from llm_interface import llm, GenerationParams
 from character_name_engine import CharacterNameEngine, CharacterProfile
-from story_system import StorySystem
+from story_system import StorySystem, MultiAgentPipeline
 from reviewer_agent import ReviewerAgent
 from quality_system import QualitySystem
-from project_memory import ProjectMemory
+from ai_humanizer import detect_ai_traces, build_humanize_prompt, build_ai_detection_report_prompt
+from project_memory import ProjectMemory, TruthFilesManager
 from planning_system import PlanningSystem
+from retention_system import RetentionSystem
+from fatigue_detector import FatigueDetector, HumanReviewGates
+from rag_engine import RAGEngine
+from truth_file_manager import TruthFileManager
+from style_fingerprint import StyleFingerprintEngine
+from strand_weave import StrandWeaveEngine
+from writing_pipeline import WritingPipeline
 
 log("Initializing core modules...")
 genre_manager = GenreProfileManager()
@@ -31,10 +47,24 @@ name_engine = CharacterNameEngine(llm)
 PROJECT_ROOT = os.path.dirname(__file__)
 log("Initializing new modules (story/reviewer/quality/memory/planning)...")
 story_system = StorySystem(PROJECT_ROOT)
+pipeline = MultiAgentPipeline(story_system)
 reviewer = ReviewerAgent(PROJECT_ROOT)
 quality_system = QualitySystem(PROJECT_ROOT)
 project_memory = ProjectMemory(PROJECT_ROOT)
+truth_files = TruthFilesManager(PROJECT_ROOT)
 planning_system = PlanningSystem(PROJECT_ROOT)
+retention_system = RetentionSystem(PROJECT_ROOT)
+fatigue_detector = FatigueDetector(PROJECT_ROOT)
+review_gates = HumanReviewGates(PROJECT_ROOT)
+rag_engine = RAGEngine(PROJECT_ROOT)
+truth_file_mgr = TruthFileManager(PROJECT_ROOT)
+style_engine = StyleFingerprintEngine()
+strand_engine = StrandWeaveEngine()
+writing_pipeline = WritingPipeline(
+    truth_manager=truth_file_mgr,
+    style_engine=style_engine,
+    strand_engine=strand_engine,
+)
 log("All modules initialized.")
 
 GENRE_KB_FILE = os.path.join(os.path.dirname(__file__), 'genre_knowledge_base.json')
@@ -131,7 +161,82 @@ def build_knowledge_injection(genre: str, school_id: str = "") -> str:
     return "\n".join(parts)
 
 
+def fetch_creative_inspiration(genre: str, theme: str = "") -> str:
+    """联网获取创作灵感，包括热门趋势和创意元素"""
+    inspiration_parts = []
+    genre_keywords = {
+        "玄幻": "玄幻小说+热门题材+创新设定+2025+2026",
+        "都市": "都市小说+热门题材+社会热点+2025+2026",
+        "仙侠": "仙侠小说+创新流派+热门设定+2025+2026",
+        "科幻": "科幻小说+前沿科技+AI+创新概念+2025+2026",
+        "悬疑": "悬疑小说+热门题材+社会案件+2025+2026",
+        "言情": "言情小说+热门题材+情感趋势+2025+2026",
+        "历史": "历史小说+热门朝代+创新穿越+2025+2026",
+        "游戏": "游戏小说+热门游戏+电竞趋势+2025+2026",
+        "恐怖": "恐怖小说+灵异题材+都市传说+2025+2026",
+        "武侠": "武侠小说+创新设定+国风复兴+2025+2026",
+    }
+    query = genre_keywords.get(genre, f"{genre}+小说+热门题材+创新+2025+2026")
+    if theme:
+        query += f"+{theme}"
+
+    encoded_query = urllib.parse.quote(query)
+    search_url = f"https://www.baidu.com/s?wd={encoded_query}"
+
+    try:
+        req = urllib.request.Request(
+            search_url,
+            headers={
+                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+                "Accept": "text/html,application/xhtml+xml",
+                "Accept-Language": "zh-CN,zh;q=0.9",
+            }
+        )
+        with urllib.request.urlopen(req, timeout=8) as resp:
+            html = resp.read().decode('utf-8', errors='ignore')
+
+        snippets = re.findall(r'<span class="content-right_[^"]*">(.*?)</span>', html, re.DOTALL)
+        if not snippets:
+            snippets = re.findall(r'<div class="c-abstract">(.*?)</div>', html, re.DOTALL)
+        if not snippets:
+            snippets = re.findall(r'class="c-summary[^"]*"[^>]*>(.*?)</', html, re.DOTALL)
+
+        if snippets:
+            clean_snippets = []
+            for s in snippets[:8]:
+                clean = re.sub(r'<[^>]+>', '', s)
+                clean = re.sub(r'\s+', ' ', clean).strip()
+                if len(clean) > 15:
+                    clean_snippets.append(clean)
+
+            if clean_snippets:
+                inspiration_parts.append("\n## 🌐 联网获取的创作灵感（来自实时搜索）\n")
+                inspiration_parts.append("以下是从网络中获取的最新热门趋势和创意元素，请参考这些信息来增强剧情的创新性和时代感：\n")
+                for i, snippet in enumerate(clean_snippets[:6], 1):
+                    inspiration_parts.append(f"{i}. {snippet}")
+                inspiration_parts.append("\n请将以上趋势信息融入剧情方案中，创造更具时代感和创新性的故事。\n")
+
+        log(f"Web inspiration fetched: {len(snippets) if snippets else 0} snippets for {genre}")
+
+    except Exception as e:
+        log(f"Web inspiration fetch failed: {e}")
+
+    creative_prompts = [
+        "\n## 🎨 创意增强指令\n",
+        "1. **反套路设计**：思考当前市场上最常见的套路是什么，然后反其道而行之",
+        "2. **跨类型融合**：将{genre}与其他类型的核心元素融合，创造全新阅读体验",
+        "3. **时代共鸣**：融入当代读者最关心的社会议题和情感需求",
+        "4. **高概念设定**：用一个简单但极具冲击力的'如果……会怎样'来构建核心创意",
+        "5. **情感锚点**：确保故事有让读者产生强烈情感共鸣的核心关系",
+    ]
+    inspiration_parts.extend(creative_prompts)
+
+    return "\n".join(inspiration_parts).replace("{genre}", genre)
+
+
 class NWACSHandler(BaseHTTPRequestHandler):
+    chapters_cache = {}  # 缓存已生成的章节内容，用于防重复检测
+
     def log_message(self, format, *args):
         log(f"HTTP: {args[0]}")
 
@@ -310,11 +415,7 @@ class NWACSHandler(BaseHTTPRequestHandler):
                     "热血燃爆": "情绪高涨",
                 },
                 "lengths": {
-                    "短篇": "3-5万字",
-                    "中篇": "10-30万字",
-                    "中长篇": "50-100万字",
-                    "长篇": "100-300万字",
-                    "超长篇": "300万字+",
+                    "自定义字数": "5万-300万字可设置",
                 }
             })
         elif path == '/api/quality/trend':
@@ -325,7 +426,12 @@ class NWACSHandler(BaseHTTPRequestHandler):
             self._send_json({"success": True, "stats": stats})
         elif path == '/api/planning/timeline':
             self._send_json({"success": True, "entries": planning_system.get_timeline()})
-        elif path == '/api/story/snapshots':
+        elif path == '/api/retention/report':
+            report = retention_system.get_overall_retention_report()
+            self._send_json({"success": True, "report": report})
+        elif path == '/api/retention/score':
+            self._send_json({"success": True, "message": "使用POST请求提交章节号"})
+        elif path == '/api/story/snapshot':
             snapshots = story_system.list_snapshots()
             self._send_json({"success": True, "snapshots": snapshots})
         elif path == '/api/story/lock':
@@ -336,6 +442,45 @@ class NWACSHandler(BaseHTTPRequestHandler):
             self._send_json({"success": True, "control": ctrl})
         elif path == '/api/quality/arcs':
             self._send_json({"success": True, "message": "使用POST请求提交文本进行分析"})
+        elif path == '/api/rag/stats':
+            stats = rag_engine.get_stats()
+            self._send_json({"success": True, "stats": stats})
+        elif path == '/api/rag/characters':
+            chars = rag_engine.get_character_network()
+            self._send_json({"success": True, "characters": chars})
+        elif path == '/api/rag/timeline':
+            timeline = rag_engine.get_event_timeline()
+            self._send_json({"success": True, "timeline": timeline})
+        elif path == '/api/style/list':
+            fps = style_engine.list_fingerprints()
+            self._send_json({"success": True, "fingerprints": fps})
+        elif path == '/api/strand/report':
+            report = strand_engine.get_rhythm_report()
+            self._send_json({"success": True, "report": report})
+        elif path == '/api/truth/new/status':
+            status = truth_file_mgr.get_all_status()
+            self._send_json({"success": True, "status": status})
+        elif path == '/api/truth/new/hooks':
+            hooks = truth_file_mgr.get_file('pending_hooks')
+            self._send_json({"success": True, "hooks": hooks})
+        elif path == '/api/pipeline/new/status':
+            self._send_json({"success": True, "results": {str(k): {'stage': v.stage.value, 'passed': v.passed, 'error': v.error} for k, v in writing_pipeline.results.items()}})
+        elif path == '/api/fatigue/overall':
+            try:
+                report = fatigue_detector.get_overall_fatigue_report()
+                self._send_json({"success": True, "report": report})
+            except Exception as e:
+                log(f"fatigue/overall error: {e}")
+                traceback.print_exc()
+                self._send_json({"success": False, "error": str(e)[:200]})
+        elif path == '/api/gates/summary':
+            try:
+                summary = review_gates.get_all_gates_summary()
+                self._send_json({"success": True, "summary": summary})
+            except Exception as e:
+                log(f"gates/summary error: {e}")
+                traceback.print_exc()
+                self._send_json({"success": False, "error": str(e)[:200]})
         elif path == '/' or path == '/index.html':
             frontend_path = os.path.join(os.path.dirname(__file__), 'frontend', 'index.html')
             if os.path.exists(frontend_path):
@@ -367,16 +512,20 @@ class NWACSHandler(BaseHTTPRequestHandler):
             self._handle_select_plot(data)
         elif path == '/api/generate_chapter':
             self._handle_generate_chapter(data)
+        elif path == '/api/generate_chapters_batch':
+            self._handle_generate_chapters_batch(data)
         elif path == '/api/detect_ai':
             self._handle_detect_ai(data)
         elif path == '/api/rewrite':
             self._handle_rewrite(data)
+        elif path == '/api/save_chapter':
+            self._handle_save_chapter(data)
         elif path == '/api/config':
             self._handle_update_config(data)
         elif path == '/api/generate_names':
             self._handle_generate_names(data)
-        elif path == '/api/generate_titles':
-            self._handle_generate_titles(data)
+        elif path == '/api/generate_names_batch':
+            self._handle_generate_names_batch(data)
         elif path == '/api/generate_org_names':
             self._handle_generate_org_names(data)
         elif path == '/api/generate_power_system':
@@ -405,8 +554,24 @@ class NWACSHandler(BaseHTTPRequestHandler):
             self._handle_memory_learn(data)
         elif path == '/api/memory/context':
             self._handle_memory_context(data)
+        elif path == '/api/memory/fingerprint':
+            self._handle_memory_fingerprint(data)
         elif path == '/api/memory/stats':
             self._handle_memory_stats(data)
+        elif path == '/api/truth/context':
+            self._handle_truth_context(data)
+        elif path == '/api/truth/all':
+            self._handle_truth_all(data)
+        elif path == '/api/truth/update':
+            self._handle_truth_update(data)
+        elif path == '/api/truth/hooks':
+            self._handle_truth_hooks(data)
+        elif path == '/api/pipeline/start':
+            self._handle_pipeline_start(data)
+        elif path == '/api/pipeline/state':
+            self._handle_pipeline_state(data)
+        elif path == '/api/pipeline/revise':
+            self._handle_pipeline_revise(data)
         elif path == '/api/planning/beat-sheet':
             self._handle_planning_beat_sheet(data)
         elif path == '/api/planning/outline':
@@ -415,6 +580,46 @@ class NWACSHandler(BaseHTTPRequestHandler):
             self._handle_planning_directive(data)
         elif path == '/api/planning/timeline':
             self._handle_planning_timeline(data)
+        elif path == '/api/retention/score':
+            self._handle_retention_score(data)
+        elif path == '/api/retention/analyze':
+            self._handle_retention_analyze(data)
+        elif path == '/api/retention/add_hook':
+            self._handle_retention_add_hook(data)
+        elif path == '/api/retention/add_cool_point':
+            self._handle_retention_add_cool_point(data)
+        elif path == '/api/retention/add_debt':
+            self._handle_retention_add_debt(data)
+        elif path == '/api/retention/resolve_debt':
+            self._handle_retention_resolve_debt(data)
+        elif path == '/api/fatigue/analyze':
+            self._handle_fatigue_analyze(data)
+        elif path == '/api/fatigue/report':
+            self._handle_fatigue_report(data)
+        elif path == '/api/fatigue/overall':
+            self._handle_fatigue_overall(data)
+        elif path == '/api/fatigue/suggestions':
+            self._handle_fatigue_suggestions(data)
+        elif path == '/api/gates/evaluate':
+            self._handle_gates_evaluate(data)
+        elif path == '/api/gates/chapter':
+            self._handle_gates_chapter(data)
+        elif path == '/api/gates/summary':
+            self._handle_gates_summary(data)
+        elif path == '/api/rag/search':
+            self._handle_rag_search(data)
+        elif path == '/api/rag/context':
+            self._handle_rag_context(data)
+        elif path == '/api/rag/reverse':
+            self._handle_rag_reverse(data)
+        elif path == '/api/rag/consistency':
+            self._handle_rag_consistency(data)
+        elif path == '/api/rag/characters':
+            self._handle_rag_characters(data)
+        elif path == '/api/rag/timeline':
+            self._handle_rag_timeline(data)
+        elif path == '/api/rag/stats':
+            self._handle_rag_stats(data)
         elif path == '/api/story/snapshot':
             self._handle_story_snapshot(data)
         elif path == '/api/story/lock':
@@ -423,6 +628,40 @@ class NWACSHandler(BaseHTTPRequestHandler):
             self._handle_story_control(data)
         elif path == '/api/quality/arcs':
             self._handle_quality_arcs(data)
+        elif path == '/api/fragment/save':
+            self._handle_fragment_save(data)
+        elif path == '/api/fragment/list':
+            self._handle_fragment_list(data)
+        elif path == '/api/fragment/get':
+            self._handle_fragment_get(data)
+        elif path == '/api/fragment/apply':
+            self._handle_fragment_apply(data)
+        elif path == '/api/characters/states':
+            self._handle_characters_states(data)
+        elif path == '/api/style/analyze':
+            self._handle_style_analyze(data)
+        elif path == '/api/style/compare':
+            self._handle_style_compare(data)
+        elif path == '/api/style/list':
+            self._handle_style_list(data)
+        elif path == '/api/strand/analyze':
+            self._handle_strand_analyze(data)
+        elif path == '/api/strand/report':
+            self._handle_strand_report(data)
+        elif path == '/api/strand/suggest':
+            self._handle_strand_suggest(data)
+        elif path == '/api/truth/new/status':
+            self._handle_truth_new_status(data)
+        elif path == '/api/truth/new/init':
+            self._handle_truth_new_init(data)
+        elif path == '/api/truth/new/update':
+            self._handle_truth_new_update(data)
+        elif path == '/api/truth/new/hooks':
+            self._handle_truth_new_hooks(data)
+        elif path == '/api/pipeline/new/run':
+            self._handle_pipeline_new_run(data)
+        elif path == '/api/pipeline/new/status':
+            self._handle_pipeline_new_status(data)
         else:
             self._send_json({"error": "Not found"}, 404)
 
@@ -436,7 +675,7 @@ class NWACSHandler(BaseHTTPRequestHandler):
         tones = data.get('tones', [data.get('tone', '紧张刺激')])
         if isinstance(tones, str):
             tones = [tones]
-        length = data.get('length', '中长篇')
+        length = data.get('length', '自定义字数')
         theme = data.get('theme', '逆境成长')
         protagonist = data.get('protagonist', '')
         extra = data.get('extra_requirements', '')
@@ -446,6 +685,9 @@ class NWACSHandler(BaseHTTPRequestHandler):
         school_names = data.get('school_names', [data.get('school_name', '')])
         if isinstance(school_names, str):
             school_names = [school_names] if school_names else []
+        writing_method = data.get('writing_method', '')
+        total_word_count = data.get('total_word_count', 500000)
+        target_word_count = data.get('target_word_count', 4000)
 
         primary_genre = genres[0] if genres else '玄幻'
         primary_school = schools[0] if schools else ''
@@ -482,18 +724,39 @@ class NWACSHandler(BaseHTTPRequestHandler):
                     if extra_kb:
                         knowledge_injection += "\n" + extra_kb
 
+            web_inspiration = fetch_creative_inspiration(primary_genre, theme)
+
+            method_instruction = ""
+            if writing_method:
+                method_map = {
+                    'three_act': '三幕结构（建置→对抗→结局）',
+                    'hero_journey': '英雄之旅（平凡世界→冒险→蜕变→归来）',
+                    'story_circle': '故事圈（舒适区→探索→改变→回归）',
+                    'seven_point': '七点结构（钩子→触发→转折→中点→转折→高潮→结局）',
+                    'pixar_formula': '皮克斯公式（日常→事件→连锁反应→成长→蜕变）',
+                    'freytag': '弗莱塔格金字塔（引言→上升→高潮→下降→结局）',
+                    'save_the_cat': '救猫咪节拍表（15节拍精准控制节奏）',
+                    'kishotenketsu': '起承转合（引入→发展→转折→收束）',
+                }
+                method_name = method_map.get(writing_method, writing_method)
+                method_instruction = f"\n### 叙事结构要求\n请严格按照「{method_name}」的结构框架来设计剧情方案，确保方案符合该叙事结构的核心节拍和节奏要求。"
+
             prompt = f"""你是一位资深网文编辑兼故事架构师，曾策划过100+部爆款小说，精通三幕式结构、英雄之旅和网文节奏设计。请为以下需求生成3个完全不同的剧情方案。
 
 ## 需求信息
 - 题材：{genre_label}
 - 风格：{style_str}
 - 基调：{tone_str}
-- 篇幅：{length}
+- 篇幅：{length}（总字数约{total_word_count//10000}万字，每章约{target_word_count}字）
 - 主题：{theme}{school_label}{multi_genre_note}{protag_str}{extra_str}
 
 {genre_context}
 
 {knowledge_injection}
+
+{web_inspiration}
+
+{method_instruction}
 
 ## 🎬 专业故事架构要求
 
@@ -596,6 +859,7 @@ class NWACSHandler(BaseHTTPRequestHandler):
     def _handle_select_plot(self, data):
         plot_id = data.get('plot_id', '')
         plot_name = data.get('plot_name', '')
+        protagonist = data.get('protagonist', '')
         genres = data.get('genres', [data.get('genre', '玄幻')])
         if isinstance(genres, str):
             genres = [genres]
@@ -605,7 +869,7 @@ class NWACSHandler(BaseHTTPRequestHandler):
         tones = data.get('tones', [data.get('tone', '紧张刺激')])
         if isinstance(tones, str):
             tones = [tones]
-        length = data.get('length', '中长篇')
+        length = data.get('length', '自定义字数')
         theme = data.get('theme', '逆境成长')
         schools = data.get('schools', [data.get('school', '')])
         if isinstance(schools, str):
@@ -613,6 +877,9 @@ class NWACSHandler(BaseHTTPRequestHandler):
         school_names = data.get('school_names', [data.get('school_name', '')])
         if isinstance(school_names, str):
             school_names = [school_names] if school_names else []
+        writing_method = data.get('writing_method', '')
+        total_word_count = data.get('total_word_count', 500000)
+        target_word_count = data.get('target_word_count', 4000)
 
         primary_genre = genres[0] if genres else '玄幻'
         primary_school = schools[0] if schools else ''
@@ -645,6 +912,23 @@ class NWACSHandler(BaseHTTPRequestHandler):
                     if extra_kb:
                         knowledge_injection += "\n" + extra_kb
 
+            web_inspiration = fetch_creative_inspiration(primary_genre, theme)
+
+            method_instruction = ""
+            if writing_method:
+                method_map = {
+                    'three_act': '三幕结构（建置→对抗→结局）',
+                    'hero_journey': '英雄之旅（平凡世界→冒险→蜕变→归来）',
+                    'story_circle': '故事圈（舒适区→探索→改变→回归）',
+                    'seven_point': '七点结构（钩子→触发→转折→中点→转折→高潮→结局）',
+                    'pixar_formula': '皮克斯公式（日常→事件→连锁反应→成长→蜕变）',
+                    'freytag': '弗莱塔格金字塔（引言→上升→高潮→下降→结局）',
+                    'save_the_cat': '救猫咪节拍表（15节拍精准控制节奏）',
+                    'kishotenketsu': '起承转合（引入→发展→转折→收束）',
+                }
+                method_name = method_map.get(writing_method, writing_method)
+                method_instruction = f"\n### 叙事结构要求\n请严格按照「{method_name}」的结构框架来规划章节大纲，确保每章对应叙事结构的相应节拍。"
+
             prompt = f"""你是一位拥有20年经验的顶级{genre_label}小说大纲规划师。你必须严格遵循以下写作铁律来构建大纲。
 
 ## ⚠️ 必须遵守的写作铁律（违反任何一条即为失败）
@@ -666,6 +950,10 @@ class NWACSHandler(BaseHTTPRequestHandler):
 
 {knowledge_injection}
 
+{web_inspiration}
+
+{method_instruction}
+
 ## 小说基本信息
 - 题材：{genre_label}
 - 风格：{style_str}{school_label}{multi_genre_note}
@@ -673,6 +961,7 @@ class NWACSHandler(BaseHTTPRequestHandler):
 - 篇幅：{length}
 - 主题：{theme}
 - 选定剧情：{plot_name}
+- 主角名：{protagonist}
 
 {genre_context}
 
@@ -681,18 +970,31 @@ class NWACSHandler(BaseHTTPRequestHandler):
 2. **梗概**：200字，必须包含：核心冲突 + 独特卖点 + 情感主线
 3. **人物**：至少4个角色（主角、反派、2个配角），每个角色必须有：
    - 名字（拒绝"天/云/辰/宇/昊/轩/逸/尘/雪/月/瑶/璃"等烂大街字）
+   - **主角名字必须使用上方指定的"主角名"**，不得更改
    - 名字寓意（50字以上，解释名字如何暗示角色命运）
    - 角色弧光（从什么状态变到什么状态）
    - 核心欲望（角色真正想要什么）
 4. **剧情线**：主线1条 + 辅线至少2条 + 因果关系链至少3条
-5. **章节规划**：12-18章，每章必须包含：
+5. **世界架构**：world_architecture对象，包含：
+   - world_type：世界类型（修真/玄幻/都市/科幻等）
+   - era：时代背景
+   - geography：地理概况（主要地域、势力范围）
+   - power_system：力量体系概述
+   - rules：世界规则（至少3条核心规则）
+6. **组织架构**：organizations数组，至少3个组织/势力，每个包含：
+   - name：组织名称
+   - type：类型（宗门/家族/国家/商会/散修等）
+   - leader：首领
+   - description：描述
+   - relationship_to_protagonist：与主角关系
+7. **章节规划**：根据总字数{total_word_count//10000}万字和每章{target_word_count}字，规划合理的章节数量（约{max(1, total_word_count//target_word_count)}章），每章必须包含：
    - 冲突类型标签（战斗/智斗/情感/探索/成长）
    - 因果链（前因是什么→本章发生什么→导致什么后果）
    - 角色变化（本章结束后角色发生了什么变化）
-   - 目标字数：4000字
+   - 目标字数：{target_word_count}字
 
 返回纯JSON（不要markdown包裹）：
-{{"title": "...", "synopsis": "...", "characters": [{{"name": "...", "name_meaning": "...", "role": "protagonist/antagonist/supporting/mentor", "description": "...", "arc": "...", "core_desire": "..."}}], "plot_lines": {{"main_line": "...", "sub_lines": ["...", "..."], "cause_effect_chains": [{{"cause": "...", "effect": "...", "chapters_involved": [1, 3]}}]}}, "acts": [{{"name": "Act 1", "description": "...", "chapters": [{{"number": 1, "title": "...", "summary": "...", "conflict_type": "战斗/智斗/情感/探索/成长", "plot_line_type": "main/sub/transition", "cause_effect": {{"caused_by": "...", "leads_to": "..."}}, "character_change": "...", "key_events": ["..."], "word_count_target": 4000, "notes": ""}}]}}]}}"""
+{{"title": "...", "synopsis": "...", "total_chapters_estimate": {max(1, total_word_count//target_word_count)}, "characters": [{{"name": "...", "name_meaning": "...", "role": "protagonist/antagonist/supporting/mentor", "description": "...", "arc": "...", "core_desire": "..."}}], "plot_lines": {{"main_line": "...", "sub_lines": ["...", "..."], "cause_effect_chains": [{{"cause": "...", "effect": "...", "chapters_involved": [1, 3]}}]}}, "world_architecture": {{"world_type": "...", "era": "...", "geography": "...", "power_system": "...", "rules": ["...", "...", "..."]}}, "organizations": [{{"name": "...", "type": "宗门/家族/国家/商会", "leader": "...", "description": "...", "relationship_to_protagonist": "..."}}], "acts": [{{"name": "Act 1", "description": "...", "chapters": [{{"number": 1, "title": "...", "summary": "...", "conflict_type": "战斗/智斗/情感/探索/成长", "plot_line_type": "main/sub/transition", "cause_effect": {{"caused_by": "...", "leads_to": "..."}}, "character_change": "...", "key_events": ["..."], "word_count_target": {target_word_count}, "notes": ""}}]}}]}}"""
 
             log("Calling LLM for outline...")
             result_text = llm.generate(prompt, params=GenerationParams(temperature=0.8, max_tokens=6000))
@@ -709,22 +1011,30 @@ class NWACSHandler(BaseHTTPRequestHandler):
                 outline = json.loads(json_str)
             except json.JSONDecodeError as je:
                 log(f"Outline JSON parse error: {je}, attempting recovery...")
-                import re
-                json_str = re.sub(r'[\x00-\x08\x0b\x0c\x0e-\x1f]', '', json_str)
+                import re as _re
+                json_str = _re.sub(r'[\x00-\x08\x0b\x0c\x0e-\x1f]', '', json_str)
                 json_str = json_str.replace('\t', ' ').replace('\r', '')
+                json_str = _re.sub(r',\s*}', '}', json_str)
+                json_str = _re.sub(r',\s*]', ']', json_str)
+                json_str = _re.sub(r'(?<!")(\btrue\b|\bfalse\b)(?!")', lambda m: f'"{m.group(1)}"', json_str, flags=_re.IGNORECASE)
+                json_str = _re.sub(r'(?<!")(\bnull\b)(?!")', '"null"', json_str, flags=_re.IGNORECASE)
                 last_brace = json_str.rfind('}')
                 last_bracket = json_str.rfind(']')
                 cut_point = max(last_brace, last_bracket)
                 if cut_point > 0:
                     json_str = json_str[:cut_point + 1]
-                    bracket_count = json_str.count('{') - json_str.count('}')
-                    json_str += '}' * bracket_count
+                    open_braces = json_str.count('{')
+                    close_braces = json_str.count('}')
+                    open_brackets = json_str.count('[')
+                    close_brackets = json_str.count(']')
+                    json_str += '}' * (open_braces - close_braces)
+                    json_str += ']' * (open_brackets - close_brackets)
                 try:
                     outline = json.loads(json_str)
                 except json.JSONDecodeError:
                     log("Outline recovery failed, using regex extraction...")
-                    title_match = re.search(r'"title"\s*:\s*"([^"]*)"', json_str)
-                    synopsis_match = re.search(r'"synopsis"\s*:\s*"([^"]*)"', json_str)
+                    title_match = _re.search(r'"title"\s*:\s*"([^"]*)"', json_str)
+                    synopsis_match = _re.search(r'"synopsis"\s*:\s*"([^"]*)"', json_str)
                     outline = {
                         "title": title_match.group(1) if title_match else plot_name,
                         "synopsis": synopsis_match.group(1) if synopsis_match else "",
@@ -732,10 +1042,10 @@ class NWACSHandler(BaseHTTPRequestHandler):
                         "plot_lines": {"main_line": "", "sub_lines": [], "cause_effect_chains": []},
                         "acts": []
                     }
-                    char_blocks = re.findall(r'\{\s*"name"\s*:\s*"([^"]*)"\s*,\s*"name_meaning"\s*:\s*"([^"]*)"\s*,\s*"role"\s*:\s*"([^"]*)"', json_str)
+                    char_blocks = _re.findall(r'\{\s*"name"\s*:\s*"([^"]*)"\s*,\s*"name_meaning"\s*:\s*"([^"]*)"\s*,\s*"role"\s*:\s*"([^"]*)"', json_str)
                     for name, meaning, role in char_blocks:
                         outline["characters"].append({"name": name, "name_meaning": meaning, "role": role, "description": ""})
-                    ch_blocks = re.findall(r'"number"\s*:\s*(\d+)\s*,\s*"title"\s*:\s*"([^"]*)"\s*,\s*"summary"\s*:\s*"([^"]*)"', json_str)
+                    ch_blocks = _re.findall(r'"number"\s*:\s*(\d+)\s*,\s*"title"\s*:\s*"([^"]*)"\s*,\s*"summary"\s*:\s*"([^"]*)"', json_str)
                     if ch_blocks:
                         act = {"name": "Act 1", "description": "", "chapters": []}
                         for num, title, summary in ch_blocks:
@@ -755,9 +1065,9 @@ class NWACSHandler(BaseHTTPRequestHandler):
                 "success": True,
                 "outline": {
                     "title": f"{plot_name}",
-                    "synopsis": f"一部{style}风格的{genre}小说，围绕{theme}展开...",
+                    "synopsis": f"一部{style_str}风格的{genre_str}小说，围绕{theme}展开...",
                     "characters": [
-                        {"name": "林逸", "name_meaning": "逸：超逸脱俗，象征主角不甘平凡、终将超越一切束缚的命运", "role": "protagonist", "description": "出身平凡的坚毅少年，意外获得改变命运的力量", "arc": "从自卑怯懦的废柴成长为自信强大的守护者", "core_desire": "保护所爱之人，打破阶级固化"},
+                        {"name": protagonist or "林逸", "name_meaning": "逸：超逸脱俗，象征主角不甘平凡、终将超越一切束缚的命运", "role": "protagonist", "description": "出身平凡的坚毅少年，意外获得改变命运的力量", "arc": "从自卑怯懦的废柴成长为自信强大的守护者", "core_desire": "保护所爱之人，打破阶级固化"},
                         {"name": "暗影", "name_meaning": "暗：神秘莫测的力量来源，影：无处不在的威胁，暗示反派如影随形的压迫感", "role": "antagonist", "description": "神秘组织的首领，与主角命运交织", "arc": "从高高在上的掌控者到被自己培养的对手击败", "core_desire": "维持现有秩序，消灭一切变数"},
                         {"name": "苏晴", "name_meaning": "晴：雨过天晴，象征在黑暗时刻带来希望与温暖的力量", "role": "supporting", "description": "主角的挚友/伴侣，在关键时刻给予支持", "arc": "从被保护的弱者成长为能与主角并肩作战的强者", "core_desire": "证明自己的价值，不再成为负担"},
                     ],
@@ -796,6 +1106,8 @@ class NWACSHandler(BaseHTTPRequestHandler):
         chapter_num = data.get('chapter_number', 1)
         chapter_title = data.get('chapter_title', '')
         chapter_summary = data.get('chapter_summary', '')
+        target_word_count = data.get('target_word_count', 4000)
+        protagonist_name = data.get('protagonist_name', '')
         genres = data.get('genres', [data.get('genre', '玄幻')])
         if isinstance(genres, str):
             genres = [genres]
@@ -866,17 +1178,47 @@ class NWACSHandler(BaseHTTPRequestHandler):
 本章必须从上一章的结尾状态自然延续，不能出现角色位置/状态/关系的跳跃。
 """
 
+            # 构建已写章节摘要列表，帮助LLM避免重复
+            written_chapters_summary = ""
+            written_indices = [i for i in range(1, chapter_num) if i in self.chapters_cache]
+            if written_indices:
+                written_chapters_summary = "\n## 📚 已写章节摘要（避免重复以下内容）\n"
+                for wi in written_indices[-5:]:  # 最多显示最近5章
+                    wc = self.chapters_cache[wi]
+                    wc_title = wc.get('title', f'第{wi}章')
+                    wc_summary = wc.get('content', '')[:100] if wc.get('content') else ''
+                    written_chapters_summary += f"- 第{wi}章 {wc_title}: {wc_summary}...\n"
+
+            truth_context = truth_files.get_context_for_chapter(chapter_num)
+            if truth_context:
+                truth_context = f"""
+## 🧠 叙事记忆注入（基于已写章节的真相文件）
+{truth_context}
+"""
+
             prompt = f"""你是一位{genre_label}领域的顶级网文作家，拥有15年创作经验，曾写出10+部爆款作品。风格为{style_str}，基调为{tone_str}。{school_label}{multi_genre_note}
 
-## ⚠️ 写作铁律
-1. **角色名字必须一致**：使用下方"已确立的角色"中的名字，不得自行更改或创造新名字
-2. **字数不低于4000字**：这是硬性要求，少于4000字视为不合格
+## ⚠️ 写作铁律（违反任何一条即为失败）
+1. **角色名字绝对锁定**：下方"已确立的角色"中的名字是最终确定的，你绝对不能更改、替换或创造新名字。主角名字是"{protagonist_name}"，如果已设定则必须使用此名
+2. **【铁律】字数必须严格控制在{target_word_count}字**：这是不可妥协的硬性要求。生成后我会用程序自动校验，少于{int(target_word_count*0.9)}字或超过{int(target_word_count*1.1)}字将判定为不合格并退回重写。你必须精确控制篇幅
 3. **剧情不可重复**：不能和前面章节的冲突模式相同
 4. **因果必须连贯**：本章开头必须承接上一章的结尾状态
+5. **名字一致性**：所有角色名字必须与下方"已确立的角色"完全一致，包括配角、路人角色也要保持一致
+
+{truth_context}
 
 {character_context}
 
 {previous_context}
+
+{written_chapters_summary}
+
+## 🚫 防重复铁律（违反即为失败）
+1. **冲突类型必须轮换**：本章的冲突类型必须与上一章不同。如果上一章是"战斗"，本章必须是"智斗/情感/探索/成长"之一
+2. **场景不能重复**：禁止使用与前面章节相同的场景设定（如连续两章都在"修炼室"或"擂台"）
+3. **对话模式不能重复**：禁止连续使用相同的对话模式（如连续两章都是"主角被质疑→主角用实力证明"）
+4. **爽点模式不能重复**：禁止连续使用相同的爽点模式（如连续两章都是"主角突破→碾压对手"）
+5. **叙事节奏必须变化**：本章的叙事节奏必须与上一章形成对比（上一章紧张则本章舒缓，上一章舒缓则本章紧张）
 
 ## 本章信息
 - 第{chapter_num}章：{chapter_title}
@@ -934,8 +1276,12 @@ class NWACSHandler(BaseHTTPRequestHandler):
 - 句子长度必须剧烈变化，不能连续3句长度相同
 - 加入口语化表达、不完美表达（"嗯""妈的""就是"）
 
+{retention_system.build_retention_prompt(chapter_num, chapter_summary)}
+{fatigue_detector.build_fatigue_avoidance_prompt(chapter_num)}
+{rag_engine.build_context_prompt(chapter_num, chapter_summary)}
+
 ## 输出要求
-- **字数**：不低于4000中文字符，这是硬性要求
+- **【铁律】字数**：严格{target_word_count}中文字符，正负误差不超过10%。程序会自动校验字数，不达标将退回重写
 - **格式**：直接输出章节正文，不要JSON包裹，不要标题
 - **钩子**：章节结尾必须有强有力的悬念钩子
 
@@ -945,7 +1291,107 @@ class NWACSHandler(BaseHTTPRequestHandler):
             content = llm.generate(prompt, params=GenerationParams(temperature=0.85, max_tokens=8000))
             log(f"Chapter response: {len(content)} chars")
 
-            self._send_json({"success": True, "content": content, "chapter_number": chapter_num, "chapter_title": chapter_title})
+            # 字数强制校验：正负误差不超过10%，最多重试3次
+            min_words = int(target_word_count * 0.85)
+            max_words = int(target_word_count * 1.15)
+            actual_words = len(content.replace('\n', '').replace(' ', ''))
+            if actual_words < min_words or actual_words > max_words:
+                log(f"Word count {actual_words} outside range [{min_words}, {max_words}], adjusting...")
+                for attempt in range(3):
+                    adjust_prompt = f"""你是一位严格的网文编辑。以下章节的字数不符合要求。
+
+当前字数：{actual_words}字
+目标字数：{target_word_count}字（允许范围：{min_words}-{max_words}字）
+
+请对以下章节内容进行**严格调整**（第{attempt+1}次调整）：
+- 如果字数太少：扩充细节描写、对话、心理活动、环境描写，使内容达到目标字数
+- 如果字数太多：精简冗余描写、合并重复表达、删减非核心内容，使内容达到目标字数
+
+**必须保持**：
+- 原有剧情走向和角色设定不变
+- 章节标题和核心情节不变
+- 角色名字完全不变
+- 结尾悬念钩子不变
+
+直接输出调整后的章节正文，不要任何额外说明：
+
+{content}"""
+                    adjusted = llm.generate(adjust_prompt, params=GenerationParams(temperature=0.7, max_tokens=8000))
+                    adjusted_words = len(adjusted.replace('\n', '').replace(' ', ''))
+                    log(f"Adjust attempt {attempt+1}: {adjusted_words} chars")
+                    if min_words <= adjusted_words <= max_words:
+                        content = adjusted
+                        actual_words = adjusted_words
+                        log(f"Word count adjusted successfully on attempt {attempt+1}")
+                        break
+                    else:
+                        content = adjusted
+                        actual_words = adjusted_words
+                        log(f"Adjust attempt {attempt+1} still outside range ({adjusted_words}), retrying...")
+                else:
+                    log(f"Word count adjustment failed after 3 attempts, using last result")
+
+            # 自动去AI痕迹（在保存之前应用）
+            try:
+                deai = data.get('auto_deai', True)
+                if deai and len(content) > 100:
+                    from ai_humanizer import detect_ai_traces, build_humanize_prompt
+                    detection = detect_ai_traces(content)
+                    if detection.get('total_score', 100) < 70:
+                        humanize_prompt = build_humanize_prompt(content, detection)
+                        if humanize_prompt:
+                            log(f"Auto DEAI: score={detection['total_score']}, traces={len(detection.get('traces_found',[]))}")
+                            deai_result = llm.generate(humanize_prompt, params=GenerationParams(temperature=0.7, max_tokens=len(content)*2))
+                            if deai_result and len(deai_result) > 100:
+                                content = deai_result
+                                log(f"DEAI applied: {len(content)} chars")
+            except Exception as deai_err:
+                log(f"DEAI warning: {deai_err}")
+
+            novel_title = outline_data.get('title', '未命名作品')
+            novel_dir = os.path.join(os.path.dirname(__file__), '..', '..', 'output', _safe_filename(novel_title))
+            os.makedirs(novel_dir, exist_ok=True)
+            ch_filename = f"第{chapter_num}章_{_safe_filename(chapter_title)}.txt"
+            ch_path = os.path.join(novel_dir, ch_filename)
+            with open(ch_path, 'w', encoding='utf-8') as f:
+                f.write(f"第{chapter_num}章 {chapter_title}\n\n{content}")
+            log(f"Chapter saved to: {ch_path}")
+
+            # 更新章节缓存，用于防重复检测
+            self.__class__.chapters_cache[chapter_num] = {
+                'title': chapter_title,
+                'content': content[:500],  # 只缓存前500字用于摘要
+                'summary': chapter_summary,
+            }
+
+            try:
+                truth_files.add_chapter_summary(
+                    chapter=chapter_num,
+                    title=chapter_title,
+                    core_events=[chapter_summary] if chapter_summary else [],
+                    word_count=len(content),
+                )
+                characters = outline_data.get('characters', [])
+                for ch in characters:
+                    truth_files.update_character_matrix(
+                        character_name=ch.get('name', ''),
+                        chapter=chapter_num,
+                        role=ch.get('role', ''),
+                        motivation=ch.get('core_desire', ''),
+                    )
+                log(f"Truth files updated for chapter {chapter_num}")
+            except Exception as te:
+                log(f"Truth files update warning: {te}")
+
+            try:
+                pipeline.start_chapter(chapter_num)
+                pipeline.set_plan({"chapter_number": chapter_num, "chapter_title": chapter_title, "chapter_summary": chapter_summary})
+                pipeline.set_draft(content)
+                log(f"Pipeline advanced to auditing for chapter {chapter_num}")
+            except Exception as pe:
+                log(f"Pipeline update warning: {pe}")
+
+            self._send_json({"success": True, "content": content, "chapter_number": chapter_num, "chapter_title": chapter_title, "saved_path": ch_path})
 
         except Exception as e:
             log(f"Chapter error: {e}")
@@ -957,6 +1403,311 @@ class NWACSHandler(BaseHTTPRequestHandler):
                 "chapter_title": chapter_title,
                 "note": f"Fallback: {str(e)[:100]}"
             })
+
+    def _handle_generate_chapters_batch(self, data):
+        start_chapter = data.get('start_chapter', 1)
+        end_chapter = data.get('end_chapter', 1)
+        max_chapters = min(end_chapter - start_chapter + 1, 5)
+        log(f"Batch generating chapters {start_chapter} to {start_chapter + max_chapters - 1}")
+
+        outline_data = data.get('outline', {})
+        characters = outline_data.get('characters', [])
+        genres = data.get('genres', ['玄幻'])
+        if isinstance(genres, str):
+            genres = [genres]
+        styles = data.get('styles', ['热血爽文'])
+        if isinstance(styles, str):
+            styles = [styles]
+        tones = data.get('tones', ['紧张刺激'])
+        if isinstance(tones, str):
+            tones = [tones]
+        theme = data.get('theme', '逆境成长')
+        schools = data.get('schools', [''])
+        if isinstance(schools, str):
+            schools = [schools] if schools else []
+        school_names = data.get('school_names', [''])
+        if isinstance(school_names, str):
+            school_names = [school_names] if school_names else []
+        target_wc = data.get('target_word_count', 4000)
+        protagonist = data.get('protagonist_name', '')
+        previous_chapter_content = data.get('previous_chapter_content', '')
+        previous_chapter_num = data.get('previous_chapter_num', 0)
+
+        primary_genre = genres[0] if genres else '玄幻'
+        primary_school = schools[0] if schools else ''
+
+        genre_str = '、'.join(genres) if len(genres) > 1 else genres[0]
+        style_str = '、'.join(styles)
+        tone_str = '、'.join(tones)
+        school_str_list = '、'.join(school_names) if school_names else ''
+
+        chapters_info = []
+        for ch_num in range(start_chapter, start_chapter + max_chapters):
+            ch_title = f"第{ch_num}章"
+            ch_summary = ''
+            if outline_data and outline_data.get('acts'):
+                for act in outline_data['acts']:
+                    for ch in (act.get('chapters') or []):
+                        if ch.get('number') == ch_num:
+                            ch_title = ch.get('title', ch_title)
+                            ch_summary = ch.get('summary', '')
+                            break
+            chapters_info.append(f"第{ch_num}章：{ch_title} - {ch_summary}")
+
+        chapters_str = '\n'.join(chapters_info)
+
+        # 构建与单章生成相同的丰富上下文
+        genre_map = {gt.label: gt for gt in GenreType}
+        genre_enum = genre_map.get(primary_genre)
+        genre_context = ""
+        if genre_enum:
+            genre_manager.set_genre(genre_enum)
+            genre_context = genre_manager.get_full_generation_context(include_pleasure=True)
+
+        genre_label = f"{genre_str}（融合）" if len(genres) > 1 else genres[0]
+        school_label = f"\n- 写作流派: {school_str_list}" if school_str_list else ""
+        multi_genre_note = ""
+        if len(genres) > 1:
+            multi_genre_note = f"\n- 跨类型融合: {genre_str}"
+
+        knowledge_injection = build_knowledge_injection(primary_genre, primary_school)
+        if len(genres) > 1:
+            for g in genres[1:]:
+                extra_kb = build_knowledge_injection(g, '')
+                if extra_kb:
+                    knowledge_injection += "\n" + extra_kb
+
+        character_context = ""
+        if characters:
+            character_context = "\n## 🎭 已确立的角色（名字必须严格一致，不得更改）\n"
+            for ch in characters:
+                character_context += f"- **{ch.get('name', '')}**（{ch.get('role', '')}）：{ch.get('description', '')}。名字寓意：{ch.get('name_meaning', '')}\n"
+
+        previous_context = ""
+        if previous_chapter_content and previous_chapter_num > 0:
+            prev_summary = previous_chapter_content[:500] if len(previous_chapter_content) > 500 else previous_chapter_content
+            previous_context = f"""
+## 📖 上一章（第{previous_chapter_num}章）结尾内容
+```
+{prev_summary}...
+```
+第{start_chapter}章必须从上一章的结尾状态自然延续，不能出现角色位置/状态/关系的跳跃。
+"""
+
+        truth_context = truth_files.get_context_for_chapter(start_chapter)
+        if truth_context:
+            truth_context = f"""
+## 🧠 叙事记忆注入（基于已写章节的真相文件）
+{truth_context}
+"""
+
+        # 为每章分配不同的冲突类型和场景，确保多样性
+        conflict_types = ['战斗', '智斗', '情感', '探索', '成长']
+        scene_types = ['室内', '户外', '城镇', '荒野', '秘境', '宫殿', '山林', '水域', '地下', '空中']
+        pleasure_modes = ['突破', '打脸', '收获', '反转', '情感', '揭秘', '联盟', '逃生']
+        chapter_assignments = []
+        for i, ch_info in enumerate(chapters_info):
+            ct = conflict_types[i % len(conflict_types)]
+            st = scene_types[(i * 3 + 1) % len(scene_types)]
+            sp = pleasure_modes[(i * 2 + 3) % len(pleasure_modes)]
+            chapter_assignments.append(f"  第{start_chapter + i}章：冲突类型={ct}，主要场景={st}，核心爽点={sp}")
+
+        assignments_str = '\n'.join(chapter_assignments)
+
+        prompt = f"""你是一位{genre_label}领域的顶级网文作家，拥有15年创作经验，曾写出10+部爆款作品。风格为{style_str}，基调为{tone_str}。{school_label}{multi_genre_note}
+
+## ⚠️ 写作铁律（违反任何一条即为失败）
+1. **角色名字绝对锁定**：下方"已确立的角色"中的名字是最终确定的，你绝对不能更改、替换或创造新名字。主角名字是"{protagonist}"，如果已设定则必须使用此名
+2. **【铁律】每章字数必须严格控制在{target_wc}字左右**：这是不可妥协的硬性要求
+3. **每章之间必须有明显的情节推进**：不能重复相同的情节模式
+4. **因果必须连贯**：每章开头必须承接上一章的结尾状态
+5. **名字一致性**：所有角色名字必须与下方"已确立的角色"完全一致
+
+{truth_context}
+
+{character_context}
+
+{previous_context}
+
+## 📋 每章差异化分配（必须严格遵守）
+以下是为每章预先分配的差异化元素，确保每章内容完全不同：
+
+{assignments_str}
+
+## 🚫 防重复铁律（违反即为失败）
+1. **冲突类型必须轮换**：连续章节不能使用相同的冲突类型。严格按照上方分配执行
+2. **场景不能重复**：每章的场景设定必须不同，严格按照上方分配执行
+3. **对话模式不能重复**：禁止连续使用相同的对话模式（如连续两章都是"主角被质疑→主角用实力证明"）
+4. **爽点模式不能重复**：每章的爽点设计必须不同，严格按照上方分配执行
+5. **叙事节奏必须变化**：紧张章节后必须跟舒缓章节，形成节奏起伏
+6. **每章开场方式必须不同**：不能连续两章以相同方式开场（对话/描写/动作/心理）
+
+## 待生成章节
+{chapters_str}
+
+## 🎨 专业写作技法（必须遵循）
+
+### 一、开篇技法
+- **黄金开篇三章定律**：前三章必须完成"钩子→世界→冲突"三步
+  - 第1章：强力钩子（悬念/动作/冲突开场，in medias res）
+  - 第2章：世界观铺垫（通过角色行动展示，而非旁白解释）
+  - 第3章：核心冲突确立（让读者知道"这本书讲什么"）
+- **拒绝信息倾泻**：不要用大段旁白解释世界观，通过角色的眼睛和行动来展示
+
+### 二、角色塑造
+- **压力揭示性格**：人在压力下的选择才暴露真实性格，不要直接说"他勇敢"，写他在危险中的行动
+- **人物反差**：给每个角色一个"表里不一"的特质（外表冷酷内心温柔/表面懦弱关键时刻爆发）
+- **标签化角色**：每个角色有一个标志性动作/口头禅/习惯，让读者一眼认出
+- **人物弧光**：角色在本章中必须有微小变化——学到了什么/失去了什么/改变了什么看法
+
+### 三、描写技法
+- **用动作替代形容词**：不写"他愤怒"，写"他一拳砸在桌上，茶杯跳了起来"
+- **感官细节**：每段场景至少包含2种感官（视觉+听觉/触觉/嗅觉/味觉）
+- **画面感描写**：像电影镜头一样——远景→中景→特写→细节
+- **本土生活细节**：加入烟火气、人情世故、市井气息（叫卖声、炊烟、讨价还价）
+
+### 四、节奏控制
+- **张弛有度**：紧张场景后必须有舒缓过渡，不能连续高强度
+- **长短句交替**：短句3-10字制造紧张，长句25-50字渲染氛围
+- **断章三式**：
+  - 悬念断章：在关键信息即将揭示时切断
+  - 反转断章：在剧情突然反转时切断
+  - 情绪断章：在情感最高潮时切断
+
+### 五、爽点设计
+- **压抑→爆发**：先让读者感到憋屈/愤怒，再让主角反击，爽感翻倍
+- **信息差爽点**：读者知道但反派不知道的信息，制造期待感
+- **成长爽点**：主角使用之前修炼/获得的技能解决问题
+- **打脸节奏**：铺垫→挑衅→反击→碾压，四步完成一个爽点循环
+
+### 六、对话技法
+- **潜台词**：角色说的和想的往往不同，对话要有言外之意
+- **语癖区分**：不同角色的说话方式完全不同（用词习惯、句子长度、语气词）
+- **行动中对话**：对话时角色在做其他事（喝茶、擦剑、看窗外），避免"站着说话"
+
+### 七、去AI痕迹
+- 禁止使用"此外""然而""因此""值得注意的是"等AI高频连接词
+- 禁止三段式列举（X、Y和Z）
+- 禁止"作为……的证明""标志着""为……奠定基础"等AI内容模式
+- 句子长度必须剧烈变化，不能连续3句长度相同
+- 加入口语化表达、不完美表达（"嗯""妈的""就是"）
+
+{genre_context}
+
+{knowledge_injection}
+
+## 输出格式
+请严格按照以下JSON格式输出，不要包含其他内容：
+{{
+  "chapters": [
+    {{"chapter_number": {start_chapter}, "title": "第{start_chapter}章标题", "content": "第{start_chapter}章完整内容..."}},
+    ...
+  ]
+}}
+
+每章字数严格控制在{target_wc}字左右，每章结尾必须有强有力的悬念钩子。"""
+
+        try:
+            result_text = llm.generate(prompt, params=GenerationParams(temperature=0.92, max_tokens=target_wc * max_chapters * 2))
+            if "```json" in result_text:
+                result_text = result_text.split("```json")[1].split("```")[0]
+            # 清理JSON中的常见问题
+            result_text = re.sub(r',\s*}', '}', result_text)
+            result_text = re.sub(r',\s*]', ']', result_text)
+            result = json.loads(result_text)
+            chapters = result.get('chapters', [])
+
+            # 生成后去重检测：检查各章内容相似度
+            if len(chapters) >= 2:
+                from difflib import SequenceMatcher
+                for i in range(len(chapters)):
+                    for j in range(i + 1, len(chapters)):
+                        ci = chapters[i].get('content', '')
+                        cj = chapters[j].get('content', '')
+                        if ci and cj:
+                            # 取前200字和后200字做相似度比较
+                            ci_head = ci[:200]
+                            cj_head = cj[:200]
+                            similarity = SequenceMatcher(None, ci_head, cj_head).ratio()
+                            if similarity > 0.6:
+                                log(f"DEDUP WARNING: ch{chapters[i].get('chapter_number')} vs ch{chapters[j].get('chapter_number')} head similarity={similarity:.2f}")
+                                # 对重复的章节添加差异化指令重新生成
+                                dup_ch = chapters[j]
+                                dup_num = dup_ch.get('chapter_number', start_chapter + j)
+                                fix_prompt = f"""你是一位网文作家。以下章节内容与前面章节的开头过于相似（相似度{similarity:.0%}）。
+
+## 必须改变的要素
+1. **开场方式**：不能以相同的方式开场（当前是"{ci_head[:50]}..."）
+2. **冲突类型**：必须使用与上一章不同的冲突类型
+3. **场景设定**：必须使用完全不同的场景
+4. **叙事视角**：可以尝试从不同角色的视角开场
+
+## 章节信息
+第{dup_num}章：{dup_ch.get('title', '')}
+
+## 要求
+- 保持原有剧情走向不变
+- 字数控制在{target_wc}字左右
+- 直接输出章节正文，不要JSON包裹
+
+现在重写第{dup_num}章："""
+                                fixed = llm.generate(fix_prompt, params=GenerationParams(temperature=0.9, max_tokens=target_wc * 2))
+                                if fixed and len(fixed) > 200:
+                                    chapters[j]['content'] = fixed
+                                    log(f"DEDUP FIXED: ch{dup_num} regenerated")
+
+            novel_title = outline_data.get('title', '未命名作品')
+            novel_dir = os.path.join(os.path.dirname(__file__), '..', '..', 'output', _safe_filename(novel_title))
+            os.makedirs(novel_dir, exist_ok=True)
+
+            for ch in chapters:
+                ch_num = ch.get('chapter_number', start_chapter)
+                ch_content = ch.get('content', '')
+                ch_title = ch.get('title', f'第{ch_num}章')
+
+                # 自动去AI痕迹
+                try:
+                    if ch_content and len(ch_content) > 100:
+                        from ai_humanizer import detect_ai_traces, build_humanize_prompt
+                        detection = detect_ai_traces(ch_content)
+                        if detection.get('total_score', 100) < 70:
+                            humanize_prompt = build_humanize_prompt(ch_content, detection)
+                            if humanize_prompt:
+                                deai_result = llm.generate(humanize_prompt, params=GenerationParams(temperature=0.7, max_tokens=len(ch_content)*2))
+                                if deai_result and len(deai_result) > 100:
+                                    ch_content = deai_result
+                                    log(f"Batch DEAI applied for ch{ch_num}")
+                except Exception as deai_err:
+                    log(f"Batch DEAI warning ch{ch_num}: {deai_err}")
+
+                ch_filename = f"第{ch_num}章_{_safe_filename(ch_title)}.txt"
+                ch_path = os.path.join(novel_dir, ch_filename)
+                with open(ch_path, 'w', encoding='utf-8') as f:
+                    f.write(f"{ch_title}\n\n{ch_content}")
+
+                # 更新章节缓存
+                self.__class__.chapters_cache[ch_num] = {
+                    'title': ch_title,
+                    'content': ch_content[:500],
+                    'summary': '',
+                }
+
+                # 更新真相文件
+                try:
+                    truth_files.add_chapter_summary(
+                        chapter=ch_num,
+                        title=ch_title,
+                        core_events=[],
+                        word_count=len(ch_content),
+                    )
+                except Exception as te:
+                    log(f"Truth files update warning ch{ch_num}: {te}")
+
+            self._send_json({"success": True, "chapters": chapters, "count": len(chapters)})
+        except Exception as e:
+            log(f"Batch chapter error: {e}")
+            traceback.print_exc()
+            self._send_json({"success": False, "error": str(e)[:200]})
 
     def _handle_update_config(self, data):
         try:
@@ -1040,24 +1791,76 @@ class NWACSHandler(BaseHTTPRequestHandler):
             } for r in fallback]
             self._send_json({"success": True, "names": names_data, "note": f"Fallback: {str(e)[:100]}"})
 
-    def _handle_generate_titles(self, data):
+    def _handle_generate_names_batch(self, data):
         genre = data.get('genre', '玄幻')
-        character_name = data.get('character_name', '')
-        personality = data.get('personality', '')
-        ability = data.get('ability', '')
-        style = data.get('title_style', 'domineering')
+        characters = data.get('characters', [])
+        world_notes = data.get('world_notes', '')
+        story_context = data.get('story_context', '')
+        count = data.get('count', 3)
+        combined_context = '\n'.join([x for x in [world_notes, story_context] if x])
 
-        log(f"Generating titles for: {character_name}")
+        if not characters:
+            self._send_json({"success": False, "error": "请提供至少一个角色信息"})
+            return
 
-        try:
-            titles = name_engine.generate_title(
-                genre=genre, character_name=character_name,
-                personality=personality, ability=ability, style=style,
-            )
-            self._send_json({"success": True, "titles": titles})
-        except Exception as e:
-            log(f"Title generation error: {e}")
-            self._send_json({"success": True, "titles": [], "note": str(e)[:100]})
+        log(f"Batch generating names for {len(characters)} characters, genre={genre}")
+
+        results = []
+        for char in characters:
+            role = char.get('role', '角色')
+            gender = char.get('gender', '男')
+            personality = char.get('personality', '')
+            try:
+                profile = CharacterProfile(
+                    role=role, gender=gender, age='young',
+                    personality=personality,
+                )
+                names = name_engine.generate_character_names(
+                    genre=genre, profile=profile, count=count,
+                    story_context=combined_context,
+                )
+                names_data = []
+                for r in names:
+                    names_data.append({
+                        "full_name": r.full_name,
+                        "surname": r.surname,
+                        "given_name": r.given_name,
+                        "style": r.style,
+                        "meaning": r.meaning,
+                        "literal_meaning": r.literal_meaning,
+                        "fate_connection": r.fate_connection,
+                        "personality_match": r.personality_match,
+                        "aliases": r.aliases,
+                        "titles": r.titles,
+                        "score": r.score,
+                    })
+                results.append({
+                    "role": role,
+                    "gender": gender,
+                    "personality": personality,
+                    "names": names_data,
+                })
+            except Exception as e:
+                log(f"Batch name error for {role}: {e}")
+                fallback_profile = CharacterProfile(role=role, gender=gender)
+                fallback = name_engine._fallback_names(genre, fallback_profile, count)
+                names_data = [{
+                    "full_name": r.full_name, "surname": r.surname,
+                    "given_name": r.given_name, "style": r.style,
+                    "meaning": r.meaning, "literal_meaning": r.literal_meaning,
+                    "fate_connection": r.fate_connection,
+                    "personality_match": r.personality_match,
+                    "aliases": r.aliases, "titles": r.titles, "score": r.score,
+                } for r in fallback]
+                results.append({
+                    "role": role,
+                    "gender": gender,
+                    "personality": personality,
+                    "names": names_data,
+                    "note": f"Fallback: {str(e)[:100]}",
+                })
+
+        self._send_json({"success": True, "results": results})
 
     def _handle_generate_org_names(self, data):
         genre = data.get('genre', '玄幻')
@@ -1256,6 +2059,13 @@ class NWACSHandler(BaseHTTPRequestHandler):
                 word_count=len(chapter_text.replace(' ', '').replace('\n', '').replace('\r', '')),
             )
 
+            try:
+                if pipeline.current_chapter == chapter and pipeline.current_stage == "auditing":
+                    audit_result = pipeline.set_audit_result(result.to_dict())
+                    log(f"Pipeline audit result: {audit_result.get('status')}")
+            except Exception as pe:
+                log(f"Pipeline audit warning: {pe}")
+
             self._send_json({"success": True, "review": result.to_dict()})
         except Exception as e:
             log(f"Review error: {e}")
@@ -1287,6 +2097,7 @@ class NWACSHandler(BaseHTTPRequestHandler):
             self._send_json({"success": False, "error": str(e)[:200]})
 
     def _handle_quality_checklist(self, data):
+        import re as _re
         action = data.get('action', 'get')
         try:
             if action == 'get':
@@ -1307,22 +2118,22 @@ class NWACSHandler(BaseHTTPRequestHandler):
                 if word_count >= 4000:
                     required_pass += 1
 
-                if re.search(r'(?:悬念|冲突|动作|疑问|危险)', chapter_text[:300]):
+                if _re.search(r'(?:悬念|冲突|动作|疑问|危险)', chapter_text[:300]):
                     required_pass += 1
 
-                if re.search(r'(?:悬念|疑问|未解|下一)', chapter_text[-300:]):
+                if _re.search(r'(?:悬念|疑问|未解|下一)', chapter_text[-300:]):
                     required_pass += 1
 
-                ai_patterns_count = len(re.findall(r'(?:此外|然而|因此|值得注意的是|总而言之|综上所述)', chapter_text))
+                ai_patterns_count = len(_re.findall(r'(?:此外|然而|因此|值得注意的是|总而言之|综上所述)', chapter_text))
                 if ai_patterns_count < 5:
                     required_pass += 1
 
                 required_pass += 1
 
-                if re.search(r'(?:突破|碾压|击败|收获|觉醒|逆袭)', chapter_text):
+                if _re.search(r'(?:突破|碾压|击败|收获|觉醒|逆袭)', chapter_text):
                     optional_pass += 1
 
-                sensory_count = len(re.findall(r'(?:看到|听到|闻到|触到|感到|觉得)', chapter_text))
+                sensory_count = len(_re.findall(r'(?:看到|听到|闻到|触到|感到|觉得)', chapter_text))
                 if sensory_count >= 3:
                     optional_pass += 1
 
@@ -1392,12 +2203,194 @@ class NWACSHandler(BaseHTTPRequestHandler):
             log(f"Memory context error: {e}")
             self._send_json({"success": False, "error": str(e)[:200]})
 
+    def _handle_memory_fingerprint(self, data):
+        action = data.get('action', 'get')
+        try:
+            if action == 'get':
+                fp = project_memory.get_fingerprint()
+                self._send_json({"success": True, "fingerprint": fp})
+            elif action == 'generate':
+                chapters = data.get('chapters', [])
+                genres = data.get('genres', [])
+                styles = data.get('styles', [])
+                fp = project_memory.generate_fingerprint(chapters, genres, styles)
+                self._send_json({"success": True, "fingerprint": fp})
+            elif action == 'lock':
+                project_memory.lock_fingerprint()
+                self._send_json({"success": True, "message": "写作指纹已锁定"})
+            elif action == 'unlock':
+                project_memory.unlock_fingerprint()
+                self._send_json({"success": True, "message": "写作指纹已解锁"})
+            elif action == 'check':
+                chapter = data.get('chapter', 1)
+                text = data.get('text', '')
+                result = project_memory.check_style_consistency(chapter, text)
+                self._send_json({"success": True, "result": result})
+            else:
+                self._send_json({"error": "Unknown action"}, 400)
+        except Exception as e:
+            log(f"Memory fingerprint error: {e}")
+            self._send_json({"success": False, "error": str(e)[:200]})
+
     def _handle_memory_stats(self, data):
         try:
             stats = project_memory.get_memory_stats()
             self._send_json({"success": True, "stats": stats})
         except Exception as e:
             log(f"Memory stats error: {e}")
+            self._send_json({"success": False, "error": str(e)[:200]})
+
+    def _handle_truth_context(self, data):
+        chapter = data.get('chapter', 1)
+        try:
+            context = truth_files.get_context_for_chapter(chapter)
+            self._send_json({"success": True, "context": context, "chapter": chapter})
+        except Exception as e:
+            log(f"Truth context error: {e}")
+            self._send_json({"success": False, "error": str(e)[:200]})
+
+    def _handle_truth_all(self, data):
+        try:
+            all_files = truth_files.get_all_truth_files()
+            self._send_json({"success": True, "truth_files": all_files})
+        except Exception as e:
+            log(f"Truth all error: {e}")
+            self._send_json({"success": False, "error": str(e)[:200]})
+
+    def _handle_truth_update(self, data):
+        file_name = data.get('file', '')
+        chapter = data.get('chapter', 1)
+        try:
+            if file_name == 'current_state':
+                result = truth_files.update_current_state(
+                    chapter=chapter,
+                    world_time=data.get('world_time', ''),
+                    locations=data.get('locations'),
+                    character_positions=data.get('character_positions'),
+                    known_information=data.get('known_information'),
+                    active_conflicts=data.get('active_conflicts'),
+                    atmosphere=data.get('atmosphere', ''),
+                )
+            elif file_name == 'particle_ledger':
+                result = truth_files.update_particle_ledger(
+                    chapter=chapter,
+                    items=data.get('items'),
+                    currency=data.get('currency'),
+                    resources=data.get('resources'),
+                )
+            elif file_name == 'pending_hooks':
+                action = data.get('action', 'add')
+                if action == 'resolve':
+                    result = truth_files.resolve_hook(
+                        hook_id=data.get('hook_id', ''),
+                        resolution_chapter=chapter,
+                        resolution_note=data.get('resolution_note', ''),
+                    )
+                else:
+                    result = truth_files.add_hook(
+                        chapter=chapter,
+                        hook_description=data.get('hook_description', ''),
+                        hook_type=data.get('hook_type', 'foreshadowing'),
+                        expected_resolution_chapter=data.get('expected_resolution_chapter'),
+                        related_characters=data.get('related_characters'),
+                    )
+            elif file_name == 'chapter_summaries':
+                result = truth_files.add_chapter_summary(
+                    chapter=chapter,
+                    title=data.get('title', ''),
+                    core_events=data.get('core_events'),
+                    emotional_changes=data.get('emotional_changes'),
+                    key_decisions=data.get('key_decisions'),
+                    character_appearances=data.get('character_appearances'),
+                    word_count=data.get('word_count', 0),
+                )
+            elif file_name == 'subplot_progress':
+                result = truth_files.update_subplot(
+                    subplot_id=data.get('subplot_id', ''),
+                    chapter=chapter,
+                    progress_description=data.get('progress_description', ''),
+                    milestone_reached=data.get('milestone_reached'),
+                    status=data.get('status', 'active'),
+                )
+            elif file_name == 'emotional_arcs':
+                result = truth_files.update_emotional_arc(
+                    character_name=data.get('character_name', ''),
+                    chapter=chapter,
+                    emotional_state=data.get('emotional_state', ''),
+                    intensity=data.get('intensity', 50),
+                    trigger_event=data.get('trigger_event', ''),
+                    arc_phase=data.get('arc_phase', ''),
+                )
+            elif file_name == 'character_matrix':
+                result = truth_files.update_character_matrix(
+                    character_name=data.get('character_name', ''),
+                    chapter=chapter,
+                    role=data.get('role', ''),
+                    motivation=data.get('motivation', ''),
+                    ability_changes=data.get('ability_changes'),
+                    relationships=data.get('relationships'),
+                    current_goal=data.get('current_goal', ''),
+                )
+            else:
+                self._send_json({"success": False, "error": f"Unknown truth file: {file_name}"}, 400)
+                return
+            self._send_json({"success": True, "result": result})
+        except Exception as e:
+            log(f"Truth update error: {e}")
+            self._send_json({"success": False, "error": str(e)[:200]})
+
+    def _handle_truth_hooks(self, data):
+        try:
+            pending = truth_files.get_pending_hooks()
+            self._send_json({"success": True, "pending_hooks": pending, "count": len(pending)})
+        except Exception as e:
+            log(f"Truth hooks error: {e}")
+            self._send_json({"success": False, "error": str(e)[:200]})
+
+    def _handle_pipeline_start(self, data):
+        chapter = data.get('chapter', 1)
+        try:
+            result = pipeline.start_chapter(chapter)
+            self._send_json({"success": True, "pipeline": result})
+        except Exception as e:
+            log(f"Pipeline start error: {e}")
+            self._send_json({"success": False, "error": str(e)[:200]})
+
+    def _handle_pipeline_state(self, data):
+        try:
+            state = pipeline.get_pipeline_state()
+            self._send_json({"success": True, "pipeline": state})
+        except Exception as e:
+            log(f"Pipeline state error: {e}")
+            self._send_json({"success": False, "error": str(e)[:200]})
+
+    def _handle_pipeline_revise(self, data):
+        content = data.get('content', '')
+        try:
+            review_result = reviewer.review_chapter(
+                chapter=pipeline.current_chapter,
+                chapter_text=content,
+                use_llm=True,
+            )
+            audit_dict = review_result.to_dict()
+            result = pipeline.revise_and_audit(content, audit_dict)
+
+            if result.get("status") == "revising":
+                revision_prompt = pipeline.build_revision_prompt(audit_dict.get("issues", []))
+                self._send_json({
+                    "success": True,
+                    "pipeline": result,
+                    "revision_prompt": revision_prompt,
+                    "issues": audit_dict.get("issues", []),
+                })
+            else:
+                self._send_json({
+                    "success": True,
+                    "pipeline": result,
+                    "final_content": content,
+                })
+        except Exception as e:
+            log(f"Pipeline revise error: {e}")
             self._send_json({"success": False, "error": str(e)[:200]})
 
     def _handle_planning_beat_sheet(self, data):
@@ -1588,27 +2581,74 @@ class NWACSHandler(BaseHTTPRequestHandler):
             self._send_json({"error": "No text provided"}, 400)
             return
 
-        log(f"Detecting AI traces in {len(text)} chars...")
+        log(f"Detecting AI traces in {len(text)} chars (deep={deep})...")
+
+        local_result = detect_ai_traces(text)
+        log(f"Local detection: {len(local_result.get('traces_found',[]))} traces, score={local_result.get('total_score',0)}")
+
+        if deep:
+            try:
+                detection_prompt = build_ai_detection_report_prompt(text)
+                llm_result = llm.generate(
+                    detection_prompt,
+                    system_prompt="你是一位专业的AI写作痕迹检测专家，基于NWACS智能检测标准进行检测。请严格按JSON格式输出。",
+                    params=GenerationParams(temperature=0.3, max_tokens=2048),
+                )
+                try:
+                    json_match = re.search(r'\{[\s\S]*\}', llm_result)
+                    if json_match:
+                        llm_data = json.loads(json_match.group(0))
+                        local_result["llm_analysis"] = llm_data
+                        local_result["ai_score"] = llm_data.get("ai_score", local_result["ai_probability"])
+                        local_result["human_score"] = llm_data.get("human_score", local_result["total_score"])
+                        if llm_data.get("issues"):
+                            for iss in llm_data["issues"]:
+                                local_result["traces_found"].append({
+                                    "category": iss.get("category", ""),
+                                    "pattern": iss.get("pattern", ""),
+                                    "found": iss.get("description", ""),
+                                    "severity": iss.get("severity", "medium"),
+                                    "fix": iss.get("fix", ""),
+                                    "source": "llm",
+                                })
+                except json.JSONDecodeError:
+                    log(f"Failed to parse LLM detection result JSON")
+            except Exception as e:
+                log(f"LLM deep detection error: {e}")
+
+        self._send_json({"success": True, "result": local_result})
+
+    def _handle_save_chapter(self, data):
+        ch_num = data.get('chapter_number', 1)
+        title = data.get('title', f'第{ch_num}章')
+        content = data.get('content', '')
+        word_count = data.get('word_count', len(re.sub(r'\s', '', content)))
+
+        if not content:
+            self._send_json({"error": "No content provided"}, 400)
+            return
 
         try:
-            from enhanced_ai_detector import EnhancedAIDetector
-            from dataclasses import asdict
-            detector = EnhancedAIDetector()
-            result = detector.detect(text, detail_level="full" if deep else "basic")
-            self._send_json({"success": True, "result": asdict(result)})
+            novel_dir = os.path.join(os.path.dirname(__file__), '..', '..', 'output', 'novel')
+            os.makedirs(novel_dir, exist_ok=True)
+
+            ch_data = {
+                'chapter': ch_num,
+                'title': title,
+                'content': content,
+                'word_count': word_count,
+                'updated_at': datetime.now().isoformat(),
+            }
+
+            ch_path = os.path.join(novel_dir, f'chapter_{ch_num:04d}.json')
+            with open(ch_path, 'w', encoding='utf-8') as f:
+                json.dump(ch_data, f, ensure_ascii=False, indent=2)
+
+            log(f"Chapter {ch_num} saved to {ch_path}")
+            self._send_json({"success": True, "chapter_number": ch_num, "saved_path": ch_path})
         except Exception as e:
-            log(f"AI detection error: {e}")
-            traceback.print_exc()
-            self._send_json({
-                "success": True,
-                "result": {
-                    "ai_score": 0.5,
-                    "confidence": 0.5,
-                    "traits": [],
-                    "suggestions": ["无法完成AI检测，请稍后重试"],
-                    "note": f"Fallback: {str(e)[:100]}"
-                }
-            })
+            log(f"Save chapter error: {e}")
+            self._send_json({"error": str(e)[:200]}, 500)
 
     def _handle_rewrite(self, data):
         text = data.get('text', '')
@@ -1620,9 +2660,15 @@ class NWACSHandler(BaseHTTPRequestHandler):
 
         log(f"Rewriting {len(text)} chars with style={style}...")
 
+        detection = detect_ai_traces(text)
+        traces_count = len(detection.get("traces_found", []))
+        log(f"Pre-rewrite detection: {traces_count} AI traces found, score={detection.get('total_score',0)}")
+
+        humanize_prompt = build_humanize_prompt(text, detection) if traces_count > 0 else ""
+
         deai_system_prompt = """你是一位拥有15年写作经验的顶级作家，精通将AI生成的文本改写为自然的人类写作风格。
 
-【去AI核心原则 — NWACS 智能去AI痕迹引擎】
+【去AI核心原则 — NWACS 智能去AI痕迹引擎 v2.0】
 
 === 内容层：消除AI内容模式 ===
 1. 禁止过度强调意义和遗产：删除"作为……的证明""标志着……的里程碑""为……奠定基础"等夸大重要性的表述
@@ -1685,6 +2731,15 @@ class NWACSHandler(BaseHTTPRequestHandler):
 44. 加入感官细节：视觉/听觉/触觉/嗅觉至少2种
 45. 加入本土生活细节：烟火气、人情世故、市井气息
 
+=== NWACS 深度语言修正 ===
+46. 拆分长定语：将多层定语拆为短句群，每层「的」不超过2个
+47. 明确指代：用具体名词替代模糊的「这」「那」「其」，确保每个代词有明确先行词
+48. 补全主语：每句必须有明确主语，中文虽可省略但AI生成文本不宜连续省略
+49. 删除范畴词：删除「问题」「情况」「状态」「方面」「领域」等不增加信息的空洞范畴词
+50. 控制时态标记：减少「了」「着」「过」密度，中文靠语序表达时态关系
+51. 减少虚词密度：控制「的」「地」「得」使用频率，用实词结构替代虚词堆砌
+52. 统一语体：保持全文语体一致，避免文言白话混杂、粗俗书面混杂
+
 === 30秒测试原则 ===
 46. 加入具体人名/地名/品牌名——不能全是泛称
 47. 加入具体数字和单位——不能全是模糊描述
@@ -1718,7 +2773,11 @@ class NWACSHandler(BaseHTTPRequestHandler):
         }
 
         instruction = style_instructions.get(style, style_instructions["deai"])
-        prompt = f"{instruction}\n\n原文：\n{text}"
+
+        if style == "deai" and humanize_prompt:
+            prompt = humanize_prompt
+        else:
+            prompt = f"{instruction}\n\n原文：\n{text}"
 
         try:
             rewritten = llm.generate(
@@ -1726,11 +2785,551 @@ class NWACSHandler(BaseHTTPRequestHandler):
                 system_prompt=deai_system_prompt,
                 params=GenerationParams(temperature=0.85, max_tokens=4096),
             )
-            self._send_json({"success": True, "content": rewritten})
+
+            post_detection = detect_ai_traces(rewritten)
+            post_traces = len(post_detection.get("traces_found", []))
+            log(f"Post-rewrite detection: {post_traces} AI traces (was {traces_count}), score={post_detection.get('total_score',0)}")
+
+            self._send_json({
+                "success": True,
+                "content": rewritten,
+                "before_score": detection.get("total_score", 0),
+                "after_score": post_detection.get("total_score", 0),
+                "before_traces": traces_count,
+                "after_traces": post_traces,
+            })
         except Exception as e:
             log(f"Rewrite error: {e}")
             traceback.print_exc()
             self._send_json({"success": True, "content": text, "note": f"Fallback: {str(e)[:100]}"})
+
+    def _handle_retention_score(self, data):
+        chapter = data.get('chapter', 1)
+        score = retention_system.get_chapter_retention_score(chapter)
+        self._send_json({"success": True, "score": score})
+
+    def _handle_retention_analyze(self, data):
+        chapter = data.get('chapter', 1)
+        content = data.get('content', '')
+        summary = data.get('summary', '')
+        result = retention_system.analyze_chapter_for_retention(chapter, content, summary)
+        self._send_json({"success": True, "analysis": result})
+
+    def _handle_retention_add_hook(self, data):
+        hook_type = data.get('hook_type', 'question')
+        description = data.get('description', '')
+        chapter = data.get('chapter', 1)
+        position = data.get('position', 'opening')
+        strength = data.get('strength', 5)
+        if not description:
+            self._send_json({"error": "description is required"}, 400)
+            return
+        hook = retention_system.add_hook(hook_type, description, chapter, position, strength)
+        self._send_json({"success": True, "hook": hook.to_dict()})
+
+    def _handle_retention_add_cool_point(self, data):
+        point_type = data.get('point_type', 'power_up')
+        description = data.get('description', '')
+        chapter = data.get('chapter', 1)
+        intensity = data.get('intensity', 5)
+        buildup = data.get('buildup_chapters', 0)
+        if not description:
+            self._send_json({"error": "description is required"}, 400)
+            return
+        cp = retention_system.add_cool_point(point_type, description, chapter, intensity, buildup)
+        self._send_json({"success": True, "cool_point": cp.to_dict()})
+
+    def _handle_retention_add_debt(self, data):
+        debt_type = data.get('debt_type', 'foreshadowing')
+        description = data.get('description', '')
+        chapter = data.get('chapter', 1)
+        expected_ch = data.get('expected_resolution_chapter')
+        urgency = data.get('urgency', 5)
+        characters = data.get('related_characters', [])
+        if not description:
+            self._send_json({"error": "description is required"}, 400)
+            return
+        debt = retention_system.add_reader_debt(
+            debt_type, description, chapter, expected_ch, urgency, characters
+        )
+        self._send_json({"success": True, "debt": debt.to_dict()})
+
+    def _handle_retention_resolve_debt(self, data):
+        debt_id = data.get('debt_id', '')
+        chapter = data.get('chapter', 1)
+        if not debt_id:
+            self._send_json({"error": "debt_id is required"}, 400)
+            return
+        debt = retention_system.resolve_debt(debt_id, chapter)
+        if debt:
+            self._send_json({"success": True, "debt": debt.to_dict()})
+        else:
+            self._send_json({"error": "Debt not found or already resolved"}, 404)
+
+    def _handle_fatigue_analyze(self, data):
+        chapter = data.get('chapter', 1)
+        content = data.get('content', '')
+        if not content:
+            self._send_json({"error": "content is required"}, 400)
+            return
+        stats = fatigue_detector.analyze_chapter(chapter, content)
+        report = fatigue_detector.get_chapter_fatigue_report(chapter)
+        self._send_json({"success": True, "stats": stats.to_dict(), "report": report})
+
+    def _handle_fatigue_report(self, data):
+        chapter = data.get('chapter', 1)
+        report = fatigue_detector.get_chapter_fatigue_report(chapter)
+        self._send_json({"success": True, "report": report})
+
+    def _handle_fatigue_overall(self, data):
+        report = fatigue_detector.get_overall_fatigue_report()
+        self._send_json({"success": True, "report": report})
+
+    def _handle_fatigue_suggestions(self, data):
+        word = data.get('word', '')
+        if not word:
+            self._send_json({"error": "word is required"}, 400)
+            return
+        result = fatigue_detector.get_word_replacement_suggestions(word)
+        self._send_json({"success": True, "suggestions": result})
+
+    def _handle_gates_evaluate(self, data):
+        chapter = data.get('chapter', 1)
+        content = data.get('content', '')
+        if not content:
+            self._send_json({"error": "content is required"}, 400)
+            return
+
+        ai_result = detect_ai_traces(content)
+        ai_score = ai_result.get("total_score", 0)
+
+        fatigue_stats = fatigue_detector.analyze_chapter(chapter, content)
+        fatigue_score = fatigue_stats.fatigue_score
+
+        retention_score_data = retention_system.get_chapter_retention_score(chapter)
+        retention_score = retention_score_data.get("total_score", 0)
+
+        word_count = len(content.replace('\n', '').replace(' ', ''))
+        target_word_count = data.get('target_word_count', 4000)
+
+        consistency_issues = data.get('consistency_issues', 0)
+        pacing_score = data.get('pacing_score', 70)
+        dialogue_ratio = data.get('dialogue_ratio', 0.2)
+        hook_count = data.get('hook_count', 1)
+
+        result = review_gates.evaluate_chapter(
+            chapter=chapter,
+            ai_trace_score=ai_score,
+            fatigue_score=fatigue_score,
+            retention_score=retention_score,
+            word_count=word_count,
+            target_word_count=target_word_count,
+            consistency_issues=consistency_issues,
+            pacing_score=pacing_score,
+            dialogue_ratio=dialogue_ratio,
+            hook_count=hook_count,
+        )
+        self._send_json({"success": True, "result": result})
+
+    def _handle_gates_chapter(self, data):
+        chapter = data.get('chapter', 1)
+        result = review_gates.get_chapter_gates(chapter)
+        if result:
+            self._send_json({"success": True, "result": result})
+        else:
+            self._send_json({"error": f"第{chapter}章暂无审查数据"}, 404)
+
+    def _handle_gates_summary(self, data):
+        summary = review_gates.get_all_gates_summary()
+        self._send_json({"success": True, "summary": summary})
+
+    def _handle_rag_search(self, data):
+        query = data.get('query', '')
+        top_k = data.get('top_k', 10)
+        chapter_filter = data.get('chapter')
+        if not query:
+            self._send_json({"error": "query is required"}, 400)
+            return
+        results = rag_engine.search(query, top_k=top_k, filter_chapter=chapter_filter)
+        self._send_json({"success": True, "results": [r.to_dict() for r in results], "count": len(results)})
+
+    def _handle_rag_context(self, data):
+        chapter = data.get('chapter', 1)
+        summary = data.get('summary', '')
+        max_chars = data.get('max_chars', 3000)
+        context = rag_engine.get_relevant_context(chapter, summary, max_chars)
+        prompt = rag_engine.build_context_prompt(chapter, summary)
+        self._send_json({"success": True, "context": context, "prompt": prompt})
+
+    def _handle_rag_reverse(self, data):
+        chapter = data.get('chapter', 1)
+        content = data.get('content', '')
+        if not content:
+            self._send_json({"error": "content is required"}, 400)
+            return
+        rag_engine.index_chapter(chapter, content)
+        result = rag_engine.reverse_engineer_chapter(chapter, content)
+        self._send_json({"success": True, "analysis": result})
+
+    def _handle_rag_consistency(self, data):
+        chapter = data.get('chapter', 1)
+        content = data.get('content', '')
+        if not content:
+            self._send_json({"error": "content is required"}, 400)
+            return
+        result = rag_engine.check_consistency(chapter, content)
+        self._send_json({"success": True, "consistency": result})
+
+    def _handle_rag_characters(self, data):
+        network = rag_engine.get_character_network()
+        self._send_json({"success": True, "network": network})
+
+    def _handle_rag_timeline(self, data):
+        timeline = rag_engine.get_event_timeline()
+        self._send_json({"success": True, "timeline": timeline})
+
+    def _handle_rag_stats(self, data):
+        stats = rag_engine.get_stats()
+        self._send_json({"success": True, "stats": stats})
+
+    # ── Fragment Management ──
+    def _handle_fragment_save(self, data):
+        chapter = data.get('chapter', 1)
+        content = data.get('content', '')
+        title = data.get('title', f'第{chapter}章')
+        word_count = data.get('word_count', len(content))
+        frag_dir = os.path.join(PROJECT_ROOT, 'fragments')
+        os.makedirs(frag_dir, exist_ok=True)
+        frag_file = os.path.join(frag_dir, f'chapter_{chapter}_fragments.json')
+        fragments = []
+        if os.path.exists(frag_file):
+            try:
+                with open(frag_file, 'r', encoding='utf-8') as f:
+                    fragments = json.load(f)
+            except:
+                fragments = []
+        version = len(fragments) + 1
+        frag = {
+            'id': f'ch{chapter}_v{version}_{int(time.time())}',
+            'chapter': chapter,
+            'version': version,
+            'title': title,
+            'content': content,
+            'word_count': word_count,
+            'created_at': time.strftime('%Y-%m-%d %H:%M:%S'),
+            'label': f'v{version} - {time.strftime("%H:%M")}'
+        }
+        fragments.append(frag)
+        with open(frag_file, 'w', encoding='utf-8') as f:
+            json.dump(fragments, f, ensure_ascii=False, indent=2)
+        self._send_json({"success": True, "version": frag['label'], "fragment": frag})
+
+    def _handle_fragment_list(self, data):
+        chapter = data.get('chapter', 1)
+        frag_file = os.path.join(PROJECT_ROOT, 'fragments', f'chapter_{chapter}_fragments.json')
+        fragments = []
+        if os.path.exists(frag_file):
+            try:
+                with open(frag_file, 'r', encoding='utf-8') as f:
+                    fragments = json.load(f)
+            except:
+                fragments = []
+        self._send_json({"success": True, "fragments": fragments})
+
+    def _handle_fragment_get(self, data):
+        fragment_id = data.get('fragment_id', '')
+        if not fragment_id:
+            self._send_json({"error": "fragment_id required"}, 400)
+            return
+        frag_dir = os.path.join(PROJECT_ROOT, 'fragments')
+        if not os.path.exists(frag_dir):
+            self._send_json({"error": "No fragments found"}, 404)
+            return
+        for fn in os.listdir(frag_dir):
+            if not fn.endswith('.json'):
+                continue
+            try:
+                with open(os.path.join(frag_dir, fn), 'r', encoding='utf-8') as f:
+                    fragments = json.load(f)
+                for frag in fragments:
+                    if frag.get('id') == fragment_id:
+                        self._send_json({"success": True, "fragment": frag})
+                        return
+            except:
+                continue
+        self._send_json({"error": "Fragment not found"}, 404)
+
+    def _handle_fragment_apply(self, data):
+        fragment_id = data.get('fragment_id', '')
+        if not fragment_id:
+            self._send_json({"error": "fragment_id required"}, 400)
+            return
+        frag_dir = os.path.join(PROJECT_ROOT, 'fragments')
+        for fn in os.listdir(frag_dir):
+            if not fn.endswith('.json'):
+                continue
+            try:
+                with open(os.path.join(frag_dir, fn), 'r', encoding='utf-8') as f:
+                    fragments = json.load(f)
+                for frag in fragments:
+                    if frag.get('id') == fragment_id:
+                        ch_num = frag.get('chapter', 1)
+                        self._send_json({
+                            "success": True,
+                            "chapter": ch_num,
+                            "chapter_data": {
+                                "title": frag.get('title', ''),
+                                "content": frag.get('content', ''),
+                                "word_count": frag.get('word_count', len(frag.get('content', '')))
+                            }
+                        })
+                        return
+            except:
+                continue
+        self._send_json({"error": "Fragment not found"}, 404)
+
+    # ── Character State Tracking ──
+    def _handle_characters_states(self, data):
+        char_file = os.path.join(PROJECT_ROOT, 'character_states.json')
+        characters = []
+        if os.path.exists(char_file):
+            try:
+                with open(char_file, 'r', encoding='utf-8') as f:
+                    characters = json.load(f)
+            except:
+                characters = []
+        if not characters:
+            characters = self._extract_characters_from_chapters()
+            try:
+                with open(char_file, 'w', encoding='utf-8') as f:
+                    json.dump(characters, f, ensure_ascii=False, indent=2)
+            except:
+                pass
+        self._send_json({"success": True, "characters": characters})
+
+    def _extract_characters_from_chapters(self):
+        chars = {}
+        novel_dir = os.path.join(PROJECT_ROOT, 'novel')
+        if not os.path.exists(novel_dir):
+            return []
+        for fn in sorted(os.listdir(novel_dir)):
+            if fn.endswith('.json'):
+                try:
+                    with open(os.path.join(novel_dir, fn), 'r', encoding='utf-8') as f:
+                        ch = json.load(f)
+                    content = ch.get('content', '') + ' ' + ch.get('title', '')
+                    chapter_num = ch.get('chapter', 0)
+
+                    name_candidates = set()
+
+                    patterns = [
+                        r'([\u4e00-\u9fff]{2,4})(?:说|道|问|答|喊|叫|怒|笑|哭|叹|骂|喝|吼|哼|嗯|啊|哦|啦|呢|吗|吧|呀|嘛|哈|嘿|喂|请|谢|拜|跪)',
+                        r'(?:说|道|问|答|喊|叫)[\u4e00-\u9fff]{0,10}?[：:]["「『【]([^"」』】]{2,4})',
+                        r'([\u4e00-\u9fff]{2,4})(?:大侠|公子|小姐|长老|宗主|掌门|师兄|师弟|师姐|师妹|前辈|老祖|天尊|大帝|圣主|魔王|教主|大人|将军|陛下|王爷|公主|殿下|先生|女士|姑娘|兄弟)',
+                        r'[「『【]([^「』】]{2,4})[」』】]',
+                        r'([\u4e00-\u9fff]{2,4})(?:的身影|的声音|的眼神|的脚步|的笑容|的拳头|的长剑|的气势|的气息|的威压|的嘴角|的眼中|的脸上|的手上|的心里)',
+                        r'([\u4e00-\u9fff]{2,4})(?:心中|体内|身后|面前|脚下|手中|眼前|脑海|身旁)',
+                        r'(?:只见|但见|却见|便见|就见|看到|发现|只见那|但见那)([\u4e00-\u9fff]{2,4})',
+                        r'(?:对|向|朝|跟|和|与|给|为|被|把|将)([\u4e00-\u9fff]{2,4})(?:说|道|问|喊|叫|笑|怒|拜|跪|拱手|抱拳|点头|摇头|行礼)',
+                    ]
+
+                    for pattern in patterns:
+                        for match in re.finditer(pattern, content):
+                            name = match.group(1).strip()
+                            if name and len(name) >= 2 and len(name) <= 6:
+                                name_candidates.add(name)
+
+                    for n in name_candidates:
+                        if n not in chars:
+                            chars[n] = {
+                                'name': n,
+                                'status': 'alive',
+                                'role': 'unknown',
+                                'last_chapter': chapter_num,
+                                'notes': '',
+                                'mention_count': content.count(n),
+                            }
+                except:
+                    continue
+        sorted_chars = sorted(chars.values(), key=lambda x: -x.get('mention_count', 0))
+        return sorted_chars[:50]
+
+    # ── Style Fingerprint Handlers ──
+    def _handle_style_analyze(self, data):
+        text = data.get('text', '')
+        label = data.get('label', 'default')
+        if not text:
+            self._send_json({"error": "text required"}, 400)
+            return
+        try:
+            fp = style_engine.analyze(text, label)
+            self._send_json({
+                "success": True,
+                "fingerprint": {
+                    "sentence_length_mean": fp.sentence_length_mean,
+                    "sentence_length_std": fp.sentence_length_std,
+                    "dialogue_ratio": fp.dialogue_ratio,
+                    "paragraph_avg_length": fp.paragraph_avg_length,
+                    "emotion_word_ratio": fp.emotion_word_ratio,
+                    "action_word_ratio": fp.action_word_ratio,
+                    "passive_voice_ratio": fp.passive_voice_ratio,
+                    "avg_sentence_complexity": fp.avg_sentence_complexity,
+                    "style_rules": fp.style_rules,
+                    "top_bigrams": [f'{w1} {w2}' for (w1, w2), _ in fp.top_bigrams[:5]],
+                },
+                "label": label,
+            })
+        except Exception as e:
+            log(f"Style analyze error: {e}")
+            self._send_json({"success": False, "error": str(e)[:200]})
+
+    def _handle_style_compare(self, data):
+        text = data.get('text', '')
+        reference_label = data.get('reference_label', 'default')
+        if not text:
+            self._send_json({"error": "text required"}, 400)
+            return
+        try:
+            result = style_engine.compare(text, reference_label)
+            self._send_json({"success": True, "comparison": result})
+        except Exception as e:
+            log(f"Style compare error: {e}")
+            self._send_json({"success": False, "error": str(e)[:200]})
+
+    def _handle_style_list(self, data):
+        try:
+            fingerprints = style_engine.list_fingerprints()
+            self._send_json({"success": True, "fingerprints": fingerprints})
+        except Exception as e:
+            log(f"Style list error: {e}")
+            self._send_json({"success": False, "error": str(e)[:200]})
+
+    # ── Strand Weave Handlers ──
+    def _handle_strand_analyze(self, data):
+        chapter = data.get('chapter', 1)
+        content = data.get('content', '')
+        if not content:
+            self._send_json({"error": "content required"}, 400)
+            return
+        try:
+            record = strand_engine.analyze_chapter(chapter, content)
+            self._send_json({
+                "success": True,
+                "analysis": {
+                    "chapter": record.chapter,
+                    "quest_ratio": record.quest_ratio,
+                    "fire_ratio": record.fire_ratio,
+                    "constellation_ratio": record.constellation_ratio,
+                    "dominant": record.dominant_strand,
+                    "quest_samples": record.quest_content[:3],
+                    "fire_samples": record.fire_content[:3],
+                    "constellation_samples": record.constellation_content[:3],
+                },
+            })
+        except Exception as e:
+            log(f"Strand analyze error: {e}")
+            self._send_json({"success": False, "error": str(e)[:200]})
+
+    def _handle_strand_report(self, data):
+        try:
+            report = strand_engine.get_rhythm_report()
+            self._send_json({"success": True, "report": report})
+        except Exception as e:
+            log(f"Strand report error: {e}")
+            self._send_json({"success": False, "error": str(e)[:200]})
+
+    def _handle_strand_suggest(self, data):
+        chapter = data.get('chapter', 1)
+        try:
+            suggestion = strand_engine.get_strand_suggestion(chapter)
+            self._send_json({"success": True, "suggestion": suggestion})
+        except Exception as e:
+            log(f"Strand suggest error: {e}")
+            self._send_json({"success": False, "error": str(e)[:200]})
+
+    # ── Truth File Manager (New) Handlers ──
+    def _handle_truth_new_status(self, data):
+        try:
+            status = truth_file_mgr.get_all_status()
+            self._send_json({"success": True, "truth_files": status})
+        except Exception as e:
+            log(f"Truth new status error: {e}")
+            self._send_json({"success": False, "error": str(e)[:200]})
+
+    def _handle_truth_new_init(self, data):
+        outline = data.get('outline', {})
+        protagonist = data.get('protagonist', '')
+        try:
+            truth_file_mgr.initialize_from_outline(outline, protagonist)
+            status = truth_file_mgr.get_all_status()
+            self._send_json({"success": True, "truth_files": status})
+        except Exception as e:
+            log(f"Truth new init error: {e}")
+            self._send_json({"success": False, "error": str(e)[:200]})
+
+    def _handle_truth_new_update(self, data):
+        file_name = data.get('file', '')
+        content = data.get('content', '')
+        if not file_name or not content:
+            self._send_json({"error": "file and content required"}, 400)
+            return
+        try:
+            truth_file_mgr.update_file(file_name, content)
+            self._send_json({"success": True, "file": file_name})
+        except Exception as e:
+            log(f"Truth new update error: {e}")
+            self._send_json({"success": False, "error": str(e)[:200]})
+
+    def _handle_truth_new_hooks(self, data):
+        try:
+            hooks = truth_file_mgr.get_hooks_summary()
+            self._send_json({"success": True, "hooks": hooks})
+        except Exception as e:
+            log(f"Truth new hooks error: {e}")
+            self._send_json({"success": False, "error": str(e)[:200]})
+
+    # ── Writing Pipeline (New) Handlers ──
+    def _handle_pipeline_new_run(self, data):
+        chapter = data.get('chapter', 1)
+        outline = data.get('outline', {})
+        context = data.get('context', {})
+        word_count = data.get('word_count', 3000)
+        style_label = data.get('style_label', '')
+        try:
+            result = writing_pipeline.run(chapter, outline, context, word_count, style_label)
+            self._send_json({
+                "success": True,
+                "result": {
+                    "chapter": result.chapter_num,
+                    "stage": result.stage.value,
+                    "passed": result.passed,
+                    "plan": result.plan[:500] if result.plan else '',
+                    "draft": result.draft[:2000] if result.draft else '',
+                    "revised_draft": result.revised_draft[:2000] if result.revised_draft else '',
+                    "issues": [
+                        {
+                            "dimension": i.dimension,
+                            "severity": i.severity.value,
+                            "description": i.description,
+                            "suggestion": i.suggestion,
+                        }
+                        for i in result.audit_issues
+                    ],
+                    "error": result.error,
+                    "duration": round(result.completed_at - result.started_at, 1) if result.completed_at else 0,
+                },
+            })
+        except Exception as e:
+            log(f"Pipeline new run error: {e}")
+            self._send_json({"success": False, "error": str(e)[:200]})
+
+    def _handle_pipeline_new_status(self, data):
+        try:
+            status = writing_pipeline.get_pipeline_status()
+            self._send_json({"success": True, "status": status})
+        except Exception as e:
+            log(f"Pipeline new status error: {e}")
+            self._send_json({"success": False, "error": str(e)[:200]})
 
 
 class ThreadedHTTPServer(HTTPServer):

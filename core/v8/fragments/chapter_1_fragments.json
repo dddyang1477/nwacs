@@ -1,0 +1,62 @@
+[
+  {
+    "id": "ch1_v1_1778561748",
+    "chapter": 1,
+    "version": 1,
+    "title": "第1章",
+    "content": "测试内容",
+    "word_count": 4,
+    "created_at": "2026-05-12 13:55:48",
+    "label": "v1 - 13:55"
+  },
+  {
+    "id": "ch1_v2_1778561841",
+    "chapter": 1,
+    "version": 2,
+    "title": "第1章",
+    "content": "测试内容",
+    "word_count": 4,
+    "created_at": "2026-05-12 13:57:21",
+    "label": "v2 - 13:57"
+  },
+  {
+    "id": "ch1_v3_1778562004",
+    "chapter": 1,
+    "version": 3,
+    "title": "第1章",
+    "content": "测试内容",
+    "word_count": 4,
+    "created_at": "2026-05-12 14:00:04",
+    "label": "v3 - 14:00"
+  },
+  {
+    "id": "ch1_v4_1778562048",
+    "chapter": 1,
+    "version": 4,
+    "title": "第1章",
+    "content": "test",
+    "word_count": 4,
+    "created_at": "2026-05-12 14:00:48",
+    "label": "v4 - 14:00"
+  },
+  {
+    "id": "ch1_v5_1778562194",
+    "chapter": 1,
+    "version": 5,
+    "title": "第1章",
+    "content": "测试内容",
+    "word_count": 4,
+    "created_at": "2026-05-12 14:03:14",
+    "label": "v5 - 14:03"
+  },
+  {
+    "id": "ch1_v6_1778562282",
+    "chapter": 1,
+    "version": 6,
+    "title": "第1章",
+    "content": "测试内容",
+    "word_count": 4,
+    "created_at": "2026-05-12 14:04:42",
+    "label": "v6 - 14:04"
+  }
+]

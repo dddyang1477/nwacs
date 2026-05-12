@@ -1,0 +1,129 @@
+{
+  "meta": {
+    "version": "1.0.0",
+    "created_at": "2026-05-12T05:28:54Z",
+    "chapter": 1
+  },
+  "issues": [
+    {
+      "severity": "low",
+      "category": "ai_flavor",
+      "location": "全文",
+      "description": "高频AI词汇密集出现（共3处）",
+      "evidence": "检测到: 淡淡, 微微, 默默 等词汇",
+      "fix_hint": "替换为更自然的表达，删除不必要的连接词，用动作和对话替代抽象描述",
+      "blocking": false
+    },
+    {
+      "severity": "medium",
+      "category": "continuity",
+      "location": "全文",
+      "description": "情绪弧过于平坦（全章情绪基调为neutral，无变化）",
+      "evidence": "5段情绪分析: neutral → neutral → neutral → neutral → neutral",
+      "fix_hint": "设计情绪起伏：紧张→舒缓→再紧张→爆发→余韵，制造情绪过山车效果",
+      "blocking": false
+    },
+    {
+      "severity": "low",
+      "category": "character",
+      "location": "全文",
+      "description": "单章出场角色过多（41个有对话的角色）",
+      "evidence": "对话角色: 压低声音, 他刚才, 也就是, 出满意的, 不改色地, 叶尘, 门弟子怒, 就知",
+      "fix_hint": "控制单章有台词角色不超过5-6个，避免读者混淆",
+      "blocking": false
+    },
+    {
+      "severity": "medium",
+      "category": "plot",
+      "location": "全文",
+      "description": "缺少爽点，读者可能缺乏满足感",
+      "evidence": "未检测到爽点标记",
+      "fix_hint": "每章至少安排一个爽点：突破/打脸/收获/反转",
+      "blocking": false
+    },
+    {
+      "severity": "high",
+      "category": "plot",
+      "location": "开篇",
+      "description": "开篇300字缺少钩子，读者可能流失",
+      "evidence": "开篇: # 第三章 宗门入门\n\n天机宗的山门巍峨如剑，直插云霄。\n\n叶尘站在山脚，仰头看着那三座悬浮在云海中的山峰，瞳孔微微收缩。灵舟已经降落，数百名来自各城的少年少女正沿着青石台阶向上走，每个人的脸上都带着...",
+      "fix_hint": "开篇300字内必须有悬念/冲突/动作/疑问，抓住读者注意力",
+      "blocking": false
+    },
+    {
+      "severity": "high",
+      "category": "plot",
+      "location": "章末",
+      "description": "章末缺少悬念钩子，追读力不足",
+      "evidence": "章末: 了什么？”\n\n他有一种预感，墨无痕和机械神教，一定在星骸城发现了什么了不得的东西。\n\n而他，必须抢在他们之前找到它。\n\n就在这时，门外突然传来一阵急促的脚步声。\n\n叶尘立刻警觉起来，翻身下床，走到门口...",
+      "fix_hint": "章末必须留一个未闭合问题或悬念，让读者想点下一章",
+      "blocking": false
+    },
+    {
+      "severity": "low",
+      "category": "continuity",
+      "location": "全文",
+      "description": "前后半章关键词重叠度低，叙事可能不连贯",
+      "evidence": "关键词重叠率: 3.0%",
+      "fix_hint": "确保前后半章有主题或人物上的连贯性",
+      "blocking": false
+    },
+    {
+      "severity": "high",
+      "category": "setting",
+      "location": "第1段",
+      "description": "章节标题为'第三章 宗门入门'，但正文开头描述天机宗山门，与标题中的'第三章'不符，应为第一章或第二章内容。",
+      "evidence": "原文标题：'# 第三章 宗门入门'，但正文是故事开篇，主角叶尘刚抵达宗门。",
+      "fix_hint": "修正章节编号为'第一章'或'第二章'，确保与故事进度一致。",
+      "blocking": false
+    },
+    {
+      "severity": "medium",
+      "category": "character",
+      "location": "第10段",
+      "description": "铁锤作为杂役处弟子，能感知到叶尘身上'机械神教的气息'，但前文未建立铁锤具备这种感知能力或背景，且叶尘刚接触机械零件，气息残留缺乏合理性。",
+      "evidence": "原文：'你身上有机械神教的气息。' 铁锤说。叶尘回应：'我在星骸城拾荒的时候，捡到过一些机械零件。'",
+      "fix_hint": "补充铁锤改造背景或感知能力的设定，或调整叶尘接触机械神教物品的细节以增强可信度。",
+      "blocking": false
+    },
+    {
+      "severity": "low",
+      "category": "continuity",
+      "location": "第5段",
+      "description": "叶尘在星骸城时已使用信息解析能力扫描外门弟子，但前文未明确该能力在星骸废墟外的使用限制或消耗，此处突然使用缺乏铺垫。",
+      "evidence": "原文：'刚才那一瞬间，他已经用信息解析能力扫过了那个外门弟子的身体——练气三层，丹田灵气稀薄，根基不稳。'",
+      "fix_hint": "在前文或本章开头简要说明信息解析能力的使用条件，避免突兀。",
+      "blocking": false
+    },
+    {
+      "severity": "low",
+      "category": "logic",
+      "location": "第18段",
+      "description": "叶尘决定留在杂役处以获取自由和掩护，但杂役处工作繁重且无修炼资源，与主角'需要时间变强'的目标存在矛盾，动机不够充分。",
+      "evidence": "原文：'杂役处虽然地位低，但有一个好处——自由。' 但后文提到：'劈柴是杂役处的工作之一，每天要劈够一百斤。'",
+      "fix_hint": "增加叶尘对杂役处自由度的具体计划，或说明他如何利用杂役处资源（如偷学、接触禁地）来弥补矛盾。",
+      "blocking": false
+    },
+    {
+      "severity": "low",
+      "category": "character",
+      "location": "第28段",
+      "description": "铁锤主动提出教叶尘'打架的本事'，但前文铁锤对叶尘态度从怀疑（扫描机械神教气息）到友好转变过快，缺乏情感过渡。",
+      "evidence": "原文：'行，你留下吧，以后跟着我干。' 和 '行，以后你跟着我干，我教你点真本事。'",
+      "fix_hint": "增加铁锤态度转变的中间事件或对话，如叶尘劈柴表现引起铁锤兴趣。",
+      "blocking": false
+    },
+    {
+      "severity": "low",
+      "category": "timeline",
+      "location": "第24段",
+      "description": "入门测试在'两天后'举行，但后文叶尘劈柴后'三天后'又发生事件，时间跳跃未明确标注，可能造成混淆。",
+      "evidence": "原文：'宗门入门测试在后天' -> '两天后，入门测试开始' -> '三天后，叶尘第一次见识到了铁锤的“真本事”。'",
+      "fix_hint": "在时间跳跃处添加明确的时间过渡语句，如'测试结束后的第三天'。",
+      "blocking": false
+    }
+  ],
+  "summary": "13个问题：0个阻断，0个严重，3个高优",
+  "blocking_count": 0,
+  "overall_status": "accepted"
+}

@@ -1,0 +1,120 @@
+{
+  "meta": {
+    "version": "1.0.0",
+    "created_at": "2026-05-12T05:28:54Z",
+    "chapter": 3
+  },
+  "issues": [
+    {
+      "severity": "low",
+      "category": "ai_flavor",
+      "location": "全文",
+      "description": "高频AI词汇密集出现（共3处）",
+      "evidence": "检测到: 淡淡, 微微, 默默 等词汇",
+      "fix_hint": "替换为更自然的表达，删除不必要的连接词，用动作和对话替代抽象描述",
+      "blocking": false
+    },
+    {
+      "severity": "medium",
+      "category": "continuity",
+      "location": "全文",
+      "description": "情绪弧过于平坦（全章情绪基调为neutral，无变化）",
+      "evidence": "5段情绪分析: neutral → neutral → neutral → neutral → neutral",
+      "fix_hint": "设计情绪起伏：紧张→舒缓→再紧张→爆发→余韵，制造情绪过山车效果",
+      "blocking": false
+    },
+    {
+      "severity": "low",
+      "category": "character",
+      "location": "全文",
+      "description": "单章出场角色过多（41个有对话的角色）",
+      "evidence": "对话角色: 压低声音, 他刚才, 也就是, 出满意的, 不改色地, 叶尘, 门弟子怒, 就知",
+      "fix_hint": "控制单章有台词角色不超过5-6个，避免读者混淆",
+      "blocking": false
+    },
+    {
+      "severity": "medium",
+      "category": "plot",
+      "location": "全文",
+      "description": "缺少爽点，读者可能缺乏满足感",
+      "evidence": "未检测到爽点标记",
+      "fix_hint": "每章至少安排一个爽点：突破/打脸/收获/反转",
+      "blocking": false
+    },
+    {
+      "severity": "high",
+      "category": "plot",
+      "location": "开篇",
+      "description": "开篇300字缺少钩子，读者可能流失",
+      "evidence": "开篇: # 第三章 宗门入门\n\n天机宗的山门巍峨如剑，直插云霄。\n\n叶尘站在山脚，仰头看着那三座悬浮在云海中的山峰，瞳孔微微收缩。灵舟已经降落，数百名来自各城的少年少女正沿着青石台阶向上走，每个人的脸上都带着...",
+      "fix_hint": "开篇300字内必须有悬念/冲突/动作/疑问，抓住读者注意力",
+      "blocking": false
+    },
+    {
+      "severity": "high",
+      "category": "plot",
+      "location": "章末",
+      "description": "章末缺少悬念钩子，追读力不足",
+      "evidence": "章末: 了什么？”\n\n他有一种预感，墨无痕和机械神教，一定在星骸城发现了什么了不得的东西。\n\n而他，必须抢在他们之前找到它。\n\n就在这时，门外突然传来一阵急促的脚步声。\n\n叶尘立刻警觉起来，翻身下床，走到门口...",
+      "fix_hint": "章末必须留一个未闭合问题或悬念，让读者想点下一章",
+      "blocking": false
+    },
+    {
+      "severity": "low",
+      "category": "continuity",
+      "location": "全文",
+      "description": "前后半章关键词重叠度低，叙事可能不连贯",
+      "evidence": "关键词重叠率: 3.0%",
+      "fix_hint": "确保前后半章有主题或人物上的连贯性",
+      "blocking": false
+    },
+    {
+      "severity": "high",
+      "category": "setting",
+      "location": "第3段",
+      "description": "外门弟子修为设定与宗门地位矛盾",
+      "evidence": "原文：'练气三层，丹田灵气稀薄，根基不稳，最多三年就会卡在瓶颈。这种人在宗门里就是炮灰，只能欺负欺负凡人。' 但天机宗作为大宗门，外门弟子最低修为应为练气中期（四层以上），且练气三层在多数设定中属于刚入门或杂役水平，不应担任接待新弟子的职务。",
+      "fix_hint": "将外门弟子修为改为练气五层或六层，或说明其因犯错被罚做接待工作",
+      "blocking": false
+    },
+    {
+      "severity": "medium",
+      "category": "character",
+      "location": "第8段",
+      "description": "铁锤对叶尘的信任建立过快，缺乏合理动机",
+      "evidence": "原文：铁锤扫描后说'你身上有机械神教的气息'，叶尘解释后铁锤立刻大笑并信任他。但铁锤作为被机械神教改造过的受害者，对相关气息应极度敏感且警惕，不应仅凭一句解释就完全放下戒心。",
+      "fix_hint": "增加铁锤的怀疑持续期，或让叶尘提供更具体的证据（如展示机械零件）",
+      "blocking": false
+    },
+    {
+      "severity": "medium",
+      "category": "logic",
+      "location": "第14段",
+      "description": "叶尘弃权第二、三关测试的行为与留在杂役处的目标矛盾",
+      "evidence": "原文：'第二关和第三关，他直接弃权了。' 但叶尘的目标是留在杂役处，而杂役处通常需要经过完整测试（即使失败）才能被分配。直接弃权可能被视为不配合，反而被驱逐出宗门。",
+      "fix_hint": "改为叶尘参加了测试但故意表现极差，或说明宗门规则允许凡人弃权后自动归入杂役处",
+      "blocking": false
+    },
+    {
+      "severity": "low",
+      "category": "continuity",
+      "location": "第1段",
+      "description": "山门描述与后续场景衔接不自然",
+      "evidence": "原文：'天机宗的山门巍峨如剑，直插云霄。' 但随后叶尘直接进入青石台阶，没有对山门本身进行任何互动或描述，山门作为标志性建筑被浪费。",
+      "fix_hint": "在叶尘经过山门时增加一句观察或感受，或删除山门描写直接从台阶开始",
+      "blocking": false
+    },
+    {
+      "severity": "low",
+      "category": "character",
+      "location": "第5段",
+      "description": "叶尘对铁锤的称呼过于随意",
+      "evidence": "原文：'铁锤。' 叶尘在第一次见面时直接在心里称呼对方名字，但此时他尚未被告知铁锤的名字，仅凭外貌特征推断。虽然可能通过星骸城情报得知，但缺乏明确交代。",
+      "fix_hint": "在叶尘回忆中增加一句'他在星骸城就听说过铁锤的外号'，或改为'那个改造人'",
+      "blocking": false
+    }
+  ],
+  "summary": "12个问题：0个阻断，0个严重，3个高优",
+  "blocking_count": 0,
+  "overall_status": "accepted"
+}

@@ -1022,6 +1022,167 @@ class StorySystem:
         }
 
 
+class MultiAgentPipeline:
+    """多Agent写作管线 — 规划→起草→审计→修订 四阶段流水线
+
+    基于合同驱动架构，协调多个专业Agent完成章节创作:
+    - Planner:   分析合同，生成详细写作指令
+    - Drafter:   根据指令生成章节正文
+    - Auditor:   对照合同审查章节质量
+    - Reviser:   根据审查意见修订内容
+
+    管线状态机:
+        idle → planning → drafting → auditing → revising → committed
+                                     ↑__________________|
+    """
+
+    STAGE_ORDER = ["idle", "planning", "drafting", "auditing", "revising", "committed"]
+
+    def __init__(self, story_system: StorySystem):
+        self.story = story_system
+        self.current_stage = "idle"
+        self.current_chapter = 0
+        self.plan: Dict[str, Any] = {}
+        self.draft: str = ""
+        self.audit_result: Dict[str, Any] = {}
+        self.revision_count: int = 0
+        self.max_revisions: int = 3
+        self.stage_log: List[Dict[str, Any]] = []
+
+    def reset(self) -> None:
+        self.current_stage = "idle"
+        self.current_chapter = 0
+        self.plan = {}
+        self.draft = ""
+        self.audit_result = {}
+        self.revision_count = 0
+        self.stage_log = []
+
+    def _log_stage(self, stage: str, data: Dict[str, Any]) -> None:
+        entry = {
+            "stage": stage,
+            "timestamp": _utc_now_iso(),
+            "chapter": self.current_chapter,
+            **data,
+        }
+        self.stage_log.append(entry)
+
+    def start_chapter(self, chapter: int) -> Dict[str, Any]:
+        self.reset()
+        self.current_chapter = chapter
+        self.current_stage = "planning"
+        self._log_stage("planning", {"action": "started"})
+        return {"status": "planning", "chapter": chapter}
+
+    def set_plan(self, plan: Dict[str, Any]) -> Dict[str, Any]:
+        if self.current_stage != "planning":
+            return {"status": "error", "error": f"Expected stage 'planning', got '{self.current_stage}'"}
+        self.plan = plan
+        self.current_stage = "drafting"
+        self._log_stage("drafting", {"action": "started", "plan_summary": str(plan)[:200]})
+        return {"status": "drafting", "chapter": self.current_chapter}
+
+    def set_draft(self, content: str) -> Dict[str, Any]:
+        if self.current_stage != "drafting":
+            return {"status": "error", "error": f"Expected stage 'drafting', got '{self.current_stage}'"}
+        self.draft = content
+        self.current_stage = "auditing"
+        self._log_stage("auditing", {"action": "started", "word_count": len(content)})
+        return {"status": "auditing", "chapter": self.current_chapter, "word_count": len(content)}
+
+    def set_audit_result(self, result: Dict[str, Any]) -> Dict[str, Any]:
+        if self.current_stage != "auditing":
+            return {"status": "error", "error": f"Expected stage 'auditing', got '{self.current_stage}'"}
+        self.audit_result = result
+        issues = result.get("issues", [])
+        blocking = [i for i in issues if i.get("severity") in ("critical", "high")]
+
+        if blocking and self.revision_count < self.max_revisions:
+            self.current_stage = "revising"
+            self.revision_count += 1
+            self._log_stage("revising", {
+                "action": "started",
+                "revision": self.revision_count,
+                "blocking_issues": len(blocking),
+            })
+            return {
+                "status": "revising",
+                "chapter": self.current_chapter,
+                "revision": self.revision_count,
+                "blocking_issues": len(blocking),
+                "issues": issues,
+            }
+        else:
+            self.current_stage = "committed"
+            self._log_stage("committed", {
+                "action": "completed",
+                "total_revisions": self.revision_count,
+                "total_issues": len(issues),
+            })
+            return {
+                "status": "committed",
+                "chapter": self.current_chapter,
+                "revisions": self.revision_count,
+                "total_issues": len(issues),
+            }
+
+    def revise_and_audit(self, revised_content: str, new_audit: Dict[str, Any]) -> Dict[str, Any]:
+        if self.current_stage != "revising":
+            return {"status": "error", "error": f"Expected stage 'revising', got '{self.current_stage}'"}
+        self.draft = revised_content
+        return self.set_audit_result(new_audit)
+
+    def get_pipeline_state(self) -> Dict[str, Any]:
+        return {
+            "stage": self.current_stage,
+            "chapter": self.current_chapter,
+            "revision_count": self.revision_count,
+            "max_revisions": self.max_revisions,
+            "draft_word_count": len(self.draft) if self.draft else 0,
+            "stage_log": self.stage_log[-10:],
+        }
+
+    def build_revision_prompt(self, issues: List[Dict[str, Any]]) -> str:
+        """根据审计问题构建修订提示词"""
+        critical_issues = [i for i in issues if i.get("severity") == "critical"]
+        high_issues = [i for i in issues if i.get("severity") == "high"]
+        medium_issues = [i for i in issues if i.get("severity") == "medium"]
+
+        prompt_parts = ["## 修订指令 — 请根据以下审查意见修改章节内容\n"]
+
+        if critical_issues:
+            prompt_parts.append("### 🔴 必须修复的严重问题")
+            for i, iss in enumerate(critical_issues, 1):
+                desc = iss.get("description") or iss.get("message", "")
+                fix = iss.get("fix") or iss.get("suggestion", "")
+                prompt_parts.append(f"{i}. **问题**: {desc}")
+                if fix:
+                    prompt_parts.append(f"   **修复建议**: {fix}")
+
+        if high_issues:
+            prompt_parts.append("\n### 🟡 重要问题")
+            for i, iss in enumerate(high_issues, 1):
+                desc = iss.get("description") or iss.get("message", "")
+                fix = iss.get("fix") or iss.get("suggestion", "")
+                prompt_parts.append(f"{i}. **问题**: {desc}")
+                if fix:
+                    prompt_parts.append(f"   **修复建议**: {fix}")
+
+        if medium_issues:
+            prompt_parts.append("\n### 🔵 建议优化")
+            for i, iss in enumerate(medium_issues[:5], 1):
+                desc = iss.get("description") or iss.get("message", "")
+                prompt_parts.append(f"{i}. {desc}")
+
+        prompt_parts.append("\n## 修订要求")
+        prompt_parts.append("- 保持原有剧情走向和角色性格不变")
+        prompt_parts.append("- 只修改有问题的部分，不要重写整个章节")
+        prompt_parts.append("- 修改后字数与原章节基本一致")
+        prompt_parts.append("- 直接输出修改后的完整章节正文")
+
+        return "\n".join(prompt_parts)
+
+
 def _deep_update(target: Dict, source: Dict) -> None:
     for key, value in source.items():
         if key in target and isinstance(target[key], dict) and isinstance(value, dict):

@@ -262,36 +262,6 @@ class CharacterNameEngine:
 
         return result
 
-    def generate_title(self, genre: str, character_name: str,
-                       personality: str = "", ability: str = "",
-                       style: str = "domineering") -> List[str]:
-        """为角色生成称号/道号/绰号"""
-        prompt = f"""你是顶级网络文学命名大师。为以下角色生成称号：
-
-角色名：{character_name}
-题材：{genre}
-性格：{personality or '待定'}
-能力：{ability or '待定'}
-风格：{style}
-
-要求：
-1. 称号要有江湖味/玄幻味，不能软
-2. 要体现角色的核心特质
-3. 读起来要有气势
-4. 生成3-5个不同风格的称号
-
-返回JSON：{{"titles": ["称号1", "称号2", ...]}}"""
-
-        try:
-            result = self.llm.generate_json(
-                prompt,
-                system_prompt="你是顶级命名大师。只返回JSON。",
-                fallback={"titles": []}
-            )
-            return result.get('titles', [])
-        except Exception:
-            return []
-
     def generate_organization_name(self, genre: str, org_type: str,
                                     description: str = "",
                                     count: int = 5) -> List[Dict]:

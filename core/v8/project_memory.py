@@ -1024,3 +1024,527 @@ class ProjectMemory:
                 key=lambda x: x["count"], reverse=True,
             )[:5],
         }
+
+    def get_fingerprint(self) -> Dict[str, Any]:
+        fp_path = self._memory_path.parent / "writing_fingerprint.json"
+        if fp_path.exists():
+            try:
+                with open(fp_path, 'r', encoding='utf-8') as f:
+                    return json.load(f)
+            except Exception as e:
+                print(f"[ProjectMemory] Failed to load fingerprint: {e}")
+        return {}
+
+    def generate_fingerprint(self, chapters: List[Dict], genres: List[str], styles: List[str]) -> Dict[str, Any]:
+        from llm_interface import llm, GenerationParams
+
+        combined_text = ""
+        for ch in chapters:
+            combined_text += f"\n--- 第{ch.get('chapter', '?')}章 ---\n{ch.get('text', '')[:2000]}"
+
+        prompt = f"""你是一位专业的写作风格分析师。请分析以下小说章节的写作风格特征，生成"写作指纹"。
+
+## 小说信息
+- 题材：{', '.join(genres) if genres else '未指定'}
+- 风格：{', '.join(styles) if styles else '未指定'}
+
+## 章节内容（节选）
+{combined_text[:4000]}
+
+## 分析要求
+请从以下维度分析写作风格，返回纯JSON：
+
+1. **句式风格** (sentence_style)：短句/长句/混合，平均句长偏好
+2. **节奏偏好** (pacing)：快节奏/慢节奏/中等，场景切换频率
+3. **对话占比** (dialogue_ratio)：高/适中/低
+4. **叙事视角** (pov)：第一人称/第三人称/多视角
+5. **描写密度** (description_density)：高/中/低
+6. **情感基调** (emotional_tone)：热血/冷静/幽默/沉重/混合
+7. **风格规则** (style_rules)：至少5条具体的写作规则，用于指导后续章节保持风格一致
+
+返回JSON格式：
+{{"style_profile": {{"sentence_style": "...", "pacing": "...", "dialogue_ratio": "...", "pov": "...", "description_density": "...", "emotional_tone": "..."}}, "style_rules": ["规则1", "规则2", ...], "locked": false}}"""
+
+        try:
+            response = llm(prompt, GenerationParams(temperature=0.4, max_tokens=1500))
+            json_str = response
+            if "```json" in response:
+                json_str = response.split("```json")[1].split("```")[0]
+            elif "```" in response:
+                json_str = response.split("```")[1].split("```")[0]
+            fp = json.loads(json_str.strip())
+            fp["generated_at"] = _utc_now_iso()
+            fp["chapter_count"] = len(chapters)
+            fp["genres"] = genres
+            fp["styles"] = styles
+
+            fp_path = self._memory_path.parent / "writing_fingerprint.json"
+            with open(fp_path, 'w', encoding='utf-8') as f:
+                json.dump(fp, f, ensure_ascii=False, indent=2)
+
+            return fp
+        except Exception as e:
+            return {"error": str(e)[:200], "style_profile": {}, "style_rules": [], "locked": False}
+
+    def lock_fingerprint(self) -> None:
+        fp_path = self._memory_path.parent / "writing_fingerprint.json"
+        fp = {}
+        if fp_path.exists():
+            try:
+                with open(fp_path, 'r', encoding='utf-8') as f:
+                    fp = json.load(f)
+            except Exception as e:
+                print(f"[ProjectMemory] Failed to load fingerprint for lock: {e}")
+        fp["locked"] = True
+        fp["locked_at"] = _utc_now_iso()
+        with open(fp_path, 'w', encoding='utf-8') as f:
+            json.dump(fp, f, ensure_ascii=False, indent=2)
+
+    def unlock_fingerprint(self) -> None:
+        fp_path = self._memory_path.parent / "writing_fingerprint.json"
+        fp = {}
+        if fp_path.exists():
+            try:
+                with open(fp_path, 'r', encoding='utf-8') as f:
+                    fp = json.load(f)
+            except Exception as e:
+                print(f"[ProjectMemory] Failed to load fingerprint for unlock: {e}")
+        fp["locked"] = False
+        with open(fp_path, 'w', encoding='utf-8') as f:
+            json.dump(fp, f, ensure_ascii=False, indent=2)
+
+    def check_style_consistency(self, chapter: int, text: str) -> Dict[str, Any]:
+        from llm_interface import llm, GenerationParams
+
+        fp = self.get_fingerprint()
+        if not fp or not fp.get('style_profile'):
+            return {"consistency_score": 100, "deviations": [], "note": "无写作指纹，无法检查"}
+
+        style_profile = fp.get('style_profile', {})
+        style_rules = fp.get('style_rules', [])
+
+        prompt = f"""你是一位严格的写作风格审查员。请检查以下章节是否与写作指纹一致。
+
+## 写作指纹（目标风格）
+- 句式风格：{style_profile.get('sentence_style', '')}
+- 节奏偏好：{style_profile.get('pacing', '')}
+- 对话占比：{style_profile.get('dialogue_ratio', '')}
+- 叙事视角：{style_profile.get('pov', '')}
+- 描写密度：{style_profile.get('description_density', '')}
+- 情感基调：{style_profile.get('emotional_tone', '')}
+
+## 风格规则
+{chr(10).join(f'- {r}' for r in style_rules) if style_rules else '无'}
+
+## 待检查章节（第{chapter}章）
+{text[:3000]}
+
+## 输出要求
+返回纯JSON，评估一致性得分（0-100）和偏差列表：
+{{"consistency_score": 85, "deviations": [{{"aspect": "句式风格", "expected": "...", "actual": "...", "suggestion": "..."}}]}}"""
+
+        try:
+            response = llm(prompt, GenerationParams(temperature=0.3, max_tokens=800))
+            json_str = response
+            if "```json" in response:
+                json_str = response.split("```json")[1].split("```")[0]
+            elif "```" in response:
+                json_str = response.split("```")[1].split("```")[0]
+            return json.loads(json_str.strip())
+        except Exception as e:
+            return {"consistency_score": 50, "deviations": [{"description": f"检查失败: {str(e)[:100]}"}]}
+
+
+class TruthFilesManager:
+    """7真相文件记忆系统 — 叙事一致性引擎
+
+    管理七个核心真相文件，确保长篇小说在以下维度保持一致性:
+    1. current_state   — 世界状态：角色位置、关系网络、已知信息、情感状态
+    2. particle_ledger — 资源账本：物品、金钱、物资数量及衰减追踪
+    3. pending_hooks   — 未闭合伏笔：铺垫、对读者的承诺、未解决冲突
+    4. chapter_summaries — 章节摘要：每章核心事件、情感变化、关键决策
+    5. subplot_progress — 支线进度：各条辅线的推进状态和关键节点
+    6. emotional_arcs   — 情感弧线：主要角色的情感变化曲线
+    7. character_matrix — 角色矩阵：角色关系、动机、能力变化
+    """
+
+    TRUTH_FILES = [
+        "current_state",
+        "particle_ledger",
+        "pending_hooks",
+        "chapter_summaries",
+        "subplot_progress",
+        "emotional_arcs",
+        "character_matrix",
+    ]
+
+    def __init__(self, project_dir):
+        self.truth_dir = Path(project_dir) / "truth_files"
+        self.truth_dir.mkdir(parents=True, exist_ok=True)
+        self._cache: Dict[str, Dict[str, Any]] = {}
+        self._init_truth_files()
+
+    def _init_truth_files(self) -> None:
+        templates = {
+            "current_state": {
+                "world_time": "",
+                "locations": {},
+                "character_positions": {},
+                "known_information": [],
+                "active_conflicts": [],
+                "atmosphere": "",
+                "last_updated_chapter": 0,
+            },
+            "particle_ledger": {
+                "items": {},
+                "currency": {},
+                "resources": {},
+                "last_updated_chapter": 0,
+            },
+            "pending_hooks": {
+                "hooks": [],
+                "promises_to_reader": [],
+                "unresolved_conflicts": [],
+                "last_updated_chapter": 0,
+            },
+            "chapter_summaries": {
+                "chapters": {},
+                "last_updated_chapter": 0,
+            },
+            "subplot_progress": {
+                "subplots": {},
+                "last_updated_chapter": 0,
+            },
+            "emotional_arcs": {
+                "characters": {},
+                "last_updated_chapter": 0,
+            },
+            "character_matrix": {
+                "characters": {},
+                "relationships": [],
+                "last_updated_chapter": 0,
+            },
+        }
+
+        for name in self.TRUTH_FILES:
+            path = self.truth_dir / f"{name}.json"
+            if not path.exists():
+                path.write_text(json.dumps(templates[name], ensure_ascii=False, indent=2), encoding="utf-8")
+
+    def _load(self, name: str) -> Dict[str, Any]:
+        if name in self._cache:
+            return self._cache[name]
+        path = self.truth_dir / f"{name}.json"
+        if path.exists():
+            data = json.loads(path.read_text(encoding="utf-8"))
+            self._cache[name] = data
+            return data
+        return {}
+
+    def _save(self, name: str, data: Dict[str, Any]) -> None:
+        path = self.truth_dir / f"{name}.json"
+        path.write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")
+        self._cache[name] = data
+
+    def update_current_state(
+        self,
+        chapter: int,
+        world_time: str = "",
+        locations: Optional[Dict[str, str]] = None,
+        character_positions: Optional[Dict[str, str]] = None,
+        known_information: Optional[List[str]] = None,
+        active_conflicts: Optional[List[str]] = None,
+        atmosphere: str = "",
+    ) -> Dict[str, Any]:
+        data = self._load("current_state")
+        if world_time:
+            data["world_time"] = world_time
+        if locations:
+            data["locations"].update(locations)
+        if character_positions:
+            data["character_positions"].update(character_positions)
+        if known_information:
+            for info in known_information:
+                if info not in data["known_information"]:
+                    data["known_information"].append(info)
+        if active_conflicts:
+            for conflict in active_conflicts:
+                if conflict not in data["active_conflicts"]:
+                    data["active_conflicts"].append(conflict)
+        if atmosphere:
+            data["atmosphere"] = atmosphere
+        data["last_updated_chapter"] = chapter
+        self._save("current_state", data)
+        return {"status": "success", "file": "current_state", "chapter": chapter}
+
+    def update_particle_ledger(
+        self,
+        chapter: int,
+        items: Optional[Dict[str, Dict[str, Any]]] = None,
+        currency: Optional[Dict[str, int]] = None,
+        resources: Optional[Dict[str, int]] = None,
+    ) -> Dict[str, Any]:
+        data = self._load("particle_ledger")
+        if items:
+            for name, info in items.items():
+                if name in data["items"]:
+                    data["items"][name].update(info)
+                else:
+                    data["items"][name] = info
+        if currency:
+            for k, v in currency.items():
+                data["currency"][k] = data["currency"].get(k, 0) + v
+        if resources:
+            for k, v in resources.items():
+                data["resources"][k] = data["resources"].get(k, 0) + v
+        data["last_updated_chapter"] = chapter
+        self._save("particle_ledger", data)
+        return {"status": "success", "file": "particle_ledger", "chapter": chapter}
+
+    def add_hook(
+        self,
+        chapter: int,
+        hook_description: str,
+        hook_type: str = "foreshadowing",
+        expected_resolution_chapter: Optional[int] = None,
+        related_characters: Optional[List[str]] = None,
+    ) -> Dict[str, Any]:
+        data = self._load("pending_hooks")
+        hook = {
+            "id": _uid(),
+            "description": hook_description,
+            "type": hook_type,
+            "planted_chapter": chapter,
+            "expected_resolution_chapter": expected_resolution_chapter,
+            "related_characters": related_characters or [],
+            "status": "pending",
+            "created_at": _utc_now_iso(),
+        }
+        data["hooks"].append(hook)
+        data["last_updated_chapter"] = chapter
+        self._save("pending_hooks", data)
+        return {"status": "success", "hook_id": hook["id"], "chapter": chapter}
+
+    def resolve_hook(self, hook_id: str, resolution_chapter: int, resolution_note: str = "") -> Dict[str, Any]:
+        data = self._load("pending_hooks")
+        for hook in data["hooks"]:
+            if hook["id"] == hook_id:
+                hook["status"] = "resolved"
+                hook["resolved_chapter"] = resolution_chapter
+                hook["resolution_note"] = resolution_note
+                hook["resolved_at"] = _utc_now_iso()
+                self._save("pending_hooks", data)
+                return {"status": "success", "hook_id": hook_id, "resolved": True}
+        return {"status": "error", "error": f"Hook {hook_id} not found"}
+
+    def get_pending_hooks(self) -> List[Dict[str, Any]]:
+        data = self._load("pending_hooks")
+        return [h for h in data["hooks"] if h.get("status") == "pending"]
+
+    def add_chapter_summary(
+        self,
+        chapter: int,
+        title: str = "",
+        core_events: Optional[List[str]] = None,
+        emotional_changes: Optional[List[str]] = None,
+        key_decisions: Optional[List[str]] = None,
+        character_appearances: Optional[Dict[str, str]] = None,
+        word_count: int = 0,
+    ) -> Dict[str, Any]:
+        data = self._load("chapter_summaries")
+        data["chapters"][str(chapter)] = {
+            "title": title,
+            "core_events": core_events or [],
+            "emotional_changes": emotional_changes or [],
+            "key_decisions": key_decisions or [],
+            "character_appearances": character_appearances or {},
+            "word_count": word_count,
+            "recorded_at": _utc_now_iso(),
+        }
+        data["last_updated_chapter"] = chapter
+        self._save("chapter_summaries", data)
+        return {"status": "success", "chapter": chapter}
+
+    def update_subplot(
+        self,
+        subplot_id: str,
+        chapter: int,
+        progress_description: str = "",
+        milestone_reached: Optional[str] = None,
+        status: str = "active",
+    ) -> Dict[str, Any]:
+        data = self._load("subplot_progress")
+        if subplot_id not in data["subplots"]:
+            data["subplots"][subplot_id] = {
+                "id": subplot_id,
+                "name": subplot_id,
+                "status": "active",
+                "progress_log": [],
+                "milestones": [],
+                "created_at": _utc_now_iso(),
+            }
+        sp = data["subplots"][subplot_id]
+        sp["status"] = status
+        if progress_description:
+            sp["progress_log"].append({
+                "chapter": chapter,
+                "description": progress_description,
+                "timestamp": _utc_now_iso(),
+            })
+        if milestone_reached:
+            sp["milestones"].append({
+                "chapter": chapter,
+                "milestone": milestone_reached,
+                "timestamp": _utc_now_iso(),
+            })
+        data["last_updated_chapter"] = chapter
+        self._save("subplot_progress", data)
+        return {"status": "success", "subplot_id": subplot_id, "chapter": chapter}
+
+    def update_emotional_arc(
+        self,
+        character_name: str,
+        chapter: int,
+        emotional_state: str = "",
+        intensity: int = 50,
+        trigger_event: str = "",
+        arc_phase: str = "",
+    ) -> Dict[str, Any]:
+        data = self._load("emotional_arcs")
+        if character_name not in data["characters"]:
+            data["characters"][character_name] = {
+                "name": character_name,
+                "arc_points": [],
+                "current_state": "",
+                "current_intensity": 50,
+                "overall_arc": "",
+            }
+        char = data["characters"][character_name]
+        if emotional_state:
+            char["current_state"] = emotional_state
+        char["current_intensity"] = intensity
+        char["arc_points"].append({
+            "chapter": chapter,
+            "state": emotional_state,
+            "intensity": intensity,
+            "trigger": trigger_event,
+            "arc_phase": arc_phase,
+            "timestamp": _utc_now_iso(),
+        })
+        data["last_updated_chapter"] = chapter
+        self._save("emotional_arcs", data)
+        return {"status": "success", "character": character_name, "chapter": chapter}
+
+    def update_character_matrix(
+        self,
+        character_name: str,
+        chapter: int,
+        role: str = "",
+        motivation: str = "",
+        ability_changes: Optional[List[str]] = None,
+        relationships: Optional[List[Dict[str, Any]]] = None,
+        current_goal: str = "",
+    ) -> Dict[str, Any]:
+        data = self._load("character_matrix")
+        if character_name not in data["characters"]:
+            data["characters"][character_name] = {
+                "name": character_name,
+                "role": role,
+                "first_appearance": chapter,
+                "motivation_history": [],
+                "ability_changes": [],
+                "current_goal": "",
+                "status": "active",
+            }
+        char = data["characters"][character_name]
+        if role:
+            char["role"] = role
+        if motivation:
+            char["motivation_history"].append({
+                "chapter": chapter,
+                "motivation": motivation,
+                "timestamp": _utc_now_iso(),
+            })
+        if ability_changes:
+            for change in ability_changes:
+                char["ability_changes"].append({
+                    "chapter": chapter,
+                    "change": change,
+                    "timestamp": _utc_now_iso(),
+                })
+        if current_goal:
+            char["current_goal"] = current_goal
+        if relationships:
+            for rel in relationships:
+                existing = next((r for r in data["relationships"] if r["from"] == character_name and r["to"] == rel.get("to")), None)
+                if existing:
+                    existing.update(rel)
+                else:
+                    data["relationships"].append({
+                        "from": character_name,
+                        "to": rel.get("to", ""),
+                        "type": rel.get("type", "neutral"),
+                        "strength": rel.get("strength", 50),
+                        "last_updated_chapter": chapter,
+                    })
+        data["last_updated_chapter"] = chapter
+        self._save("character_matrix", data)
+        return {"status": "success", "character": character_name, "chapter": chapter}
+
+    def get_context_for_chapter(self, chapter: int) -> str:
+        """为章节生成获取完整的叙事上下文注入"""
+        parts = []
+
+        state = self._load("current_state")
+        if state.get("character_positions"):
+            parts.append("## 当前世界状态")
+            parts.append(f"- 时间：{state.get('world_time', '未知')}")
+            parts.append(f"- 氛围：{state.get('atmosphere', '未知')}")
+            for name, pos in state.get("character_positions", {}).items():
+                parts.append(f"- {name} 位于：{pos}")
+            if state.get("active_conflicts"):
+                parts.append(f"- 活跃冲突：{', '.join(state['active_conflicts'])}")
+
+        ledger = self._load("particle_ledger")
+        if ledger.get("items") or ledger.get("currency"):
+            parts.append("\n## 资源状态")
+            for name, info in ledger.get("items", {}).items():
+                qty = info.get("quantity", "?")
+                parts.append(f"- {name}：{qty}")
+            for k, v in ledger.get("currency", {}).items():
+                parts.append(f"- {k}：{v}")
+
+        hooks = self._load("pending_hooks")
+        pending = [h for h in hooks.get("hooks", []) if h.get("status") == "pending"]
+        if pending:
+            parts.append("\n## 待闭合伏笔（必须在后续章节中呼应）")
+            for h in pending:
+                parts.append(f"- [第{h.get('planted_chapter', '?')}章埋下] {h.get('description', '')}")
+
+        matrix = self._load("character_matrix")
+        if matrix.get("characters"):
+            parts.append("\n## 角色当前状态")
+            for name, char in matrix.get("characters", {}).items():
+                parts.append(f"- {name}（{char.get('role', '未知')}）：目标={char.get('current_goal', '未知')}")
+
+        arcs = self._load("emotional_arcs")
+        if arcs.get("characters"):
+            parts.append("\n## 角色情感状态")
+            for name, char in arcs.get("characters", {}).items():
+                parts.append(f"- {name}：{char.get('current_state', '未知')}（强度{char.get('current_intensity', 50)}）")
+
+        return "\n".join(parts) if parts else ""
+
+    def get_all_truth_files(self) -> Dict[str, Any]:
+        result = {}
+        for name in self.TRUTH_FILES:
+            result[name] = self._load(name)
+        return result
+
+    def get_truth_file(self, name: str) -> Optional[Dict[str, Any]]:
+        if name in self.TRUTH_FILES:
+            return self._load(name)
+        return None
+
+    def clear_cache(self) -> None:
+        self._cache.clear()
