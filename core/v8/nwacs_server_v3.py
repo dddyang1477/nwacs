@@ -3,8 +3,10 @@ from datetime import datetime
 from http.server import HTTPServer, BaseHTTPRequestHandler
 from urllib.parse import urlparse
 
-sys.path.insert(0, r'd:\Trae CN\github\nwacs\nwacs\core\v8')
-os.chdir(r'd:\Trae CN\github\nwacs\nwacs\core\v8')
+# 动态获取当前文件所在目录，支持跨平台
+CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, CURRENT_DIR)
+os.chdir(CURRENT_DIR)
 
 LOG_FILE = os.path.join(os.path.dirname(__file__), 'server_debug.log')
 
@@ -650,6 +652,9 @@ class NWACSHandler(BaseHTTPRequestHandler):
             self._handle_strand_analyze(data)
         elif path == '/api/strand/report':
             self._handle_strand_report(data)
+
+        elif path == '/api/generate_detailed_outline':
+            self._handle_generate_detailed_outline(data)
         elif path == '/api/strand/suggest':
             self._handle_strand_suggest(data)
         elif path == '/api/truth/new/status':
@@ -3390,7 +3395,7 @@ def main():
     port = 8099
     server = ThreadedHTTPServer(('0.0.0.0', port), NWACSHandler)
     print(f"=" * 60)
-    print(f"  NWACS 商用级写作工具 v9.0")
+    print(f"  NWACS 商用级写作工具 v7.0")
     print(f"  http://localhost:{port}")
     print(f"=" * 60)
     try:
@@ -3398,6 +3403,105 @@ def main():
     except KeyboardInterrupt:
         print("\nShutting down...")
         server.shutdown()
+
+
+
+
+    def _handle_generate_detailed_outline(self, data):
+        """生成详细大纲"""
+        try:
+            outline = data.get('outline', {})
+            genres = data.get('genres', [])
+            styles = data.get('styles', [])
+            tones = data.get('tones', [])
+            method = data.get('method', '')
+            target_word_count = data.get('target_word_count', 4000)
+            
+            # 构建提示词
+            genre_str = '、'.join(genres) if genres else '玄幻'
+            style_str = '、'.join(styles) if styles else '热血'
+            tone_str = '、'.join(tones) if tones else '紧张'
+            
+            prompt = f"""你是一个专业的小说大纲设计师。请根据以下信息生成详细的章节大纲。
+
+## 基本信息
+- 题材：{genre_str}
+- 风格：{style_str}
+- 基调：{tone_str}
+- 写作方法：{method}
+- 目标每章字数：{target_word_count}
+
+## 基础大纲
+{json.dumps(outline, ensure_ascii=False, indent=2) if outline else '无'}
+
+## 要求
+1. 生成详细的章节大纲，包括：
+   - 章节编号和标题
+   - 本章主要情节
+   - 关键情节点
+   - 角色发展
+   - 字数分配
+2. 大纲应该详细到可以直接用来写作的程度
+3. 返回JSON格式，包含 chapters 数组，每个元素包含：
+   - chapter: 章节号
+   - title: 章节标题
+   - summary: 章节摘要
+   - plot_points: 情节点数组
+   - character_development: 角色发展
+   - word_count: 预计字数
+   - key_events: 关键事件数组
+
+返回格式示例：
+```json
+{{
+  "chapters": [
+    {{
+      "chapter": 1,
+      "title": "第一章：觉醒",
+      "summary": "主角发现自己拥有特殊能力",
+      "plot_points": ["发现能力", "初次使用", "遇到困难"],
+      "character_development": "主角从迷茫到坚定",
+      "word_count": 3000,
+      "key_events": ["意外觉醒", "测试能力", "决定行动"]
+    }}
+  ]
+}}
+```
+"""
+            
+            # 调用LLM生成
+            from llm_interface import llm, GenerationParams
+            params = GenerationParams(max_tokens=2000, temperature=0.7)
+            response = llm(prompt, params)
+            
+            # 解析响应
+            import json
+            try:
+                # 尝试提取JSON
+                json_match = re.search(r'```json\s*(.*?)\s*```', response, re.DOTALL)
+                if json_match:
+                    result = json.loads(json_match.group(1))
+                else:
+                    result = json.loads(response)
+                
+                self._send_json({
+                    "success": True,
+                    "detailed_outline": result
+                })
+            except json.JSONDecodeError:
+                # 如果解析失败，返回原始文本
+                self._send_json({
+                    "success": True,
+                    "detailed_outline": {
+                        "chapters": [{"chapter": 1, "title": "生成的大纲", "summary": response}],
+                        "raw_text": response
+                    }
+                })
+                
+        except Exception as e:
+            log(f"Error in _handle_generate_detailed_outline: {e}")
+            log(traceback.format_exc())
+            self._send_json({"error": str(e)}, 500)
 
 
 if __name__ == '__main__':

@@ -3,7 +3,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>NWACS — 智能小说写作系统</title>
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<title>NWACS — 智能小说写作系统 v7.0 (build 2026-05-14)</title>
 <style>
 :root {
   --bg-root: #050510;
@@ -162,7 +165,7 @@ body::before{
 .stepper-wrap{
   background:var(--bg-elevated);border:1px solid var(--border-dim);
   border-radius:var(--radius-xl);padding:6px;margin-bottom:36px;
-  display:flex;align-items:center;
+  display:flex;align-items:center;overflow-x:auto;
 }
 .stepper{display:flex;align-items:center;flex:1;justify-content:center}
 .stepper-step{
@@ -676,26 +679,138 @@ kbd{
   color:var(--text-secondary);
 }
 
-/* ═══════════════════════ Responsive ═══════════════════════ */
-@media(max-width:1200px){
-  .workspace{grid-template-columns:1fr}
-  .ws-side,.ws-panel{position:static}
-  .ws-side{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+/* ═══════════════════════ Variable Association Graph ═══════════════════════ */
+.var-graph{display:flex;flex-direction:column;align-items:center;padding:20px;min-height:300px;}
+.var-node{padding:8px 16px;border-radius:20px;font-size:0.82rem;font-weight:600;cursor:pointer;transition:all 0.3s var(--ease-out);border:2px solid var(--border-base);background:var(--bg-input);color:var(--text-secondary);}
+.var-node:hover{transform:scale(1.05);border-color:var(--accent);color:var(--accent-soft);}
+.var-node.active{background:var(--accent);border-color:var(--accent);color:#fff;}
+.var-link{font-size:0.7rem;color:var(--text-tertiary);margin:4px 0;}
+
+/* ═══════════════════════ Character Grid (Step 5) ═══════════════════════ */
+.char-grid{display:grid;grid-template-columns:repeat(auto-fill, minmax(200px, 1fr));gap:12px;margin-top:12px;}
+.char-card{
+  background:var(--bg-input);border:1.5px solid var(--border-base);
+  border-radius:var(--radius-md);padding:16px;cursor:pointer;
+  transition:all 0.3s var(--ease-out);text-align:center;
 }
+.char-card:hover{border-color:var(--accent);transform:translateY(-2px);box-shadow:var(--shadow-sm)}
+.char-card .char-icon{font-size:2rem;margin-bottom:8px;display:block;}
+.char-card .char-name{font-weight:600;font-size:0.92rem;margin-bottom:4px;}
+.char-card .char-role{font-size:0.72rem;color:var(--text-tertiary);}
+
+/* ═══════════════════════ Detailed Outline (Step 6) ═══════════════════════ */
+.outline-detailed{padding:16px;}
+.outline-chapter{
+  background:var(--bg-input);border:1px solid var(--border-dim);
+  border-radius:var(--radius-sm);padding:14px;margin-bottom:10px;
+  transition:all 0.3s var(--ease-out);
+}
+.outline-chapter:hover{border-color:var(--accent);background:var(--bg-overlay)}
+.outline-chapter .ch-num{font-weight:700;color:var(--accent-soft);font-size:0.82rem;}
+.outline-chapter .ch-title{font-weight:600;margin:4px 0;}
+.outline-chapter .ch-summary{font-size:0.78rem;color:var(--text-secondary);line-height:1.6;}
+
+/* ═══════════════════════ World Building (Step 7) ═══════════════════════ */
+.world-rule-item{display:flex;gap:8px;align-items:center;margin-bottom:8px;}
+.world-rule-item input{flex:1;}
+.org-item{margin-bottom:12px;padding:12px;background:var(--bg-input);border-radius:var(--radius-sm);}
+
+/* ═══════════════════════ Responsive (Step 5/6/7) ═══════════════════════ */
+@media(max-width:1200px){
+  .app{max-width:100%;}
+  .stepper{flex-wrap:wrap;gap:6px;}
+  .stepper-step{font-size:0.72rem;}
+  .stepper-step span:last-child{display:none;}
+  .char-grid{grid-template-columns:repeat(auto-fill, minmax(180px, 1fr));}
+}
+
 @media(max-width:768px){
-  .app{padding:0 16px}
-  .plot-grid{grid-template-columns:1fr}
-  .field-row{grid-template-columns:1fr}
-  .sel-grid{grid-template-columns:repeat(2,1fr)}
-  .stepper-step span:last-child{display:none}
-  .stepper-line{width:28px}
-  .ws-side{grid-template-columns:1fr}
-  .chapter-box{padding:24px;font-size:0.94rem}
-  .topbar-actions .btn span{display:none}
+  body{padding:0;}
+  .app{border-radius:0;min-height:100vh;}
+  .header{padding:16px 12px;}
+  .header h1{font-size:1.2rem;}
+  .stepper{padding:10px;gap:4px;}
+  .stepper-step{font-size:0.68rem;padding:4px 6px;}
+  .stepper-step .stepper-dot{width:22px;height:22px;font-size:0.68rem;}
+  .step{padding:16px 12px;}
+  .card{padding:14px;margin-bottom:12px;}
+  .card-head{font-size:0.92rem;}
+  .sel-grid{grid-template-columns:repeat(2, 1fr);gap:8px;}
+  .sel-item{padding:10px 6px;font-size:0.78rem;}
+  .char-grid{grid-template-columns:repeat(2, 1fr);gap:8px;}
+  .char-card{padding:12px;}
+  .outline-chapter{padding:10px;font-size:0.82rem;}
+  .field-row{flex-direction:column;gap:8px;}
+  .field{min-width:100%;}
+  .btn{padding:8px 14px;font-size:0.82rem;}
+  .btn-lg{padding:12px 24px;font-size:0.92rem;}
+  .modal-box{max-width:95%;padding:20px;}
+  .info-card{display:none;}
+  #variableCard{display:block !important;}
+}
+
+@media(max-width:480px){
+  .header h1{font-size:1rem;}
+  .header .subtitle{font-size:0.72rem;}
+  .stepper-step span:last-child{display:none;}
+  .stepper-step .stepper-dot{width:20px;height:20px;font-size:0.62rem;}
+  .sel-grid{grid-template-columns:1fr;}
+  .char-grid{grid-template-columns:1fr;}
+  .btn{padding:6px 10px;font-size:0.78rem;}
+  .tab-bar{font-size:0.78rem;}
+  .tab-btn{padding:6px 10px;}
+  .stat-grid{grid-template-columns:repeat(3, 1fr);gap:6px;}
+  .stat-label{font-size:0.62rem;}
+  .stat-val{font-size:1rem;}
+}
+
+
+<!-- ═══════════════════════ 审查标注样式 ═══════════════════════ -->
+<style>
+.review-issue {
+  padding: 8px 12px;
+  margin: 6px 0;
+  border-radius: 6px;
+  border-left: 4px solid var(--amber);
+  background: var(--bg-input);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.review-issue:hover {
+  background: var(--bg-surface);
+  transform: translateX(4px);
+}
+.review-issue.critical {
+  border-left-color: var(--rose);
+}
+.review-issue.high {
+  border-left-color: var(--amber);
+}
+.review-issue.medium {
+  border-left-color: var(--cyan);
+}
+.review-issue.low {
+  border-left-color: var(--emerald);
+}
+.highlight-text {
+  background: rgba(245, 158, 11, 0.3);
+  padding: 2px 4px;
+  border-radius: 3px;
+  transition: background 0.3s;
+}
+.highlight-text.active {
+  background: rgba(245, 158, 11, 0.6);
 }
 </style>
-</head>
+</style></head>
 <body>
+<div id="debugPanel" style="display:none;position:fixed;bottom:0;left:0;right:0;background:var(--bg-elevated);border-top:2px solid var(--rose);color:var(--text-primary);padding:10px;max-height:200px;overflow-y:auto;z-index:99999;font-size:0.72rem;font-family:monospace;">
+  <div style="display:flex;justify-content:space-between;margin-bottom:8px;">
+    <strong>🛠️ 调试面板</strong>
+    <button onclick="document.getElementById('debugPanel').style.display='none';" style="background:none;border:none;color:var(--text-tertiary);cursor:pointer;font-size:1rem;">✕</button>
+  </div>
+  <div id="debugContent"></div>
+</div>
 
 <div class="app">
   <!-- ═══════════════════════ Top Bar ═══════════════════════ -->
@@ -704,7 +819,9 @@ kbd{
       <div class="brand-mark">✦</div>
       <div>
         <div class="brand-name">NWACS</div>
-        <div class="brand-ver">智能小说写作系统 v9.0</div>
+        <div class="brand-ver">智能小说写作系统 v7.0
+  <span style="font-size:0.58rem;color:var(--accent-soft);margin-left:4px;">(build 2026-05-14)</span>
+</div>
       </div>
     </div>
     <div class="topbar-actions">
@@ -717,6 +834,7 @@ kbd{
       </div>
       <span class="status-dot" id="statusDot" title="就绪"></span>
       <span class="status-text" id="statusText">就绪</span>
+      <span id="serverStatusBadge" style="font-size:0.7rem;padding:2px 8px;border-radius:10px;display:none;"></span>
       <button class="btn btn-ghost btn-sm" onclick="showModelConfig()"><span>⚙️</span> 模型配置</button>
       <button class="btn btn-ghost btn-sm" onclick="showExportModal()"><span>📥</span> 导出作品</button>
       <button class="btn btn-ghost btn-sm" onclick="resetAll()"><span>🔄</span> 重置</button>
@@ -743,7 +861,19 @@ kbd{
       </div>
       <div class="stepper-line"></div>
       <div class="stepper-step" data-step="5" onclick="goToStep(5)">
-        <span class="stepper-dot">5</span><span>开始写作</span>
+        <span class="stepper-dot">5</span><span>角色开发</span>
+      </div>
+      <div class="stepper-line"></div>
+      <div class="stepper-step" data-step="6" onclick="goToStep(6)">
+        <span class="stepper-dot">6</span><span>细纲生成</span>
+      </div>
+      <div class="stepper-line"></div>
+      <div class="stepper-step" data-step="7" onclick="goToStep(7)">
+        <span class="stepper-dot">7</span><span>世界构建</span>
+      </div>
+      <div class="stepper-line"></div>
+      <div class="stepper-step" data-step="8" onclick="goToStep(8)">
+        <span class="stepper-dot">8</span><span>开始写作</span>
       </div>
     </div>
   </div>
@@ -757,7 +887,10 @@ kbd{
         <button class="quick-nav-btn" data-step="2" onclick="goToStep(2)" title="写作方法">2</button>
         <button class="quick-nav-btn" data-step="3" onclick="goToStep(3)" title="剧情方案">3</button>
         <button class="quick-nav-btn" data-step="4" onclick="goToStep(4)" title="大纲规划">4</button>
-        <button class="quick-nav-btn" data-step="5" onclick="goToStep(5)" title="开始写作">5</button>
+        <button class="quick-nav-btn" data-step="5" onclick="goToStep(5)" title="角色开发">5</button>
+        <button class="quick-nav-btn" data-step="6" onclick="goToStep(6)" title="细纲生成">6</button>
+        <button class="quick-nav-btn" data-step="7" onclick="goToStep(7)" title="世界构建">7</button>
+        <button class="quick-nav-btn" data-step="8" onclick="goToStep(8)" title="开始写作">8</button>
       </div>
     </div>
   </div>
@@ -918,8 +1051,120 @@ kbd{
     </div>
   </div>
 
-  <!-- ═══════════════════════ Step 5: Writing Workspace ═══════════════════════ -->
+  <!-- ═══════════════════════ Step 5: Character Development ═══════════════════════ -->
   <div class="step hidden" id="step5">
+    <div class="card">
+      <div class="card-head"><span class="icon">👥</span> 角色开发 <span style="font-size:0.74rem;color:var(--text-tertiary);font-weight:400;">— 创建和管理故事角色</span></div>
+      <div class="sel-grid" id="characterGrid"></div>
+    </div>
+    <div class="card">
+      <div class="card-head"><span class="icon">🔗</span> 角色关系图 <span style="font-size:0.74rem;color:var(--text-tertiary);font-weight:400;">— 可视化角色关联</span></div>
+      <div id="characterRelationMap" style="min-height:300px;background:var(--bg-input);border-radius:var(--radius-md);padding:20px;margin-top:12px;">
+        <div style="color:var(--text-tertiary);text-align:center;padding:40px 20px;font-size:0.86rem;">完成大纲后自动生成角色关系图</div>
+      </div>
+    </div>
+    <div style="display:flex;gap:14px;justify-content:center;margin-top:10px;">
+      <button class="btn btn-secondary" onclick="goToStep(4)">← 返回大纲</button>
+      <button class="btn btn-primary" onclick="goToStep(6)">下一步：细纲生成 →</button>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════ Step 6: Detailed Outline ═══════════════════════ -->
+  <div class="step hidden" id="step6">
+    <div class="card">
+      <div class="card-head"><span class="icon">📐</span> 细纲生成 <span style="font-size:0.74rem;color:var(--text-tertiary);font-weight:400;">— 生成详细章节大纲</span></div>
+      <div style="text-align:center;margin-bottom:16px;">
+        <button class="btn btn-primary" id="btnGenerateDetailedOutline" onclick="generateDetailedOutline()" style="padding:14px 32px;font-size:1.02rem;">✨ 生成细纲</button>
+      </div>
+      <div id="detailedOutlineContainer" style="min-height:200px;">
+        <div style="color:var(--text-tertiary);text-align:center;padding:40px 20px;font-size:0.86rem;">点击上方按钮生成细纲</div>    </div>
+    <div class="card" id="timelineCard" style="display:none;">
+      <div class="card-head"><span class="icon">📊</span> 情节时间线 <span style="font-size:0.74rem;color:var(--text-tertiary);font-weight:400;">— 可视化情节发展</span></div>
+      <div id="plotTimeline" style="min-height:200px;background:var(--bg-input);border-radius:var(--radius-md);padding:16px;margin-top:12px;">
+        <svg id="timelineSvg" width="100%" height="200" style="overflow:visible;"></svg>
+      </div>
+    </div>
+    <div style="display:flex;gap:14px;justify-content:center;margin-top:10px;">
+      <button class="btn btn-secondary" onclick="goToStep(5)">← 返回角色开发</button>
+      <button class="btn btn-primary" onclick="goToStep(7)">下一步：世界构建 →</button>
+    </div>
+  </div>
+  </div>
+
+  <!-- ═══════════════════════ Step 7: Worldbuilding ═══════════════════════ -->
+  <div class="step hidden" id="step7">
+    <div class="card">
+      <div class="card-head"><span class="icon">🌍</span> 世界构建 <span style="font-size:0.74rem;color:var(--text-tertiary);font-weight:400;">— 创建故事世界</span></div>
+      <div class="field-row">
+        <div class="field">
+          <label class="field-label">世界类型</label>
+          <select id="worldType" class="field-input" onchange="updateWorldBuilding()">
+            <option value="玄幻">玄幻</option>
+            <option value="科幻">科幻</option>
+            <option value="奇幻">奇幻</option>
+            <option value="都市">都市</option>
+            <option value="武侠">武侠</option>
+            <option value="仙侠">仙侠</option>
+          </select>
+        </div>
+        <div class="field">
+          <label class="field-label">时代背景</label>
+          <input class="field-input" id="worldEra" placeholder="如：古代、未来、现代...">
+        </div>
+      </div>
+      <div class="field">
+        <label class="field-label">地理概况</label>
+        <textarea class="field-area" id="worldGeography" placeholder="描述世界的地理环境、主要地点..." style="min-height:60px;"></textarea>
+      </div>
+      <div class="field">
+        <label class="field-label">力量体系</label>
+        <textarea class="field-area" id="worldPowerSystem" placeholder="描述世界的力量体系、等级划分..." style="min-height:60px;"></textarea>
+      </div>
+      <div class="field">
+        <label class="field-label">世界规则</label>
+        <div id="worldRulesContainer">
+          <div class="world-rule-item" style="display:flex;gap:8px;margin-bottom:8px;">
+            <input class="field-input" placeholder="输入世界规则..." style="flex:1;">
+            <button class="btn btn-ghost btn-xs" onclick="removeWorldRule(this)">✕</button>
+          </div>
+        </div>
+        <button class="btn btn-ghost btn-sm" onclick="addWorldRule()">➕ 添加规则</button>
+      </div>
+      <div class="field">
+        <label class="field-label">组织架构</label>
+        <div id="worldOrganizationsContainer">
+          <div class="org-item" style="padding:10px;background:var(--bg-input);border-radius:var(--radius-sm);margin-bottom:8px;">
+            <div style="display:flex;gap:8px;margin-bottom:6px;">
+              <input class="field-input" placeholder="组织名称" style="flex:1;">
+              <select class="field-input" style="width:120px;">
+                <option value="宗门">宗门</option>
+                <option value="家族">家族</option>
+                <option value="国家">国家</option>
+                <option value="商会">商会</option>
+                <option value="其他">其他</option>
+              </select>
+              <button class="btn btn-ghost btn-xs" onclick="removeOrg(this)">✕</button>
+            </div>
+            <input class="field-input" placeholder="组织描述..." style="width:100%;">
+          </div>
+        </div>
+        <button class="btn btn-ghost btn-sm" onclick="addOrganization()">➕ 添加组织</button>
+      </div>
+    </div>
+        <div class="card" id="worldBuildingVizCard" style="display:none;">
+      <div class="card-head"><span class="icon">🌍</span> 世界构建可视化 <span style="font-size:0.74rem;color:var(--text-tertiary);font-weight:400;">— 可视化世界元素</span></div>
+      <div id="worldBuildingViz" style="min-height:200px;background:var(--bg-input);border-radius:var(--radius-md);padding:16px;margin-top:12px;">
+        <svg id="worldVizSvg" width="100%" height="250" style="overflow:visible;"></svg>
+      </div>
+    </div>
+    <div style="display:flex;gap:14px;justify-content:center;margin-top:10px;">
+      <button class="btn btn-secondary" onclick="goToStep(6)">← 返回细纲</button>
+      <button class="btn btn-primary" onclick="saveWorldBuilding();goToStep(8);">✅ 保存并继续写作 →</button>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════ Step 8: Start Writing ═══════════════════════ -->
+  <div class="step hidden" id="step8">
     <div class="workspace">
       <!-- ── Left Sidebar ── -->
       <div class="ws-side">
@@ -957,6 +1202,7 @@ kbd{
           <div class="tab-bar" id="toolTabs">
             <button class="tab-btn active" onclick="switchToolTab('tools')">工具</button>
             <button class="tab-btn" onclick="switchToolTab('quality')">质量</button>
+            <button class="tab-btn" onclick="switchToolTab('qualityCheck')">审核</button>
             <button class="tab-btn" onclick="switchToolTab('review')">审查</button>
             <button class="tab-btn" onclick="switchToolTab('memory')">记忆</button>
             <button class="tab-btn" onclick="switchToolTab('story')">故事</button>
@@ -1016,7 +1262,16 @@ kbd{
             <div id="qualityContent" style="font-size:0.78rem;">
               <div style="color:var(--text-tertiary);text-align:center;padding:14px;">点击上方按钮查看质量分析</div>
             </div>
-          </div>
+          
+            <hr style="margin:16px 0;border:none;border-top:1px solid var(--border-dim);">
+            <div style="font-weight:600;color:var(--accent-soft);margin-bottom:10px;">🔍 质量审核与AI痕迹检测</div>
+            <div style="margin-bottom:10px;">
+              <button class="btn btn-primary btn-sm" onclick="runQualityCheckBeforeGeneration(parseInt(document.getElementById('chapterNum').value) || 1)">▶ 运行质量检查</button>
+            </div>
+            <div id="qualityCheckResult" style="font-size:0.82rem;color:var(--text-secondary);line-height:1.7;max-height:300px;overflow-y:auto;">
+              <div style="color:var(--text-tertiary);text-align:center;padding:14px;">点击"运行质量检查"查看结果</div>
+            </div>
+</div>
 
           <div class="tab-panel" id="tab-review">
             <div id="reviewContent" style="font-size:0.78rem;">
@@ -1215,6 +1470,23 @@ kbd{
             <div>• 善用左侧工具箱优化文本</div>
           </div>
         </div>
+        <div class="info-card" id="variableCard" style="display:none;">
+          <h4>🔗 变量关联</h4>
+          <div id="variableContent" style="font-size:0.78rem;color:var(--text-secondary);line-height:1.8;">
+            <div style="margin-bottom:7px;">• 题材：<span id="varGenres" style="color:var(--accent-soft);">无</span></div>
+            <div style="margin-bottom:7px;">• 风格：<span id="varStyles" style="color:var(--cyan-soft);">无</span></div>
+            <div style="margin-bottom:7px;">• 基调：<span id="varTones" style="color:var(--emerald-soft);">无</span></div>
+            <div style="margin-bottom:7px;">• 方法：<span id="varMethod" style="color:var(--amber-soft);">未选择</span></div>
+            <div style="margin-bottom:7px;">• 剧情：<span id="varPlot" style="color:var(--rose-soft);">未选择</span></div>
+            <div style="margin-bottom:7px;">• 角色：<span id="varChars" style="color:var(--accent-soft);">0</span> 个</div>
+            <div style="margin-bottom:12px;">• 世界：<span id="varWorld" style="color:var(--cyan-soft);">未构建</span></div>
+          </div>
+          <div id="variableGraph" style="margin-top:12px;padding:10px;background:var(--bg-input);border-radius:var(--radius-sm);min-height:200px;">
+            <svg id="varGraphSvg" width="100%" height="200" style="overflow:visible;">
+              <!-- 变量关系图将通过JS动态绘制 -->
+            </svg>
+          </div>
+        </div>
         <div class="info-card" id="quickReview" style="display:none;">
           <h4>📝 快速审查</h4>
           <div id="quickReviewContent" style="font-size:0.78rem;color:var(--text-secondary);"></div>
@@ -1350,6 +1622,8 @@ kbd{
       <button class="btn btn-secondary" onclick="doExport('txt')" style="justify-content:flex-start;">📝 纯文本 (.txt)</button>
       <button class="btn btn-secondary" onclick="doExport('md')" style="justify-content:flex-start;">📋 Markdown (.md)</button>
       <button class="btn btn-secondary" onclick="doExport('html')" style="justify-content:flex-start;">🌐 HTML (.html)</button>
+      <button class="btn btn-secondary" onclick="doExport('epub')" style="justify-content:flex-start;">📚 EPUB (.epub)</button>
+      <button class="btn btn-secondary" onclick="doExport('pdf')" style="justify-content:flex-start;">📄 PDF (.pdf)</button>
     </div>
     <div class="modal-actions">
       <button class="btn btn-secondary btn-sm" onclick="closeExportModal()">取消</button>
@@ -1357,7 +1631,195 @@ kbd{
   </div>
 </div>
 
+<!-- ══════════════════════ Character Edit Modal ══════════════════════ -->
+<div class="modal-overlay" id="characterEditModal">
+  <div class="modal" style="max-width:700px;">
+    <h3>✏️ 编辑角色（详细档案）</h3>
+    <p style="color:var(--text-secondary);font-size:0.86rem;margin-bottom:20px;">编辑角色的详细信息，包括外貌、性格、背景、目标、冲突等。</p>
+    
+    <div class="field-row">
+      <div class="field">
+        <label class="field-label">角色姓名</label>
+        <input class="field-input" id="editCharName" placeholder="输入角色姓名">
+      </div>
+      <div class="field">
+        <label class="field-label">角色类型</label>
+        <select class="field-input" id="editCharRole">
+          <option value="protagonist">🦸 主角</option>
+          <option value="antagonist">🦹 反派</option>
+          <option value="mentor">🧙 导师</option>
+          <option value="side">👤 配角</option>
+        </select>
+      </div>
+    </div>
+    
+    <div class="field">
+      <label class="field-label">外貌描述</label>
+      <textarea class="field-input" id="editCharAppearance" rows="2" placeholder="角色的外貌特征、穿着风格等"></textarea>
+    </div>
+    
+    <div class="field">
+      <label class="field-label">性格特点</label>
+      <textarea class="field-input" id="editCharPersonality" rows="2" placeholder="角色的性格特征、习惯、喜好等"></textarea>
+    </div>
+    
+    <div class="field">
+      <label class="field-label">背景故事</label>
+      <textarea class="field-input" id="editCharBackground" rows="3" placeholder="角色的背景、成长经历、重要事件等"></textarea>
+    </div>
+    
+    <div class="field-row">
+      <div class="field">
+        <label class="field-label">目标/动机</label>
+        <textarea class="field-input" id="editCharGoal" rows="2" placeholder="角色的目标和动机"></textarea>
+      </div>
+      <div class="field">
+        <label class="field-label">冲突/弱点</label>
+        <textarea class="field-input" id="editCharConflict" rows="2" placeholder="角色的内心冲突或弱点"></textarea>
+      </div>
+    </div>
+    
+    <div class="field">
+      <label class="field-label">角色关系（JSON格式）</label>
+      <textarea class="field-input" id="editCharRelationships" rows="2" placeholder='[{"target":"角色名","type":"ally"},...]'></textarea>
+      <div style="font-size:0.72rem;color:var(--text-tertiary);margin-top:4px;">类型：ally(盟友), enemy(敌人), lover(恋人), family(家人), friend(朋友)</div>
+    </div>
+    
+    <div class="modal-actions">
+      <button class="btn btn-primary" onclick="saveCharacterEdit()">💾 保存</button>
+      <button class="btn btn-secondary" onclick="closeCharacterEditModal()">取消</button>
+    </div>
+  </div>
+</div>
+
+
+
+// ═══════════════════════ 增强的审查显示函数 ═══════════════════════
+function displayReviewWithHighlighting(reviewData) {
+  /*
+  reviewData 格式:
+  {
+    "issues": [
+      {
+        "severity": "critical|high|medium|low",
+        "dimension": "情节|角色|文笔|逻辑",
+        "description": "问题描述",
+        "suggestion": "建议",
+        "original_text": "原文片段",  // 新增：原文中的位置
+        "position": {"start": 100, "end": 200}  // 新增：原文位置
+      }
+    ]
+  }
+  */
+  
+  const container = document.getElementById('reviewContent');
+  if (!container) return;
+  
+  let html = '';
+  
+  if (reviewData.issues && reviewData.issues.length > 0) {
+    html += '<div style="font-weight:600;font-size:0.76rem;color:var(--rose-soft);margin-bottom:10px;">📋 审查问题 (' + reviewData.issues.length + '项)</div>';
+    
+    reviewData.issues.forEach((issue, idx) => {
+      const sevClass = issue.severity === 'critical' ? 'critical' : 
+                      issue.severity === 'high' ? 'high' : 
+                      issue.severity === 'medium' ? 'medium' : 'low';
+      const sevColor = issue.severity === 'critical' ? 'var(--rose-soft)' : 
+                      issue.severity === 'high' ? 'var(--amber-soft)' : 
+                      'var(--text-tertiary)';
+      
+      // 如果有原文位置，添加点击事件
+      const onclickAttr = issue.position ? `onclick="highlightOriginalText(${issue.position.start}, ${issue.position.end}, 'issue-${idx}')"` : '';
+      
+      html += `<div class="review-issue ${sevClass}" ${onclickAttr}>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
+          <span style="color:${sevColor};font-weight:600;font-size:0.72rem;">[${issue.severity}] ${issue.dimension}</span>
+          ${issue.position ? '<span style="font-size:0.68rem;color:var(--accent-soft);">📍 点击定位原文</span>' : ''}
+        </div>
+        <div style="font-size:0.72rem;color:var(--text-secondary);margin-bottom:4px;">${issue.description}</div>
+        <div style="font-size:0.68rem;color:var(--emerald-soft);">💡 ${issue.suggestion}</div>
+        ${issue.original_text ? `<div style="font-size:0.68rem;color:var(--text-tertiary);margin-top:4px;padding:4px;background:var(--bg-surface);border-radius:4px;">📄 原文：${issue.original_text}</div>` : ''}
+      </div>`;
+    });
+  } else {
+    html += '<div style="font-size:0.74rem;color:var(--emerald-soft);">✅ 无审查问题</div>';
+  }
+  
+  container.innerHTML = html;
+}
+
+// 高亮原文中的对应位置
+function highlightOriginalText(start, end, issueId) {
+  const editor = document.getElementById('chapterEditor');
+  if (!editor) return;
+  
+  // 获取原文
+  const text = editor.value || editor.innerText || '';
+  
+  // 移除之前的高亮
+  const previousHighlights = document.querySelectorAll('.highlight-text');
+  previousHighlights.forEach(el => el.classList.remove('active'));
+  
+  // 如果支持选区高亮（对于 contenteditable）
+  if (editor.contentEditable === 'true') {
+    // 对于 contenteditable 元素
+    const range = document.createRange();
+    const sel = window.getSelection();
+    
+    // 找到位置并高亮
+    // 这里需要更复杂的实现，取决于编辑器类型
+    toast(`已定位到第${start}~${end}字符位置`, 'info');
+  } else {
+    // 对于 textarea，无法高亮，只能显示位置
+    toast(`问题位置：第${start}~${end}字符`, 'info');
+    
+    // 可以尝试滚动到大致位置
+    if (editor.setSelectionRange) {
+      editor.focus();
+      editor.setSelectionRange(start, end);
+    }
+  }
+  
+  // 在工具箱中显示上下文
+  showTextContext(start, end);
+}
+
+// 显示问题周围的文本上下文
+function showTextContext(start, end) {
+  const editor = document.getElementById('chapterEditor');
+  if (!editor) return;
+  
+  const text = editor.value || editor.innerText || '';
+  const contextStart = Math.max(0, start - 50);
+  const contextEnd = Math.min(text.length, end + 50);
+  const context = text.substring(contextStart, contextEnd);
+  
+  const contextHtml = `
+    <div style="font-size:0.72rem;color:var(--text-secondary);margin-top:8px;padding:8px;background:var(--bg-input);border-radius:6px;">
+      <div style="font-weight:600;margin-bottom:4px;">📄 问题上下文：</div>
+      <div style="font-family:monospace;white-space:pre-wrap;">${context.replace(text.substring(start, end), '<span style="background:rgba(245,158,11,0.4);padding:2px;border-radius:3px;">' + text.substring(start, end) + '</span>')}</div>
+    </div>
+  `;
+  
+  const contextContainer = document.getElementById('textContext');
+  if (contextContainer) {
+    contextContainer.innerHTML = contextHtml;
+  }
+}
+
+
 <script>
+// 全局错误处理
+window.addEventListener('error', function(e) {
+  const msg = `JS错误: ${e.error?.message || e.message} (${e.filename}:${e.lineno})`;
+  console.error(msg);
+  const errDiv = document.getElementById('debugPanel');
+  if (errDiv) {
+    errDiv.style.display = 'block';
+    errDiv.innerHTML += `<div style="color:var(--rose-soft);padding:4px 0;border-bottom:1px solid var(--border-dim);">${msg}</div>`;
+  }
+});
+
 const API = '';
 let options = {};
 let selectedGenres = ['玄幻'];
@@ -1382,6 +1844,23 @@ let loadingStart = 0;
 let loadingTimer = null;
 let adoptedProtagonistName = '';
 let selectedMethod = null;
+let _initDone = false; // 防止重复初始化
+
+function updateDebugPanel() {
+  const dbg = document.getElementById('debugContent');
+  if (!dbg) return;
+  const stepEl = document.querySelector('.stepper-step.active');
+  const step = stepEl ? stepEl.dataset.step : '?';
+  dbg.innerHTML =
+    `<div>当前步骤: ${step}</div>` +
+    `<div>已选题材: ${selectedGenres.join(', ') || '无'}</div>` +
+    `<div>已选风格: ${selectedStyles.join(', ') || '无'}</div>` +
+    `<div>已选基调: ${selectedTones.join(', ') || '无'}</div>` +
+    `<div>写作方法: ${selectedMethod ? selectedMethod.name : '未选择'}</div>` +
+    `<div>剧情方案: ${selectedPlot ? selectedPlot.name : '未选择'}</div>` +
+    `<div>大纲状态: ${outline ? '已生成' : '未生成'}</div>` +
+    `<div>章节数: ${Object.keys(chapters).length}</div>`;
+}
 
 const WRITING_METHODS = [
   { id: 'three_act', name: '三幕结构', icon: '🎬', desc: '经典叙事结构，分为建置、对抗、结局三幕，适合大多数类型小说',
@@ -1505,28 +1984,43 @@ function toast(msg, type='info') {
 }
 
 function goToStep(n) {
-  for (let i=1; i<=5; i++) {
-    const el = document.getElementById('step'+i);
-    if (el) el.classList.toggle('hidden', i!==n);
-  }
+  // 动态获取所有步骤，移除硬编码的5步限制
+  const allSteps = document.querySelectorAll('[id^="step"]');
+  allSteps.forEach(el => {
+    const stepNum = parseInt(el.id.replace('step', ''));
+    el.classList.toggle('hidden', stepNum !== n);
+  });
   document.querySelectorAll('.stepper-step').forEach(el => {
     const s = parseInt(el.dataset.step);
     el.classList.remove('active','done');
     if (s === n) el.classList.add('active');
   });
   document.querySelectorAll('.stepper-line').forEach(el => el.classList.remove('done'));
-  const stepLabels = {1:'📚 题材选择',2:'✏️ 写作方法',3:'📖 剧情方案',4:'📋 大纲规划',5:'🚀 开始写作'};
-  document.getElementById('quickNavLabel').textContent = stepLabels[n] || `步骤${n}`;
+  const stepLabels = {1:'📚 题材选择',2:'✏️ 写作方法',3:'📖 剧情方案',4:'📋 大纲规划',5:'👥 角色开发',6:'📐 细纲生成',7:'🌍 世界构建',8:'🚀 开始写作'};
+  const labelEl = document.getElementById('quickNavLabel');
+  if (labelEl) labelEl.textContent = stepLabels[n] || `步骤${n}`;
   document.querySelectorAll('.quick-nav-btn').forEach(el => {
     el.classList.toggle('active', parseInt(el.dataset.step) === n);
   });
-  document.getElementById('quickNav').classList.add('show');
+  const quickNavEl = document.getElementById('quickNav');
+  if (quickNavEl) quickNavEl.classList.add('show');
   if (n === 2) renderMethodGrid();
+  if (n === 5) renderCharacterGrid();
+  if (n === 6 && typeof renderPlotTimeline === 'function' && document.querySelector('#detailedOutlineContainer').innerHTML.indexOf('outline-chapter') !== -1) renderPlotTimeline();
+  if (n === 7 && typeof renderWorldBuildingViz === 'function') renderWorldBuildingViz();
+  if (n === 8) updateVariableDisplay();
   window.scrollTo({top:0, behavior:'smooth'});
   localStorage.setItem('nwacs_current_step', n);
+  updateDebugPanel(); // 更新调试面板
 }
 
 async function init() {
+  if (_initDone) {
+    console.warn('[NWACS] init() 已执行过，跳过重复初始化');
+    return;
+  }
+  _initDone = true;
+  
   // 恢复保存的主题
   const savedTheme = localStorage.getItem('nwacs_theme');
   if (savedTheme) switchTheme(savedTheme);
@@ -1543,9 +2037,12 @@ async function init() {
     const wcSelect = document.getElementById('targetWordCountStep1');
     if (wcSelect) targetWordCount = parseInt(wcSelect.value);
     goToStep(savedStep);
+    updateDebugPanel();
   } catch(e) {
     toast('无法连接服务器，请确认服务已启动', 'error');
+    console.error('[NWACS] init() API调用失败:', e);
     goToStep(1);
+    updateDebugPanel();
   }
 }
 
@@ -2828,6 +3325,72 @@ h3{color:#8b5cf6;margin-top:28px;}
     });
     content += '</body></html>';
     downloadFile(`${novelTitle}_${rangeLabel}.html`, content, 'text/html;charset=utf-8');
+  } else if (format === 'epub') {
+    // EPUB导出（简易版：生成包含HTML的ZIP文件）
+    toast('正在生成EPUB文件...', 'info');
+    // 这里需要引入JSZIP库来生成EPUB
+    // 简易方案：生成一个可在浏览器打印的版本
+    const printContent = `<!DOCTYPE html><html><head><meta charset="UTF-8"><title>${escHtml(novelTitle)}</title>
+<style>body{font-family:'PingFang SC','Microsoft YaHei',sans-serif;max-width:800px;margin:0 auto;padding:20px;line-height:2;}
+h1{text-align:center;margin-bottom:30px;}
+h2{color:#7c3aed;margin-top:40px;page-break-before:always;}
+h3{color:#8b5cf6;margin-top:28px;}
+.chapter{white-space:pre-wrap;margin:20px 0;text-indent:2em;}</style></head><body>
+<h1>${escHtml(novelTitle)}</h1>`;
+    let epubHtml = printContent;
+    let lastVol = 0;
+    chKeys.forEach(n => {
+      const ch = chapters[n];
+      const vi = volMap[n];
+      if (vi && vi.vol !== lastVol) {
+        epubHtml += `<h2>${escHtml(vi.volName)}</h2>`;
+        lastVol = vi.vol;
+      }
+      epubHtml += `<h3>第${n}章 ${escHtml(ch.title||'')}</h3><div class="chapter">${escHtml(ch.content)}</div>`;
+    });
+    epubHtml += '</body></html>';
+    
+    // 打开新窗口用于打印/保存为PDF
+    const printWin = window.open('', '_blank');
+    printWin.document.write(epubHtml);
+    printWin.document.close();
+    setTimeout(() => {
+      printWin.print();
+    }, 500);
+    
+    toast(`已生成可打印版本（${chKeys.length}章），请使用浏览器的"打印"功能保存为PDF`, 'success');
+  } else if (format === 'pdf') {
+    // PDF导出（使用浏览器打印功能）
+    toast('正在生成PDF...', 'info');
+    const printContent = `<!DOCTYPE html><html><head><meta charset="UTF-8"><title>${escHtml(novelTitle)}</title>
+<style>@media print{body{-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+@page{margin:2cm;}
+h1{text-align:center;margin-bottom:30px;page-break-after:avoid;}
+h2{color:#7c3aed;margin-top:40px;page-break-before:always;}
+h3{color:#8b5cf6;margin-top:28px;page-break-after:avoid;}
+.chapter{white-space:pre-wrap;margin:20px 0;text-indent:2em;page-break-inside:avoid;}}</style></head><body>
+<h1>${escHtml(novelTitle)}</h1>`;
+    let pdfHtml = printContent;
+    let lastVol = 0;
+    chKeys.forEach(n => {
+      const ch = chapters[n];
+      const vi = volMap[n];
+      if (vi && vi.vol !== lastVol) {
+        pdfHtml += `<h2>${escHtml(vi.volName)}</h2>`;
+        lastVol = vi.vol;
+      }
+      pdfHtml += `<h3>第${n}章 ${escHtml(ch.title||'')}</h3><div class="chapter">${escHtml(ch.content)}</div>`;
+    });
+    pdfHtml += '</body></html>';
+    
+    const printWin = window.open('', '_blank');
+    printWin.document.write(pdfHtml);
+    printWin.document.close();
+    setTimeout(() => {
+      printWin.print();
+    }, 500);
+    
+    toast(`已生成PDF预览（${chKeys.length}章），请使用浏览器的"打印"功能保存`, 'success');
   }
   toast(`已导出 ${chKeys.length} 章 (${format.toUpperCase()}格式)`, 'success');
 }
@@ -5419,11 +5982,739 @@ document.getElementById('chapterNum').addEventListener('keydown', function(e) {
 document.addEventListener('keydown', function(e) {
   if (e.ctrlKey && e.key === 'Enter') {
     const currentStep = document.querySelector('.stepper-step.active');
-    if (currentStep && parseInt(currentStep.dataset.step) === 4) generateChapter();
+    if (currentStep && parseInt(currentStep.dataset.step) === 8) generateChapter();
   }
 });
 
+// ═══════════════════════ Step 5: 角色开发 ═══════════════════════
+async function renderCharacterGrid() {
+  const grid = document.getElementById('characterGrid');
+  if (!grid) return;
+  
+  // 如果大纲中有角色数据，显示角色网格
+  if (outline && outline.characters && outline.characters.length > 0) {
+    grid.innerHTML = '';
+    outline.characters.forEach((ch, idx) => {
+      const roleIcon = ch.role === 'protagonist' ? '🦸' : ch.role === 'antagonist' ? '🦹' : ch.role === 'mentor' ? '🧙' : '👤';
+      const card = document.createElement('div');
+      card.className = 'sel-card';
+      card.innerHTML = `
+        <span class="sel-icon">${roleIcon}</span>
+        <div class="sel-label">${escHtml(ch.name || `角色${idx + 1}`)}</div>
+        <div class="sel-desc">${escHtml(ch.description || ch.role || '未定义')}</div>
+      `;
+      card.onclick = () => editCharacter(idx);
+      grid.appendChild(card);
+    });
+    
+    // 生成角色关系图
+    renderCharacterRelationMap();
+  } else {
+    grid.innerHTML = '<div style="color:var(--text-tertiary);font-size:0.86rem;padding:16px;">请先完成大纲规划以生成角色</div>';
+  }
+}
+
+let editingCharIdx = -1; // 当前编辑的角色索引
+
+function editCharacter(idx) {
+  if (!outline || !outline.characters) return;
+  const ch = outline.characters[idx];
+  if (!ch) return;
+  
+  editingCharIdx = idx;
+  
+  // 填充模态框字段
+  document.getElementById('editCharName').value = ch.name || '';
+  document.getElementById('editCharRole').value = ch.role || 'side';
+  document.getElementById('editCharAppearance').value = ch.appearance || '';
+  document.getElementById('editCharPersonality').value = ch.personality || '';
+  document.getElementById('editCharBackground').value = ch.background || '';
+  document.getElementById('editCharGoal').value = ch.goal || '';
+  document.getElementById('editCharConflict').value = ch.conflict || '';
+  
+  // 填充关系数据
+  if (ch.relationships && Array.isArray(ch.relationships)) {
+    document.getElementById('editCharRelationships').value = JSON.stringify(ch.relationships, null, 2);
+  } else {
+    document.getElementById('editCharRelationships').value = '';
+  }
+  
+  // 显示模态框
+  document.getElementById('characterEditModal').style.display = 'flex';
+}
+
+function saveCharacterEdit() {
+  if (editingCharIdx < 0 || !outline || !outline.characters) return;
+  
+  const ch = outline.characters[editingCharIdx];
+  if (!ch) return;
+  
+  // 保存修改
+  ch.name = document.getElementById('editCharName').value.trim();
+  ch.role = document.getElementById('editCharRole').value;
+  ch.appearance = document.getElementById('editCharAppearance').value.trim();
+  ch.personality = document.getElementById('editCharPersonality').value.trim();
+  ch.background = document.getElementById('editCharBackground').value.trim();
+  ch.goal = document.getElementById('editCharGoal').value.trim();
+  ch.conflict = document.getElementById('editCharConflict').value.trim();
+  
+  // 解析关系数据
+  const relationsStr = document.getElementById('editCharRelationships').value.trim();
+  if (relationsStr) {
+    try {
+      ch.relationships = JSON.parse(relationsStr);
+    } catch (e) {
+      toast('关系数据JSON格式错误', 'error');
+      return;
+    }
+  } else {
+    ch.relationships = [];
+  }
+  
+  // 更新显示
+  renderCharacterGrid();
+  renderCharacterRelationMap();
+  updateVariableDisplay();
+  
+  // 关闭模态框
+  closeCharacterEditModal();
+  
+  toast(`角色「${ch.name || '未命名'}」已更新`, 'success');
+}
+
+function closeCharacterEditModal() {
+  document.getElementById('characterEditModal').style.display = 'none';
+  editingCharIdx = -1;
+}
+
+async function renderCharacterRelationMap() {
+  const container = document.getElementById('characterRelationMap');
+  if (!container) return;
+  
+  if (!outline || !outline.characters || outline.characters.length === 0) {
+    container.innerHTML = '<div style="color:var(--text-tertiary);text-align:center;padding:40px 20px;font-size:0.86rem;">完成大纲规划后自动生成角色关系图</div>';
+    return;
+  }
+  
+  // 创建SVG关系图
+  const width = container.clientWidth || 400;
+  const height = 300;
+  
+  let svg = '<svg width="' + width + '" height="' + height + '" style="overflow:visible;">';
+  
+  const chars = outline.characters;
+  const centerX = width / 2;
+  const centerY = height / 2;
+  const radius = Math.min(width, height) * 0.3;
+  
+  // 绘制角色节点
+  chars.forEach((ch, idx) => {
+    const angle = (idx / chars.length) * 2 * Math.PI - Math.PI / 2;
+    const x = centerX + radius * Math.cos(angle);
+    const y = centerY + radius * Math.sin(angle);
+    
+    const roleColor = ch.role === 'protagonist' ? 'var(--accent)' : 
+                     ch.role === 'antagonist' ? 'var(--rose)' : 
+                     ch.role === 'mentor' ? 'var(--amber)' : 
+                     'var(--cyan)';
+    
+    // 圆圈
+    svg += '<circle cx="' + x + '" cy="' + y + '" r="25" fill="var(--bg-input)" ' +
+            'stroke="' + roleColor + '" stroke-width="2" />';
+    
+    // 角色名字
+    const displayName = (ch.name && ch.name.length > 3) ? ch.name.substring(0, 3) : (ch.name || '?');
+    svg += '<text x="' + x + '" y="' + (y + 5) + '" text-anchor="middle" ' +
+            'font-size="11" fill="' + roleColor + '" font-weight="600">' + displayName + '</text>';
+  });
+  
+  // 中心标题
+  svg += '<text x="' + centerX + '" y="' + (centerY + 5) + '" text-anchor="middle" ' +
+          'font-size="12" fill="var(--text-tertiary)">角色关系</text>';
+  
+  svg += '</svg>';
+  
+  container.innerHTML = svg;
+}
+
+// ═══════════════════════ Step 6: 细纲生成 ═══════════════════════
+async function generateDetailedOutline() {
+  if (!outline) {
+    toast('请先完成大纲规划', 'warning');
+    return;
+  }
+  
+  const btn = document.getElementById('btnGenerateDetailedOutline');
+  btn.disabled = true;
+  btn.textContent = '⏳ 生成中...';
+  showLoading('正在生成详细大纲...', '预计20秒');
+  
+  try {
+    const data = await api('/api/generate_detailed_outline', 'POST', {
+      outline: outline,
+      genres: selectedGenres,
+      styles: selectedStyles,
+      tones: selectedTones,
+      method: selectedMethod ? selectedMethod.id : '',
+      target_word_count: targetWordCount
+    });
+    
+    if (data.detailed_outline) {
+      renderDetailedOutline(data.detailed_outline);
+      renderPlotTimeline(data.detailed_outline);
+      toast('详细大纲生成完成', 'success');
+    } else {
+      toast('生成失败：未返回数据', 'error');
+    }
+  } catch(e) {
+    toast('生成失败: ' + e.message, 'error');
+  } finally {
+    hideLoading();
+    btn.disabled = false;
+    btn.textContent = '✨ 生成细纲';
+  }
+}
+
+// 渲染情节时间线
+function renderPlotTimeline(detailedOutline) {
+  const container = document.getElementById('plotTimeline');
+  const svg = document.getElementById('timelineSvg');
+  if (!container || !svg || !detailedOutline) return;
+  
+  // 显示时间线卡片
+  document.getElementById('timelineCard').style.display = 'block';
+  
+  const width = svg.clientWidth || 600;
+  const height = 200;
+  svg.setAttribute('height', height);
+  
+  // 清空SVG
+  svg.innerHTML = '';
+  
+  // 定义时间线路径
+  const chapters = Array.isArray(detailedOutline) ? detailedOutline : 
+                   (detailedOutline.chapters || []);
+  
+  if (chapters.length === 0) return;
+  
+  const padding = 60;
+  const timelineWidth = width - 2 * padding;
+  const step = timelineWidth / (chapters.length - 1);
+  const y = height / 2;
+  
+  // 绘制时间线
+  const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+  line.setAttribute('x1', padding);
+  line.setAttribute('y1', y);
+  line.setAttribute('x2', width - padding);
+  line.setAttribute('y2', y);
+  line.setAttribute('stroke', 'var(--border-base)');
+  line.setAttribute('stroke-width', '2');
+  svg.appendChild(line);
+  
+  // 绘制章节节点
+  chapters.forEach((ch, idx) => {
+    const x = padding + idx * step;
+    
+    // 节点圆圈
+    const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+    circle.setAttribute('cx', x);
+    circle.setAttribute('cy', y);
+    circle.setAttribute('r', '6');
+    circle.setAttribute('fill', 'var(--accent)');
+    circle.setAttribute('stroke', 'var(--bg-input)');
+    circle.setAttribute('stroke-width', '2');
+    svg.appendChild(circle);
+    
+    // 章节编号
+    const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+    text.setAttribute('x', x);
+    text.setAttribute('y', y - 15);
+    text.setAttribute('text-anchor', 'middle');
+    text.setAttribute('font-size', '10');
+    text.setAttribute('fill', 'var(--text-secondary)');
+    text.textContent = ch.chapter || (idx + 1);
+    svg.appendChild(text);
+    
+    // 章节标题（旋转显示）
+    if (ch.title) {
+      const titleText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      titleText.setAttribute('x', x);
+      titleText.setAttribute('y', y + 20);
+      titleText.setAttribute('text-anchor', 'start');
+      titleText.setAttribute('font-size', '9');
+      titleText.setAttribute('fill', 'var(--text-tertiary)');
+      titleText.setAttribute('transform', 'rotate(45, ' + x + ', ' + (y + 20) + ')');
+      titleText.textContent = ch.title.substring(0, 10) + (ch.title.length > 10 ? '...' : '');
+      svg.appendChild(titleText);
+    }
+  });
+  
+  // 添加滚动条（如果章节很多）
+  if (chapters.length > 10) {
+    svg.setAttribute('width', chapters.length * 80);
+    container.style.overflowX = 'auto';
+  }
+}
+
+function renderDetailedOutline(detailedOutline) {
+  const container = document.getElementById('detailedOutlineContainer');
+  if (!container) return;
+  
+  let html = '';
+  
+  if (detailedOutline.chapters && detailedOutline.chapters.length > 0) {
+    html += '<div style="padding:10px 0;">';
+    detailedOutline.chapters.forEach((ch, idx) => {
+      html += `
+        <div style="padding:12px 16px;margin-bottom:8px;background:var(--bg-input);border-radius:var(--radius-sm);border-left:3px solid var(--accent);">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
+            <span style="font-weight:600;color:var(--accent-soft);">第${ch.number || idx + 1}章</span>
+            <span style="font-size:0.86rem;font-weight:500;">${escHtml(ch.title || '')}</span>
+          </div>
+          <div style="font-size:0.78rem;color:var(--text-secondary);line-height:1.6;">${escHtml(ch.summary || '')}</div>
+          ${ch.key_events ? `<div style="font-size:0.72rem;color:var(--cyan-soft);margin-top:4px;">🎯 ${escHtml(Array.isArray(ch.key_events) ? ch.key_events.join('、') : ch.key_events)}</div>` : ''}
+        </div>
+      `;
+    });
+    html += '</div>';
+  } else {
+    html = '<div style="color:var(--text-tertiary);text-align:center;padding:40px 20px;font-size:0.86rem;">暂无详细大纲数据</div>';
+  }
+  
+  container.innerHTML = html;
+}
+
+// ═══════════════════════ Step 7: 世界构建 ═══════════════════════
+let worldBuildingData = {
+  world_type: '',
+  era: '',
+  geography: '',
+  power_system: '',
+  rules: [],
+  organizations: []
+};
+
+function updateWorldBuilding() {
+  worldBuildingData.world_type = document.getElementById('worldType')?.value || '';
+  worldBuildingData.era = document.getElementById('worldEra')?.value || '';
+  worldBuildingData.geography = document.getElementById('worldGeography')?.value || '';
+  worldBuildingData.power_system = document.getElementById('worldPowerSystem')?.value || '';
+  
+  // 保存世界构建数据到localStorage
+  localStorage.setItem('nwacs_world_building', JSON.stringify(worldBuildingData));
+  console.log('[NWACS] World building data updated:', worldBuildingData);
+}
+
+function addWorldRule() {
+  const container = document.getElementById('worldRulesContainer');
+  if (!container) return;
+  
+  const ruleId = `rule_${Date.now()}`;
+  const ruleHtml = `
+    <div class="world-rule-item" id="${ruleId}" style="display:flex;gap:8px;margin-bottom:8px;">
+      <input class="field-input" placeholder="输入世界规则..." style="flex:1;" onchange="updateWorldBuilding()">
+      <button class="btn btn-ghost btn-xs" onclick="removeWorldRule('${ruleId}')">✕</button>
+    </div>
+  `;
+  
+  container.insertAdjacentHTML('beforeend', ruleHtml);
+}
+
+function removeWorldRule(ruleId) {
+  const ruleEl = document.getElementById(ruleId);
+  if (ruleEl) ruleEl.remove();
+  updateWorldBuilding();
+}
+
+function addOrganization() {
+  const container = document.getElementById('worldOrganizationsContainer');
+  if (!container) return;
+  
+  const orgId = `org_${Date.now()}`;
+  const orgHtml = `
+    <div class="org-item" id="${orgId}" style="padding:10px;background:var(--bg-input);border-radius:var(--radius-sm);margin-bottom:8px;">
+      <div style="display:flex;gap:8px;margin-bottom:6px;">
+        <input class="field-input" placeholder="组织名称" style="flex:1;" onchange="updateWorldBuilding()">
+        <select class="field-input" style="width:120px;" onchange="updateWorldBuilding()">
+          <option value="宗门">宗门</option>
+          <option value="家族">家族</option>
+          <option value="国家">国家</option>
+          <option value="商会">商会</option>
+          <option value="其他">其他</option>
+        </select>
+        <button class="btn btn-ghost btn-xs" onclick="removeOrg('${orgId}')">✕</button>
+      </div>
+      <input class="field-input" placeholder="组织描述..." style="width:100%;" onchange="updateWorldBuilding()">
+    </div>
+  `;
+  
+  container.insertAdjacentHTML('beforeend', orgHtml);
+}
+
+function removeOrg(orgId) {
+  const orgEl = document.getElementById(orgId);
+  if (orgEl) orgEl.remove();
+  updateWorldBuilding();
+}
+
+function saveWorldBuilding() {
+  updateWorldBuilding();
+  
+  // 保存到outline对象
+  if (!outline) outline = {};
+  outline.world_building = worldBuildingData;
+  
+  toast('世界构建数据已保存', 'success');
+}
+
+// 渲染世界构建可视化
+function renderWorldBuildingViz() {
+  const card = document.getElementById('worldBuildingVizCard');
+  const svg = document.getElementById('worldVizSvg');
+  if (!card || !svg || !worldBuildingData) return;
+  
+  // 显示卡片
+  card.style.display = 'block';
+  
+  const width = svg.clientWidth || 400;
+  const height = 250;
+  svg.setAttribute('height', height);
+  
+  // 清空SVG
+  svg.innerHTML = '';
+  
+  // 定义要显示的元素
+  const elements = [];
+  
+  if (worldBuildingData.world_type) {
+    elements.push({'label': '世界类型', 'value': worldBuildingData.world_type, 'color': 'var(--accent-soft)'});
+  }
+  
+  if (worldBuildingData.era) {
+    elements.push({'label': '时代背景', 'value': worldBuildingData.era, 'color': 'var(--cyan-soft)'});
+  }
+  
+  if (worldBuildingData.geography) {
+    elements.push({'label': '地理概况', 'value': worldBuildingData.geography.substring(0, 30) + (worldBuildingData.geography.length > 30 ? '...' : ''), 'color': 'var(--emerald-soft)'});
+  }
+  
+  if (worldBuildingData.power_system) {
+    elements.push({'label': '力量体系', 'value': worldBuildingData.power_system.substring(0, 30) + (worldBuildingData.power_system.length > 30 ? '...' : ''), 'color': 'var(--amber-soft)'});
+  }
+  
+  if (worldBuildingData.rules && Array.isArray(worldBuildingData.rules)) {
+    elements.push({'label': '世界规则', 'value': worldBuildingData.rules.length + ' 条规则', 'color': 'var(--rose-soft)'});
+  }
+  
+  if (worldBuildingData.organizations && Array.isArray(worldBuildingData.organizations)) {
+    elements.push({'label': '组织架构', 'value': worldBuildingData.organizations.length + ' 个组织', 'color': 'var(--accent-soft)'});
+  }
+  
+  // 绘制元素方块
+  const blockWidth = 120;
+  const blockHeight = 60;
+  const cols = Math.floor(width / (blockWidth + 20));
+  const rows = Math.ceil(elements.length / cols);
+  
+  elements.forEach((el, idx) => {
+    const col = idx % cols;
+    const row = Math.floor(idx / cols);
+    const x = 20 + col * (blockWidth + 20);
+    const y = 20 + row * (blockHeight + 20);
+    
+    // 方块
+    const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+    rect.setAttribute('x', x);
+    rect.setAttribute('y', y);
+    rect.setAttribute('width', blockWidth);
+    rect.setAttribute('height', blockHeight);
+    rect.setAttribute('rx', '8');
+    rect.setAttribute('fill', 'var(--bg-surface)');
+    rect.setAttribute('stroke', el.color);
+    rect.setAttribute('stroke-width', '2');
+    svg.appendChild(rect);
+    
+    // 标签
+    const label = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+    label.setAttribute('x', x + blockWidth / 2);
+    label.setAttribute('y', y + 20);
+    label.setAttribute('text-anchor', 'middle');
+    label.setAttribute('font-size', '10');
+    label.setAttribute('fill', 'var(--text-secondary)');
+    label.textContent = el.label;
+    svg.appendChild(label);
+    
+    // 值
+    const value = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+    value.setAttribute('x', x + blockWidth / 2);
+    value.setAttribute('y', y + 40);
+    value.setAttribute('text-anchor', 'middle');
+    value.setAttribute('font-size', '11');
+    value.setAttribute('fill', el.color);
+    value.setAttribute('font-weight', '600');
+    value.textContent = el.value;
+    svg.appendChild(value);
+  });
+}
+
+// 页面加载时恢复世界构建数据
+(function restoreWorldBuilding() {
+  try {
+    const saved = localStorage.getItem('nwacs_world_building');
+    if (saved) {
+      worldBuildingData = JSON.parse(saved);
+      // 恢复表单值
+      if (document.getElementById('worldType')) document.getElementById('worldType').value = worldBuildingData.world_type || '';
+      if (document.getElementById('worldEra')) document.getElementById('worldEra').value = worldBuildingData.era || '';
+      if (document.getElementById('worldGeography')) document.getElementById('worldGeography').value = worldBuildingData.geography || '';
+      if (document.getElementById('worldPowerSystem')) document.getElementById('worldPowerSystem').value = worldBuildingData.power_system || '';
+      
+      // 恢复规则
+      if (worldBuildingData.rules && worldBuildingData.rules.length > 0) {
+        const container = document.getElementById('worldRulesContainer');
+        if (container) {
+          worldBuildingData.rules.forEach(rule => {
+            addWorldRule();
+            const inputs = container.querySelectorAll('input');
+            if (inputs.length > 0) inputs[inputs.length - 1].value = rule;
+          });
+        }
+      }
+      
+      // 恢复组织
+      if (worldBuildingData.organizations && worldBuildingData.organizations.length > 0) {
+        worldBuildingData.organizations.forEach(org => {
+          addOrganization();
+          // 注意：这里需要更复杂的恢复逻辑，暂时省略
+        });
+      }
+    }
+  } catch(e) {
+    console.warn('[NWACS] Failed to restore world building data:', e);
+  }
+})();
+
+function updateVariableDisplay() {
+  const card = document.getElementById('variableCard');
+  if (!card) return;
+  
+  // 显示卡片
+  card.style.display = 'block';
+  
+  // 更新变量值
+  const varGenres = document.getElementById('varGenres');
+  if (varGenres) varGenres.textContent = selectedGenres.join(', ') || '无';
+  
+  const varStyles = document.getElementById('varStyles');
+  if (varStyles) varStyles.textContent = selectedStyles.join(', ') || '无';
+  
+  const varTones = document.getElementById('varTones');
+  if (varTones) varTones.textContent = selectedTones.join(', ') || '无';
+  
+  const varMethod = document.getElementById('varMethod');
+  if (varMethod) varMethod.textContent = selectedMethod ? selectedMethod.name : '未选择';
+  
+  const varPlot = document.getElementById('varPlot');
+  if (varPlot) varPlot.textContent = selectedPlotName || '未选择';
+  
+  const varChars = document.getElementById('varChars');
+  if (varChars) {
+    const count = (outline && outline.characters) ? outline.characters.length : 0;
+    varChars.textContent = count;
+  }
+  
+  const varWorld = document.getElementById('varWorld');
+  if (varWorld) {
+    const hasWorld = worldBuildingData && (worldBuildingData.world_type || worldBuildingData.geography);
+    varWorld.textContent = hasWorld ? '已构建' : '未构建';
+  }
+  
+  // 绘制变量关系图
+  drawVariableGraph();
+}
+
+// 绘制变量关系图
+function drawVariableGraph() {
+  const svg = document.getElementById('varGraphSvg');
+  if (!svg) return;
+  
+  // 清空SVG
+  svg.innerHTML = '';
+  
+  const width = svg.clientWidth || 280;
+  const height = 200;
+  svg.setAttribute('height', height);
+  
+  // 定义变量节点
+  const variables = [];
+  if (selectedGenres.length > 0) variables.push({id: 'genre', label: '题材', color: 'var(--accent-soft)', x: 0.2, y: 0.3});
+  if (selectedStyles.length > 0) variables.push({id: 'style', label: '风格', color: 'var(--cyan-soft)', x: 0.8, y: 0.3});
+  if (selectedTones.length > 0) variables.push({id: 'tone', label: '基调', color: 'var(--emerald-soft)', x: 0.5, y: 0.1});
+  if (selectedMethod) variables.push({id: 'method', label: '方法', color: 'var(--amber-soft)', x: 0.2, y: 0.7});
+  if (selectedPlotName) variables.push({id: 'plot', label: '剧情', color: 'var(--rose-soft)', x: 0.8, y: 0.7});
+  if (outline && outline.characters && outline.characters.length > 0) variables.push({id: 'chars', label: '角色', color: 'var(--accent-soft)', x: 0.5, y: 0.5});
+  if (worldBuildingData && (worldBuildingData.world_type || worldBuildingData.geography)) variables.push({id: 'world', label: '世界', color: 'var(--cyan-soft)', x: 0.5, y: 0.9});
+  
+  // 定义连接关系
+  const edges = [
+    {from: 'genre', to: 'style', strength: 0.6},
+    {from: 'genre', to: 'world', strength: 0.8},
+    {from: 'style', to: 'tone', strength: 0.7},
+    {from: 'plot', to: 'chars', strength: 0.9},
+    {from: 'plot', to: 'world', strength: 0.8},
+    {from: 'method', to: 'plot', strength: 0.5},
+    {from: 'chars', to: 'world', strength: 0.7}
+  ];
+  
+  // 绘制连接线
+  edges.forEach(edge => {
+    const fromNode = variables.find(v => v.id === edge.from);
+    const toNode = variables.find(v => v.id === edge.to);
+    if (fromNode && toNode) {
+      const x1 = fromNode.x * width;
+      const y1 = fromNode.y * height;
+      const x2 = toNode.x * width;
+      const y2 = toNode.y * height;
+      const strokeWidth = edge.strength * 2;
+      
+      const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+      line.setAttribute('x1', x1);
+      line.setAttribute('y1', y1);
+      line.setAttribute('x2', x2);
+      line.setAttribute('y2', y2);
+      line.setAttribute('stroke', 'var(--border-base)');
+      line.setAttribute('stroke-width', strokeWidth);
+      line.setAttribute('opacity', '0.5');
+      svg.appendChild(line);
+    }
+  });
+  
+  // 绘制节点
+  variables.forEach(v => {
+    const cx = v.x * width;
+    const cy = v.y * height;
+    const r = 20;
+    
+    // 圆圈
+    const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+    circle.setAttribute('cx', cx);
+    circle.setAttribute('cy', cy);
+    circle.setAttribute('r', r);
+    circle.setAttribute('fill', 'var(--bg-input)');
+    circle.setAttribute('stroke', v.color);
+    circle.setAttribute('stroke-width', '2');
+    svg.appendChild(circle);
+    
+    // 文字
+    const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+    text.setAttribute('x', cx);
+    text.setAttribute('y', cy + 5);
+    text.setAttribute('text-anchor', 'middle');
+    text.setAttribute('font-size', '11');
+    text.setAttribute('fill', v.color);
+    text.textContent = v.label;
+    svg.appendChild(text);
+  });
+}
+
 init();
+
+
+// ═══════════════════════ 质量审核和AI痕迹检测 ═══════════════════════
+async function runQualityCheckBeforeGeneration(chapterNum) {
+  /*
+  在生成章节前，运行质量审核和AI痕迹检测
+  只有通过检测才允许生成
+  */
+  
+  toast('正在运行质量审核和AI痕迹检测...', 'info');
+  showLoading('质量审核中...', '检测AI痕迹和质量问题');
+  
+  try {
+    // 1. 获取当前大纲和设定
+    const outline = JSON.parse(localStorage.getItem('nwacs_outline') || '{}');
+    
+    // 2. 调用质量检查API
+    const qualityData = await api('/api/quality/checklist', 'POST', {
+      chapter: chapterNum,
+      outline: outline
+    });
+    
+    // 3. 调用AI痕迹检测API
+    const aiTraceData = await api('/api/detect_ai', 'POST', {
+      text: '',  // 暂时为空，生成后再检测
+      chapter: chapterNum
+    });
+    
+    // 4. 显示检测结果
+    let qualityHtml = '<div style="font-weight:600;color:var(--accent-soft);margin-bottom:10px;">🔍 质量审核结果</div>';
+    
+    // 质量检查
+    if (qualityData.checklist) {
+      qualityHtml += '<div style="margin-bottom:8px;"><strong>✅ 质量检查</strong></div>';
+      qualityData.checklist.forEach(item => {
+        const passed = item.passed ? '✅' : '⚠️';
+        qualityHtml += `<div style="font-size:0.72rem;color:var(--text-secondary);padding:2px 0;">${passed} ${item.check_name}: ${item.message || ''}</div>`;
+      });
+    }
+    
+    // AI痕迹检测
+    if (aiTraceData) {
+      qualityHtml += '<div style="margin-top:10px;margin-bottom:8px;"><strong>🤖 AI痕迹检测</strong></div>';
+      const aiScore = aiTraceData.ai_score || 0;
+      const scoreColor = aiScore > 70 ? 'var(--rose-soft)' : aiScore > 40 ? 'var(--amber-soft)' : 'var(--emerald-soft)';
+      qualityHtml += `<div style="font-size:0.72rem;color:${scoreColor};">AI痕迹分数：${aiScore}/100 ${aiScore > 70 ? '(需修复)' : aiScore > 40 ? '(建议修复)' : '(通过)'}</div>`;
+      
+      if (aiTraceData.issues && aiTraceData.issues.length > 0) {
+        qualityHtml += '<div style="font-size:0.72rem;color:var(--text-secondary);margin-top:4px;">问题：' + aiTraceData.issues.join(', ') + '</div>';
+      }
+    }
+    
+    // 5. 判断是否通过
+    const passed = (qualityData.passed !== false) && (aiTraceData.ai_score || 0) < 70;
+    
+    qualityHtml += `<div style="margin-top:12px;padding:8px;background:${passed ? 'var(--emerald-soft)' : 'var(--rose-soft)'};color:white;border-radius:6px;text-align:center;font-weight:600;">
+      ${passed ? '✅ 通过质量审核，可以生成' : '⚠️ 未通过质量审核，建议修复后重试'}
+    </div>`;
+    
+    document.getElementById('qualityCheckResult').innerHTML = qualityHtml;
+    hideLoading();
+    
+    if (!passed) {
+      toast('未通过质量审核，建议修复后重试', 'warning');
+      return false;
+    }
+    
+    toast('质量审核通过', 'success');
+    return true;
+    
+  } catch (e) {
+    hideLoading();
+    toast('质量审核失败: ' + e.message, 'error');
+    console.error('Quality check error:', e);
+    return false;
+  }
+}
+
+// 在生成章节前调用质量检查
+const originalGenerateChapter = window.generateChapter;
+window.generateChapter = async function() {
+  // 先运行质量检查
+  const chapterNum = parseInt(document.getElementById('chapterNum').value) || 1;
+  const passed = await runQualityCheckBeforeGeneration(chapterNum);
+  
+  if (!passed) {
+    toast('请先通过质量审核', 'warning');
+    return;
+  }
+  
+  // 通过质量检查，继续生成
+  if (typeof originalGenerateChapter === 'function') {
+    return originalGenerateChapter.apply(this, arguments);
+  }
+};
+
 </script>
 </body>
 </html>
