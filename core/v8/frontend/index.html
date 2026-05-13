@@ -195,6 +195,27 @@ body::before{
 .stepper-line{width:56px;height:2px;background:var(--border-base);border-radius:1px;margin:0 2px;transition:background 0.4s var(--ease-out)}
 .stepper-line.done{background:var(--emerald)}
 
+/* ═══════════════════════ Quick Nav ═══════════════════════ */
+.quick-nav{
+  position:fixed;bottom:24px;left:50%;transform:translateX(-50%);z-index:999;
+  background:var(--bg-elevated);border:1px solid var(--border-base);
+  border-radius:var(--radius-lg);padding:8px 16px;
+  box-shadow:0 8px 40px rgba(0,0,0,0.5);backdrop-filter:blur(12px);
+  display:none;align-items:center;gap:12px;
+}
+.quick-nav.show{display:flex}
+.quick-nav-inner{display:flex;align-items:center;gap:12px}
+.quick-nav-label{font-size:0.78rem;color:var(--text-secondary);white-space:nowrap;font-weight:600}
+.quick-nav-steps{display:flex;gap:4px}
+.quick-nav-btn{
+  width:28px;height:28px;border-radius:50%;border:1.5px solid var(--border-base);
+  background:var(--bg-surface);color:var(--text-tertiary);font-size:0.72rem;
+  font-weight:700;cursor:pointer;transition:all 0.2s var(--ease-out);font-family:inherit;
+  display:flex;align-items:center;justify-content:center;
+}
+.quick-nav-btn:hover{border-color:var(--accent);color:var(--accent-soft)}
+.quick-nav-btn.active{background:var(--accent);border-color:var(--accent);color:#fff;box-shadow:0 0 12px var(--accent-glow)}
+
 /* ═══════════════════════ Steps ═══════════════════════ */
 .step{animation:fadeUp 0.5s var(--ease-out)}
 .step.hidden{display:none}
@@ -727,6 +748,20 @@ kbd{
     </div>
   </div>
 
+  <!-- 浮动快速导航栏 -->
+  <div class="quick-nav" id="quickNav">
+    <div class="quick-nav-inner">
+      <span class="quick-nav-label" id="quickNavLabel">📚 题材选择</span>
+      <div class="quick-nav-steps">
+        <button class="quick-nav-btn" data-step="1" onclick="goToStep(1)" title="题材选择">1</button>
+        <button class="quick-nav-btn" data-step="2" onclick="goToStep(2)" title="写作方法">2</button>
+        <button class="quick-nav-btn" data-step="3" onclick="goToStep(3)" title="剧情方案">3</button>
+        <button class="quick-nav-btn" data-step="4" onclick="goToStep(4)" title="大纲规划">4</button>
+        <button class="quick-nav-btn" data-step="5" onclick="goToStep(5)" title="开始写作">5</button>
+      </div>
+    </div>
+  </div>
+
   <!-- ═══════════════════════ Step 1: Genre Selection ═══════════════════════ -->
   <div class="step" id="step1">
     <div class="card">
@@ -750,11 +785,11 @@ kbd{
       <div class="field-row">
         <div class="field" style="flex:1;">
           <label class="field-label">总字数（万字）</label>
-          <input class="field-input" id="totalWordCount" type="number" min="5" max="300" value="50" onchange="updateWordCountSettings()" style="width:100%;">
+          <input class="field-input" id="totalWordCount" type="number" min="5" max="300" value="50" oninput="updateWordCountSettings()" style="width:100%;">
         </div>
         <div class="field" style="flex:1;">
           <label class="field-label">每章目标字数</label>
-          <select id="targetWordCountStep1" onchange="targetWordCount=parseInt(this.value)" style="background:var(--bg-input);border:1.5px solid var(--border-base);color:var(--text-primary);padding:12px 16px;border-radius:var(--radius-sm);font-size:0.9rem;width:100%;">
+          <select id="targetWordCountStep1" onchange="targetWordCount=parseInt(this.value);updateWordCountSettings();" style="background:var(--bg-input);border:1.5px solid var(--border-base);color:var(--text-primary);padding:12px 16px;border-radius:var(--radius-sm);font-size:0.9rem;width:100%;">
             <option value="2000">2000字</option>
             <option value="3000">3000字</option>
             <option value="4000" selected>4000字</option>
@@ -769,7 +804,7 @@ kbd{
       </div>
     </div>
     <div class="card">
-      <div class="card-head"><span class="icon">✏️</span> 创作要求</div>
+      <div class="card-head"><span class="icon">✏️</span> 创作要求 <span style="font-size:0.74rem;color:var(--text-tertiary);font-weight:400;">— 设定角色、世界观与备注</span></div>
       <div class="field-row">
         <div class="field">
           <label class="field-label">主角设定（可选）</label>
@@ -781,51 +816,20 @@ kbd{
         </div>
       </div>
       <div class="field">
-        <label class="field-label">额外要求（可选）</label>
+        <label class="field-label">角色要求（可选）</label>
         <textarea class="field-area" id="extraRequirements" placeholder="如：需要系统流、要有金手指、主角开局很弱但成长很快..."></textarea>
+      </div>
+      <div class="field">
+        <label class="field-label">世界观要求（可选）</label>
+        <textarea class="field-area" id="worldRequirement" placeholder="如：东方玄幻世界、灵气复苏背景、赛博朋克未来都市..." style="min-height:60px;"></textarea>
+      </div>
+      <div class="field">
+        <label class="field-label">备注（可选）</label>
+        <textarea class="field-area" id="creationNotes" placeholder="如：参考《凡人修仙传》的修仙体系、需要多女主、节奏要快..." style="min-height:60px;"></textarea>
       </div>
       <button class="btn btn-primary btn-full" onclick="goToStep(2)" style="margin-top:14px;padding:14px;font-size:0.95rem;">
         ➡️ 下一步：选择写作方法
       </button>
-    </div>
-
-    <div class="card" id="nameGenCard">
-      <div class="card-head"><span class="icon">🏷️</span> 角色命名工坊 <span style="font-size:0.74rem;color:var(--text-tertiary);font-weight:400;">— 根据题材智能生成</span></div>
-      <div style="display:flex;gap:10px;align-items:center;margin-bottom:14px;">
-        <button class="btn btn-primary btn-sm" onclick="generateNamesByGenre()">🎲 根据题材生成主角名</button>
-        <span style="font-size:0.74rem;color:var(--text-tertiary);">数量:</span>
-        <select class="field-input" id="nameCount" style="width:64px;">
-          <option value="6" selected>6</option>
-          <option value="10">10</option>
-        </select>
-      </div>
-      <div id="nameResults" style="margin-bottom:16px;"></div>
-
-      <div class="card-head" style="font-size:0.9rem;margin-top:8px;"><span class="icon">👥</span> 多角色命名 <span style="font-size:0.74rem;color:var(--text-tertiary);font-weight:400;">（最多10人）</span></div>
-      <div id="multiCharNames" style="margin-bottom:12px;">
-        <div class="char-name-row" style="display:flex;gap:8px;align-items:center;margin-bottom:8px;">
-          <input class="field-input" placeholder="角色定位(如:主角/反派/导师)" style="flex:1;font-size:0.78rem;" id="charRole1">
-          <input class="field-input" placeholder="性别(男/女)" style="width:80px;font-size:0.78rem;" id="charGender1">
-          <input class="field-input" placeholder="性格特征" style="flex:1;font-size:0.78rem;" id="charPersonality1">
-        </div>
-      </div>
-      <div style="display:flex;gap:8px;align-items:center;margin-bottom:14px;">
-        <button class="btn btn-secondary btn-xs" onclick="addCharRow()">+ 添加角色</button>
-        <span style="font-size:0.7rem;color:var(--text-tertiary);" id="charCountLabel">1/10</span>
-        <button class="btn btn-primary btn-sm" onclick="generateMultiNames()" style="margin-left:auto;">🎲 批量生成名字</button>
-        <span style="font-size:0.74rem;color:var(--text-tertiary);">每人:</span>
-        <select class="field-input" id="batchNameCount" style="width:56px;">
-          <option value="1">1</option>
-          <option value="2">2</option>
-          <option value="3" selected>3</option>
-          <option value="5">5</option>
-          <option value="10">10</option>
-        </select>
-      </div>
-      <div id="multiNameResults"></div>
-
-      <div class="card-head" style="font-size:0.9rem;margin-top:8px;"><span class="icon">📝</span> 备注 <span style="font-size:0.74rem;color:var(--text-tertiary);font-weight:400;">（宗门/宗教/势力体系提示词）</span></div>
-      <textarea class="field-area" id="worldNotes" placeholder="如：青云宗(正道第一宗门)、魔教(暗中操控江湖)、散修联盟(中立势力)..." style="min-height:60px;"></textarea>
     </div>
   </div>
 
@@ -863,6 +867,51 @@ kbd{
   <!-- ═══════════════════════ Step 4: Outline ═══════════════════════ -->
   <div class="step hidden" id="step4">
     <div class="card" id="outlineContainer"></div>
+
+    <!-- 角色命名工坊 -->
+    <div class="card" id="nameGenCard">
+      <div class="card-head"><span class="icon">🏷️</span> 角色命名工坊 <span style="font-size:0.74rem;color:var(--text-tertiary);font-weight:400;">— 根据剧情设定为角色生成名字</span></div>
+      <div style="padding:4px 0;">
+        <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:12px;">
+          <input class="field-input" id="worldNotes" placeholder="世界观/背景备注（可选）" style="flex:2;min-width:200px;font-size:0.82rem;">
+          <select id="nameCount" style="background:var(--bg-input);border:1.5px solid var(--border-base);color:var(--text-primary);padding:8px 12px;border-radius:var(--radius-sm);font-size:0.82rem;width:100px;">
+            <option value="3">3个</option>
+            <option value="6" selected>6个</option>
+            <option value="10">10个</option>
+          </select>
+          <button class="btn btn-secondary btn-sm" onclick="generateNamesByGenre()">🎲 根据题材生成主角名</button>
+        </div>
+        <div id="nameResults" style="min-height:60px;">
+          <div style="color:var(--text-tertiary);text-align:center;padding:20px;font-size:0.82rem;">点击上方按钮或从大纲角色点击「重命名」生成名字</div>
+        </div>
+      </div>
+      <div style="border-top:1px solid var(--border-dim);padding-top:14px;margin-top:6px;">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+          <span style="font-weight:600;font-size:0.88rem;color:var(--text-secondary);">👥 批量角色命名</span>
+          <div style="display:flex;gap:8px;align-items:center;">
+            <span id="charCountLabel" style="font-size:0.72rem;color:var(--text-tertiary);">1/10</span>
+            <button class="btn btn-xs btn-secondary" onclick="addCharRow()">➕ 添加角色</button>
+            <select id="batchNameCount" style="background:var(--bg-input);border:1.5px solid var(--border-base);color:var(--text-primary);padding:4px 8px;border-radius:var(--radius-sm);font-size:0.78rem;width:70px;">
+              <option value="3">3个</option>
+              <option value="5" selected>5个</option>
+              <option value="10">10个</option>
+            </select>
+            <button class="btn btn-primary btn-sm" onclick="generateMultiNames()">✨ 批量生成</button>
+          </div>
+        </div>
+        <div id="multiCharNames">
+          <div class="char-name-row" style="display:flex;gap:8px;align-items:center;margin-bottom:8px;">
+            <input class="field-input" placeholder="角色定位(如:主角/反派/导师)" style="flex:1;font-size:0.78rem;" id="charRole1">
+            <input class="field-input" placeholder="性别(男/女)" style="width:80px;font-size:0.78rem;" id="charGender1">
+            <input class="field-input" placeholder="性格特征" style="flex:1;font-size:0.78rem;" id="charPersonality1">
+          </div>
+        </div>
+        <div id="multiNameResults" style="min-height:40px;font-size:0.78rem;">
+          <div style="color:var(--text-tertiary);text-align:center;padding:10px;">填写角色信息后点击「批量生成」</div>
+        </div>
+      </div>
+    </div>
+
     <div style="display:flex;gap:14px;justify-content:center;margin-top:10px;">
       <button class="btn btn-secondary" onclick="goToStep(3)">← 重新选择方案</button>
       <button class="btn btn-primary" onclick="goToStep(5)">🚀 开始写作</button>
@@ -928,6 +977,30 @@ kbd{
               <button class="btn btn-secondary btn-sm" onclick="rewriteCurrent()">✏️ 去AI痕迹重写</button>
               <button class="btn btn-secondary btn-sm" onclick="exportChapter()">📄 导出本章</button>
               <button class="btn btn-secondary btn-sm" onclick="analyzeArcs()">📈 节奏/情绪弧分析</button>
+            </div>
+            <div style="margin-top:10px;padding:10px;background:var(--bg-input);border-radius:var(--radius-sm);">
+              <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;flex-wrap:wrap;">
+                <span style="font-size:0.78rem;font-weight:600;color:var(--text-secondary);">✏️ 智能优化</span>
+                <select id="rewriteStyle" style="background:var(--bg-surface);border:1px solid var(--border-base);color:var(--text-primary);padding:4px 8px;border-radius:var(--radius-sm);font-size:0.76rem;flex:1;min-width:120px;">
+                  <option value="deai">🚫 去AI痕迹（综合）</option>
+                  <option value="polish">✨ 润色句子</option>
+                  <option value="simplify">📐 简化结构</option>
+                  <option value="tone_formal">🎩 正式语气</option>
+                  <option value="tone_casual">💬 口语化</option>
+                  <option value="details">🔍 增加细节</option>
+                  <option value="concise">🎯 突出核心</option>
+                  <option value="rhythm">🎵 调整节奏</option>
+                  <option value="expand">📖 文章扩写</option>
+                  <option value="imitate">🎨 文章仿写</option>
+                  <option value="wording">📝 改善用词</option>
+                  <option value="abbreviate">📏 文章缩写</option>
+                  <option value="maintain_theme">🎯 保持主题</option>
+                </select>
+                <button class="btn btn-primary btn-sm" onclick="rewriteCurrent()">▶ 执行</button>
+              </div>
+              <div style="font-size:0.7rem;color:var(--text-tertiary);line-height:1.5;">
+                选择优化模式后点击「执行」，系统将根据所选模式智能优化当前章节
+              </div>
             </div>
             <div id="aiDetectContent" style="margin-top:14px;font-size:0.78rem;color:var(--text-secondary);line-height:1.7;max-height:400px;overflow-y:auto;">
               <div style="color:var(--text-tertiary);text-align:center;padding:14px;">点击「AI痕迹检测」查看结果</div>
@@ -1308,7 +1381,6 @@ let chapters = {};
 let loadingStart = 0;
 let loadingTimer = null;
 let adoptedProtagonistName = '';
-let targetWordCount = 4000;
 let selectedMethod = null;
 
 const WRITING_METHODS = [
@@ -1330,15 +1402,26 @@ const WRITING_METHODS = [
     beats: ['起: 背景引入', '承: 发展深化', '转: 转折变化', '合: 收束总结'] }
 ];
 
+let _apiBusy = false;
+
 async function api(path, method='GET', body=null) {
+  if (_apiBusy) {
+    console.warn('[NWACS] API call blocked: previous call still in progress');
+    throw new Error('操作正在进行中，请等待完成');
+  }
+  _apiBusy = true;
   const opts = { method, headers: {'Content-Type':'application/json'} };
   if (body) opts.body = JSON.stringify(body);
-  const res = await fetch(API + path, opts);
-  if (!res.ok) {
-    const err = await res.json().catch(()=>({detail:'Unknown error'}));
-    throw new Error(err.detail || err.error || `HTTP ${res.status}`);
+  try {
+    const res = await fetch(API + path, opts);
+    if (!res.ok) {
+      const err = await res.json().catch(()=>({detail:'Unknown error'}));
+      throw new Error(err.detail || err.error || `HTTP ${res.status}`);
+    }
+    return res.json();
+  } finally {
+    _apiBusy = false;
   }
-  return res.json();
 }
 
 function switchTheme(theme) {
@@ -1395,9 +1478,15 @@ function showLoading(text='正在生成...', sub='') {
     const pct = Math.min(90, elapsed / 60 * 100);
     document.getElementById('loadingProgressBar').style.width = pct + '%';
   }, 500);
+  if (window._loadingSafetyTimer) clearTimeout(window._loadingSafetyTimer);
+  window._loadingSafetyTimer = setTimeout(() => {
+    hideLoading();
+    toast('操作超时，请重试', 'warning');
+  }, 1800000);
 }
 
 function hideLoading() {
+  if (window._loadingSafetyTimer) { clearTimeout(window._loadingSafetyTimer); window._loadingSafetyTimer = null; }
   document.getElementById('loadingProgressBar').style.width = '100%';
   setTimeout(() => {
     document.getElementById('loadingOverlay').classList.remove('show');
@@ -1424,19 +1513,25 @@ function goToStep(n) {
     const s = parseInt(el.dataset.step);
     el.classList.remove('active','done');
     if (s === n) el.classList.add('active');
-    if (s < n) el.classList.add('done');
   });
-  document.querySelectorAll('.stepper-line').forEach((el,i) => {
-    el.classList.toggle('done', i+1 < n);
+  document.querySelectorAll('.stepper-line').forEach(el => el.classList.remove('done'));
+  const stepLabels = {1:'📚 题材选择',2:'✏️ 写作方法',3:'📖 剧情方案',4:'📋 大纲规划',5:'🚀 开始写作'};
+  document.getElementById('quickNavLabel').textContent = stepLabels[n] || `步骤${n}`;
+  document.querySelectorAll('.quick-nav-btn').forEach(el => {
+    el.classList.toggle('active', parseInt(el.dataset.step) === n);
   });
+  document.getElementById('quickNav').classList.add('show');
   if (n === 2) renderMethodGrid();
   window.scrollTo({top:0, behavior:'smooth'});
+  localStorage.setItem('nwacs_current_step', n);
 }
 
 async function init() {
   // 恢复保存的主题
   const savedTheme = localStorage.getItem('nwacs_theme');
   if (savedTheme) switchTheme(savedTheme);
+  // 恢复上次的步骤
+  const savedStep = parseInt(localStorage.getItem('nwacs_current_step')) || 1;
   try {
     const data = await api('/api/options');
     options = data;
@@ -1445,11 +1540,12 @@ async function init() {
     renderSelectionGrid('styleGrid', data.styles, 'style');
     renderSelectionGrid('toneGrid', data.tones, 'tone');
     updateWordCountSettings();
-    // 同步字数选择器
     const wcSelect = document.getElementById('targetWordCountStep1');
     if (wcSelect) targetWordCount = parseInt(wcSelect.value);
+    goToStep(savedStep);
   } catch(e) {
     toast('无法连接服务器，请确认服务已启动', 'error');
+    goToStep(1);
   }
 }
 
@@ -1592,6 +1688,8 @@ async function generatePlots() {
       protagonist: document.getElementById('protagonist').value,
       theme: document.getElementById('theme').value,
       extra_requirements: document.getElementById('extraRequirements').value,
+      world_requirement: document.getElementById('worldRequirement').value,
+      creation_notes: document.getElementById('creationNotes').value,
       writing_method: selectedMethod ? selectedMethod.id : '',
       total_word_count: totalWordCountSetting,
       target_word_count: targetWordCount,
@@ -1653,6 +1751,9 @@ async function selectPlot() {
       length: selectedLength, schools: selectedSchools, school_names: selectedSchoolNames,
       theme: document.getElementById('theme').value,
       protagonist: protagonistName,
+      extra_requirements: document.getElementById('extraRequirements').value,
+      world_requirement: document.getElementById('worldRequirement').value,
+      creation_notes: document.getElementById('creationNotes').value,
       writing_method: selectedMethod ? selectedMethod.id : '',
       total_word_count: totalWordCountSetting,
       target_word_count: targetWordCount,
@@ -1824,7 +1925,6 @@ function saveChapterNote(actIdx, chNum, noteText) {
   if (!act || !act.chapters) return;
   const ch = act.chapters.find(c => c.number === chNum);
   if (ch) ch.notes = noteText;
-}
 }
 
 async function batchGenerateChapters() {
@@ -2060,10 +2160,116 @@ function highlightIssuesInContent(chNum) {
       const before = text.substring(0, idx);
       const after = text.substring(idx + loc.length);
       const issId = `iss_${chNum}_${sorted.indexOf(iss)}`;
-      text = before + `<span id="${issId}" class="issue-highlight ${sev}" style="background:${bg};border-bottom:2px solid ${color};padding:0 2px;border-radius:2px;cursor:pointer;" onclick="scrollToIssue('${issId}')" title="[${sev}] ${escHtml(iss.description||iss.message||'')}">${escHtml(loc)}</span>` + after;
+      text = before + `<span id="${issId}" class="issue-highlight ${sev}" style="background:${bg};border-bottom:2px solid ${color};padding:0 2px;border-radius:2px;cursor:pointer;" onclick="showIssueDetail('${issId}', ${sorted.indexOf(iss)})" title="[${sev}] ${escHtml(iss.description||iss.message||'')}">${escHtml(loc)}</span>` + after;
     }
   }
   el.innerHTML = text;
+}
+
+function showIssueDetail(issId, issueIndex) {
+  const chNum = parseInt(document.getElementById('chapterNum').value) || 1;
+  const ch = chapters[chNum];
+  if (!ch || !ch.issues) return;
+  
+  const issue = ch.issues[issueIndex];
+  if (!issue) return;
+  
+  const sevColors = {
+    critical: '#ef4444',
+    high: '#f59e0b',
+    medium: '#06b6d4',
+    low: '#6b7280'
+  };
+  const sevLabels = {
+    critical: '严重',
+    high: '重要',
+    medium: '中等',
+    low: '轻微'
+  };
+  
+  const modal = document.createElement('div');
+  modal.id = 'issueDetailModal';
+  modal.style.cssText = `
+    position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+    background: var(--bg-card); border-radius: 12px; padding: 20px;
+    width: 90%; max-width: 500px; z-index: 1000;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.3); border: 1px solid var(--border);
+  `;
+  
+  modal.innerHTML = `
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;">
+      <span style="width:12px;height:12px;border-radius:50%;background:${sevColors[issue.severity] || '#6b7280'};"></span>
+      <h3 style="margin:0;color:var(--text-primary);">${sevLabels[issue.severity] || '未知'}问题</h3>
+      <button onclick="document.getElementById('issueDetailModal').remove();document.getElementById('modalOverlay').remove();" 
+              style="margin-left:auto;padding:6px 12px;border:none;background:var(--bg-secondary);border-radius:6px;cursor:pointer;">关闭</button>
+    </div>
+    <div style="margin-bottom:12px;">
+      <div style="color:var(--text-secondary);font-size:0.85rem;margin-bottom:4px;">问题描述</div>
+      <div style="color:var(--text-primary);">${escHtml(issue.description || issue.message || '')}</div>
+    </div>
+    ${issue.location ? `<div style="margin-bottom:12px;">
+      <div style="color:var(--text-secondary);font-size:0.85rem;margin-bottom:4px;">问题位置</div>
+      <div style="color:var(--text-primary);font-family:monospace;font-size:0.85rem;">${escHtml(issue.location)}</div>
+    </div>` : ''}
+    ${issue.fix || issue.suggestion ? `<div style="margin-bottom:16px;">
+      <div style="color:var(--text-secondary);font-size:0.85rem;margin-bottom:4px;">修复建议</div>
+      <div style="color:var(--emerald-soft);">${escHtml(issue.fix || issue.suggestion)}</div>
+    </div>` : ''}
+    <div style="display:flex;gap:10px;">
+      ${issue.fix ? `<button onclick="applyFix(${chNum}, ${issueIndex});" 
+                    style="flex:1;padding:10px 16px;border:none;border-radius:8px;background:var(--emerald-soft);color:white;cursor:pointer;font-weight:500;">应用修复</button>` : ''}
+      <button onclick="document.getElementById('issueDetailModal').remove();document.getElementById('modalOverlay').remove();" 
+              style="flex:1;padding:10px 16px;border:1px solid var(--border);border-radius:8px;background:transparent;cursor:pointer;">关闭</button>
+    </div>
+  `;
+  
+  const overlay = document.createElement('div');
+  overlay.id = 'modalOverlay';
+  overlay.style.cssText = `
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.5); z-index: 999;
+  `;
+  overlay.onclick = () => {
+    document.getElementById('issueDetailModal').remove();
+    document.getElementById('modalOverlay').remove();
+  };
+  
+  document.body.appendChild(overlay);
+  document.body.appendChild(modal);
+}
+
+async function applyFix(chNum, issueIndex) {
+  const ch = chapters[chNum];
+  if (!ch || !ch.issues) return;
+  
+  const issue = ch.issues[issueIndex];
+  if (!issue || !issue.fix) return;
+  
+  showLoading('正在应用修复...');
+  try {
+    const data = await api('/api/rewrite', 'POST', {
+      text: ch.content,
+      style: 'fix',
+      issue: issue
+    });
+    
+    if (data && data.content) {
+      const wc = data.content.replace(/\s/g, '').length;
+      chapters[chNum] = { ...chapters[chNum], content: data.content, word_count: wc };
+      displayChapter(chapters[chNum]);
+      updateStats(chapters[chNum]);
+      toast('修复已应用', 'success');
+      autoReviewChapter(chNum);
+    } else {
+      toast('修复失败', 'error');
+    }
+  } catch(e) {
+    toast('修复失败: ' + e.message, 'error');
+  } finally {
+    hideLoading();
+    document.getElementById('issueDetailModal').remove();
+    document.getElementById('modalOverlay').remove();
+  }
 }
 
 function scrollToIssue(issId) {
@@ -2155,11 +2361,27 @@ function copyChapter() {
 async function polishChapter() {
   const chNum = parseInt(document.getElementById('chapterNum').value) || 1;
   const ch = chapters[chNum];
-  if (!ch || !ch.content) { toast('请先生成章节内容', 'info'); return; }
+  
+  console.log('[polishChapter] chNum:', chNum);
+  console.log('[polishChapter] chapters:', chapters);
+  console.log('[polishChapter] ch:', ch);
+  
+  if (!ch || !ch.content) { 
+    console.log('[polishChapter] No chapter content found');
+    toast('请先生成章节内容', 'info'); 
+    return; 
+  }
+  
+  if (!ch.content.trim()) {
+    console.log('[polishChapter] Content is empty');
+    toast('章节内容为空', 'info');
+    return;
+  }
+  
   showLoading('正在润色本章...');
   try {
     const data = await api('/api/rewrite', 'POST', {text: ch.content, style: 'polish'});
-    if (data.content) {
+    if (data && data.content) {
       const wc = data.content.replace(/\s/g, '').length;
       chapters[chNum] = { ...chapters[chNum], content: data.content, word_count: wc };
       displayChapter(chapters[chNum]);
@@ -2167,9 +2389,11 @@ async function polishChapter() {
       toast('润色完成', 'success');
       autoReviewChapter(chNum);
     } else {
-      toast('润色失败', 'error');
+      console.log('[polishChapter] No content returned from API');
+      toast('润色失败：未返回内容', 'error');
     }
   } catch(e) {
+    console.error('[polishChapter] Error:', e);
     toast('润色失败: ' + e.message, 'error');
   } finally {
     hideLoading();
@@ -2495,11 +2719,19 @@ async function detectAIForCurrent() {
 async function rewriteCurrent() {
   const el = document.getElementById('chapterContent');
   if (el.classList.contains('empty')) { toast('请先生成章节内容', 'info'); return; }
-  setStatus('busy', '重写中...');
-  showLoading('正在去AI痕迹重写...');
+  const style = document.getElementById('rewriteStyle').value;
+  const styleLabels = {
+    deai: '去AI痕迹重写', polish: '润色句子', simplify: '简化结构',
+    tone_formal: '正式语气', tone_casual: '口语化', details: '增加细节',
+    concise: '突出核心', rhythm: '调整节奏', expand: '文章扩写',
+    imitate: '文章仿写', wording: '改善用词', abbreviate: '文章缩写',
+    maintain_theme: '保持主题',
+  };
+  setStatus('busy', '优化中...');
+  showLoading(`正在${styleLabels[style]||'优化'}...`);
   try {
     const text = el.textContent;
-    const data = await api('/api/rewrite', 'POST', {text, style:'deai'});
+    const data = await api('/api/rewrite', 'POST', {text, style});
     if (data.content) {
       el.textContent = data.content;
       const chNum = parseInt(document.getElementById('chapterNum').value) || 1;
@@ -2508,16 +2740,16 @@ async function rewriteCurrent() {
         chapters[chNum].word_count = data.content.length;
       }
       if (data.before_score !== undefined && data.after_score !== undefined) {
-        toast(`去AI完成：${data.before_score}分 → ${data.after_score}分 (${data.before_traces}→${data.after_traces}处痕迹)`, 'success');
+        toast(`${styleLabels[style]||'优化'}完成：${data.before_score}分 → ${data.after_score}分 (${data.before_traces}→${data.after_traces}处痕迹)`, 'success');
       } else {
-        toast('去AI痕迹重写完成', 'success');
+        toast(`${styleLabels[style]||'优化'}完成`, 'success');
       }
     } else {
-      toast('重写失败，请稍后重试', 'error');
+      toast('优化失败，请稍后重试', 'error');
     }
   } catch(e) {
-    toast('重写失败: '+e.message, 'error');
-    setStatus('error', '重写失败');
+    toast('优化失败: '+e.message, 'error');
+    setStatus('error', '优化失败');
   } finally {
     hideLoading();
     setTimeout(() => setStatus('', '就绪'), 1500);
@@ -2686,9 +2918,9 @@ async function generateNamesByGenre() {
   const genre = selectedGenres[0] || '玄幻'
   const count = parseInt(document.getElementById('nameCount').value) || 6
   const worldNotes = document.getElementById('worldNotes').value || ''
-  // 获取剧情上下文
   const plotContext = selectedPlot ? `剧情方案：${selectedPlot.name} - ${selectedPlot.core_idea}` : ''
-  const storyContext = [worldNotes, plotContext].filter(Boolean).join('\n')
+  const outlineContext = outline ? `大纲书名：${outline.title}，梗概：${(outline.synopsis||'').slice(0,100)}` : ''
+  const storyContext = [worldNotes, plotContext, outlineContext].filter(Boolean).join('\n')
   try {
     const data = await api('/api/generate_names', 'POST', {
       genre, role: 'protagonist', gender: 'male', count,
@@ -2826,7 +3058,10 @@ function editCharName(idx) {
   editingCharIndex = idx
   const ch = outline.characters[idx]
   document.getElementById('protagonist').value = ch.name || ''
-  document.getElementById('worldNotes').value = ch.role || ''
+  const worldContext = outline.world_architecture
+    ? `世界类型：${outline.world_architecture.world_type||''}，时代：${outline.world_architecture.era||''}`
+    : ch.role || ''
+  document.getElementById('worldNotes').value = worldContext
   document.getElementById('nameGenCard').scrollIntoView({behavior:'smooth',block:'center'})
   toast(`正在为「${ch.name || ch.role}」重新生成名字，请在下方角色命名工坊中操作`, 'info')
 }

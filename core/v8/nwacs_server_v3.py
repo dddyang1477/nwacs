@@ -408,11 +408,13 @@ class NWACSHandler(BaseHTTPRequestHandler):
                     "史诗宏大": {"icon": "🏰", "desc": "世界观庞大"},
                 },
                 "tones": {
-                    "紧张刺激": "节奏紧凑",
-                    "轻松愉快": "氛围轻松",
-                    "虐心催泪": "情感浓烈",
-                    "冷静克制": "叙事冷静",
-                    "热血燃爆": "情绪高涨",
+                    "紧张刺激": {"icon": "⚡", "desc": "节奏紧凑，悬念迭起"},
+                    "轻松愉快": {"icon": "😊", "desc": "氛围轻松，温馨有趣"},
+                    "虐心催泪": {"icon": "😢", "desc": "情感浓烈，催人泪下"},
+                    "冷静克制": {"icon": "🧊", "desc": "叙事冷静，理性克制"},
+                    "热血燃爆": {"icon": "🔥", "desc": "情绪高涨，热血沸腾"},
+                    "黑暗沉重": {"icon": "🌑", "desc": "氛围压抑，人性探讨"},
+                    "诙谐幽默": {"icon": "😂", "desc": "轻松搞笑，诙谐风趣"},
                 },
                 "lengths": {
                     "自定义字数": "5万-300万字可设置",
@@ -679,6 +681,8 @@ class NWACSHandler(BaseHTTPRequestHandler):
         theme = data.get('theme', '逆境成长')
         protagonist = data.get('protagonist', '')
         extra = data.get('extra_requirements', '')
+        world_req = data.get('world_requirement', '')
+        creation_notes = data.get('creation_notes', '')
         schools = data.get('schools', [data.get('school', '')])
         if isinstance(schools, str):
             schools = [schools] if schools else []
@@ -709,6 +713,8 @@ class NWACSHandler(BaseHTTPRequestHandler):
                 genre_context = genre_manager.get_full_generation_context(include_pleasure=True)
 
             extra_str = f"\nExtra: {extra}" if extra else ""
+            world_str = f"\nWorld Requirement: {world_req}" if world_req else ""
+            notes_str = f"\nNotes: {creation_notes}" if creation_notes else ""
             protag_str = f"\nProtagonist: {protagonist}" if protagonist else ""
 
             genre_label = f"{genre_str}（融合）" if len(genres) > 1 else genres[0]
@@ -748,7 +754,7 @@ class NWACSHandler(BaseHTTPRequestHandler):
 - 风格：{style_str}
 - 基调：{tone_str}
 - 篇幅：{length}（总字数约{total_word_count//10000}万字，每章约{target_word_count}字）
-- 主题：{theme}{school_label}{multi_genre_note}{protag_str}{extra_str}
+- 主题：{theme}{school_label}{multi_genre_note}{protag_str}{extra_str}{world_str}{notes_str}
 
 {genre_context}
 
@@ -880,6 +886,9 @@ class NWACSHandler(BaseHTTPRequestHandler):
         writing_method = data.get('writing_method', '')
         total_word_count = data.get('total_word_count', 500000)
         target_word_count = data.get('target_word_count', 4000)
+        extra = data.get('extra_requirements', '')
+        world_req = data.get('world_requirement', '')
+        creation_notes = data.get('creation_notes', '')
 
         primary_genre = genres[0] if genres else '玄幻'
         primary_school = schools[0] if schools else ''
@@ -962,6 +971,9 @@ class NWACSHandler(BaseHTTPRequestHandler):
 - 主题：{theme}
 - 选定剧情：{plot_name}
 - 主角名：{protagonist}
+- 角色要求：{extra}
+- 世界观要求：{world_req}
+- 备注：{creation_notes}
 
 {genre_context}
 
@@ -1288,30 +1300,29 @@ class NWACSHandler(BaseHTTPRequestHandler):
 现在开始写第{chapter_num}章正文："""
 
             log("Calling LLM for chapter...")
+            # 重置API调用计数，防止重试叠加
+            llm.reset_operation_count()
             content = llm.generate(prompt, params=GenerationParams(temperature=0.85, max_tokens=8000))
             log(f"Chapter response: {len(content)} chars")
 
-            # 字数强制校验：正负误差不超过10%，最多重试3次
+            # 字数强制校验：正负误差不超过10%，最多重试2次（带间隔）
             min_words = int(target_word_count * 0.85)
             max_words = int(target_word_count * 1.15)
             actual_words = len(content.replace('\n', '').replace(' ', ''))
             if actual_words < min_words or actual_words > max_words:
                 log(f"Word count {actual_words} outside range [{min_words}, {max_words}], adjusting...")
-                for attempt in range(3):
-                    adjust_prompt = f"""你是一位严格的网文编辑。以下章节的字数不符合要求。
+                for attempt in range(2):
+                    time.sleep(1.0 + random.uniform(0, 0.5))
+                    direction = "扩充" if actual_words < min_words else "精简"
+                    adjust_prompt = f"""你是一位严格的网文编辑。以下章节字数不符合要求。
 
-当前字数：{actual_words}字
-目标字数：{target_word_count}字（允许范围：{min_words}-{max_words}字）
+当前字数：{actual_words}字 | 目标：{target_word_count}字 | 允许范围：{min_words}-{max_words}字
 
-请对以下章节内容进行**严格调整**（第{attempt+1}次调整）：
-- 如果字数太少：扩充细节描写、对话、心理活动、环境描写，使内容达到目标字数
-- 如果字数太多：精简冗余描写、合并重复表达、删减非核心内容，使内容达到目标字数
+请{direction}以下章节内容（第{attempt+1}次调整）：
+- 扩充：增加细节描写、对话、心理活动、环境描写
+- 精简：删除冗余修饰、合并重复表达、删减非核心内容
 
-**必须保持**：
-- 原有剧情走向和角色设定不变
-- 章节标题和核心情节不变
-- 角色名字完全不变
-- 结尾悬念钩子不变
+**必须保持**：剧情走向、角色设定、章节标题、核心情节、角色名字、结尾悬念钩子不变
 
 直接输出调整后的章节正文，不要任何额外说明：
 
@@ -1324,29 +1335,21 @@ class NWACSHandler(BaseHTTPRequestHandler):
                         actual_words = adjusted_words
                         log(f"Word count adjusted successfully on attempt {attempt+1}")
                         break
-                    else:
-                        content = adjusted
-                        actual_words = adjusted_words
-                        log(f"Adjust attempt {attempt+1} still outside range ({adjusted_words}), retrying...")
+                    content = adjusted
+                    actual_words = adjusted_words
                 else:
-                    log(f"Word count adjustment failed after 3 attempts, using last result")
+                    log(f"Word count adjustment failed after 2 attempts, using last result ({actual_words} chars)")
 
-            # 自动去AI痕迹（在保存之前应用）
+            # 自动去AI痕迹：集成到生成prompt中，避免额外API调用
             try:
                 deai = data.get('auto_deai', True)
                 if deai and len(content) > 100:
-                    from ai_humanizer import detect_ai_traces, build_humanize_prompt
+                    from ai_humanizer import detect_ai_traces
                     detection = detect_ai_traces(content)
                     if detection.get('total_score', 100) < 70:
-                        humanize_prompt = build_humanize_prompt(content, detection)
-                        if humanize_prompt:
-                            log(f"Auto DEAI: score={detection['total_score']}, traces={len(detection.get('traces_found',[]))}")
-                            deai_result = llm.generate(humanize_prompt, params=GenerationParams(temperature=0.7, max_tokens=len(content)*2))
-                            if deai_result and len(deai_result) > 100:
-                                content = deai_result
-                                log(f"DEAI applied: {len(content)} chars")
+                        log(f"Auto DEAI skipped (score={detection['total_score']}), AI痕迹已通过生成prompt控制")
             except Exception as deai_err:
-                log(f"DEAI warning: {deai_err}")
+                log(f"DEAI check warning: {deai_err}")
 
             novel_title = outline_data.get('title', '未命名作品')
             novel_dir = os.path.join(os.path.dirname(__file__), '..', '..', 'output', _safe_filename(novel_title))
@@ -1608,16 +1611,15 @@ class NWACSHandler(BaseHTTPRequestHandler):
 每章字数严格控制在{target_wc}字左右，每章结尾必须有强有力的悬念钩子。"""
 
         try:
+            llm.reset_operation_count()
             result_text = llm.generate(prompt, params=GenerationParams(temperature=0.92, max_tokens=target_wc * max_chapters * 2))
             if "```json" in result_text:
                 result_text = result_text.split("```json")[1].split("```")[0]
-            # 清理JSON中的常见问题
             result_text = re.sub(r',\s*}', '}', result_text)
             result_text = re.sub(r',\s*]', ']', result_text)
             result = json.loads(result_text)
             chapters = result.get('chapters', [])
 
-            # 生成后去重检测：检查各章内容相似度
             if len(chapters) >= 2:
                 from difflib import SequenceMatcher
                 for i in range(len(chapters)):
@@ -1625,13 +1627,11 @@ class NWACSHandler(BaseHTTPRequestHandler):
                         ci = chapters[i].get('content', '')
                         cj = chapters[j].get('content', '')
                         if ci and cj:
-                            # 取前200字和后200字做相似度比较
                             ci_head = ci[:200]
                             cj_head = cj[:200]
                             similarity = SequenceMatcher(None, ci_head, cj_head).ratio()
                             if similarity > 0.6:
                                 log(f"DEDUP WARNING: ch{chapters[i].get('chapter_number')} vs ch{chapters[j].get('chapter_number')} head similarity={similarity:.2f}")
-                                # 对重复的章节添加差异化指令重新生成
                                 dup_ch = chapters[j]
                                 dup_num = dup_ch.get('chapter_number', start_chapter + j)
                                 fix_prompt = f"""你是一位网文作家。以下章节内容与前面章节的开头过于相似（相似度{similarity:.0%}）。
@@ -1651,6 +1651,7 @@ class NWACSHandler(BaseHTTPRequestHandler):
 - 直接输出章节正文，不要JSON包裹
 
 现在重写第{dup_num}章："""
+                                time.sleep(1.0)
                                 fixed = llm.generate(fix_prompt, params=GenerationParams(temperature=0.9, max_tokens=target_wc * 2))
                                 if fixed and len(fixed) > 200:
                                     chapters[j]['content'] = fixed
@@ -1718,7 +1719,11 @@ class NWACSHandler(BaseHTTPRequestHandler):
                 if key in data:
                     if key == 'provider':
                         from llm_interface import ModelProvider
-                        updates[key] = ModelProvider(data[key])
+                        try:
+                            updates[key] = ModelProvider(data[key])
+                        except ValueError:
+                            log(f"Unknown provider: {data[key]}, falling back to custom")
+                            updates[key] = ModelProvider.CUSTOM
                     else:
                         updates[key] = data[key]
             llm.update_config(**updates)
@@ -1732,6 +1737,7 @@ class NWACSHandler(BaseHTTPRequestHandler):
             }})
         except Exception as e:
             log(f"Config update error: {e}")
+            traceback.print_exc()
             self._send_json({"error": str(e)}, 400)
 
     def _handle_generate_names(self, data):
@@ -2660,97 +2666,80 @@ class NWACSHandler(BaseHTTPRequestHandler):
 
         log(f"Rewriting {len(text)} chars with style={style}...")
 
-        detection = detect_ai_traces(text)
-        traces_count = len(detection.get("traces_found", []))
-        log(f"Pre-rewrite detection: {traces_count} AI traces found, score={detection.get('total_score',0)}")
-
-        humanize_prompt = build_humanize_prompt(text, detection) if traces_count > 0 else ""
-
         deai_system_prompt = """你是一位拥有15年写作经验的顶级作家，精通将AI生成的文本改写为自然的人类写作风格。
 
-【去AI核心原则 — NWACS 智能去AI痕迹引擎 v2.0】
+【去AI核心原则 — NWACS 智能去AI痕迹引擎 v3.0】
 
-=== 内容层：消除AI内容模式 ===
-1. 禁止过度强调意义和遗产：删除"作为……的证明""标志着……的里程碑""为……奠定基础"等夸大重要性的表述
-2. 禁止宣传广告式语言：删除"坐落于""令人叹为观止的""必游之地""开创性的"等夸张宣传词
-3. 禁止以-ing结尾的肤浅分析：删除"突出""强调""彰显""确保""反映""象征"等空洞动词结尾
-4. 禁止模糊归因：删除"行业报告显示""观察者指出""专家认为""多个来源"等无具体来源的引用
-5. 禁止提纲式挑战与未来展望：删除"尽管面临若干挑战""未来展望""前景一片光明"等公式化段落
-6. 禁止通用积极结论：删除"未来看起来光明""向正确方向迈出的重要一步""未来可期"等模糊乐观结尾
+=== 一、降低AI痕迹（核心目标）===
+1. 重写文本更自然：去除机械感，让文字充满人性温度
+2. 减少完美句式：故意保留轻微的"不完美"，如小停顿、口语化表达
+3. 个性化表达：加入独特的视角和表达方式，避免模板化
+4. 口语化融入：适当使用"嗯""呃""那个""就是"等自然口语词
+5. 避免机械段落：打破AI特有的均匀段落结构，让段落长短错落有致
 
-=== 语言语法层：消除AI语言特征 ===
-7. 禁止过度使用的AI词汇：删除"此外""至关重要""深入探讨""格局""关键性的""织锦""充满活力的""与……保持一致"
-8. 恢复系动词"是"：将"作为……充当""代表……标志着""拥有……设有"改回简单的"是""有"
-9. 禁止否定式排比：将"不仅……而且""不仅仅是……而是"改为更自然的表达
-10. 禁止三段式法则：避免"X、Y和Z"的机械列举，用不规则的列举方式
-11. 禁止虚假范围：删除"从……到……的旅程/转变"等伪深度结构
-12. 禁止填充短语：删除"值得注意的是""为了实现这一目标""在这个时间点""具有……的能力"
+=== 二、润色句子 ===
+6. 用词精准生动：替换平淡词汇为更精准、更有画面感的表达
+7. 句式流畅：调整语序，让句子读起来更顺口
+8. 增强韵律感：注意平仄、节奏，让文字有音乐感
+9. 风格统一：保持全文风格一致，避免混搭
+10. 修正错误：修复语法、用词不当等问题
 
-=== 风格层：消除AI风格特征 ===
-13. 破折号减半：每段最多使用1个破折号，用句号或逗号替代多余的
-14. 禁止协作交流痕迹：删除"希望这对您有帮助""您说得完全正确""请告诉我"等聊天机器人用语
-15. 禁止知识截止日期免责声明：删除"截至""根据我最后的训练更新""基于可用信息"等
-16. 禁止谄媚/卑躬屈膝的语气：删除"好问题""您的观察非常敏锐""我很高兴您问到这个问题"
-17. 禁止过度限定：删除"可以潜在地可能被认为""在一定程度上""在某种意义上"等软弱措辞
+=== 三、简化结构 ===
+11. 拆分长段落：每段不超过5句，一段一中心
+12. 去除模糊歧义：明确指代，避免"这""那""其"等模糊代词
+13. 层次清晰：逻辑递进，让读者一目了然
 
-=== 填充短语与公式化结构消除 ===
-18. 禁止喉清开场：删除"事情是这样的""这么说吧""你听我说""Here's the thing"
-19. 禁止强调拐杖：删除"这一点很重要""这很关键""这才是重点""This matters because"
-20. 禁止表演式诚实：删除"说实话""老实说""不瞒你说""To be honest"
-21. 禁止掌声句：删除"这就是关键所在""这才是真正的力量""That's it. That's the thing."
-22. 禁止二元对比结构：避免"不是……而是……""并非……而是……"的机械对比
-23. 禁止问答自嗨：避免"为什么？因为……""怎么做？很简单……"的自问自答
-24. 禁止通用开场白：删除"在当今……时代""随着……的发展""In today's fast-paced world"
-25. 禁止空洞大词：删除"赋能""闭环""底层逻辑""降维打击""颗粒度""对齐""拉通"
+=== 四、转换语气 ===
+14. 正式/非正式切换：根据场景调整语气强度
+15. 匹配受众认知：使用目标读者熟悉的表达方式
+16. 调整术语密度：避免术语堆砌，必要时解释专业概念
+17. 情感贴合：让语气与内容情感相匹配
 
-=== 五维度质量要求 (50分制) ===
-26. 直接性(10分)：直接陈述事实，不绕圈宣告。禁止"作为……的证明""标志着""值得注意的是"
-27. 节奏(10分)：句长剧烈变化。短句3-10字，长句25-50字，连续3句不能同长度
-28. 信任度(10分)：尊重读者智慧。禁止"也就是说""换句话说""这意味着""顾名思义"
-29. 真实性(10分)：听起来像真人说话。禁止"无缝、直观和强大""创新、灵感和洞察"等三段式
-30. 精炼度(10分)：删除一切冗余。禁止"在这个时间点""由于……的事实""为了实现这一目标"
+=== 五、增加细节 ===
+18. 补充案例数据：加入具体数字、实例，增强说服力
+19. 解释概念：对抽象内容进行具象化处理
+20. 感官描写：加入视觉、听觉、触觉、嗅觉等细节
 
-=== Burstiness 节奏注入 ===
-31. 句子长度必须剧烈变化：B=(σ/μ)×100，目标B>50（爵士乐节奏）
-32. 短句(≤10字)占比至少20%，长句(≥30字)占比至少15%
-33. 不能连续3句长度差小于3个字——这是AI的节拍器节奏
-34. 段落长度也必须变化：不能每段都是3-5句
+=== 六、突出核心 ===
+21. 删除重复冗余：去除重复表达，合并相似观点
+22. 去无关细节：砍掉与主题无关的内容
+23. 减少修饰：避免过度形容词堆砌，每句有明确目的
 
-=== 结构层去AI ===
-35. 段落长度不能均匀：有的段落1句话，有的段落8句话
-36. 不能每段都是"主题句→论据→结论"的模板结构
-37. 前后半部分不能对称——打破平衡
+=== 七、调整节奏 ===
+24. 长短句混合：短句（≤15字）占20%，长句（≥30字）占15%
+25. 简单句与复合句交替：避免句式单调
+26. 修辞问句：适当使用反问、设问增强节奏感
+27. 韵律自然：避免机械排比，让节奏有呼吸感
 
-=== 灵魂注入原则 ===
-38. 长短句交替：必须有短句(≤10字)和长句(≥30字)交替出现
-39. 个人观点表达：加入"我觉得""我在想""让我困扰""不安""兴奋"等主观感受
-40. 具体数据细节：加入具体数字、时间、次数、百分比
-41. 不完美表达：加入"嗯""呃""那个""就是""妈的""操"等人类口语瑕疵
-42. 幽默或锋芒：加入讽刺、自嘲、黑色幽默
-43. 用动作替代形容词：不写"他愤怒"，写"他一拳砸在桌上"
-44. 加入感官细节：视觉/听觉/触觉/嗅觉至少2种
-45. 加入本土生活细节：烟火气、人情世故、市井气息
+=== 八、避免AI特征词汇 ===
+28. 禁用空洞大词：删除"赋能""闭环""底层逻辑""降维打击""颗粒度"
+29. 禁用AI连接词：删除"此外""至关重要""深入探讨""格局"
+30. 禁用夸张宣传词：删除"令人叹为观止""开创性的""必游之地"
+31. 禁用模糊归因：删除"专家认为""行业报告显示""多个来源"
+32. 禁用填充短语：删除"值得注意的是""为了实现这一目标""在这个时间点"
 
-=== NWACS 深度语言修正 ===
-46. 拆分长定语：将多层定语拆为短句群，每层「的」不超过2个
-47. 明确指代：用具体名词替代模糊的「这」「那」「其」，确保每个代词有明确先行词
-48. 补全主语：每句必须有明确主语，中文虽可省略但AI生成文本不宜连续省略
-49. 删除范畴词：删除「问题」「情况」「状态」「方面」「领域」等不增加信息的空洞范畴词
-50. 控制时态标记：减少「了」「着」「过」密度，中文靠语序表达时态关系
-51. 减少虚词密度：控制「的」「地」「得」使用频率，用实词结构替代虚词堆砌
-52. 统一语体：保持全文语体一致，避免文言白话混杂、粗俗书面混杂
+=== 九、灵魂注入技巧 ===
+33. 动作替代形容词：不写"他很愤怒"，写"他一拳砸在桌上"
+34. 个人语气表达：加入"我觉得""我在想""让我困扰"等主观感受
+35. 本土生活细节：加入烟火气、人情世故、市井气息
+36. 幽默或锋芒：适当加入讽刺、自嘲、黑色幽默
 
-=== 30秒测试原则 ===
-46. 加入具体人名/地名/品牌名——不能全是泛称
-47. 加入具体数字和单位——不能全是模糊描述
-48. 加入个人语气和情感——不能全是客观陈述
-49. 加入独特细节和意外感——不能全是可预测的内容
+=== 十、语言精炼原则 ===
+37. 拆分长定语：多层定语拆为短句，每层"的"不超过2个
+38. 补全主语：避免连续省略主语
+39. 删除范畴词：删除"问题""情况""状态""方面""领域"等空洞词汇
+40. 控制虚词密度：减少"的""地""得"使用频率
 
-=== 输出前自检清单 ===
+=== 十一、节奏注入要求 ===
+41. 句子长度必须剧烈变化：目标Burstiness>50
+42. 不能连续3句长度差小于3个字
+43. 段落长度不均匀：有的段落1句，有的段落8句
+44. 打破对称结构：前后部分不要刻意对称
+
+=== 十二、输出前自检清单 ===
 □ 连续三个句子长度是否不同？
 □ 段落是否以简洁的单行结尾？
 □ 破折号是否≤2处？
-□ 是否解释了隐喻或比喻？（应该信任读者）
 □ "此外""然而"等连接词是否≤3处？
 □ 三段式列举是否≤2处？
 □ 是否有具体人名/地名/数字？
@@ -2762,27 +2751,74 @@ class NWACSHandler(BaseHTTPRequestHandler):
 - 保持原文的核心信息和情节不变
 - 如果原文已经是自然的人类写作风格，只做微调，不要过度修改"""
 
+        detection = detect_ai_traces(text)
+        traces_count = len(detection.get("traces_found", []))
+        log(f"Pre-rewrite detection: {traces_count} AI traces found, score={detection.get('total_score',0)}")
+
+        humanize_prompt = build_humanize_prompt(text, detection) if traces_count > 0 else ""
+
         style_instructions = {
-            "polish": "请润色以下文本，使其更加流畅优美，保持原意不变。",
-            "simplify": "请简化以下文本，使其更加简洁明了。",
-            "expand": "请扩写以下文本，增加细节描写和情感表达。",
-            "summarize": "请概括以下文本的主要内容，不超过100字。",
-            "formal": "请将以下文本改为正式文体。",
-            "casual": "请将以下文本改为口语化表达。",
             "deai": "请将以下AI生成的文本改写为自然的人类写作风格，消除所有AI痕迹。",
+            "polish": "请润色以下文本，使其用词更精准、表达更生动、语句更流畅，保持原意不变。",
+            "simplify": "请简化以下文本结构：拆分长段落（每段不超过5句）、拆分长句（每句不超过40字）、用短句替代复杂从句。",
+            "tone_formal": "请将以下文本改为正式、严谨的书面语气，适合正式场合使用。",
+            "tone_casual": "请将以下文本改为自然、亲切的口语化表达，像朋友间聊天一样。",
+            "details": "请为以下文本增加细节：补充具体案例、数据、背景信息、感官描写，使内容更丰富立体。",
+            "concise": "请精简以下文本：删除重复表达、冗余修饰、无关内容，突出核心信息。",
+            "rhythm": "请调整以下文本的节奏：长短句交替使用（短句≤15字占比20%，长句≥30字占比15%），段落长度变化，避免连续3句同长度。",
+            "expand": "请扩写以下文本：围绕主题丰富信息，增加细节描写、对话、心理活动、环境描写，使内容更充实。",
+            "imitate": "请先分析以下文本的原文风格（用词习惯、句式特点、节奏感、语气），然后保持该风格重写文本，使其风格更鲜明一致。",
+            "wording": "请优化以下文本的用词：替换平淡词汇为更精准生动的表达，避免重复用词，删除陈词滥调和空洞大词。",
+            "abbreviate": "请缩写以下文本：删除无关内容、合并重复表达、精简冗余描写，保留核心情节和信息。",
+            "maintain_theme": "请重写以下文本，确保中心思想贯穿全文：删除偏离主题的内容，强化主题相关的表达，使主线更清晰。",
+            "fix": "请根据提供的问题描述和修复建议，修改指定位置的文本。",
         }
 
+        issue = data.get('issue', None)
+        
         instruction = style_instructions.get(style, style_instructions["deai"])
+
+        system_prompt = deai_system_prompt if style == "deai" else f"""你是一位拥有15年写作经验的顶级文字编辑。
+
+{instruction}
+
+## 改写原则
+1. 保持原文的核心信息和情节不变
+2. 不要过度修改，保留原文的特色和风格
+3. 直接输出改写后的文本，不要任何解释、不要前言、不要后记
+4. 确保改写后的文本自然流畅，读起来像人类写作"""
 
         if style == "deai" and humanize_prompt:
             prompt = humanize_prompt
+        elif style == "fix" and issue:
+            issue_desc = issue.get('description', '')
+            issue_loc = issue.get('location', '')
+            issue_fix = issue.get('fix', '')
+            prompt = f"""请根据以下问题描述和修复建议，修改原文中指定位置的内容。
+
+## 问题描述
+{issue_desc}
+
+## 问题位置
+{issue_loc}
+
+## 修复建议
+{issue_fix}
+
+## 原文
+{text}
+
+## 要求
+1. 只修改问题位置附近的内容
+2. 保持其他部分不变
+3. 直接输出修改后的完整文本，不要任何额外说明"""
         else:
             prompt = f"{instruction}\n\n原文：\n{text}"
 
         try:
             rewritten = llm.generate(
                 prompt,
-                system_prompt=deai_system_prompt,
+                system_prompt=system_prompt,
                 params=GenerationParams(temperature=0.85, max_tokens=4096),
             )
 

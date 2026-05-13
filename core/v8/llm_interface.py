@@ -31,6 +31,9 @@ DEFAULT_CONFIG_PATH = os.path.join(os.path.dirname(__file__), 'llm_config.json')
 class ModelProvider(Enum):
     DEEPSEEK = "deepseek"
     OPENAI = "openai"
+    ZHIPU = "zhipu"
+    MOONSHOT = "moonshot"
+    QWEN = "qwen"
     CUSTOM = "custom"
 
 
@@ -62,6 +65,47 @@ class GenerationParams:
     system_prompt: Optional[str] = None
 
 
+class CircuitBreaker:
+    """熔断器 — 防止连续失败导致无限重试"""
+
+    def __init__(self, failure_threshold: int = 5, recovery_timeout: float = 30.0):
+        self.failure_threshold = failure_threshold
+        self.recovery_timeout = recovery_timeout
+        self._failure_count = 0
+        self._last_failure_time = 0.0
+        self._state = "closed"  # closed / open / half-open
+        self._lock = threading.Lock()
+
+    def record_failure(self):
+        with self._lock:
+            self._failure_count += 1
+            self._last_failure_time = time.monotonic()
+            if self._failure_count >= self.failure_threshold:
+                self._state = "open"
+                logger.warning(f"Circuit breaker OPEN after {self._failure_count} failures")
+
+    def record_success(self):
+        with self._lock:
+            self._failure_count = 0
+            self._state = "closed"
+
+    def is_allowed(self) -> bool:
+        with self._lock:
+            if self._state == "closed":
+                return True
+            if self._state == "open":
+                if time.monotonic() - self._last_failure_time > self.recovery_timeout:
+                    self._state = "half-open"
+                    logger.info("Circuit breaker half-open, allowing test request")
+                    return True
+                return False
+            return True  # half-open: allow one test request
+
+    @property
+    def state(self):
+        return self._state
+
+
 class TokenBucket:
     """令牌桶速率限制器"""
 
@@ -89,7 +133,7 @@ class TokenBucket:
         while time.monotonic() < deadline:
             if self.acquire(tokens):
                 return True
-            time.sleep(0.1)
+            time.sleep(0.5)
         return False
 
 
@@ -121,6 +165,10 @@ class LLMInterface:
             'on_generate_end': [],
             'on_error': [],
         }
+        self._circuit_breaker = CircuitBreaker(failure_threshold=5, recovery_timeout=30.0)
+        self._total_api_calls = 0
+        self._max_api_calls_per_operation = 20
+        self._operation_api_calls = 0
 
     def _load_config(self, config_path: str = None) -> ModelConfig:
         path = config_path or DEFAULT_CONFIG_PATH
@@ -233,13 +281,32 @@ class LLMInterface:
             payload["stop"] = p.stop
         return payload
 
+    def reset_operation_count(self):
+        self._operation_api_calls = 0
+
+    def _check_operation_limit(self):
+        if self._operation_api_calls >= self._max_api_calls_per_operation:
+            raise RuntimeError(
+                f"Operation API call limit reached ({self._max_api_calls_per_operation}). "
+                "Too many retries detected. Please try again later."
+            )
+
     def _retry_with_backoff(self, func, *args, **kwargs):
+        if not self._circuit_breaker.is_allowed():
+            raise RuntimeError("Circuit breaker is OPEN. Too many consecutive failures. Please wait and try again.")
+
         last_error = None
         for attempt in range(self.config.max_retries + 1):
             try:
-                return func(*args, **kwargs)
+                self._check_operation_limit()
+                result = func(*args, **kwargs)
+                self._operation_api_calls += 1
+                self._total_api_calls += 1
+                self._circuit_breaker.record_success()
+                return result
             except Exception as e:
                 last_error = e
+                self._circuit_breaker.record_failure()
                 if attempt < self.config.max_retries:
                     delay = min(
                         self.config.retry_delay_base * (2 ** attempt) + random.uniform(0, 1),
