@@ -3453,7 +3453,7 @@ def main():
 
 返回格式示例：
 ```json
-{{
+{
   "chapters": [
     {{
       "chapter": 1,
