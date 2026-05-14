@@ -1,0 +1,59 @@
+{
+  "metadata": {
+    "template": "1min",
+    "style": "literary",
+    "duration": 60,
+    "book_count": 2
+  },
+  "segments": [
+    {
+      "time": "0-10",
+      "type": "opening",
+      "description": "开场引入",
+      "narration": "你是否也在寻找一本能触动心灵的书？今天为你推荐几本值得一读的好书。",
+      "visual": "展示温馨的阅读场景，搭配柔和的光影效果",
+      "subtitle": "今天推荐的好书"
+    },
+    {
+      "time": "10-25",
+      "type": "book1",
+      "description": "第一本书深度推荐",
+      "narration": "《活着》 by 余华。讲述了一个普通人苦难而坚韧的一生，让我们读懂生命的意义",
+      "visual": "展示《活着》的封面，搭配书中精彩片段",
+      "subtitle": "《活着》- 人是为活着本身而活着的"
+    },
+    {
+      "time": "25-40",
+      "type": "book2",
+      "description": "第二本书深度推荐",
+      "narration": "《被讨厌的勇气》 by 岸见一郎。阿德勒心理学的通俗解读，教你如何获得真正的自由",
+      "visual": "展示《被讨厌的勇气》的封面，搭配书中精彩片段",
+      "subtitle": "《被讨厌的勇气》- 决定我们自身的不是过去的经历"
+    },
+    {
+      "time": "40-55",
+      "type": "summary",
+      "description": "总结升华",
+      "narration": "以上就是今天推荐的《活着》、《被讨厌的勇气》，希望对你有所帮助。",
+      "visual": "展示所有推荐书籍的封面合集",
+      "subtitle": "感谢观看"
+    },
+    {
+      "time": "55-60",
+      "type": "cta",
+      "description": "关注引导",
+      "narration": "如果你喜欢这期视频，别忘了点赞关注，我们下期再见。",
+      "visual": "显示点赞、关注的图标",
+      "subtitle": "点赞+关注"
+    }
+  ],
+  "materials": {
+    "images": [],
+    "bgm": [
+      "舒缓钢琴曲",
+      "轻音乐",
+      "古典吉他"
+    ],
+    "subtitles": []
+  }
+}

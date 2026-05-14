@@ -1,0 +1,50 @@
+{
+  "调度官": {
+    "name": "调度官",
+    "prompt_file": "agents/调度官.md",
+    "model": "kimi-k2.6",
+    "priority": 1,
+    "max_retries": 3,
+    "timeout": 120
+  },
+  "剧情构造师": {
+    "name": "剧情构造师",
+    "prompt_file": "agents/剧情构造师.md",
+    "model": "deepseek-v3.2",
+    "priority": 2,
+    "max_retries": 3,
+    "timeout": 120
+  },
+  "场景构造师": {
+    "name": "场景构造师",
+    "prompt_file": "agents/场景构造师.md",
+    "model": "deepseek-v3.2",
+    "priority": 2,
+    "max_retries": 3,
+    "timeout": 120
+  },
+  "对话设计师": {
+    "name": "对话设计师",
+    "prompt_file": "agents/对话设计师.md",
+    "model": "deepseek-v3.2",
+    "priority": 2,
+    "max_retries": 3,
+    "timeout": 120
+  },
+  "去AI监督官": {
+    "name": "去AI监督官",
+    "prompt_file": "agents/去AI监督官.md",
+    "model": "kimi-k2.6",
+    "priority": 3,
+    "max_retries": 3,
+    "timeout": 120
+  },
+  "质量审计师": {
+    "name": "质量审计师",
+    "prompt_file": "agents/质量审计师.md",
+    "model": "kimi-k2.6",
+    "priority": 3,
+    "max_retries": 3,
+    "timeout": 120
+  }
+}

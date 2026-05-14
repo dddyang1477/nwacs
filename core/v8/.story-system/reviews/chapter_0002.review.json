@@ -1,0 +1,156 @@
+{
+  "meta": {
+    "version": "1.0.0",
+    "created_at": "2026-05-11T17:15:01Z",
+    "chapter": 2
+  },
+  "issues": [
+    {
+      "severity": "medium",
+      "category": "ai_flavor",
+      "location": "全文",
+      "description": "高频AI词汇密集出现（共7处）",
+      "evidence": "检测到: 然而, 缓缓, 淡淡, 轻轻, 默默 等词汇",
+      "fix_hint": "替换为更自然的表达，删除不必要的连接词，用动作和对话替代抽象描述",
+      "blocking": false
+    },
+    {
+      "severity": "high",
+      "category": "character",
+      "location": "全文",
+      "description": "POV视角混乱（4处视角跳跃/上帝视角）",
+      "evidence": "第114段: 上帝视角叙述「所有人都」; 第126段: 上帝视角叙述「没有人知道」; 第136段: 上帝视角叙述「所有人都」",
+      "fix_hint": "固定一个POV角色，只描述该角色能感知到的信息。如需切换POV，用场景分隔符明确标记",
+      "blocking": false
+    },
+    {
+      "severity": "low",
+      "category": "character",
+      "location": "全文",
+      "description": "单章出场角色过多（69个有对话的角色）",
+      "evidence": "对话角色: 浮屠突然, 但管理员, 人类语言, 猎鹰, 管理员在, 个调查员, 他没有追, 他不能",
+      "fix_hint": "控制单章有台词角色不超过5-6个，避免读者混淆",
+      "blocking": false
+    },
+    {
+      "severity": "low",
+      "category": "setting",
+      "location": "全文",
+      "description": "场景切换过于频繁（29次）",
+      "evidence": "检测到29次地点转换",
+      "fix_hint": "减少场景切换，每个场景至少写500字再切换",
+      "blocking": false
+    },
+    {
+      "severity": "medium",
+      "category": "plot",
+      "location": "全文",
+      "description": "缺少爽点，读者可能缺乏满足感",
+      "evidence": "未检测到爽点标记",
+      "fix_hint": "每章至少安排一个爽点：突破/打脸/收获/反转",
+      "blocking": false
+    },
+    {
+      "severity": "high",
+      "category": "plot",
+      "location": "开篇",
+      "description": "开篇300字缺少钩子，读者可能流失",
+      "evidence": "开篇: # 第二章 联邦调查组\n\n陆沉趴在废墟里，一动不动。\n\n那个异族斥候还在原地，探测仪的红色指示灯在黑暗中一跳一跳，像某种不祥的倒计时。陆沉的左腿在发烫，他能感觉到脓血正在浸透绷带，但疼痛反而让他更清醒...",
+      "fix_hint": "开篇300字内必须有悬念/冲突/动作/疑问，抓住读者注意力",
+      "blocking": false
+    },
+    {
+      "severity": "medium",
+      "category": "continuity",
+      "location": "全文",
+      "description": "回忆/闪回过多（11处），打断叙事节奏",
+      "evidence": "检测到11处回忆标记",
+      "fix_hint": "将必要背景信息融入当前场景，减少独立闪回段落",
+      "blocking": false
+    },
+    {
+      "severity": "low",
+      "category": "continuity",
+      "location": "全文",
+      "description": "前后半章关键词重叠度低，叙事可能不连贯",
+      "evidence": "关键词重叠率: 3.5%",
+      "fix_hint": "确保前后半章有主题或人物上的连贯性",
+      "blocking": false
+    },
+    {
+      "severity": "low",
+      "category": "style",
+      "location": "全文",
+      "description": "段落长度过于统一，缺乏视觉节奏",
+      "evidence": "段落长度变化率: 29.4%",
+      "fix_hint": "刻意变化段落长度，制造视觉节奏感",
+      "blocking": false
+    },
+    {
+      "severity": "high",
+      "category": "setting",
+      "location": "第2段（异族斥候守了三炷香）",
+      "description": "时间单位“三炷香”与世界观设定冲突。前文未建立“炷香”作为计时单位，且该世界观为科幻废土背景（有探测仪、合金、医疗舱等），使用古代计时单位不协调。",
+      "evidence": "原文：“三炷香了。这个异族斥候守在这里三炷香” vs 世界观：探测仪、合金匕首、震爆弹、医疗舱等科技物品存在。",
+      "fix_hint": "替换为符合科幻背景的计时单位，如“三刻钟”“三十分钟”或“三炷香时间”改为“三个标准时”。",
+      "blocking": false
+    },
+    {
+      "severity": "high",
+      "category": "character",
+      "location": "第5段（陆沉计算冲过去需要五步）",
+      "description": "陆沉左腿重伤（脓血浸透绷带），但计算冲刺时间时仅考虑距离，未考虑伤势对速度的影响。后续战斗中也未体现左腿伤势对移动的持续限制（如翻滚、弹起、侧步等动作均未受明显影响）。",
+      "evidence": "原文：“以他左腿的伤势，冲过去至少要五步的时间” vs 后续：“借着翻滚的惯性从地上弹起”“往左边侧了一步”等动作未提及左腿剧痛或失衡。",
+      "fix_hint": "在战斗动作中明确体现左腿伤势的制约，或调整计算逻辑使其包含伤势因素。",
+      "blocking": false
+    },
+    {
+      "severity": "medium",
+      "category": "logic",
+      "location": "第8段（异族斥候触须感知杀意）",
+      "description": "异族斥候的触须能捕捉“极其微弱的生命电信号”，但陆沉仅因“杀意”就被感知，缺乏逻辑衔接。杀意是情绪，非电信号，且前文未设定异族能读取情绪或思维。",
+      "evidence": "原文：“异族的触须是感知器官，能捕捉到极其微弱的生命电信号。他刚才那一瞬间的杀意，可能被捕捉到了。”",
+      "fix_hint": "将“杀意”改为“肌肉紧张或心跳加速”等可被电信号捕捉的生理变化，或补充设定说明异族能通过电信号变化推断情绪。",
+      "blocking": false
+    },
+    {
+      "severity": "medium",
+      "category": "continuity",
+      "location": "第10段（陆沉翻滚躲飞刀）",
+      "description": "陆沉在翻滚前已拔出匕首，但后续描述中匕首去向不明。他翻滚后“拔出匕首”，但匕首本应已在手中；之后异族斥候拔下插在下颌上的匕首，说明陆沉在翻滚后仍持有匕首并成功刺中。但翻滚前“拔出匕首”的动作与后续“拔出匕首”重复，可能造成混淆。",
+      "evidence": "原文：“他在翻滚的同时已经拔出了匕首” vs “他矮身下蹲……陆沉手中的匕首朝上捅去” vs “异族斥候拔下插在下颌上的匕首”。",
+      "fix_hint": "统一描述：翻滚前已拔出匕首，后续直接使用，避免重复“拔出”。",
+      "blocking": false
+    },
+    {
+      "severity": "medium",
+      "category": "character",
+      "location": "第16段（铁浮屠说“小子，你叫什么名字？”）",
+      "description": "铁浮屠在矿难时已带陆沉从通风管道爬出，且三天前共同经历矿难，此时才问名字，不符合常理。矿难中或之后应有基本交流。",
+      "evidence": "原文：“三天前矿难发生时，是他带着陆沉从通风管道爬出来的” vs 铁浮屠：“小子，你叫什么名字？”",
+      "fix_hint": "将问名字的场景提前至矿难后，或说明当时情况紧急未及互通姓名。",
+      "blocking": false
+    },
+    {
+      "severity": "low",
+      "category": "continuity",
+      "location": "第18段（陆沉醒来后铁浮屠在擦拭合金弯刀）",
+      "description": "铁浮屠在陆沉昏迷期间已处理完伤口、准备干净衣服、烧好盐水，但弯刀作为战利品，在陆沉昏迷前并未提及被铁浮屠拾取。陆沉昏迷前铁浮屠背起他，弯刀可能被遗落。",
+      "evidence": "原文：“铁浮屠把他背起来” vs 醒来后：“铁浮屠坐在不远处，正在擦拭那把合金弯刀——从异族斥候身上扒下来的战利品”。",
+      "fix_hint": "在铁浮屠背起陆沉前，增加他拾取弯刀的动作。",
+      "blocking": false
+    },
+    {
+      "severity": "low",
+      "category": "setting",
+      "location": "第20段（铁浮屠说“我在废墟里待了三年”）",
+      "description": "铁浮屠自称在废墟待了三年，但前文称他是“第七矿道的矿工头子”，矿工通常属于联邦管辖的矿区，而非废墟。若他已在废墟三年，则“矿工头子”身份与废墟生存背景矛盾。",
+      "evidence": "原文：“铁浮屠，第七矿道的矿工头子” vs “我在废墟里待了三年”。",
+      "fix_hint": "明确铁浮屠是矿难后被迫留在废墟，或调整“矿工头子”为“前矿工头子”。",
+      "blocking": false
+    }
+  ],
+  "summary": "16个问题：0个阻断，0个严重，4个高优",
+  "blocking_count": 0,
+  "overall_status": "needs_review"
+}

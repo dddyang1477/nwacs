@@ -1,0 +1,135 @@
+{
+  "version": "1.0",
+  "updated_at": "2026-05-05T14:49:35.306987",
+  "total_entries": 7,
+  "entries": [
+    {
+      "entry_id": "tpl_protagonist",
+      "name": "主角模板",
+      "category": "角色",
+      "content": "姓名：[待设定]\n性别：[待设定]\n年龄：[待设定]\n外貌特征：[待设定]\n性格特点：[待设定]\n核心能力：[待设定]\n背景故事：[待设定]\n核心动机：[待设定]",
+      "trigger_keywords": [
+        "主角",
+        "主人公"
+      ],
+      "priority": 5,
+      "cascade_to": [],
+      "chapter_introduced": 0,
+      "chapter_expires": 0,
+      "is_active": true,
+      "usage_count": 0,
+      "last_triggered": "",
+      "notes": ""
+    },
+    {
+      "entry_id": "tpl_world",
+      "name": "世界观模板",
+      "category": "规则",
+      "content": "世界名称：[待设定]\n时代背景：[待设定]\n力量体系：[待设定]\n社会结构：[待设定]\n主要势力：[待设定]\n核心冲突：[待设定]",
+      "trigger_keywords": [
+        "世界",
+        "设定",
+        "背景"
+      ],
+      "priority": 4,
+      "cascade_to": [],
+      "chapter_introduced": 0,
+      "chapter_expires": 0,
+      "is_active": true,
+      "usage_count": 0,
+      "last_triggered": "",
+      "notes": ""
+    },
+    {
+      "entry_id": "tpl_location",
+      "name": "地点模板",
+      "category": "地点",
+      "content": "地点名称：[待设定]\n地理位置：[待设定]\n环境特征：[待设定]\n所属势力：[待设定]\n重要事件：[待设定]",
+      "trigger_keywords": [
+        "地点",
+        "场景",
+        "位置"
+      ],
+      "priority": 3,
+      "cascade_to": [],
+      "chapter_introduced": 0,
+      "chapter_expires": 0,
+      "is_active": true,
+      "usage_count": 0,
+      "last_triggered": "",
+      "notes": ""
+    },
+    {
+      "entry_id": "char_001",
+      "name": "萧炎",
+      "category": "角色",
+      "content": "主角，天才少年，拥有异火",
+      "trigger_keywords": [
+        "萧炎",
+        "炎帝",
+        "异火"
+      ],
+      "priority": 4,
+      "cascade_to": [],
+      "chapter_introduced": 0,
+      "chapter_expires": 0,
+      "is_active": true,
+      "usage_count": 3,
+      "last_triggered": "2026-05-05T14:49:34.325002",
+      "notes": ""
+    },
+    {
+      "entry_id": "loc_001",
+      "name": "乌坦城",
+      "category": "地点",
+      "content": "萧家所在的边陲小城",
+      "trigger_keywords": [
+        "乌坦城",
+        "萧家"
+      ],
+      "priority": 3,
+      "cascade_to": [],
+      "chapter_introduced": 0,
+      "chapter_expires": 0,
+      "is_active": true,
+      "usage_count": 3,
+      "last_triggered": "2026-05-05T14:49:34.325002",
+      "notes": ""
+    },
+    {
+      "entry_id": "item_001",
+      "name": "玄重尺",
+      "category": "物品",
+      "content": "药老赠予萧炎的重尺，用于修炼",
+      "trigger_keywords": [
+        "玄重尺",
+        "重尺"
+      ],
+      "priority": 2,
+      "cascade_to": [],
+      "chapter_introduced": 0,
+      "chapter_expires": 0,
+      "is_active": true,
+      "usage_count": 3,
+      "last_triggered": "2026-05-05T14:49:34.327301",
+      "notes": ""
+    },
+    {
+      "entry_id": "int_001",
+      "name": "集成角色",
+      "category": "角色",
+      "content": "测试",
+      "trigger_keywords": [
+        "集成"
+      ],
+      "priority": 3,
+      "cascade_to": [],
+      "chapter_introduced": 0,
+      "chapter_expires": 0,
+      "is_active": true,
+      "usage_count": 0,
+      "last_triggered": "",
+      "notes": ""
+    }
+  ]
+}

@@ -1,0 +1,138 @@
+{
+  "meta": {
+    "version": "1.0.0",
+    "created_at": "2026-05-13T22:56:46Z",
+    "chapter": 1
+  },
+  "issues": [
+    {
+      "severity": "medium",
+      "category": "ai_flavor",
+      "location": "全文",
+      "description": "高频AI词汇密集出现（共7处）",
+      "evidence": "检测到: 与此同时, 缓缓, 淡淡, 轻轻 等词汇",
+      "fix_hint": "替换为更自然的表达，删除不必要的连接词，用动作和对话替代抽象描述",
+      "blocking": false
+    },
+    {
+      "severity": "high",
+      "category": "ai_flavor",
+      "location": "全文",
+      "description": "连续6句长度几乎相同（节拍器节奏）",
+      "evidence": "句子长度变化极小，最大连续同构句数: 6",
+      "fix_hint": "刻意变化句子长度：短句3-10字制造紧张，长句25-50字渲染氛围",
+      "blocking": false
+    },
+    {
+      "severity": "medium",
+      "category": "character",
+      "location": "全文",
+      "description": "POV视角存在1处不一致",
+      "evidence": "第105段: 上帝视角叙述「没有人知道」",
+      "fix_hint": "检查是否无意中切换了视角，确保信息只来自当前POV角色的感知范围",
+      "blocking": false
+    },
+    {
+      "severity": "medium",
+      "category": "continuity",
+      "location": "全文",
+      "description": "钩子债务偏高（净增4个开放循环）",
+      "evidence": "创建6个新悬念，回收2个",
+      "fix_hint": "考虑在本章回收1-2个旧悬念，避免读者遗忘",
+      "blocking": false
+    },
+    {
+      "severity": "medium",
+      "category": "pacing",
+      "location": "全文",
+      "description": "节奏单一（全章节奏类型为mixed，无变化）",
+      "evidence": "4段节奏分析: mixed → mixed → mixed → mixed",
+      "fix_hint": "设计节奏变化：快节奏战斗→对话过渡→慢节奏描写→快节奏高潮，制造节奏对比",
+      "blocking": false
+    },
+    {
+      "severity": "low",
+      "category": "character",
+      "location": "全文",
+      "description": "单章出场角色过多（31个有对话的角色）",
+      "evidence": "对话角色: 楼下的街, 更现实的, 的声音在, 怎么突然, 周勇, 他知, 他也不知, 然后",
+      "fix_hint": "控制单章有台词角色不超过5-6个，避免读者混淆",
+      "blocking": false
+    },
+    {
+      "severity": "low",
+      "category": "setting",
+      "location": "全文",
+      "description": "场景切换过于频繁（7次）",
+      "evidence": "检测到7次地点转换",
+      "fix_hint": "减少场景切换，每个场景至少写500字再切换",
+      "blocking": false
+    },
+    {
+      "severity": "low",
+      "category": "logic",
+      "location": "全文",
+      "description": "因果链不清晰，事件之间缺乏逻辑连接",
+      "evidence": "因果连接词仅1个",
+      "fix_hint": "确保每个事件都有前因后果，用行动-反应链条串联情节",
+      "blocking": false
+    },
+    {
+      "severity": "medium",
+      "category": "plot",
+      "location": "全文",
+      "description": "缺少爽点，读者可能缺乏满足感",
+      "evidence": "未检测到爽点标记",
+      "fix_hint": "每章至少安排一个爽点：突破/打脸/收获/反转",
+      "blocking": false
+    },
+    {
+      "severity": "high",
+      "category": "plot",
+      "location": "章末",
+      "description": "章末缺少悬念钩子，追读力不足",
+      "evidence": "章末: ，她的脸色突然变了。\n\n整张脸瞬间变成惨白，嘴唇发紫，眼珠向上翻。\n\n身体向后倒去。\n\n陈默冲过去，一把扶住她。\n\n他看到了。\n\n老太太体内的那团黑气，正在以肉眼可见的速度扩散。\n\n肝部的阴影在扩大，...",
+      "fix_hint": "章末必须留一个未闭合问题或悬念，让读者想点下一章",
+      "blocking": false
+    },
+    {
+      "severity": "medium",
+      "category": "continuity",
+      "location": "全文",
+      "description": "回忆/闪回过多（11处），打断叙事节奏",
+      "evidence": "检测到11处回忆标记",
+      "fix_hint": "将必要背景信息融入当前场景，减少独立闪回段落",
+      "blocking": false
+    },
+    {
+      "severity": "low",
+      "category": "continuity",
+      "location": "全文",
+      "description": "前后半章关键词重叠度低，叙事可能不连贯",
+      "evidence": "关键词重叠率: 3.2%",
+      "fix_hint": "确保前后半章有主题或人物上的连贯性",
+      "blocking": false
+    },
+    {
+      "severity": "low",
+      "category": "style",
+      "location": "全文",
+      "description": "段落长度过于统一，缺乏视觉节奏",
+      "evidence": "段落长度变化率: 27.7%",
+      "fix_hint": "刻意变化段落长度，制造视觉节奏感",
+      "blocking": false
+    },
+    {
+      "severity": "medium",
+      "category": "logic",
+      "location": "第1段附近（“二十六年的犯罪心理学训练”）",
+      "description": "主角年龄与训练年限矛盾：26岁的犯罪心理学硕士不可能有26年的专业训练。",
+      "evidence": "原文：“二十六年的犯罪心理学训练让他学会了在任何情况下保持理性。” 主角年龄推测约26岁（硕士毕业），训练年限不应超过其年龄。",
+      "fix_hint": "将“二十六年”改为“六年”或“多年的训练”，或明确主角年龄更大（如30岁以上）以匹配26年训练。",
+      "blocking": false
+    }
+  ],
+  "summary": "14个问题：0个阻断，0个严重，2个高优",
+  "blocking_count": 0,
+  "overall_status": "accepted"
+}

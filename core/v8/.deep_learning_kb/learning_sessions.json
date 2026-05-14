@@ -1,0 +1,56 @@
+[
+  {
+    "session_id": "20260507_012326",
+    "started_at": "2026-05-07T01:23:26.269710",
+    "completed_at": "2026-05-07T01:23:29.684228",
+    "sources_attempted": 3,
+    "sources_succeeded": 0,
+    "techniques_learned": 0,
+    "errors": []
+  },
+  {
+    "session_id": "20260507_013155",
+    "started_at": "2026-05-07T01:31:55.850587",
+    "completed_at": "2026-05-07T01:32:28.578632",
+    "sources_attempted": 2,
+    "sources_succeeded": 2,
+    "techniques_learned": 9,
+    "errors": []
+  },
+  {
+    "session_id": "20260507_013245",
+    "started_at": "2026-05-07T01:32:45.797342",
+    "completed_at": "2026-05-07T01:33:00.215680",
+    "sources_attempted": 1,
+    "sources_succeeded": 1,
+    "techniques_learned": 4,
+    "errors": []
+  },
+  {
+    "session_id": "20260507_013344",
+    "started_at": "2026-05-07T01:33:44.667263",
+    "completed_at": "2026-05-07T01:34:00.072616",
+    "sources_attempted": 1,
+    "sources_succeeded": 1,
+    "techniques_learned": 4,
+    "errors": []
+  },
+  {
+    "session_id": "20260507_013520",
+    "started_at": "2026-05-07T01:35:20.454164",
+    "completed_at": "2026-05-07T01:35:37.323739",
+    "sources_attempted": 1,
+    "sources_succeeded": 1,
+    "techniques_learned": 5,
+    "errors": []
+  },
+  {
+    "session_id": "20260507_013616",
+    "started_at": "2026-05-07T01:36:16.056714",
+    "completed_at": "2026-05-07T01:36:31.973456",
+    "sources_attempted": 1,
+    "sources_succeeded": 1,
+    "techniques_learned": 5,
+    "errors": []
+  }
+]

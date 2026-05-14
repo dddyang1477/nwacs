@@ -1,0 +1,57 @@
+{
+    "林尘": {
+        "name": "林尘",
+        "personality": "沉稳内敛，谨慎多智，城府极深",
+        "appearance": "眉清目秀，气质内敛，看似普通",
+        "background": "没落家族的遗孤",
+        "special_abilities": ["无名呼吸法", "太上诀", "符阵", "毒丹"],
+        "goals": ["查明家族灭门真相", "为亲人报仇"],
+        "character_arc": ["废物→筑基→金丹→元婴→化神→大乘→渡劫→道祖"],
+        "first_appearance": 1,
+        "last_appearance": 200
+    },
+    "苏青璇": {
+        "name": "苏青璇",
+        "personality": "外冷内热，温柔细腻，外柔内刚",
+        "appearance": "一袭青裙，温婉如玉，眼眸如星",
+        "background": "百花谷圣女",
+        "special_abilities": ["医药毒理", "花草通灵"],
+        "goals": [],
+        "character_arc": [],
+        "first_appearance": 9,
+        "last_appearance": 200
+    },
+    "姜若兰": {
+        "name": "姜若兰",
+        "personality": "聪慧过人，高贵冷艳，算无遗策",
+        "appearance": "紫衣华贵，眉心一点朱砂，气质出尘",
+        "background": "天机阁阁主之女",
+        "special_abilities": ["推演天机", "布局谋划"],
+        "goals": [],
+        "character_arc": [],
+        "first_appearance": 16,
+        "last_appearance": 200
+    },
+    "白琉璃": {
+        "name": "白琉璃",
+        "personality": "妩媚妖娆，心狠手辣，但有原则",
+        "appearance": "白裙胜雪，骨感妩媚，笑里藏刀",
+        "background": "魔道白骨门少主",
+        "special_abilities": ["骨术", "傀儡控制"],
+        "goals": [],
+        "character_arc": [],
+        "first_appearance": 18,
+        "last_appearance": 200
+    },
+    "叶红妆": {
+        "name": "叶红妆",
+        "personality": "热情似火，侠骨柔情，快意恩仇",
+        "appearance": "红衣如火，英姿飒爽，巾帼不让须眉",
+        "background": "散修，神秘身世",
+        "special_abilities": ["双剑合璧", "剑法凌厉"],
+        "goals": [],
+        "character_arc": [],
+        "first_appearance": 66,
+        "last_appearance": 200
+    }
+}

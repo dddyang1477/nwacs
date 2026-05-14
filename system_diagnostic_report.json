@@ -1,0 +1,72 @@
+{
+  "diagnostic_time": "2026-05-14 12:24:15",
+  "elapsed_seconds": 1.24,
+  "statistics": {
+    "total_files": 711,
+    "python_files": 199,
+    "html_files": 3,
+    "js_files": 9,
+    "json_files": 77,
+    "total_lines": 10346,
+    "syntax_errors": 0,
+    "warnings": 16
+  },
+  "issues_found": 0,
+  "warnings_found": 17,
+  "issues": [],
+  "warnings": [
+    {
+      "file": "C:\\Users\\111\\WorkBuddy\\2026-05-13-task-3\\NWACS\\core\\v8\\nwacs_server_v3.py",
+      "message": "函数 build_knowledge_injection 过长: 76 行"
+    },
+    {
+      "file": "C:\\Users\\111\\WorkBuddy\\2026-05-13-task-3\\NWACS\\core\\v8\\nwacs_server_v3.py",
+      "message": "函数 fetch_creative_inspiration 过长: 70 行"
+    },
+    {
+      "file": "C:\\Users\\111\\WorkBuddy\\2026-05-13-task-3\\NWACS\\core\\v8\\nwacs_server_v3.py",
+      "message": "函数 main 过长: 98 行"
+    },
+    {
+      "file": "C:\\Users\\111\\WorkBuddy\\2026-05-13-task-3\\NWACS\\core\\v8\\nwacs_server_v3.py",
+      "message": "函数 do_GET 过长: 239 行"
+    },
+    {
+      "file": "C:\\Users\\111\\WorkBuddy\\2026-05-13-task-3\\NWACS\\core\\v8\\nwacs_server_v3.py",
+      "message": "函数 do_POST 过长: 171 行"
+    },
+    {
+      "file": "C:\\Users\\111\\WorkBuddy\\2026-05-13-task-3\\NWACS\\core\\v8\\nwacs_server_v3.py",
+      "message": "函数 _handle_generate_plots 过长: 193 行"
+    },
+    {
+      "file": "C:\\Users\\111\\WorkBuddy\\2026-05-13-task-3\\NWACS\\core\\v8\\nwacs_server_v3.py",
+      "message": "函数 _handle_select_plot 过长: 250 行"
+    },
+    {
+      "file": "C:\\Users\\111\\WorkBuddy\\2026-05-13-task-3\\NWACS\\core\\v8\\nwacs_server_v3.py",
+      "message": "函数 _handle_generate_chapter 过长: 291 行"
+    },
+    {
+      "file": "C:\\Users\\111\\WorkBuddy\\2026-05-13-task-3\\NWACS\\core\\v8\\nwacs_server_v3.py",
+      "message": "函数 _handle_generate_chapters_batch 过长: 301 行"
+    },
+    {
+      "file": "C:\\Users\\111\\WorkBuddy\\2026-05-13-task-3\\NWACS\\core\\v8\\nwacs_server_v3.py",
+      "message": "函数 _handle_generate_names 过长: 55 行"
+    }
+  ],
+  "optimization_plan": {
+    "immediate_actions": [],
+    "short_term_improvements": [
+      "添加单元测试",
+      "完善错误处理",
+      "优化API响应格式"
+    ],
+    "long_term_restructuring": [
+      "模块化重构后端代码",
+      "前后端分离架构",
+      "引入类型提示"
+    ]
+  }
+}

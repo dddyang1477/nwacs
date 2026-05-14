@@ -1,0 +1,115 @@
+{
+  "optimization_time": "2026-05-14 12:28:26",
+  "actions_taken": [
+    "创建系统备份",
+    "分析函数长度",
+    "创建重构计划",
+    "重构do_GET方法",
+    "优化导入语句"
+  ],
+  "refactoring_plan": {
+    "priority_1": [
+      {
+        "name": "_handle_generate_chapters_batch",
+        "lines": 301,
+        "line_no": 1415
+      },
+      {
+        "name": "_handle_generate_chapter",
+        "lines": 291,
+        "line_no": 1122
+      },
+      {
+        "name": "_handle_select_plot",
+        "lines": 250,
+        "line_no": 870
+      },
+      {
+        "name": "do_GET",
+        "lines": 239,
+        "line_no": 261
+      }
+    ],
+    "priority_2": [
+      {
+        "name": "_handle_generate_plots",
+        "lines": 193,
+        "line_no": 675
+      },
+      {
+        "name": "_handle_rewrite",
+        "lines": 181,
+        "line_no": 2664
+      },
+      {
+        "name": "do_POST",
+        "lines": 171,
+        "line_no": 502
+      }
+    ],
+    "priority_3": [
+      {
+        "name": "main",
+        "lines": 98,
+        "line_no": 3394
+      },
+      {
+        "name": "_handle_generate_detailed_outline",
+        "lines": 82,
+        "line_no": 3410
+      },
+      {
+        "name": "_handle_truth_update",
+        "lines": 80,
+        "line_no": 2271
+      },
+      {
+        "name": "build_knowledge_injection",
+        "lines": 76,
+        "line_no": 87
+      },
+      {
+        "name": "fetch_creative_inspiration",
+        "lines": 70,
+        "line_no": 166
+      },
+      {
+        "name": "_handle_generate_names_batch",
+        "lines": 69,
+        "line_no": 1805
+      },
+      {
+        "name": "_handle_quality_checklist",
+        "lines": 63,
+        "line_no": 2110
+      },
+      {
+        "name": "_handle_generate_names",
+        "lines": 55,
+        "line_no": 1748
+      },
+      {
+        "name": "_handle_review",
+        "lines": 53,
+        "line_no": 2031
+      }
+    ]
+  },
+  "next_steps": [
+    "应用重构后的代码",
+    "为所有长函数创建处理器方法",
+    "添加单元测试",
+    "完善错误处理",
+    "优化API响应格式"
+  ],
+  "system_health": {
+    "status": "需要优化",
+    "priority": "高",
+    "recommendations": [
+      "立即重构过长函数",
+      "模块化系统设计",
+      "添加类型提示",
+      "完善文档"
+    ]
+  }
+}

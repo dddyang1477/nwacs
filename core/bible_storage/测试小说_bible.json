@@ -1,0 +1,170 @@
+{
+  "novel_title": "测试小说",
+  "updated_at": "2026-05-05T14:49:34.383438",
+  "sections": {
+    "角色档案": [
+      {
+        "entry_id": "e6b9a3d4",
+        "section": "角色档案",
+        "title": "林风",
+        "content": "林风，25岁，剑修，性格坚毅，拥有先天剑体",
+        "tags": [
+          "主角",
+          "剑修"
+        ],
+        "references": [
+          "3c1adbb4",
+          "3c1adbb4",
+          "3c1adbb4"
+        ],
+        "created_at": "2026-05-05T14:39:20.150979",
+        "updated_at": "2026-05-05T14:49:34.369746",
+        "version": 5,
+        "metadata": {}
+      },
+      {
+        "entry_id": "9f5d336a",
+        "section": "角色档案",
+        "title": "苏婉",
+        "content": "女主角，青云宗内门弟子",
+        "tags": [
+          "主角",
+          "女修"
+        ],
+        "references": [],
+        "created_at": "2026-05-05T14:39:20.161715",
+        "updated_at": "2026-05-05T14:39:20.161715",
+        "version": 1,
+        "metadata": {
+          "name": "苏婉",
+          "age": "22",
+          "faction": "青云宗"
+        }
+      },
+      {
+        "entry_id": "9f39f0f3",
+        "section": "角色档案",
+        "title": "林风",
+        "content": "主角，25岁，剑修，性格坚毅",
+        "tags": [
+          "主角",
+          "剑修"
+        ],
+        "references": [],
+        "created_at": "2026-05-05T14:46:39.334510",
+        "updated_at": "2026-05-05T14:46:39.334510",
+        "version": 1,
+        "metadata": {}
+      },
+      {
+        "entry_id": "5317be18",
+        "section": "角色档案",
+        "title": "林风",
+        "content": "主角，25岁，剑修，性格坚毅",
+        "tags": [
+          "主角",
+          "剑修"
+        ],
+        "references": [],
+        "created_at": "2026-05-05T14:49:34.355574",
+        "updated_at": "2026-05-05T14:49:34.355574",
+        "version": 1,
+        "metadata": {}
+      }
+    ],
+    "世界观": [
+      {
+        "entry_id": "3c1adbb4",
+        "section": "世界观",
+        "title": "青云宗",
+        "content": "修仙界三大宗门之一，以剑道闻名",
+        "tags": [
+          "宗门",
+          "剑道"
+        ],
+        "references": [],
+        "created_at": "2026-05-05T14:39:20.154265",
+        "updated_at": "2026-05-05T14:39:20.154265",
+        "version": 1,
+        "metadata": {}
+      },
+      {
+        "entry_id": "cf5c59fd",
+        "section": "世界观",
+        "title": "青云宗",
+        "content": "修仙界三大宗门之一，以剑道闻名",
+        "tags": [
+          "宗门",
+          "剑道"
+        ],
+        "references": [],
+        "created_at": "2026-05-05T14:46:39.337847",
+        "updated_at": "2026-05-05T14:46:39.337847",
+        "version": 1,
+        "metadata": {}
+      },
+      {
+        "entry_id": "82750103",
+        "section": "世界观",
+        "title": "青云宗",
+        "content": "修仙界三大宗门之一，以剑道闻名",
+        "tags": [
+          "宗门",
+          "剑道"
+        ],
+        "references": [],
+        "created_at": "2026-05-05T14:49:34.358877",
+        "updated_at": "2026-05-05T14:49:34.358877",
+        "version": 1,
+        "metadata": {}
+      }
+    ],
+    "剧情大纲": [
+      {
+        "entry_id": "982167cc",
+        "section": "剧情大纲",
+        "title": "第一卷大纲",
+        "content": "林风拜入青云宗，从外门弟子成长为内门弟子",
+        "tags": [
+          "大纲",
+          "第一卷"
+        ],
+        "references": [],
+        "created_at": "2026-05-05T14:39:20.157652",
+        "updated_at": "2026-05-05T14:39:20.157652",
+        "version": 1,
+        "metadata": {}
+      },
+      {
+        "entry_id": "dfaf1494",
+        "section": "剧情大纲",
+        "title": "第一卷大纲",
+        "content": "林风拜入青云宗，从外门弟子成长为内门弟子",
+        "tags": [
+          "大纲",
+          "第一卷"
+        ],
+        "references": [],
+        "created_at": "2026-05-05T14:46:39.341619",
+        "updated_at": "2026-05-05T14:46:39.341619",
+        "version": 1,
+        "metadata": {}
+      },
+      {
+        "entry_id": "3aa415bc",
+        "section": "剧情大纲",
+        "title": "第一卷大纲",
+        "content": "林风拜入青云宗，从外门弟子成长为内门弟子",
+        "tags": [
+          "大纲",
+          "第一卷"
+        ],
+        "references": [],
+        "created_at": "2026-05-05T14:49:34.362161",
+        "updated_at": "2026-05-05T14:49:34.362161",
+        "version": 1,
+        "metadata": {}
+      }
+    ]
+  }
+}

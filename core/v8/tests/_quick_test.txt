@@ -1,0 +1,10 @@
+Skills: ['plot_design', 'character_building', 'dialogue_writing', 'description', 'pacing_control', 'foreshadowing', 'emotional_design', 'world_building']
+  plot_design: level=大师, exp=65/337
+  character_building: level=学徒, exp=25/100
+  dialogue_writing: level=新手, exp=10/100
+  description: level=新手, exp=10/100
+  pacing_control: level=新手, exp=5/100
+  foreshadowing: level=新手, exp=5/100
+  emotional_design: level=新手, exp=5/100
+  world_building: level=学徒, exp=20/100
+DONE

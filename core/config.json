@@ -1,0 +1,35 @@
+{
+  "api_key": "sk-f3246fbd1eef446e9a11d78efefd9bba",
+  "base_url": "https://api.deepseek.com/v1",
+  "model": "deepseek-v4-pro",
+  "enabled": true,
+  "model_version": "v4-pro",
+  "idle_threshold": 600,
+  "sensitivity": {
+    "content_type": "political",
+    "check_level": "normal"
+  },
+  "learning_enabled": true,
+  "auto_sync": true,
+  "cache_expiry": 3600,
+  "writing": {
+    "min_chapter_words": 3000,
+    "max_chapter_words": 5500,
+    "short_novel_words": 10000,
+    "medium_novel_words": 30000,
+    "long_novel_words": 500000
+  },
+  "timeout": 60,
+  "max_retries": 3,
+  "api_version": "v1",
+  "learning": {
+    "enabled": true,
+    "auto_learn_interval": 3600,
+    "max_learning_hours": 2
+  },
+  "logging": {
+    "level": "INFO",
+    "file": "logs/NWACS.log",
+    "max_size": "10MB"
+  }
+}

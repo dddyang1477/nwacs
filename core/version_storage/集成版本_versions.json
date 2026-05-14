@@ -1,0 +1,59 @@
+{
+  "novel_title": "集成版本",
+  "current_branch": "main",
+  "branches": {
+    "main": "473c7ae8-323"
+  },
+  "updated_at": "2026-05-05T14:49:35.314305",
+  "total_snapshots": 4,
+  "snapshots": [
+    {
+      "snapshot_id": "884637b5-b5e",
+      "chapter": 1,
+      "content": "集成测试章节内容。",
+      "word_count": 9,
+      "snapshot_type": "手动保存",
+      "timestamp": "2026-05-05T14:08:42.958806",
+      "message": "",
+      "tags": [],
+      "parent_snapshot": "",
+      "branch_name": "main"
+    },
+    {
+      "snapshot_id": "649cfcc2-fc6",
+      "chapter": 1,
+      "content": "集成测试章节内容。",
+      "word_count": 9,
+      "snapshot_type": "手动保存",
+      "timestamp": "2026-05-05T14:39:20.923253",
+      "message": "",
+      "tags": [],
+      "parent_snapshot": "884637b5-b5e",
+      "branch_name": "main"
+    },
+    {
+      "snapshot_id": "52ffb77c-41e",
+      "chapter": 1,
+      "content": "集成测试章节内容。",
+      "word_count": 9,
+      "snapshot_type": "手动保存",
+      "timestamp": "2026-05-05T14:46:40.328860",
+      "message": "",
+      "tags": [],
+      "parent_snapshot": "649cfcc2-fc6",
+      "branch_name": "main"
+    },
+    {
+      "snapshot_id": "473c7ae8-323",
+      "chapter": 1,
+      "content": "集成测试章节内容。",
+      "word_count": 9,
+      "snapshot_type": "手动保存",
+      "timestamp": "2026-05-05T14:49:35.314295",
+      "message": "",
+      "tags": [],
+      "parent_snapshot": "52ffb77c-41e",
+      "branch_name": "main"
+    }
+  ]
+}
