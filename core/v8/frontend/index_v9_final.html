@@ -547,6 +547,13 @@ textarea{resize:vertical;min-height:60px}
             <button class="tool-btn" onclick="addEmotion()">💗 情感增强</button>
             <button class="tool-btn" onclick="enhanceDialog()">💬 对话优化</button>
           </div>
+          <div class="tool-section" id="backendAnalysisTools" style="display:none">
+            <div class="tool-section-title">🧠 后端智能分析</div>
+            <button class="tool-btn" onclick="analyzeQuality()">📊 质量评分</button>
+            <button class="tool-btn" onclick="analyzeFatigue()">😴 疲劳检测</button>
+            <button class="tool-btn" onclick="analyzeRetention()">🎣 留存分析</button>
+            <button class="tool-btn" onclick="analyzeStyle()">🎨 风格指纹</button>
+          </div>
         </div>
 
         <!-- 写作区 -->
@@ -639,6 +646,8 @@ function toggleBackendMode() {
   localStorage.setItem('nwacs_use_backend', useBackend);
   const el = document.getElementById('backendModeIndicator');
   if (el) el.textContent = useBackend ? '🟢 后端AI模式' : '⚪ 本地模板模式';
+  const analysisTools = document.getElementById('backendAnalysisTools');
+  if (analysisTools) analysisTools.style.display = useBackend ? 'block' : 'none';
   return useBackend;
 }
 
@@ -823,6 +832,10 @@ function init() {
   // 初始化后端模式指示器
   const backendEl = document.getElementById('backendModeIndicator');
   if (backendEl) backendEl.textContent = useBackend ? '🟢 后端AI模式' : '⚪ 本地模板模式';
+
+  // 显示/隐藏后端智能分析工具
+  const analysisTools = document.getElementById('backendAnalysisTools');
+  if (analysisTools) analysisTools.style.display = useBackend ? 'block' : 'none';
 
   // 初始化角色
   initCharacters();
@@ -1476,24 +1489,24 @@ const FOREIGN_NAMES = {
   jp_f: ['美咲','桜','愛','結衣','陽菜','葵','凛','澪','茜','芽依','莉子','美月','愛子','彩花','美羽']
 };
 
-// 智能命名核心函数（简化可靠版）
+// 智能命名核心函数（五行八卦·阴阳风水·真正启用版）
 function generateTraditionalName(charType, charRole, charPersonality, charGoal, genre) {
   const isFemale = charRole.includes('女');
   const isVillain = charRole.includes('反派');
   const isMentor = charRole.includes('师') || charRole.includes('导师');
   const isMain = charRole.includes('主角');
-  
+
   let surname = '';
   let givenName = '';
   let nameStyle = '中文';
-  
+
   // 根据题材选择命名风格
   if (genre === '奇幻' || genre === '科幻') {
     nameStyle = '西方';
   } else if (genre === '轻小说') {
     nameStyle = '日式';
   }
-  
+
   if (nameStyle === '西方') {
     const poolNames = ['en','fr','de','ru'];
     const pool = poolNames[Math.floor(Math.random() * poolNames.length)];
@@ -1502,44 +1515,98 @@ function generateTraditionalName(charType, charRole, charPersonality, charGoal, 
     const fullName = givenName + ' ' + surname;
     return {name: fullName, meaning: '【' + fullName + '】\n西方风格命名\n寓意：独特个性'};
   }
-  
+
   if (nameStyle === '日式') {
     surname = FOREIGN_SURNAMES.jp[Math.floor(Math.random() * FOREIGN_SURNAMES.jp.length)];
     givenName = isFemale ? FOREIGN_NAMES.jp_f[Math.floor(Math.random() * FOREIGN_NAMES.jp_f.length)] : FOREIGN_NAMES.jp_m[Math.floor(Math.random() * FOREIGN_NAMES.jp_m.length)];
     const fullName = surname + givenName;
     return {name: fullName, meaning: '【' + fullName + '】\n日式风格命名\n寓意：东瀛风情'};
   }
-  
-  // 中文命名
+
+  // ═══ 中文命名：真正启用五行八卦阴阳风水 ═══
+  // 1. 根据角色性格选定五行主属性
+  let mainElement = null;
+  const wxKeys = Object.keys(WUXING);
+  if (charPersonality) {
+    const p = charPersonality;
+    if (p.includes('仁')||p.includes('直')||p.includes('倔')) mainElement = WUXING.wood;
+    else if (p.includes('热')||p.includes('急')||p.includes('豪')) mainElement = WUXING.fire;
+    else if (p.includes('厚')||p.includes('稳')||p.includes('守')) mainElement = WUXING.earth;
+    else if (p.includes('刚')||p.includes('冷')||p.includes('决')) mainElement = WUXING.metal;
+    else if (p.includes('慧')||p.includes('柔')||p.includes('变')) mainElement = WUXING.water;
+  }
+  if (!mainElement) mainElement = WUXING[wxKeys[Math.floor(Math.random()*wxKeys.length)]];
+
+  // 2. 根据角色目标选定八卦意象
+  let mainBagua = null;
+  const bgKeys = Object.keys(BAGUA);
+  if (charGoal) {
+    const g = charGoal;
+    if (g.includes('天')||g.includes('创')||g.includes('领')) mainBagua = BAGUA.qian;
+    else if (g.includes('地')||g.includes('容')||g.includes('承')) mainBagua = BAGUA.kun;
+    else if (g.includes('动')||g.includes('惊')||g.includes('变')) mainBagua = BAGUA.zhen;
+    else if (g.includes('风')||g.includes('入')||g.includes('散')) mainBagua = BAGUA.xun;
+    else if (g.includes('险')||g.includes('陷')||g.includes('困')) mainBagua = BAGUA.kan;
+    else if (g.includes('丽')||g.includes('明')||g.includes('文')) mainBagua = BAGUA.li;
+    else if (g.includes('止')||g.includes('静')||g.includes('山')) mainBagua = BAGUA.gen;
+    else if (g.includes('悦')||g.includes('和')||g.includes('说')) mainBagua = BAGUA.dui;
+  }
+  if (!mainBagua) mainBagua = BAGUA[bgKeys[Math.floor(Math.random()*bgKeys.length)]];
+
+  // 3. 根据角色类型选定阴阳
+  const yinyang = isFemale ? YINYANG.yin : YINYANG.yang;
+
+  // 4. 风水方位：随机选一个增加多样性
+  const fsKeys = Object.keys(FENGSHUI);
+  const fengshui = FENGSHUI[fsKeys[Math.floor(Math.random()*fsKeys.length)]];
+
+  // 5. 构建名字池：融合五行+八卦+阴阳+风水
+  let namePool = [...mainElement.words, ...mainBagua.keywords, ...yinyang.words, ...fengshui.words];
+  // 去重
+  namePool = [...new Set(namePool)];
+
+  // 6. 选定姓氏
   if (isMain || isMentor) {
-    // 主角/导师：30%复姓 + 仙侠风名字
     if (Math.random() < 0.3) {
       surname = FUXING[Math.floor(Math.random() * FUXING.length)];
     } else {
       surname = BAIJIAxing[Math.floor(Math.random() * BAIJIAxing.length)];
     }
-    givenName = isFemale ? NAME_POOL.xianxia_f[Math.floor(Math.random() * NAME_POOL.xianxia_f.length)] : NAME_POOL.xianxia_m[Math.floor(Math.random() * NAME_POOL.xianxia_m.length)];
   } else if (isVillain) {
-    // 反派：50%复姓 + 邪魅名字
     if (Math.random() < 0.5) {
       surname = FUXING[Math.floor(Math.random() * FUXING.length)];
     } else {
       surname = BAIJIAxing[Math.floor(Math.random() * BAIJIAxing.length)];
     }
-    givenName = isFemale ? NAME_POOL.villain_f[Math.floor(Math.random() * NAME_POOL.villain_f.length)] : NAME_POOL.villain_m[Math.floor(Math.random() * NAME_POOL.villain_m.length)];
   } else {
-    // 配角：百家姓 + 普通名字
     surname = BAIJIAxing[Math.floor(Math.random() * BAIJIAxing.length)];
-    givenName = isFemale ? NAME_POOL.female[Math.floor(Math.random() * NAME_POOL.female.length)] : NAME_POOL.male[Math.floor(Math.random() * NAME_POOL.male.length)];
   }
-  
-  // 安全检查：确保不是undefined
+
+  // 7. 名字长度：50%概率2字（单名），50%概率3字（双名）
+  const nameLen = Math.random() < 0.5 ? 1 : 2;
+  const pickWord = () => namePool[Math.floor(Math.random() * namePool.length)];
+  givenName = pickWord();
+  if (nameLen === 2) {
+    let second = pickWord();
+    // 避免重复字
+    while (second === givenName) second = pickWord();
+    givenName += second;
+  }
+
+  // 安全检查
   if (!surname) surname = '李';
   if (!givenName) givenName = isFemale ? '瑶' : '浩';
-  
+
   const finalName = surname + givenName;
-  const meaning = '【' + finalName + '】\n姓氏：' + surname + '（百家姓）\n名字：' + givenName + '\n寓意：' + (isVillain ? '邪魅霸气' : isMain ? '主角光环' : '平凡真实');
-  
+  const meaning = '【' + finalName + '】\n'
+    + '姓氏：' + surname + (FUXING.includes(surname)?'（复姓）':'（百家姓）') + '\n'
+    + '名字：' + givenName + '\n'
+    + '五行：' + mainElement.element + '（' + mainElement.trait + '）\n'
+    + '八卦：' + mainBagua.trigram + '·' + mainBagua.meaning + '（' + mainBagua.trait + '）\n'
+    + '阴阳：' + (isFemale?'阴·柔':'阳·刚') + '\n'
+    + '风水：' + fengshui.direction + '方·' + fengshui.element + '（' + fengshui.meaning + '）\n'
+    + '寓意：' + (isVillain?'邪魅霸气，天命反派':isMain?'承天地之气运，负五行之精华':'随剧情而生，因风云而变');
+
   return {name: finalName, meaning: meaning};
 }
 
@@ -3571,44 +3638,49 @@ function aiPolish() {
     }
   });
 
-  // ── 阶段11：词汇升级（小说专用，保留原有功能） ──
-  const novelUpgrades = [
-    {from: /非常重要/g, to: '至关重要'},
-    {from: /非常关键/g, to: '至关紧要'},
-    {from: /非常好/g, to: '极好'},
-    {from: /非常大/g, to: '极大'},
-    {from: /非常快/g, to: '极快'},
-    {from: /非常慢/g, to: '极慢'},
-    {from: /非常/g, to: '极其'},
-    {from: /很好/g, to: '堪称完美'},
-    {from: /很大/g, to: '难以估量'},
-    {from: /很快/g, to: '转瞬即逝'},
-    {from: /慢慢/g, to: '徐徐'},
-    {from: /突然/g, to: '骤然'},
-    {from: /看着/g, to: '凝视'},
-    {from: /看了看/g, to: '扫视了一眼'},
-    {from: /说道/g, to: '沉声道'},
-    {from: /说道，/g, to: '沉声道，'},
-    {from: /说道：/g, to: '沉声道：'},
-    {from: /问道/g, to: '追问道'},
-    {from: /大喊/g, to: '厉声喝道'},
-    {from: /小声说/g, to: '压低声音道'},
-    {from: /笑着说/g, to: '莞尔道'},
-    {from: /生气地说/g, to: '怒不可遏地道'},
-    {from: /害怕地说/g, to: '胆战心惊地道'},
-    {from: /慢慢地走/g, to: '徐徐而行'},
-    {from: /快步走/g, to: '疾步而行'},
-    {from: /快速地跑/g, to: '疾驰而去'},
-    {from: /大声笑/g, to: '朗声大笑'},
-    {from: /小声哭/g, to: '低声啜泣'},
-    {from: /很生气/g, to: '怒不可遏'},
-    {from: /很害怕/g, to: '胆战心惊'},
+  // ── 阶段11：去AI化词汇替换（将AI高频词降级为日常口语） ──
+  const deAiVocab = [
+    // AI高频副词 → 口语化降级
+    {from: /至关重要/g, to: '挺关键', name: 'AI高频词降级'},
+    {from: /至关紧要/g, to: '要紧', name: 'AI高频词降级'},
+    {from: /极其/g, to: '挺', name: 'AI高频词降级'},
+    {from: /极为/g, to: '怪', name: 'AI高频词降级'},
+    {from: /极为重要/g, to: '挺重要', name: 'AI高频词降级'},
+    {from: /堪称完美/g, to: '不错', name: 'AI高频词降级'},
+    {from: /难以估量/g, to: '不小', name: 'AI高频词降级'},
+    {from: /转瞬即逝/g, to: '一晃就过去了', name: 'AI高频词降级'},
+    {from: /徐徐/g, to: '慢慢', name: 'AI高频词降级'},
+    {from: /骤然/g, to: '猛地', name: 'AI高频词降级'},
+    // AI文艺动词 → 日常表达
+    {from: /凝视/g, to: '看着', name: '文艺词降级'},
+    {from: /扫视了一眼/g, to: '瞅了瞅', name: '文艺词降级'},
+    {from: /沉声道/g, to: '说', name: '网文套话降级'},
+    {from: /追问道/g, to: '问', name: '网文套话降级'},
+    {from: /厉声喝道/g, to: '喊道', name: '网文套话降级'},
+    {from: /压低声音道/g, to: '小声说', name: '网文套话降级'},
+    {from: /莞尔道/g, to: '笑着说', name: '网文套话降级'},
+    {from: /怒不可遏地道/g, to: '生气地说', name: '网文套话降级'},
+    {from: /胆战心惊地道/g, to: '害怕地说', name: '网文套话降级'},
+    {from: /徐徐而行/g, to: '慢慢走', name: '网文套话降级'},
+    {from: /疾步而行/g, to: '快步走', name: '网文套话降级'},
+    {from: /疾驰而去/g, to: '快步跑', name: '网文套话降级'},
+    {from: /朗声大笑/g, to: '大声笑', name: '网文套话降级'},
+    {from: /低声啜泣/g, to: '小声哭', name: '网文套话降级'},
+    {from: /怒不可遏/g, to: '很生气', name: '网文套话降级'},
+    {from: /胆战心惊/g, to: '很害怕', name: '网文套话降级'},
+    // 去AI痕迹：将"进行/实施/开展"等官话降级
+    {from: /进行(?=[\u4e00-\u9fa5]{2})/g, to: '', name: '官话删除'},
+    {from: /实施(?=[\u4e00-\u9fa5]{2})/g, to: '', name: '官话删除'},
+    {from: /开展(?=[\u4e00-\u9fa5]{2})/g, to: '搞', name: '官话删除'},
+    {from: /利用(?=[\u4e00-\u9fa5]{2})/g, to: '用', name: '官话删除'},
+    {from: /通过(?=[\u4e00-\u9fa5]{2})/g, to: '靠', name: '官话删除'},
+    {from: /采用(?=[\u4e00-\u9fa5]{2})/g, to: '用', name: '官话删除'},
   ];
-  novelUpgrades.forEach(r => {
+  deAiVocab.forEach(r => {
     const matches = text.match(r.from);
     if (matches) {
       totalChanges += matches.length;
-      changeLog.push(`词汇升级："${matches[0]}" → 更生动的表达 x${matches.length}`);
+      changeLog.push(`${r.name}："${matches[0]}" → 口语化表达 x${matches.length}`);
       text = text.replace(r.from, r.to);
     }
   });
@@ -4039,6 +4111,168 @@ function enhanceDialog() {
   editor.value = text;
   onWritingInput();
   alert(`💬 对话优化完成！\\n\\n✅ 优化了${modified}处对话\\n为对话添加了神态和动作描写\\n\\n💡 建议：继续检查对话节奏，确保每段对话都有推动剧情的作用。`);
+}
+
+// ═══════════════════════════════════════════════════════════════
+// 后端智能分析工具（前后端联动核心）
+// ═══════════════════════════════════════════════════════════════
+
+async function analyzeQuality() {
+  const editor = document.getElementById('writingEditor');
+  const text = editor.value.trim();
+  if (!text) { alert('⚠️ 编辑器内容为空！'); return; }
+  if (!useBackend) { alert('⚠️ 请切换到后端AI模式后使用此功能'); return; }
+
+  try {
+    const btn = event.target; btn.textContent = '⏳ 分析中...'; btn.disabled = true;
+    const res = await apiClient.post('/quality/checklist', {
+      action: 'evaluate',
+      text: text,
+      chapter_number: state.currentChapter || 1,
+      genre: state.genre[0] || '玄幻'
+    });
+    btn.textContent = '📊 质量评分'; btn.disabled = false;
+
+    if (res.success && res.result) {
+      const r = res.result;
+      let report = `📊 后端质量分析报告\\n\\n`;
+      report += `综合评分：${r.score || 'N/A'}/100\\n`;
+      report += `必达项完成率：${r.required_rate ? Math.round(r.required_rate*100)+'%' : 'N/A'}（${r.required_pass || 0}/${r.required_total || 0}）\\n`;
+      report += `加分项完成率：${r.optional_rate ? Math.round(r.optional_rate*100)+'%' : 'N/A'}（${r.optional_pass || 0}/${r.optional_total || 0}）\\n`;
+      report += `总完成度：${r.completion_rate ? Math.round(r.completion_rate*100)+'%' : 'N/A'}\\n`;
+      alert(report);
+    } else if (res.success && res.checklist) {
+      let report = `📋 质量检查清单\\n\\n`;
+      const req = res.checklist.required || [];
+      const opt = res.checklist.optional || [];
+      report += `必达项（${req.length}项）：\\n`;
+      req.forEach((item, i) => report += `${i+1}. ${item}\\n`);
+      report += `\\n加分项（${opt.length}项）：\\n`;
+      opt.forEach((item, i) => report += `${i+1}. ${item}\\n`);
+      alert(report);
+    } else {
+      alert('⚠️ 质量分析返回异常：' + (res.error || '未知错误'));
+    }
+  } catch (e) {
+    alert('❌ 质量分析失败：' + e.message);
+  }
+}
+
+async function analyzeFatigue() {
+  const editor = document.getElementById('writingEditor');
+  const text = editor.value.trim();
+  if (!text) { alert('⚠️ 编辑器内容为空！'); return; }
+  if (!useBackend) { alert('⚠️ 请切换到后端AI模式后使用此功能'); return; }
+
+  try {
+    const btn = event.target; btn.textContent = '⏳ 检测中...'; btn.disabled = true;
+    const res = await apiClient.post('/fatigue/analyze', {
+      content: text,
+      chapter: state.currentChapter || 1
+    });
+    btn.textContent = '😴 疲劳检测'; btn.disabled = false;
+
+    if (res.success && res.stats) {
+      const s = res.stats;
+      const rpt = res.report || {};
+      let report = `😴 读者疲劳度分析报告\\n\\n`;
+      report += `疲劳指数：${s.fatigue_score !== undefined ? s.fatigue_score : 'N/A'}/100（越高越疲劳）\\n`;
+      report += `信息密度：${s.info_density !== undefined ? Math.round(s.info_density*100)+'%' : 'N/A'}\\n`;
+      report += `重复度：${s.repetition_score !== undefined ? Math.round(s.repetition_score*100)+'%' : 'N/A'}\\n`;
+      report += `复杂度：${s.complexity_score !== undefined ? Math.round(s.complexity_score*100)+'%' : 'N/A'}\\n\\n`;
+      if (rpt.fatigue_zones && rpt.fatigue_zones.length) {
+        report += `🔴 疲劳区域：\\n`;
+        rpt.fatigue_zones.forEach((z, i) => report += `${i+1}. ${z.description || '信息过载'}\\n`);
+      }
+      if (rpt.suggestions && rpt.suggestions.length) {
+        report += `\\n💡 缓解建议：\\n`;
+        rpt.suggestions.forEach((s, i) => report += `${i+1}. ${s}\\n`);
+      }
+      alert(report);
+    } else {
+      alert('⚠️ 疲劳检测返回异常：' + (res.error || '未知错误'));
+    }
+  } catch (e) {
+    alert('❌ 疲劳检测失败：' + e.message);
+  }
+}
+
+async function analyzeRetention() {
+  const editor = document.getElementById('writingEditor');
+  const text = editor.value.trim();
+  if (!text) { alert('⚠️ 编辑器内容为空！'); return; }
+  if (!useBackend) { alert('⚠️ 请切换到后端AI模式后使用此功能'); return; }
+
+  try {
+    const btn = event.target; btn.textContent = '⏳ 分析中...'; btn.disabled = true;
+    const res = await apiClient.post('/retention/analyze', {
+      content: text,
+      chapter: state.currentChapter || 1,
+      genre: state.genre[0] || '玄幻'
+    });
+    btn.textContent = '🎣 留存分析'; btn.disabled = false;
+
+    if (res.success && res.score !== undefined) {
+      const r = res.score;
+      let report = `🎣 章节留存能力分析报告\\n\\n`;
+      report += `留存评分：${r.overall !== undefined ? r.overall : 'N/A'}/100\\n`;
+      report += `开头钩子：${r.opening_hook !== undefined ? r.opening_hook : 'N/A'}\\n`;
+      report += `断章悬念：${r.cliffhanger !== undefined ? r.cliffhanger : 'N/A'}\\n`;
+      report += `信息释放：${r.info_release !== undefined ? r.info_release : 'N/A'}\\n`;
+      report += `情绪曲线：${r.emotion_arc !== undefined ? r.emotion_arc : 'N/A'}\\n`;
+      alert(report);
+    } else if (res.success && res.analysis) {
+      const a = res.analysis;
+      let report = `🎣 留存深度分析\\n\\n`;
+      report += `整体评价：${a.summary || 'N/A'}\\n\\n`;
+      if (a.strengths && a.strengths.length) {
+        report += `✅ 优势：\\n`;
+        a.strengths.forEach((s, i) => report += `${i+1}. ${s}\\n`);
+      }
+      if (a.weaknesses && a.weaknesses.length) {
+        report += `\\n⚠️ 风险：\\n`;
+        a.weaknesses.forEach((w, i) => report += `${i+1}. ${w}\\n`);
+      }
+      alert(report);
+    } else {
+      alert('⚠️ 留存分析返回异常：' + (res.error || '未知错误'));
+    }
+  } catch (e) {
+    alert('❌ 留存分析失败：' + e.message);
+  }
+}
+
+async function analyzeStyle() {
+  const editor = document.getElementById('writingEditor');
+  const text = editor.value.trim();
+  if (!text) { alert('⚠️ 编辑器内容为空！'); return; }
+  if (!useBackend) { alert('⚠️ 请切换到后端AI模式后使用此功能'); return; }
+
+  try {
+    const btn = event.target; btn.textContent = '⏳ 分析中...'; btn.disabled = true;
+    const res = await apiClient.post('/style/analyze', { text: text });
+    btn.textContent = '🎨 风格指纹'; btn.disabled = false;
+
+    if (res.success && res.fingerprint) {
+      const fp = res.fingerprint;
+      let report = `🎨 风格指纹分析报告\\n\\n`;
+      report += `平均句长：${fp.sentence_length_mean ? fp.sentence_length_mean.toFixed(1) : '?'}字\\n`;
+      report += `句长标准差：${fp.sentence_length_std ? fp.sentence_length_std.toFixed(1) : '?'}\\n`;
+      report += `对话占比：${fp.dialogue_ratio ? Math.round(fp.dialogue_ratio*100)+'%' : '?'}\\n`;
+      report += `段落平均长度：${fp.paragraph_avg_length ? fp.paragraph_avg_length.toFixed(1) : '?'}字\\n`;
+      report += `情感词占比：${fp.emotion_word_ratio ? Math.round(fp.emotion_word_ratio*100)+'%' : '?'}\\n`;
+      report += `动作词占比：${fp.action_word_ratio ? Math.round(fp.action_word_ratio*100)+'%' : '?'}\\n`;
+      report += `被动语态：${fp.passive_voice_ratio ? Math.round(fp.passive_voice_ratio*100)+'%' : '?'}\\n\\n`;
+      if (fp.top_bigrams && fp.top_bigrams.length) {
+        report += `🔑 高频双词组：${fp.top_bigrams.join('、')}\\n`;
+      }
+      alert(report);
+    } else {
+      alert('⚠️ 风格分析返回异常：' + (res.error || '未知错误'));
+    }
+  } catch (e) {
+    alert('❌ 风格分析失败：' + e.message);
+  }
 }
 
 // 导出小说
