@@ -4809,6 +4809,10 @@ function runDiagnostics() {
   const funcs = ['init','initCharacters','renderCharacters','smartNameChar','generatePlots','generateOutline','generateChapterContent','startWriting','runDiagnostics'];
   const missingFuncs = funcs.filter(f => typeof window[f] !== 'function');
   results.push(missingFuncs.length === 0 ? '✅ 所有核心函数已定义' : '❌ 缺失函数: '+missingFuncs.join(', '));
+  // 2b. 检查Phase4扩展API函数
+  const extFuncs = ['generateChaptersBatch','generateOrgNames','generatePowerSystem','storyInit','planningBeatSheet','planningOutline','planningDirective','retentionAddHook','retentionAddCoolPoint','fatigueReport','ragSearch','ragContext','fragmentSave','fragmentList','fragmentGet','strandAnalyze','charactersStates','styleCompare'];
+  const missingExt = extFuncs.filter(f => typeof window[f] !== 'function');
+  results.push(missingExt.length === 0 ? '✅ Phase4扩展API函数(18项)全部就绪' : '⚠️ 扩展API缺失: '+missingExt.join(', '));
   
   // 3. 检查state状态
   results.push('📊 当前state:');
@@ -4861,6 +4865,12 @@ function runDiagnostics() {
       {name: '疲劳检测', path: '/fatigue/overall'},
       {name: '风格列表', path: '/style/list'},
       {name: 'RAG统计', path: '/rag/stats'},
+      {name: '规划时间线', path: '/planning/timeline'},
+      {name: '故事快照', path: '/story/snapshot'},
+      {name: '记忆统计', path: '/memory/stats'},
+      {name: '线索报告', path: '/strand/report'},
+      {name: '真相状态', path: '/truth/new/status'},
+      {name: '流水线状态', path: '/pipeline/new/status'},
     ];
     for (const api of apis) {
       try {
@@ -4872,6 +4882,420 @@ function runDiagnostics() {
     }
     alert(apiResults.join('\n'));
   }, 100);
+}
+
+// ═══════════════════════════════════════════════════
+// Phase 4: 扩展API全面对接（2026-05-17）
+// 以下函数为后端API提供前端调用入口，均返回Promise
+// ═══════════════════════════════════════════════════
+
+// ── 1. 批量章节生成 ──
+async function generateChaptersBatch(startChapter, endChapter) {
+  if (!useBackend) { alert('⚠️ 请切换到后端AI模式后使用批量生成'); return {success:false}; }
+  try {
+    const outlineData = {acts: state.outline.map((o,i)=>({chapters:[{number:i+1,title:o.title,summary:o.summary||''}]}))};
+    const payload = {
+      start_chapter: startChapter || 1,
+      end_chapter: endChapter || Math.min((startChapter||1)+4, state.outline.length),
+      outline: outlineData,
+      genres: state.genre,
+      styles: state.style,
+      tones: state.tone,
+      theme: state.theme || '逆境成长',
+      schools: state.school.map(s=>s.key),
+      school_names: state.school.map(s=>s.label),
+      target_word_count: state.wordsPerChapter || 4000,
+      protagonist_name: state.characters[0]?.name || '',
+    };
+    const res = await apiClient.post('/generate_chapters_batch', payload);
+    if (res.chapters) {
+      alert(`✅ 批量生成完成：${res.chapters.length}章`);
+      return {success:true, chapters:res.chapters};
+    }
+    return {success:false, error:res.error||'生成失败'};
+  } catch(e) {
+    alert('❌ 批量生成失败：'+e.message);
+    return {success:false, error:e.message};
+  }
+}
+
+// ── 2. 组织/门派命名 ──
+async function generateOrgNames(genre, orgType, description, count) {
+  if (!useBackend) {
+    const localOrgs = ['青云宗','玄天盟','万剑阁','天机楼','炼丹坊'].slice(0,count||5);
+    return {success:true, local:true, organizations:localOrgs.map(n=>({name:n,type:orgType||'sect'}))};
+  }
+  try {
+    const res = await apiClient.post('/generate_org_names', {
+      genre: genre || state.genre[0] || '玄幻',
+      org_type: orgType || 'sect',
+      description: description || '',
+      count: count || 5,
+    });
+    return {success:res.success!==false, organizations:res.organizations||[]};
+  } catch(e) { return {success:false, error:e.message}; }
+}
+
+// ── 3. 力量体系生成 ──
+async function generatePowerSystem(genre, systemType, description, count) {
+  if (!useBackend) {
+    const localLevels = ['练气','筑基','金丹','元婴','化神','炼虚','合体','大乘'].slice(0,count||8);
+    return {success:true, local:true, levels:localLevels.map((n,i)=>({name:n,level:i+1,description:'本地默认等级'}))};
+  }
+  try {
+    const res = await apiClient.post('/generate_power_system', {
+      genre: genre || state.genre[0] || '玄幻',
+      system_type: systemType || 'cultivation',
+      description: description || '',
+      count: count || 8,
+    });
+    return {success:res.success!==false, levels:res.levels||[]};
+  } catch(e) { return {success:false, error:e.message}; }
+}
+
+// ── 4. 故事初始化 ──
+async function storyInit(settings) {
+  if (!useBackend) { return {success:false, note:'故事初始化需要后端AI模式'}; }
+  try {
+    const payload = {
+      title: settings?.title || state.storyTitle || '未命名作品',
+      genre: settings?.genre || state.genre[0] || '玄幻',
+      sub_genre: settings?.sub_genre || '',
+      tone: settings?.tone || state.tone[0] || '紧张刺激',
+      style: settings?.style || state.style[0] || '热血爽文',
+      protagonist_name: settings?.protagonist_name || state.characters[0]?.name || '',
+      protagonist_desire: settings?.protagonist_desire || state.storyCore || '',
+      protagonist_flaw: settings?.protagonist_flaw || '',
+      core_conflict: settings?.core_conflict || '',
+      world_type: settings?.world_type || state.worldType || '',
+      power_system: settings?.power_system || '',
+    };
+    const res = await apiClient.post('/story/init', payload);
+    if (res.success && res.master_setting) {
+      alert('✅ 故事主设定已初始化');
+      return {success:true, master_setting:res.master_setting};
+    }
+    return {success:false, error:res.error};
+  } catch(e) { return {success:false, error:e.message}; }
+}
+
+// ── 5. 规划系统：节拍表 ──
+async function planningBeatSheet(action, params) {
+  if (!useBackend) { return {success:false, note:'规划系统需要后端AI模式'}; }
+  try {
+    const payload = { action: action||'get', ...params };
+    const res = await apiClient.post('/planning/beat-sheet', payload);
+    return {success:res.success!==false, beat_sheet:res.beat_sheet, beat:res.beat};
+  } catch(e) { return {success:false, error:e.message}; }
+}
+
+// ── 6. 规划系统：章节大纲 ──
+async function planningOutline(action, outlineText, chapter) {
+  if (!useBackend) { return {success:false, note:'规划系统需要后端AI模式'}; }
+  try {
+    const res = await apiClient.post('/planning/outline', {
+      action: action||'parse',
+      outline_text: outlineText||'',
+      chapter: chapter||1,
+    });
+    return {success:res.success!==false, outline:res.outline};
+  } catch(e) { return {success:false, error:e.message}; }
+}
+
+// ── 7. 规划系统：创作指令 ──
+async function planningDirective(outlineText, chapter) {
+  if (!useBackend) { return {success:false, note:'规划系统需要后端AI模式'}; }
+  try {
+    const res = await apiClient.post('/planning/directive', {
+      outline_text: outlineText||'',
+      chapter: chapter||1,
+    });
+    return {success:res.success!==false, directive:res.directive};
+  } catch(e) { return {success:false, error:e.message}; }
+}
+
+// ── 8. 留存：添加钩子 ──
+async function retentionAddHook(hookType, description, chapter, position, strength) {
+  if (!useBackend) { return {success:false, note:'留存系统需要后端AI模式'}; }
+  try {
+    const res = await apiClient.post('/retention/add_hook', {
+      hook_type: hookType||'question',
+      description: description||'',
+      chapter: chapter||1,
+      position: position||'opening',
+      strength: strength||5,
+    });
+    return {success:res.success!==false, hook:res.hook};
+  } catch(e) { return {success:false, error:e.message}; }
+}
+
+// ── 9. 留存：添加爽点 ──
+async function retentionAddCoolPoint(pointType, description, chapter, intensity, buildup) {
+  if (!useBackend) { return {success:false, note:'留存系统需要后端AI模式'}; }
+  try {
+    const res = await apiClient.post('/retention/add_cool_point', {
+      point_type: pointType||'power_up',
+      description: description||'',
+      chapter: chapter||1,
+      intensity: intensity||5,
+      buildup_chapters: buildup||0,
+    });
+    return {success:res.success!==false, cool_point:res.cool_point};
+  } catch(e) { return {success:false, error:e.message}; }
+}
+
+// ── 10. 疲劳报告 ──
+async function fatigueReport(chapter) {
+  if (!useBackend) { return {success:false, note:'疲劳检测需要后端AI模式'}; }
+  try {
+    const res = await apiClient.post('/fatigue/report', {chapter: chapter||1});
+    return {success:res.success!==false, report:res.report};
+  } catch(e) { return {success:false, error:e.message}; }
+}
+
+// ── 11. 疲劳建议 ──
+async function fatigueSuggestions(word) {
+  if (!useBackend) { return {success:false, note:'疲劳检测需要后端AI模式'}; }
+  try {
+    const res = await apiClient.post('/fatigue/suggestions', {word: word||''});
+    return {success:res.success!==false, suggestions:res.suggestions};
+  } catch(e) { return {success:false, error:e.message}; }
+}
+
+// ── 12. RAG检索 ──
+async function ragSearch(query, topK, chapterFilter) {
+  if (!useBackend) { return {success:false, note:'RAG检索需要后端AI模式'}; }
+  try {
+    const payload = {query: query||'', top_k: topK||10};
+    if (chapterFilter) payload.chapter = chapterFilter;
+    const res = await apiClient.post('/rag/search', payload);
+    return {success:res.success!==false, results:res.results||[], count:res.count||0};
+  } catch(e) { return {success:false, error:e.message}; }
+}
+
+// ── 13. RAG上下文 ──
+async function ragContext(chapter, summary, maxChars) {
+  if (!useBackend) { return {success:false, note:'RAG检索需要后端AI模式'}; }
+  try {
+    const res = await apiClient.post('/rag/context', {
+      chapter: chapter||1,
+      summary: summary||'',
+      max_chars: maxChars||3000,
+    });
+    return {success:res.success!==false, context:res.context, prompt:res.prompt};
+  } catch(e) { return {success:false, error:e.message}; }
+}
+
+// ── 14. 片段保存 ──
+async function fragmentSave(chapter, content, title, wordCount) {
+  if (!useBackend) {
+    const key = `nwacs_fragment_ch${chapter}`;
+    const existing = JSON.parse(localStorage.getItem(key)||'[]');
+    const frag = {id:`local_${Date.now()}`,chapter,version:existing.length+1,title:title||`第${chapter}章`,content,word_count:wordCount||content.length,created_at:new Date().toLocaleString(),label:`v${existing.length+1}`};
+    existing.push(frag);
+    localStorage.setItem(key, JSON.stringify(existing));
+    return {success:true, local:true, version:frag.label, fragment:frag};
+  }
+  try {
+    const res = await apiClient.post('/fragment/save', {
+      chapter: chapter||1, content: content||'', title: title||`第${chapter}章`, word_count: wordCount||0,
+    });
+    return {success:res.success!==false, version:res.version, fragment:res.fragment};
+  } catch(e) { return {success:false, error:e.message}; }
+}
+
+// ── 15. 片段列表 ──
+async function fragmentList(chapter) {
+  if (!useBackend) {
+    const key = `nwacs_fragment_ch${chapter}`;
+    const frags = JSON.parse(localStorage.getItem(key)||'[]');
+    return {success:true, local:true, fragments:frags};
+  }
+  try {
+    const res = await apiClient.post('/fragment/list', {chapter: chapter||1});
+    return {success:res.success!==false, fragments:res.fragments||[]};
+  } catch(e) { return {success:false, error:e.message}; }
+}
+
+// ── 16. 片段获取 ──
+async function fragmentGet(fragmentId) {
+  if (!useBackend) {
+    for (let i=1;i<=100;i++) {
+      const key = `nwacs_fragment_ch${i}`;
+      const frags = JSON.parse(localStorage.getItem(key)||'[]');
+      const found = frags.find(f=>f.id===fragmentId);
+      if (found) return {success:true, local:true, fragment:found};
+    }
+    return {success:false, error:'片段未找到'};
+  }
+  try {
+    const res = await apiClient.post('/fragment/get', {fragment_id: fragmentId});
+    return {success:res.success!==false, fragment:res.fragment};
+  } catch(e) { return {success:false, error:e.message}; }
+}
+
+// ── 17. 片段应用 ──
+async function fragmentApply(fragmentId) {
+  if (!useBackend) { return {success:false, note:'片段应用需要后端AI模式'}; }
+  try {
+    const res = await apiClient.post('/fragment/apply', {fragment_id: fragmentId});
+    return {success:res.success!==false, fragment:res.fragment};
+  } catch(e) { return {success:false, error:e.message}; }
+}
+
+// ── 18. 线索分析 ──
+async function strandAnalyze(chapter, content) {
+  if (!useBackend) { return {success:false, note:'线索编织需要后端AI模式'}; }
+  try {
+    const res = await apiClient.post('/strand/analyze', {chapter: chapter||1, content: content||''});
+    return {success:res.success!==false, analysis:res.analysis};
+  } catch(e) { return {success:false, error:e.message}; }
+}
+
+// ── 19. 线索建议 ──
+async function strandSuggest(chapter) {
+  if (!useBackend) { return {success:false, note:'线索编织需要后端AI模式'}; }
+  try {
+    const res = await apiClient.post('/strand/suggest', {chapter: chapter||1});
+    return {success:res.success!==false, suggestion:res.suggestion};
+  } catch(e) { return {success:false, error:e.message}; }
+}
+
+// ── 20. 角色状态 ──
+async function charactersStates() {
+  if (!useBackend) { return {success:false, note:'角色状态需要后端AI模式'}; }
+  try {
+    const res = await apiClient.post('/characters/states', {});
+    return {success:res.success!==false, characters:res.characters||[]};
+  } catch(e) { return {success:false, error:e.message}; }
+}
+
+// ── 21. 风格对比 ──
+async function styleCompare(text, referenceLabel) {
+  if (!useBackend) { return {success:false, note:'风格对比需要后端AI模式'}; }
+  try {
+    const res = await apiClient.post('/style/compare', {
+      text: text||'', reference_label: referenceLabel||'default',
+    });
+    return {success:res.success!==false, comparison:res.comparison};
+  } catch(e) { return {success:false, error:e.message}; }
+}
+
+// ── 22. 质量记录 ──
+async function qualityRecord(chapter, scores) {
+  if (!useBackend) { return {success:false, note:'质量系统需要后端AI模式'}; }
+  try {
+    const res = await apiClient.post('/quality/record', {chapter: chapter||1, ...scores});
+    return {success:res.success!==false};
+  } catch(e) { return {success:false, error:e.message}; }
+}
+
+// ── 23. 质量趋势 ──
+async function qualityTrend() {
+  if (!useBackend) { return {success:false, note:'质量系统需要后端AI模式'}; }
+  try {
+    const res = await apiClient.get('/quality/trend');
+    return {success:res.success!==false, trend:res.trend};
+  } catch(e) { return {success:false, error:e.message}; }
+}
+
+// ── 24. 故事快照 ──
+async function storySnapshot() {
+  if (!useBackend) { return {success:false, note:'故事系统需要后端AI模式'}; }
+  try {
+    const res = await apiClient.get('/story/snapshot');
+    return {success:res.success!==false, snapshot:res.snapshot};
+  } catch(e) { return {success:false, error:e.message}; }
+}
+
+// ── 25. 流水线启动 ──
+async function pipelineStart(chapter, params) {
+  if (!useBackend) { return {success:false, note:'流水线需要后端AI模式'}; }
+  try {
+    const res = await apiClient.post('/pipeline/start', {chapter: chapter||1, ...params});
+    return {success:res.success!==false, state:res.state};
+  } catch(e) { return {success:false, error:e.message}; }
+}
+
+// ── 26. 流水线状态 ──
+async function pipelineState() {
+  if (!useBackend) { return {success:false, note:'流水线需要后端AI模式'}; }
+  try {
+    const res = await apiClient.post('/pipeline/state', {});
+    return {success:res.success!==false, state:res.state};
+  } catch(e) { return {success:false, error:e.message}; }
+}
+
+// ── 27. 流水线修订 ──
+async function pipelineRevise(chapter, feedback) {
+  if (!useBackend) { return {success:false, note:'流水线需要后端AI模式'}; }
+  try {
+    const res = await apiClient.post('/pipeline/revise', {chapter: chapter||1, feedback: feedback||''});
+    return {success:res.success!==false, revision:res.revision};
+  } catch(e) { return {success:false, error:e.message}; }
+}
+
+// ── 28. RAG一致性检查 ──
+async function ragConsistency(chapter, content) {
+  if (!useBackend) { return {success:false, note:'RAG检索需要后端AI模式'}; }
+  try {
+    const res = await apiClient.post('/rag/consistency', {chapter: chapter||1, content: content||''});
+    return {success:res.success!==false, consistency:res.consistency};
+  } catch(e) { return {success:false, error:e.message}; }
+}
+
+// ── 29. RAG反向工程 ──
+async function ragReverse(chapter, content) {
+  if (!useBackend) { return {success:false, note:'RAG检索需要后端AI模式'}; }
+  try {
+    const res = await apiClient.post('/rag/reverse', {chapter: chapter||1, content: content||''});
+    return {success:res.success!==false, analysis:res.analysis};
+  } catch(e) { return {success:false, error:e.message}; }
+}
+
+// ── 30. 记忆模式 ──
+async function memoryPatterns() {
+  if (!useBackend) { return {success:false, note:'记忆系统需要后端AI模式'}; }
+  try {
+    const res = await apiClient.post('/memory/patterns', {});
+    return {success:res.success!==false, patterns:res.patterns};
+  } catch(e) { return {success:false, error:e.message}; }
+}
+
+// ── 31. 记忆学习 ──
+async function memoryLearn(data) {
+  if (!useBackend) { return {success:false, note:'记忆系统需要后端AI模式'}; }
+  try {
+    const res = await apiClient.post('/memory/learn', data||{});
+    return {success:res.success!==false};
+  } catch(e) { return {success:false, error:e.message}; }
+}
+
+// ── 32. 记忆上下文 ──
+async function memoryContext(chapter) {
+  if (!useBackend) { return {success:false, note:'记忆系统需要后端AI模式'}; }
+  try {
+    const res = await apiClient.post('/memory/context', {chapter: chapter||1});
+    return {success:res.success!==false, context:res.context};
+  } catch(e) { return {success:false, error:e.message}; }
+}
+
+// ── 33. 记忆指纹 ──
+async function memoryFingerprint(text) {
+  if (!useBackend) { return {success:false, note:'记忆系统需要后端AI模式'}; }
+  try {
+    const res = await apiClient.post('/memory/fingerprint', {text: text||''});
+    return {success:res.success!==false, fingerprint:res.fingerprint};
+  } catch(e) { return {success:false, error:e.message}; }
+}
+
+// ── 34. 真相文件状态 ──
+async function truthStatus() {
+  if (!useBackend) { return {success:false, note:'真相文件需要后端AI模式'}; }
+  try {
+    const res = await apiClient.get('/truth/new/status');
+    return {success:res.success!==false, truth_files:res.truth_files};
+  } catch(e) { return {success:false, error:e.message}; }
 }
 
 // ═════════════════════ 启动 ═════════════════════
