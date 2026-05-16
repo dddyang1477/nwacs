@@ -631,7 +631,8 @@ const apiClient = {
   async post(endpoint, data) { return this.call(endpoint, data, 'POST'); },
 };
 
-let useBackend = localStorage.getItem('nwacs_use_backend') === 'true';
+// 默认启用后端AI模式（首次访问或未设置时）
+let useBackend = localStorage.getItem('nwacs_use_backend') !== 'false';
 
 function toggleBackendMode() {
   useBackend = !useBackend;
@@ -657,17 +658,107 @@ const DATA = {
     {icon:'🔄',label:'无限流',desc:'无限快穿系统'},
     {icon:'🎮',label:'轻小说',desc:'二次元异世界'}
   ],
-  school: [
-    {icon:'📅',label:'签到流',desc:'每日签到变强'},
-    {icon:'⚙️',label:'系统流',desc:'绑定系统任务'},
-    {icon:'🧠',label:'智取流',desc:'以智取胜'},
-    {icon:'🐢',label:'苟道流',desc:'低调发育'},
-    {icon:'👤',label:'凡人流',desc:'资质平凡逆袭'},
-    {icon:'👑',label:'无敌流',desc:'开局满级'},
-    {icon:'🔥',label:'废柴逆袭',desc:'从废物到巅峰'},
-    {icon:'🌾',label:'种田',desc:'经营发展'},
-    {icon:'🎭',label:'幕后黑手',desc:'暗中操控'}
-  ],
+  school: {
+    '玄幻': [
+      {id:'sign_in', icon:'📅', label:'签到流', desc:'每日签到获得奖励，躺平变强'},
+      {id:'system', icon:'⚙️', label:'系统流', desc:'绑定系统，完成任务获得能力'},
+      {id:'wisdom', icon:'🧠', label:'智取流', desc:'以智取胜，运筹帷幄'},
+      {id:'gou_dao', icon:'🐢', label:'苟道流', desc:'低调发育，苟到无敌'},
+      {id:'mortal', icon:'👤', label:'凡人流', desc:'资质平凡，靠毅力逆袭'},
+      {id:'invincible', icon:'👑', label:'无敌流', desc:'开局满级，一路碾压'},
+      {id:'waste_reverse', icon:'🔥', label:'废柴逆袭流', desc:'从废物到巅峰的热血之路'},
+      {id:'farming', icon:'🌾', label:'种田流', desc:'经营发展，种田修仙'},
+      {id:'behind_scenes', icon:'🎭', label:'幕后黑手流', desc:'暗中操控一切，做幕后大佬'}
+    ],
+    '仙侠': [
+      {id:'traditional_xiuxian', icon:'☯️', label:'传统修仙流', desc:'炼气筑基，步步登仙'},
+      {id:'sword_cultivator', icon:'⚔️', label:'剑修流', desc:'一剑破万法，剑道独尊'},
+      {id:'alchemy', icon:'🧪', label:'丹修流', desc:'炼丹成道，以药入仙'},
+      {id:'formation', icon:'🔯', label:'阵法流', desc:'布阵杀敌，阵法通神'},
+      {id:'sect', icon:'🏛️', label:'宗门流', desc:'宗门经营，壮大势力'},
+      {id:'rogue_cultivator', icon:'🌙', label:'散修流', desc:'无门无派，独自闯荡'},
+      {id:'demon_cultivator', icon:'😈', label:'魔修流', desc:'以魔入道，亦正亦邪'},
+      {id:'reincarnation_immortal', icon:'🔄', label:'转世重修流', desc:'大能转世，重走仙路'}
+    ],
+    '都市': [
+      {id:'urban_romance', icon:'💕', label:'都市情感', desc:'现代都市中的爱恨情仇'},
+      {id:'business_war', icon:'💼', label:'商战流', desc:'商场如战场，资本博弈'},
+      {id:'rebirth_city', icon:'⏰', label:'重生流', desc:'重生回到过去，改写人生'},
+      {id:'divine_doctor', icon:'💊', label:'神医流', desc:'医术通天，妙手回春'},
+      {id:'treasure', icon:'💎', label:'鉴宝流', desc:'慧眼识珠，捡漏暴富'},
+      {id:'entertainment', icon:'🎬', label:'娱乐流', desc:'娱乐圈打拼，成为顶流'},
+      {id:'war_god_return', icon:'🎖️', label:'战神归来流', desc:'退役兵王回归都市'},
+      {id:'campus', icon:'🎓', label:'校园流', desc:'校园青春，热血成长'},
+      {id:'workplace', icon:'📊', label:'职场流', desc:'职场晋升，步步为营'}
+    ],
+    '科幻': [
+      {id:'hard_scifi', icon:'🔬', label:'硬科幻流', desc:'基于真实科学理论的推演'},
+      {id:'cyberpunk', icon:'🌃', label:'赛博朋克流', desc:'高科技低生活，反乌托邦'},
+      {id:'star_war', icon:'🚀', label:'星际战争流', desc:'宇宙大战，文明碰撞'},
+      {id:'apocalypse', icon:'☢️', label:'末世流', desc:'末日降临，挣扎求生'},
+      {id:'mecha', icon:'🤖', label:'机甲流', desc:'驾驶机甲，驰骋星海'},
+      {id:'gene_evolution', icon:'🧬', label:'基因进化流', desc:'基因改造，人类进化'},
+      {id:'ai_awakening', icon:'🧠', label:'AI觉醒流', desc:'人工智能产生自我意识'},
+      {id:'time_travel_scifi', icon:'⏳', label:'时空穿梭流', desc:'穿越时空，改变命运'}
+    ],
+    '悬疑': [
+      {id:'classic_detective', icon:'🔍', label:'本格推理流', desc:'逻辑严密，公平解谜'},
+      {id:'social_suspense', icon:'🏙️', label:'社会派流', desc:'关注社会问题，人性探讨'},
+      {id:'psychological', icon:'🧠', label:'心理悬疑流', desc:'心理博弈，精神对抗'},
+      {id:'criminal_investigation', icon:'👮', label:'刑侦流', desc:'警察破案，追查真凶'},
+      {id:'tomb_raider', icon:'⚰️', label:'盗墓流', desc:'古墓探险，解密寻宝'},
+      {id:'spy', icon:'🕵️', label:'谍战流', desc:'间谍暗战，情报交锋'},
+      {id:'reversal', icon:'🔄', label:'反转流', desc:'层层反转，不到最后不知真相'}
+    ],
+    '言情': [
+      {id:'ceo_romance', icon:'👔', label:'霸道总裁流', desc:'强势总裁爱上我'},
+      {id:'sweet_pet', icon:'🍬', label:'甜宠流', desc:'全程高甜，宠溺无边'},
+      {id:'tortured_love', icon:'💔', label:'虐恋流', desc:'虐心虐身，痛彻心扉'},
+      {id:'marry_first', icon:'💍', label:'先婚后爱流', desc:'先结婚后恋爱，日久生情'},
+      {id:'female_dominance', icon:'👑', label:'女尊流', desc:'女性主导，女强男弱'},
+      {id:'palace_struggle', icon:'🏯', label:'宫斗流', desc:'后宫争斗，步步惊心'},
+      {id:'family_struggle', icon:'🏠', label:'宅斗流', desc:'家族内斗，嫡庶之争'},
+      {id:'business_woman', icon:'💼', label:'商业女霸总', desc:'女强人叱咤商界'},
+      {id:'youth_campus_love', icon:'🌸', label:'青春校园流', desc:'校园纯爱，青春悸动'}
+    ],
+    '历史': [
+      {id:'time_travel_history', icon:'⏳', label:'穿越流', desc:'现代人穿越古代，用知识改变世界'},
+      {id:'farming_history', icon:'🌾', label:'种田流', desc:'古代种田发家致富'},
+      {id:'conquest', icon:'⚔️', label:'争霸流', desc:'逐鹿天下，一统江山'},
+      {id:'scheming', icon:'🎭', label:'权谋流', desc:'朝堂权谋，智斗天下'},
+      {id:'imperial_exam', icon:'📜', label:'科举流', desc:'科举入仕，步步高升'},
+      {id:'business_history', icon:'💰', label:'经商流', desc:'古代经商，富甲天下'},
+      {id:'alternate_history', icon:'🗺️', label:'架空历史流', desc:'虚构朝代，自由发挥'},
+      {id:'tech_uplift', icon:'🔧', label:'科技攀升流', desc:'用现代科技改造古代'}
+    ],
+    '游戏': [
+      {id:'full_dive_vr', icon:'🥽', label:'全息游戏流', desc:'沉浸式虚拟现实游戏'},
+      {id:'esports', icon:'🏆', label:'电竞流', desc:'电子竞技，巅峰对决'},
+      {id:'game_system', icon:'⚙️', label:'系统流', desc:'现实世界获得游戏系统'},
+      {id:'fourth_disaster', icon:'👾', label:'第四天灾流', desc:'玩家降临异界，掀起波澜'},
+      {id:'npc_awakening', icon:'🤖', label:'NPC觉醒流', desc:'游戏NPC产生自我意识'},
+      {id:'game_rebirth', icon:'⏰', label:'游戏重生流', desc:'重生回游戏开服前'},
+      {id:'game_world_travel', icon:'🌌', label:'游戏异界流', desc:'穿越到游戏世界'}
+    ],
+    '恐怖': [
+      {id:'supernatural', icon:'👻', label:'灵异流', desc:'鬼怪灵异，阴阳两界'},
+      {id:'folk_horror', icon:'🎭', label:'民俗恐怖流', desc:'民间传说，禁忌仪式'},
+      {id:'infinite_loop', icon:'🔄', label:'无限流', desc:'无限循环的恐怖副本'},
+      {id:'rule_horror', icon:'📋', label:'规则怪谈流', desc:'遵守规则才能存活'},
+      {id:'cthulhu', icon:'🐙', label:'克苏鲁流', desc:'不可名状的宇宙恐怖'},
+      {id:'urban_legend', icon:'🌃', label:'都市传说流', desc:'都市中的诡异传说'},
+      {id:'survival_horror', icon:'🏚️', label:'生存恐怖流', desc:'绝境求生，恐怖降临'}
+    ],
+    '武侠': [
+      {id:'traditional_wuxia', icon:'🗡️', label:'传统武侠流', desc:'侠之大者，为国为民'},
+      {id:'high_martial', icon:'💥', label:'高武流', desc:'武力值爆表，破碎虚空'},
+      {id:'national_art', icon:'👊', label:'国术流', desc:'国术传承，明劲暗劲'},
+      {id:'government_martial', icon:'🏛️', label:'朝廷鹰犬流', desc:'为朝廷效力，六扇门风云'},
+      {id:'demon_cult', icon:'🩸', label:'魔教流', desc:'魔教中人，亦正亦邪'},
+      {id:'assassin', icon:'🗡️', label:'刺客流', desc:'暗影刺杀，一击必杀'},
+      {id:'swordsman', icon:'⚔️', label:'剑客流', desc:'剑气纵横，剑意通神'}
+    ]
+  },
   style: [
     {icon:'🔥',label:'热血爽文',desc:'节奏明快爽点密'},
     {icon:'😄',label:'轻松搞笑',desc:'幽默诙谐'},
@@ -719,7 +810,11 @@ const state = {
 function init() {
   // 渲染选择网格
   renderGrid('genreGrid', DATA.genre, 'genre', 2);
-  renderGrid('schoolGrid', DATA.school, 'school', 3);
+  // school按当前题材动态加载（默认玄幻）
+  const firstGenre = state.genre[0] || '玄幻';
+  const genreForSchool = mapGenreToSchoolKey(firstGenre);
+  const schoolList = DATA.school[genreForSchool] || DATA.school['玄幻'];
+  renderSchoolGrid(schoolList, 3);
   renderGrid('styleGrid', DATA.style, 'style', 3);
   renderGrid('toneGrid', DATA.tone, 'tone', 3);
   renderGrid('methodGrid', DATA.method, 'method', 1);
@@ -743,7 +838,12 @@ function init() {
   // 设置默认值（如果用户未选择）
   setTimeout(() => {
     if (state.genre.length === 0) selectItem('genre', '玄幻');
-    if (state.school.length === 0) selectItem('school', '废柴逆袭');
+    if (state.school.length === 0) {
+      const genreKey = mapGenreToSchoolKey(state.genre[0] || '玄幻');
+      const defaults = { '玄幻':'废柴逆袭流', '仙侠':'传统修仙流', '都市':'都市情感', '科幻':'硬科幻流', '悬疑':'本格推理流', '言情':'霸道总裁流', '历史':'穿越流', '游戏':'全息游戏流', '恐怖':'灵异流', '武侠':'传统武侠流' };
+      const defLabel = defaults[genreKey] || '废柴逆袭流';
+      selectSchoolByLabel(defLabel);
+    }
     if (state.style.length === 0) selectItem('style', '热血爽文');
     if (state.tone.length === 0) selectItem('tone', '紧张刺激');
     if (!state.method) selectItem('method', '三幕结构');
@@ -756,6 +856,21 @@ function init() {
   }, 100);
 }
 
+// 通过label选中school（用于默认值）
+function selectSchoolByLabel(label) {
+  const genreKey = mapGenreToSchoolKey(state.genre[0] || '玄幻');
+  const schoolList = DATA.school[genreKey] || DATA.school['玄幻'];
+  const item = schoolList.find(s => s.label === label);
+  if (item) {
+    state.school.push({ label: item.label, id: item.id });
+    // 延迟标记选中状态（等render完成后）
+    setTimeout(() => {
+      const card = document.querySelector(`#schoolGrid .sel-card[data-value="${item.label}"]`);
+      if (card) card.classList.add('selected');
+    }, 50);
+  }
+}
+
 function renderGrid(gridId, items, type, max) {
   const grid = document.getElementById(gridId);
   grid.innerHTML = items.map(item => `
@@ -765,8 +880,35 @@ function renderGrid(gridId, items, type, max) {
       <div class="sel-desc">${item.desc}</div>
     </div>
   `).join('');
-  
+
   // 绑定点击事件
+  grid.querySelectorAll('.sel-card').forEach(card => {
+    card.addEventListener('click', () => toggleSelect(card));
+  });
+}
+
+// 题材映射到知识库key（后端只有10个题材）
+function mapGenreToSchoolKey(genre) {
+  const map = {
+    '玄幻': '玄幻', '仙侠': '仙侠', '都市': '都市', '科幻': '科幻',
+    '悬疑': '悬疑', '悬疑推理': '悬疑', '言情': '言情',
+    '历史': '历史', '游戏': '游戏', '恐怖': '恐怖', '武侠': '武侠',
+    // 映射前端特有题材到最接近的知识库题材
+    '宫斗宅斗': '言情', '奇幻': '玄幻', '轻小说': '游戏', '无限流': '恐怖'
+  };
+  return map[genre] || '玄幻';
+}
+
+// 渲染流派网格（支持id存储）
+function renderSchoolGrid(items, max) {
+  const grid = document.getElementById('schoolGrid');
+  grid.innerHTML = items.map(item => `
+    <div class="sel-card" data-type="school" data-max="${max}" data-value="${item.label}" data-id="${item.id}">
+      <div class="sel-icon">${item.icon}</div>
+      <div class="sel-label">${item.label}</div>
+      <div class="sel-desc">${item.desc}</div>
+    </div>
+  `).join('');
   grid.querySelectorAll('.sel-card').forEach(card => {
     card.addEventListener('click', () => toggleSelect(card));
   });
@@ -779,24 +921,35 @@ function toggleSelect(card) {
 
   if (card.classList.contains('selected')) {
     card.classList.remove('selected');
-    state[type] = state[type].filter(v => v !== value);
+    if (type === 'school') {
+      state.school = state.school.filter(s => s.label !== value);
+    } else {
+      state[type] = state[type].filter(v => v !== value);
+    }
   } else {
-    if (state[type].length >= max) {
-      alert(`最多选 ${max} 个！`);
-      return;
+    if (type === 'school') {
+      if (state.school.length >= max) { alert(`最多选 ${max} 个！`); return; }
+      card.classList.add('selected');
+      state.school.push({ label: value, id: card.dataset.id || '' });
+    } else {
+      if (state[type].length >= max) { alert(`最多选 ${max} 个！`); return; }
+      if (max === 1) {
+        card.parentElement.querySelectorAll('.sel-card').forEach(c => c.classList.remove('selected'));
+        state[type] = [];
+      }
+      card.classList.add('selected');
+      state[type].push(value);
     }
-    // 如果是单选(如method)，先取消其他选择
-    if (max === 1) {
-      card.parentElement.querySelectorAll('.sel-card').forEach(c => c.classList.remove('selected'));
-      state[type] = [];
-    }
-    card.classList.add('selected');
-    state[type].push(value);
   }
 
-  // 如果选择了题材，自动推断世界类型
+  // 如果选择了题材，自动推断世界类型并重新加载流派
   if (type === 'genre' && card.classList.contains('selected')) {
     autoSetWorldByGenre(value);
+    // 重新渲染schoolGrid，只显示当前题材的流派
+    const genreKey = mapGenreToSchoolKey(value);
+    const schoolList = DATA.school[genreKey] || DATA.school['玄幻'];
+    state.school = []; // 清空已选school
+    renderSchoolGrid(schoolList, 3);
   }
 
   updateAllPreviews();
@@ -983,7 +1136,7 @@ function autoFillDefaults(targetStep) {
   // 第1步：题材（默认玄幻+废柴逆袭+热血爽文+紧张刺激）
   if (targetStep > 1 && state.genre.length === 0) {
     selectItem('genre', '玄幻');
-    selectItem('school', '废柴逆袭');
+    selectSchoolByLabel('废柴逆袭流');
     selectItem('style', '热血爽文');
     selectItem('tone', '紧张刺激');
   }
@@ -1437,7 +1590,10 @@ async function generatePlots() {
   const style = state.style[0] || '热血爽文';
   const method = state.method || '三幕结构';
   const tone = state.tone[0] || '紧张刺激';
-  const school = state.school[0] || '';
+  const schoolObj = state.school[0] || { label: '', id: '' };
+  const schoolLabel = schoolObj.label || '';
+  const schoolIds = state.school.map(s => s.id).filter(Boolean);
+  const schoolLabels = state.school.map(s => s.label);
 
   // ── 后端AI模式 ──
   if (useBackend) {
@@ -1447,8 +1603,8 @@ async function generatePlots() {
         genres: state.genre,
         styles: state.style,
         tones: state.tone,
-        schools: state.school,
-        school_names: state.school_names || state.school,
+        schools: schoolIds,
+        school_names: schoolLabels,
         writing_method: state.method,
         length: '自定义字数',
         total_word_count: (parseInt(document.getElementById('totalWords')?.value || 50) * 10000),
@@ -1488,12 +1644,12 @@ async function generatePlots() {
   let usedTemplate = 'default';
   
   // 优先匹配流派关键词
-  if (school) {
-    if (templates[school]) {
-      plots = templates[school];
-      usedTemplate = school;
+  if (schoolLabel) {
+    if (templates[schoolLabel]) {
+      plots = templates[schoolLabel];
+      usedTemplate = schoolLabel;
     } else {
-      usedTemplate = 'default（' + school + '流派暂无专属模板，使用默认模板）';
+      usedTemplate = 'default（' + schoolLabel + '流派暂无专属模板，使用默认模板）';
     }
   }
 
@@ -1822,10 +1978,14 @@ async function startWriting() {
     if (useBackend) {
       try {
         editor.placeholder = '正在调用后端AI生成章节内容，请稍候...';
+        const schoolIds = state.school.map(s => s.id).filter(Boolean);
+        const schoolLabels = state.school.map(s => s.label);
         const res = await apiClient.post('/generate_chapter', {
           genre: state.genre,
           style: state.style,
           tone: state.tone,
+          schools: schoolIds,
+          school_names: schoolLabels,
           chapter_number: state.currentChapter,
           chapter_title: ch.title || `第${state.currentChapter}章`,
           chapter_summary: ch.content || '',
@@ -2807,7 +2967,7 @@ function updateWritingSummary() {
   const chapterCount = state.outline.length || Math.ceil(totalWords * 10000 / (state.wordsPerChapter || 4000));
 
   document.getElementById('sum-genre').textContent = state.genre.join('、') || '未选';
-  document.getElementById('sum-school').textContent = state.school.join('、') || '未选';
+  document.getElementById('sum-school').textContent = state.school.map(s=>s.label).join('、') || '未选';
   document.getElementById('sum-style').textContent = state.style.join('、') || '未选';
   document.getElementById('sum-tone').textContent = state.tone.join('、') || '未选';
   document.getElementById('sum-method').textContent = state.method || '未选';
@@ -2877,204 +3037,256 @@ function continueWriting() {
 // ═══════════════════════════════════════════════════════════════
 // 自动去AI处理（纯函数，无UI交互）
 // 返回处理后的文本
-function autoHumanize(inputText) {
-  let text = inputText;
-  if (!text || !text.trim()) return text;
+function autoHumanize(text) {
+  if (!text || text.length < 10) return text;
+  let result = text;
 
-  // ── 阶段1：删除AI交流痕迹与协作语气 ──
-  const chatTraces = [
-    {from: /希望这对您有帮助[!！]/g, to: ''},
-    {from: /当然[!！]/g, to: ''},
-    {from: /一定[!！]/g, to: ''},
-    {from: /您说得完全正确[!！]/g, to: ''},
-    {from: /这是一个复杂的话题/g, to: ''},
-    {from: /好问题[!！]/g, to: ''},
-    {from: /截至\s*\d{4}年/g, to: ''},
-    {from: /根据我最后的训练更新/g, to: ''},
-    {from: /虽然具体细节有限/g, to: ''},
-    {from: /基于可用信息/g, to: ''},
-    {from: /请告诉我/g, to: ''},
-    {from: /如果您想让我/g, to: ''},
+  // ===== 阶段0: 预处理 - 清理AI残留标记 =====
+  result = result.replace(/\b(当然|显然|值得注意的是|不可否认的是|必须指出|应当看到)\b[，,:：]/g, '');
+  result = result.replace(/\n{3,}/g, '\n\n');
+
+  // ===== 阶段1: 小说AI高频套话替换库（核心升级）=====
+  const novelReplacements = [
+    {
+      pattern: /(?:那是|这是|眼前)(?:传说中的|传闻中的|上古的|远古的|失落已久的|神秘的|禁忌的)([^，。；！？]+)[，。；！？]/g,
+      variants: [
+        (m, p1) => `老辈人提起过${p1}，没人说得清真假。`,
+        (m, p1) => `${p1}的事，山脚下的茶馆里倒有人吹过牛。`,
+        (m, p1) => `是不是真有${p1}，谁也拿不准。`,
+        (m, p1) => `古籍里提过${p1}，大多当笑话看。`,
+      ]
+    },
+    {
+      pattern: /眼中(?:燃烧着|闪烁着|跳动着|迸射出)(?:不屈的|坚定的|冰冷的|疯狂的|炽热|凌厉)的(?:火焰|光芒|寒光|杀意|神采)/g,
+      variants: [
+        () => pickOne(['眼神一下子变了', '目光沉下去', '眼睛里没有温度', '眼底有东西闪了一下', '盯着对方，没说话']),
+        () => pickOne(['眼神像淬了冰', '目光刀子似的', '眼里没什么表情', '眼珠动了动', '眼神定在某处']),
+      ]
+    },
+    {
+      pattern: /(?:他|她|.+?)(?:握紧|攥紧|捏紧)了(?:拳头|双拳|手掌)/g,
+      variants: [
+        () => pickOne(['手指一根根收紧', '指节发白', '手不自觉地握起来', '拳头在身侧紧了紧', '指甲嵌进掌心']),
+      ]
+    },
+    {
+      pattern: /(?:成为强者|变强|登顶|站在巅峰)(?:，|。)(?:这?是?他(?:此生|这一生|这辈子|今世|一生|这一辈子))(?:唯一|最大的|最终|最大|毕生|至死不改)的(?:目标|追求|执念|信念|梦想|夙愿)/g,
+      variants: [
+        () => pickOne(['变强这件事，他倒没想过为什么，只是非做不可。', '谁不想往上爬呢，他只是比别人更犟。', '这条路，走上去就没打算回头。', '他不信命，也不信别的，只信自己还能再往上走一步。']),
+      ]
+    },
+    {
+      pattern: /无论(?:前方|前面|未来|前路|将来)(?:有?多少|有什么|面临|等待|迎接)(?:艰难险阻|艰难困苦|风雨|挑战|困难|磨难|坎坷|危机|险阻)，(?:他|她|.+?)(?:都?不会|绝不|也?不会|绝不?会)(?:退缩|放弃|后退|低头|止步|动摇|妥协|屈服)/g,
+      variants: [
+        () => pickOne(['路不好走，他比谁都清楚，但停下来更难受。', '怕有什么用，该来的躲不掉。', '没人逼他，他自己选的。', '回头？他连来时的路都记不全了。']),
+      ]
+    },
+    {
+      pattern: /(?:因为|只因|毕竟|说到底)，(?:他|她|.+?)(?:早已|已经|根本|从来|压根|根本?就)(?:没有|没了|不再有|失去)(?:退路|选择|余地|机会|资格)/g,
+      variants: [
+        () => pickOne(['后退？他没想过这个词。', '走到这步，回头路比前面还难走。', '不是不想退，是没地方退了。', '退路那是别人的东西，他没有。']),
+      ]
+    },
+    {
+      pattern: /(?:在这|于这|在)(?:一|这|那|个)(?:一刻|瞬间|刹那|顷刻|弹指间|电光火石间|转瞬间|须臾间)，(?:他|她|.+?)(?:仿佛|似乎|好像|隐约|恍若)(?:听到了?|看到了?|感受到?了?|觉到?了?|触到了?)(?:命运|宿命|天意|天道|法则|天地|某种力量|某种召唤)的(?:召唤|呼唤|指引|召唤|牵引|低语|咆哮|嘲弄)/g,
+      variants: [
+        () => pickOne(['心里忽然空了一下，说不清是什么感觉。', '那一瞬间他愣了愣，像被人从背后叫了一声。', '某种说不清的东西在脑子里闪过去。', '他皱了皱眉，没来由地有些烦躁。']),
+      ]
+    },
+    {
+      pattern: /(?:心跳|心脏|心口)(?:快得|剧烈|疯狂|猛烈|急速|如擂鼓般)(?:像要|仿佛|似乎|好像|即将)(?:跳出|跃出|冲出|撕裂|炸开)(?:胸腔|胸口|喉咙|胸膛)/g,
+      variants: [
+        () => pickOne(['胸口闷得厉害。', '心口一下一下撞着肋骨。', '心跳声大得他自己都听见了。', '血往头上涌，耳膜嗡嗡响。']),
+      ]
+    },
+    {
+      pattern: /(?:每一根|每根|所有)(?:神经|毛孔|细胞|汗毛)(?:都|全都|全部)(?:绷紧|收紧|竖起|炸开|收缩|收缩)到了?(?:极致|极点|极限|最大程度|顶点)/g,
+      variants: [
+        () => pickOne(['后背发凉。', '头皮发麻。', '整个人僵在原地。', '手心冒汗，脚底却发冷。', '身子先于脑子动了。']),
+      ]
+    },
+    {
+      pattern: /(?:危险|杀意|危机|死亡|灭顶之灾|致命威胁)(?:正在|正|已经|悄然|无声无息地)(?:逼近|靠近|降临|来袭|笼罩|蔓延|席卷|吞噬|淹没)/g,
+      variants: [
+        () => pickOne(['空气里有什么东西变了。', '他忽然觉得冷。', '周围太安静了。', '一种直觉让他停住动作。', '有人盯着他，他感觉得到。']),
+      ]
+    },
+    {
+      pattern: /(?:在这|于这|在这)(?:千钧一发|生死一线|命悬一线|危急|万分紧急|生死存亡)之(?:际|时|刻)/g,
+      variants: [
+        () => pickOne(['眼看就要出事。', '来不及细想了。', '就是这一刻。', '没有犹豫的时间。', '脑子还没转，身体已经动了。']),
+      ]
+    },
+    {
+      pattern: /(?:生，或者死|生与死|胜或败|成与败|生或死|进或退|活或死|天堂或地狱|辉煌或陨落)/g,
+      variants: [
+        () => pickOne(['不是赢就是输，很简单。', '结果无非两种。', '赌一把。', '没有中间地带。', '总得选一边。']),
+      ]
+    },
+    {
+      pattern: /(?:风|夜风|冷风|寒风|狂风|阴风)(?:呼啸|吹拂|掠过|卷过|呼啸而|吹动|刮过)(?:而?过|，|。)(?:吹动|扬起|掀起|撩起|拨动)(?:他|她|.+?)(?:的|那|一身)(?:衣袂|衣袍|长衫|衣袖|黑发|发丝|头发|衣衫)/g,
+      variants: [
+        () => pickOne(['风吹过来，衣服贴在背上。', '风大，吹得他眯了眯眼。', '夜风带着凉意。', '衣摆被风吹得猎猎响。']),
+      ]
+    },
+    {
+      pattern: /(?:他|她|.+?)(?:能|可以)(?:清晰?地?|清楚?地?|明显?地?|真切?地?)(?:感觉到|感受到|觉察到|意识到|察觉到|体会到|感应到)(?:自己|身上|体内|周遭|周围)(?:的|那一?股?)([^，。；！？]{3,25})(?:正在|在|如|像)/g,
+      variants: [
+        (m, p1) => pickOne([`${p1}的变化他自己最清楚。`, `不用别人说，${p1}不对劲。`, `${p1}的感觉骗不了人。`, `${p1}？他早知道了。`]),
+      ]
+    },
+    {
+      pattern: /(?:时间|岁月|光阴)(?:所剩无几|不多|紧迫|无多|流逝|无情)/g,
+      variants: [
+        () => pickOne(['没多少时间了。', '再等下去要出事。', '日子不多了。', '太阳快落山了。', '钟摆还在走。']),
+      ]
+    },
+    {
+      pattern: /(?:站在|立于|伫立于|傲立于)(?:山巅|山顶|高峰|巅峰|山崖|绝顶)(?:，|。)(?:望?着?|俯瞰|俯视|眺望|凝视)(?:脚下|身下|下方|远方|远处)/g,
+      variants: [
+        () => pickOne(['山顶风大，他往下看了看。', '站在最高处，往下瞅了一眼。', '高处不胜寒，他裹了裹衣服。', '往上走了很久，终于到顶了。']),
+      ]
+    },
+    {
+      pattern: /(?:一道|一束|一片|一轮|一团|一股)(?:金光|光芒|霞光|神光|灵光|异光|紫气|黑气|血光)(?:冲天而起|从天而降|划破长空|撕裂天幕|照亮天际|弥漫开来|席卷而来)/g,
+      variants: [
+        () => pickOne(['天上忽然亮了亮。', '远处有什么东西闪了一下。', '云层里透出光来。', '天边的颜色变了。']),
+      ]
+    },
+    {
+      pattern: /(?:做出|面临|需要)(?:抉择|选择|决断|决定)/g,
+      variants: [
+        () => pickOne(['拿主意', '做决定', '选一边', '定下来', '没别的选了']),
+      ]
+    },
+    {
+      pattern: /(?:云海翻涌|云海翻腾|云雾缭绕|云卷云舒|风起云涌)/g,
+      variants: [
+        () => pickOne(['云在脚底下动', '雾浓得化不开', '云一层叠一层', '天阴沉沉的']),
+      ]
+    },
+    {
+      pattern: /(?:远方的|远处的|天际的|天边的)(?:天际线|地平线|天幕|苍穹|天空|天际)/g,
+      variants: [
+        () => pickOne(['天边', '远处', '目力所及', '远远望去']),
+      ]
+    },
+    {
+      pattern: /(?:众所周知|不可否认的是|值得注意的是|显而易见|不言而喻|毫无疑问|毋庸置疑|毫无疑问的是|可以肯定的是|需要指出的是|必须承认)/g,
+      variants: [() => '']
+    },
+    {
+      pattern: /(?:首先|其次|再次|最后|总而言之|综上所述|一言以蔽之|归根结底|说到底|说白了|其实说白了)/g,
+      variants: [() => pickOne(['', '话说回来，', '说白了，', '其实，'])]
+    },
+    {
+      pattern: /(?:非常|极其|十分|特别|格外|相当|无比|前所未有|史无前例|登峰造极|极致|绝伦)(?:的|地)/g,
+      variants: [() => pickOne(['', '挺', '怪', '够', '实打实', ''])]
+    },
   ];
-  chatTraces.forEach(r => { text = text.replace(r.from, r.to); });
 
-  // ── 阶段2：删除填充短语与过度限定 ──
-  const fillerPhrases = [
-    {from: /为了实现这一目标/g, to: '为了这'},
-    {from: /由于……的事实/g, to: '因为'},
-    {from: /由于……的原因/g, to: '因为'},
-    {from: /在这个时间点/g, to: '现在'},
-    {from: /在……的情况下/g, to: '如果'},
-    {from: /值得注意的是/g, to: ''},
-    {from: /可以潜在地可能被认为/g, to: ''},
-    {from: /可能会对……产生一些影响/g, to: '可能会影响'},
-  ];
-  fillerPhrases.forEach(r => { text = text.replace(r.from, r.to); });
+  for (const rule of novelReplacements) {
+    let match;
+    const regex = new RegExp(rule.pattern.source, rule.pattern.flags.includes('g') ? rule.pattern.flags : rule.pattern.flags + 'g');
+    let temp = result, lastIndex = 0, newResult = '';
+    while ((match = regex.exec(temp)) !== null) {
+      newResult += temp.slice(lastIndex, match.index);
+      const variant = rule.variants[Math.floor(Math.random() * rule.variants.length)];
+      newResult += variant(match[0], ...(match.slice(1)));
+      lastIndex = regex.lastIndex;
+    }
+    newResult += temp.slice(lastIndex);
+    result = newResult;
+  }
 
-  // ── 阶段3：删除夸大象征意义与宣传语言 ──
-  const hypePatterns = [
-    {from: /标志着……的关键时刻/g, to: ''},
-    {from: /是……的体现/g, to: ''},
-    {from: /是……的证明/g, to: ''},
-    {from: /极其重要的/g, to: '重要的'},
-    {from: /关键性的/g, to: '关键的'},
-    {from: /不断演变的格局/g, to: '领域'},
-    {from: /不可磨灭的印记/g, to: ''},
-    {from: /深深植根于/g, to: '源于'},
-    {from: /为……做出贡献/g, to: ''},
-    {from: /为……奠定基础/g, to: ''},
-    {from: /坐落于/g, to: '位于'},
-    {from: /位于……的中心/g, to: '在'},
-    {from: /拥有丰富的/g, to: '有'},
-    {from: /充满活力的/g, to: '有活力的'},
-    {from: /令人叹为观止的/g, to: '壮观的'},
-    {from: /迷人的/g, to: '吸引人的'},
-    {from: /开创性的/g, to: '创新的'},
-    {from: /自然之美/g, to: '自然风光'},
-    {from: /必游之地/g, to: '值得去的地方'},
-    {from: /著名的/g, to: '知名的'},
-  ];
-  hypePatterns.forEach(r => { text = text.replace(r.from, r.to); });
+  // ===== 阶段2: 句式打乱 - 破坏AI对称排比 =====
+  result = result.replace(/([一二两三四五六七八九十百千]+)(?:个|种|位|名|把|柄|颗|粒|片|道|股|团|缕|抹|层|面|方|块|条|根|支|只|头|匹|件|套|副|双|对|群|队|班|排|连|营|团|师|军)/g, (m, p1) => {
+    const vague = pickOne(['几', '好些', '不少', '一些', '若干', '']);
+    return vague === '' ? m : vague + m.slice(p1.length);
+  });
+  result = result.replace(/([一二两三四五六七八九十百千零]+)(?:年|月|日|天|夜|时辰|刻|柱香|弹指|刹那|瞬间|顷刻)/g, (m) => {
+    return pickOne(['一阵', '半晌', '好一会儿', '不知不觉', '']);
+  });
 
-  // ── 阶段4：删除模糊归因 ──
-  const vagueAttribution = [
-    {from: /行业报告显示/g, to: ''},
-    {from: /观察者指出/g, to: ''},
-    {from: /专家认为/g, to: ''},
-    {from: /一些批评者认为/g, to: ''},
-    {from: /多个来源指出/g, to: ''},
-    {from: /被广泛认为/g, to: ''},
-  ];
-  vagueAttribution.forEach(r => { text = text.replace(r.from, r.to); });
+  // ===== 阶段3: 增加口语化和不完美表达 =====
+  const fillers = ['嗯', '呃', '那个', '其实', '话说', '怎么说呢', '讲真', '老实说', '说白了', '你懂的', '反正'];
+  const sentences = result.split(/([。！？；\n]+)/);
+  let newSentences = [];
+  for (let i = 0; i < sentences.length; i += 2) {
+    let s = sentences[i];
+    let p = sentences[i + 1] || '';
+    if (s.trim().length > 5 && Math.random() < 0.15) {
+      const f = fillers[Math.floor(Math.random() * fillers.length)];
+      s = f + '，' + s.trimStart();
+    }
+    if (p === '。' && Math.random() < 0.08) {
+      p = '……';
+    }
+    newSentences.push(s + p);
+  }
+  result = newSentences.join('');
 
-  // ── 阶段5：AI典型句式修复（中文AI高频模板） ──
-  const aiTemplates = [
-    {from: /值得注意的是，/g, to: ''},
-    {from: /需要指出的是，/g, to: ''},
-    {from: /必须承认，/g, to: ''},
-    {from: /不可否认的是，/g, to: ''},
-    {from: /总而言之，/g, to: ''},
-    {from: /综上所述，/g, to: ''},
-    {from: /从这个角度来看，/g, to: ''},
-    {from: /在……的背景下，/g, to: ''},
-    {from: /随着……的发展，/g, to: ''},
-    {from: /通过……的努力，/g, to: ''},
-  ];
-  aiTemplates.forEach(r => { text = text.replace(r.from, r.to); });
+  // ===== 阶段4: 词汇级去AI化 =====
+  const wordMap = {
+    '进行': ['做', '干', '搞', '弄', ''], '实施': ['做', '干', ''], '开展': ['搞', '做', ''],
+    '通过': ['靠', '凭着', '借着', ''], '利用': ['用', '拿', ''], '采用': ['用', ''],
+    '提升': ['提高', '往上提', '往上走', ''], '优化': ['改好', '调好', ''], '完善': ['补齐', '弄好', ''],
+    '增强': ['加强', '变强', ''], '促进': ['推动', '让', ''], '推动': ['推着', '让', ''],
+    '因此': ['所以', '于是', '就这么', ''], '因而': ['所以', '于是', ''], '从而': ['就这么', '于是', ''],
+    '然而': ['不过', '可', '但是', ''], '但是': ['不过', '可', '只是', ''], '可是': ['不过', '但', ''],
+    '此外': ['另外', '还有', ''], '另外': ['还有', '再一个', ''], '同时': ['一边', '与此同时', ''],
+    '由于': ['因为', ''], '因为': ['', ''], '所以': ['', '就', ''],
+    '不仅': ['不只', '不光', ''], '不但': ['不只', '不光', ''], '而且': ['还', '也', ''],
+    '虽然': ['虽说', '尽管', ''], '尽管': ['虽说', '虽然', ''],
+    '即便': ['就算', '即使', ''], '即使': ['就算', '即便', ''],
+    '倘若': ['要是', '如果', ''], '假如': ['要是', '如果', ''], '如果': ['要是', ''],
+    '必须': ['得', '非得', ''], '应当': ['该', '应该', ''], '应该': ['该', '得', ''],
+    '能够': ['能', '可以', ''], '可以': ['能', '行', ''], '可能': ['许', '或许', '说不定', ''],
+    '似乎': ['好像', '仿佛', ''], '仿佛': ['好像', '似乎', ''], '好像': ['像是', '仿佛', ''],
+    '逐渐': ['慢慢', '渐渐', ''], '渐渐': ['慢慢', '逐渐', ''], '慢慢': ['缓缓', '一点一点', ''],
+    '突然': ['猛地', '冷不丁', ''], '猛然': ['猛地', '突然', ''], '猛地': ['突然', '冷不防', ''],
+    '立刻': ['马上', '立马', ''], '立即': ['马上', '立马', ''], '马上': ['立马', '这就', ''],
+    '终于': ['总算', '到底', ''], '最终': ['最后', '到头来', ''], '最后': ['到头来', '末了', ''],
+    '先前': ['之前', '早前', ''], '之前': ['前头', '先前', ''], '之后': ['后来', '往后', ''],
+    '此时': ['这会儿', '这当口', ''], '此刻': ['这会儿', '这当口', ''], '现在': ['这会儿', '眼下', ''],
+    '随后': ['接着', '跟着', ''], '接着': ['然后', '随后', ''], '然后': ['接着', '随后', ''],
+    '以前': ['从前', '早先', ''], '后来': ['往后', '后来', ''],
+  };
 
-  // ── 阶段6：替换高频AI词汇 ──
-  const aiWords = [
-    {from: /此外/g, to: '另外'},
-    {from: /然而/g, to: '不过'},
-    {from: /因此/g, to: '所以'},
-    {from: /此外，/g, to: '另外，'},
-    {from: /然而，/g, to: '不过，'},
-    {from: /因此，/g, to: '所以，'},
-    {from: /不仅……而且……/g, to: '既……又……'},
-    {from: /不仅……还……/g, to: '既……也……'},
-    {from: /一方面……另一方面……/g, to: '一边……一边……'},
-    {from: /从……到……/g, to: ''},
-    {from: /作为……的/g, to: '是……的'},
-    {from: /扮演着重要的角色/g, to: '很重要'},
-    {from: /发挥着重要的作用/g, to: '很重要'},
-    {from: /具有重要的意义/g, to: '很重要'},
-    {from: /具有重要的价值/g, to: '很有价值'},
-    {from: /具有重要的影响/g, to: '影响很大'},
-    {from: /凸显了/g, to: '显示出'},
-    {from: /反映了/g, to: '说明'},
-    {from: /体现了/g, to: '表现出'},
-    {from: /展示了/g, to: '显出'},
-  ];
-  aiWords.forEach(r => { text = text.replace(r.from, r.to); });
+  for (const [aiWord, humanWords] of Object.entries(wordMap)) {
+    const regex = new RegExp(`(?<![\\u4e00-\\u9fa5])${aiWord}(?![\\u4e00-\\u9fa5])`, 'g');
+    result = result.replace(regex, () => {
+      const choice = humanWords[Math.floor(Math.random() * humanWords.length)];
+      return choice;
+    });
+  }
 
-  // ── 阶段7：修复否定排比 ──
-  text = text.replace(/不是……而是……/g, '不是……而是……');
-  text = text.replace(/不仅没有……反而/g, '不但没有……反而');
-  text = text.replace(/不仅没有……还/g, '不但没有……还');
-  text = text.replace(/不仅没有……而且/g, '不但没有……而且');
+  // ===== 阶段5: 破坏AI完美结构 - 随机合并短句 =====
+  const paras = result.split('\n');
+  let newParas = [];
+  for (let i = 0; i < paras.length; i++) {
+    const p = paras[i].trim();
+    if (p.length < 15 && i < paras.length - 1 && Math.random() < 0.3) {
+      paras[i + 1] = p + '，' + paras[i + 1];
+    } else if (p.length > 0) {
+      newParas.push(p);
+    }
+  }
+  result = newParas.join('\n');
 
-  // ── 阶段8：修复虚假范围 ──
-  text = text.replace(/从……到……/g, '');
-  text = text.replace(/范围从……到……/g, '');
+  // ===== 阶段6: 清理残余 =====
+  result = result.replace(/，(?:，|。)+/g, '，');
+  result = result.replace(/。(?:。|，)+/g, '。');
+  result = result.replace(/……(?:……)+/g, '……');
+  result = result.replace(/，\s*$/gm, '');
+  result = result.replace(/^\s*[，。：；、]\s*/gm, '');
+  result = result.replace(/\n{3,}/g, '\n\n');
 
-  // ── 阶段9：修复系动词回避 ──
-  text = text.replace(/作为……的/g, '是……的');
-  text = text.replace(/作为……的重要组成部分/g, '是……的重要部分');
+  return result;
+}
 
-  // ── 阶段10：删除通用积极结论 ──
-  const positiveConclusions = [
-    /为……的发展奠定了坚实的基础[。，]/g,
-    /为……的发展提供了重要的保障[。，]/g,
-    /为……的实现创造了有利的条件[。，]/g,
-    /必将推动……的进一步发展[。，]/g,
-    /必将促进……的进一步提升[。，]/g,
-    /必将为……的发展注入新的活力[。，]/g,
-  ];
-  positiveConclusions.forEach(p => { text = text.replace(p, '。'); });
-
-  // ── 阶段11：删除提纲式"挑战与未来展望" ──
-  const outlinePatterns = [
-    /面临的挑战[：:]/g,
-    /未来的展望[：:]/g,
-    /未来的发展方向[：:]/g,
-    /未来的发展趋势[：:]/g,
-    /需要进一步研究[：:]/g,
-    /需要进一步探讨[：:]/g,
-  ];
-  outlinePatterns.forEach(p => { text = text.replace(p, ''); });
-
-  // ── 阶段12：清理风格痕迹 ──
-  text = text.replace(/——/g, '—');
-  text = text.replace(/\*\*/g, '');
-  text = text.replace(/\*/g, '');
-  text = text.replace(/#[^\n]+/g, '');
-  text = text.replace(/\u201c|\u201d|\u2018|\u2019/g, '"');
-  text = text.replace(/[😀-🿿]/g, '');
-
-  // ── 阶段13：小说AI模板套话修复 ──
-  const novelAiTemplates = [
-    {from: /那是传说中的/g, to: '那是'},
-    {from: /这是他此生唯一的目标/g, to: '这是他唯一的目标'},
-    {from: /这是他此生最大的目标/g, to: '这是他最大的目标'},
-    {from: /在这一刻，他仿佛/g, to: '他仿佛'},
-    {from: /在这一刻，他感觉/g, to: '他感觉'},
-    {from: /在这一刻，他似乎/g, to: '他似乎'},
-    {from: /在这一刻，他好像/g, to: '他好像'},
-    {from: /远方的天际线上/g, to: '天边'},
-    {from: /眼中燃烧着不屈的火焰/g, to: '眼里闪着不甘'},
-    {from: /眼中燃烧着/g, to: '眼里有'},
-    {from: /握紧了拳头/g, to: '攥紧拳头'},
-    {from: /他都不会退缩/g, to: '他也不会退'},
-    {from: /他早已没有退路/g, to: '他没退路了'},
-    {from: /因为，他早已/g, to: '他早'},
-    {from: /因为，他已经/g, to: '他已经'},
-    {from: /因为，他早已没有/g, to: '他没'},
-    {from: /风呼啸而过，吹动他的衣袂/g, to: '风卷过，衣摆猎猎作响'},
-    {from: /风呼啸而过/g, to: '风卷过'},
-    {from: /吹动他的衣袂/g, to: '衣摆猎猎作响'},
-    {from: /他仿佛听到了命运的召唤/g, to: '他隐约听到某种召唤'},
-    {from: /命运的召唤/g, to: '某种召唤'},
-    {from: /站在山巅，望着/g, to: '立在山巅，看'},
-    {from: /望着脚下/g, to: '看脚下'},
-    {from: /云海翻涌/g, to: '云海翻腾'},
-    {from: /一道金光冲天而起/g, to: '一道金光破空'},
-    {from: /冲天而起/g, to: '破空而起'},
-    {from: /他握紧了拳头/g, to: '他攥紧拳头'},
-    {from: /成为强者，这是他/g, to: '成为强者——他'},
-    {from: /无论前方有多少艰难险阻/g, to: '不管前面多难'},
-    {from: /艰难险阻/g, to: '难关'},
-  ];
-  novelAiTemplates.forEach(r => { text = text.replace(r.from, r.to); });
-
-  // ── 清理多余标点和空白 ──
-  text = text.replace(/，，+/g, '，');
-  text = text.replace(/。。+/g, '。');
-  text = text.replace(/；；+/g, '；');
-  text = text.replace(/、、+/g, '、');
-  text = text.replace(/\n\s+/g, '\n');
-  text = text.replace(/\s+\n/g, '\n');
-
-  return text;
+function pickOne(arr) {
+  return arr[Math.floor(Math.random() * arr.length)];
 }
 
 function aiPolish() {
@@ -3836,7 +4048,7 @@ function exportNovel() {
   const currentText = editor.value.trim();
 
   const genreName = state.genre.join('、') || '未命名';
-  const schoolName = state.school.join('、') || '未选';
+  const schoolName = state.school.map(s=>s.label).join('、') || '未选';
   const styleName = state.style.join('、') || '未选';
   const toneName = state.tone.join('、') || '未选';
   const methodName = state.method || '未选';
@@ -3898,7 +4110,7 @@ function exportNovel() {
 // ═════════════════════ 更新预览 ═════════════════════
 function updateAllPreviews() {
   const g = state.genre.join('、') || '未选';
-  const s = state.school.join('、') || '未选';
+  const s = state.school.map(s=>s.label).join('、') || '未选';
   const st = state.style.join('、') || '未选';
   const t = state.tone.join('、') || '未选';
   
@@ -4057,7 +4269,7 @@ function runDiagnostics() {
   // 3. 检查state状态
   results.push('📊 当前state:');
   results.push('  题材: '+(state.genre.join(',')||'未选'));
-  results.push('  流派: '+(state.school.join(',')||'未选'));
+  results.push('  流派: '+(state.school.map(s=>s.label).join(',')||'未选'));
   results.push('  风格: '+(state.style.join(',')||'未选'));
   results.push('  基调: '+(state.tone.join(',')||'未选'));
   results.push('  手法: '+(state.method||'未选'));
