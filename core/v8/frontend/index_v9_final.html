@@ -747,7 +747,11 @@ function init() {
     if (state.style.length === 0) selectItem('style', '热血爽文');
     if (state.tone.length === 0) selectItem('tone', '紧张刺激');
     if (!state.method) selectItem('method', '三幕结构');
-    if (!state.worldType) selectItem('worldType', '东方玄幻');
+    // 世界类型根据题材自动生成
+    if (!state.worldType || state.worldType === '') {
+      const firstGenre = state.genre[0] || '玄幻';
+      autoSetWorldByGenre(firstGenre);
+    }
     updateAllPreviews();
   }, 100);
 }
@@ -772,7 +776,7 @@ function toggleSelect(card) {
   const type = card.dataset.type;
   const max = parseInt(card.dataset.max);
   const value = card.dataset.value;
-  
+
   if (card.classList.contains('selected')) {
     card.classList.remove('selected');
     state[type] = state[type].filter(v => v !== value);
@@ -789,8 +793,84 @@ function toggleSelect(card) {
     card.classList.add('selected');
     state[type].push(value);
   }
-  
+
+  // 如果选择了题材，自动推断世界类型
+  if (type === 'genre' && card.classList.contains('selected')) {
+    autoSetWorldByGenre(value);
+  }
+
   updateAllPreviews();
+}
+
+// 根据题材自动设置世界类型、时代、力量体系
+function autoSetWorldByGenre(genre) {
+  const worldMap = {
+    '玄幻': { type: '东方玄幻世界', era: '上古蛮荒时代', power: '炼气→筑基→金丹→元婴→化神→渡劫' },
+    '仙侠': { type: '修仙问道世界', era: '远古仙界纪元', power: '炼气→筑基→金丹→元婴→化神→渡劫→飞升' },
+    '都市': { type: '现代都市世界', era: '当代都市社会', power: '普通人→异能觉醒→强者→传奇→神话' },
+    '科幻': { type: '星际未来世界', era: '公元3050年星际时代', power: '基因改造→脑机接口→星际航行→维度跃迁' },
+    '历史': { type: '古代王朝世界', era: '三国鼎立时代', power: '平民→谋士→将军→诸侯→帝王' },
+    '武侠': { type: '江湖武林世界', era: '南宋末年乱世', power: '外功→内功→绝世武功→武林至尊→一代宗师' },
+    '言情': { type: '现代言情世界', era: '当代都市生活', power: '普通人→相遇→相知→相爱→相守' },
+    '宫斗宅斗': { type: '宫廷宅院世界', era: '大清乾隆盛世', power: '宫女→嫔妃→贵妃→皇后→太后' },
+    '奇幻': { type: '西方奇幻世界', era: '中土纪元', power: '学徒→法师→大法师→传奇法师→神祇' },
+    '悬疑推理': { type: '推理探案世界', era: '现代都市罪案', power: '普通人→侦探→名侦探→破案大师→传奇' },
+    '无限流': { type: '无限轮回世界', era: '多元宇宙交汇点', power: '新手→资深者→队长→破界者→主宰' },
+    '轻小说': { type: '二次元异世界', era: '剑与魔法纪元', power: '村民→冒险者→英雄→勇者→传说' }
+  };
+  const info = worldMap[genre];
+  if (!info) return;
+
+  // 如果世界类型未手动设置，自动填充
+  if (!state.worldType || state.worldType === '') {
+    selectItem('worldType', info.type);
+  }
+  const eraInput = document.getElementById('worldEra');
+  const powerInput = document.getElementById('worldPower');
+  if (eraInput && !eraInput.value.trim()) {
+    state.worldEra = info.era;
+    eraInput.value = info.era;
+  }
+  if (powerInput && !powerInput.value.trim()) {
+    state.worldPower = info.power;
+    powerInput.value = info.power;
+  }
+}
+
+// 通过值选择网格项（用于代码中自动设置）
+function selectItem(type, value) {
+  const grid = document.getElementById(type + 'Grid');
+  if (!grid) return;
+  const cards = grid.querySelectorAll('.sel-card');
+  let found = false;
+  cards.forEach(card => {
+    if (card.dataset.value === value) {
+      // 如果是单选，先取消其他
+      const max = parseInt(card.dataset.max || '1');
+      if (max === 1) {
+        cards.forEach(c => {
+          c.classList.remove('selected');
+        });
+        state[type] = [];
+      }
+      card.classList.add('selected');
+      if (!state[type]) state[type] = [];
+      if (Array.isArray(state[type]) && !state[type].includes(value)) {
+        state[type].push(value);
+      } else if (!Array.isArray(state[type])) {
+        state[type] = value;
+      }
+      found = true;
+    }
+  });
+  if (!found) {
+    // 如果grid中找不到，直接设置state
+    if (Array.isArray(state[type])) {
+      if (!state[type].includes(value)) state[type].push(value);
+    } else {
+      state[type] = value;
+    }
+  }
 }
 
 function initCharacters() {
@@ -911,13 +991,10 @@ function autoFillDefaults(targetStep) {
   if (targetStep > 2 && !state.method) {
     selectItem('method', '三幕结构');
   }
-  // 第3步：世界构建
+  // 第3步：世界构建（根据题材自动生成）
   if (targetStep > 3 && (!state.worldType || !state.worldEra)) {
-    selectItem('worldType', '东方玄幻');
-    if (!state.worldEra) state.worldEra = '天地初开之时';
-    if (!state.worldPower) state.worldPower = '炼气→筑基→金丹→元婴';
-    document.getElementById('worldEra').value = state.worldEra;
-    document.getElementById('worldPower').value = state.worldPower;
+    const firstGenre = state.genre[0] || '玄幻';
+    autoSetWorldByGenre(firstGenre);
   }
   // 第4步：角色（已有默认6人，无需处理）
   if (targetStep > 4) {

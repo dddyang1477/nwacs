@@ -744,16 +744,18 @@ class NWACSHandler(BaseHTTPRequestHandler):
     
     def _handle_get_index(self):
         """处理首页请求"""
-        frontend_path = os.path.join(os.path.dirname(__file__), 'frontend', 'index.html')
-        if os.path.exists(frontend_path):
-            with open(frontend_path, 'r', encoding='utf-8') as f:
-                html = f.read()
-            self.send_response(200)
-            self.send_header('Content-Type', 'text/html; charset=utf-8')
-            self.end_headers()
-            self.wfile.write(html.encode('utf-8'))
-        else:
-            self._send_json({"error": "Frontend not found"}, 404)
+        frontend_dir = os.path.join(os.path.dirname(__file__), 'frontend')
+        for fname in ['index_v9_final.html', 'index.html']:
+            frontend_path = os.path.join(frontend_dir, fname)
+            if os.path.exists(frontend_path):
+                with open(frontend_path, 'r', encoding='utf-8') as f:
+                    html = f.read()
+                self.send_response(200)
+                self.send_header('Content-Type', 'text/html; charset=utf-8')
+                self.end_headers()
+                self.wfile.write(html.encode('utf-8'))
+                return
+        self._send_json({"error": "Frontend not found"}, 404)
     
     def _handle_error(self, e):
         """统一错误处理"""
