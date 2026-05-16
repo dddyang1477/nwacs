@@ -3105,14 +3105,14 @@ function saveWriting() {
     title: chapterTitle,
     content: text,
     savedAt: new Date().toLocaleString('zh-CN'),
-    wordCount: text.length
+    wordCount: countChineseChars(text)
   };
   localStorage.setItem('nwacs_chapters', JSON.stringify(savedChapters));
   alert(`💾 第${state.currentChapter}章已保存！\\n字数：${text.length}字\\n保存时间：${new Date().toLocaleString('zh-CN')}`);
 }
 
 // 继续写作：基于当前内容生成后续段落
-function continueWriting() {
+async function continueWriting() {
   const editor = document.getElementById('writingEditor');
   const text = editor.value.trim();
   if (!text) {
@@ -3126,8 +3126,47 @@ function continueWriting() {
   const genre = state.genre[0] || '玄幻';
   const heroName = hero?.name || '主角';
   const villainName = villain?.name || '反派';
-  const phase = ch?.phase || '发展';
 
+  // ── 后端AI模式：调用API续写 ──
+  if (useBackend) {
+    try {
+      const btn = event.target; btn.textContent = '⏳ 续写中...'; btn.disabled = true;
+      const schoolIds = state.school.map(s => s.id).filter(Boolean);
+      const schoolLabels = state.school.map(s => s.label);
+      const res = await apiClient.post('/generate_chapter', {
+        genre: state.genre,
+        style: state.style,
+        tone: state.tone,
+        schools: schoolIds,
+        school_names: schoolLabels,
+        chapter_number: state.currentChapter,
+        chapter_title: ch?.title || `第${state.currentChapter}章`,
+        chapter_summary: ch?.content || '',
+        outline: state.outline.map(o => ({chapter: o.chapter, title: o.title, content: o.content})),
+        characters: state.characters,
+        plot_conflict: state.selectedPlotData?.conflict || '命运抗争',
+        plot_goal: state.selectedPlotData?.goal || '成为强者',
+        writing_method: state.method,
+        target_word_count: Math.max(500, Math.floor(state.wordsPerChapter * 0.3)),
+        previous_chapter_content: text,
+        previous_chapter_num: state.currentChapter,
+        world_setting: {era: state.worldEra || '天地初开之时', power_system: state.worldPower || '炼气→筑基→金丹→元婴'}
+      });
+      btn.textContent = '✨ 继续写作'; btn.disabled = false;
+
+      if (res.success && res.content) {
+        const humanized = autoHumanize(res.content);
+        editor.value += '\n\n' + humanized;
+        onWritingInput();
+        alert(`✨ 后端AI续写完成！\n续写字数：约${countChineseChars(humanized)}字`);
+        return;
+      }
+    } catch (e) {
+      console.warn('后端续写失败，回退到本地模板：', e);
+    }
+  }
+
+  // ── 本地模板模式（回退） ──
   const continuations = [
     `\\n\\n接下来的日子里，${heroName}开始了更加艰苦的修炼。\\n\\n每天清晨，当第一缕阳光照进窗户时，他就已经在修炼场中挥汗如雨。\\n\\n他知道，只有变得更强，才能保护自己所珍视的一切。\\n\\n而此刻的${villainName}，也正在暗中积蓄力量，准备发起最后的反扑...`,
     `\\n\\n夜色渐深，${heroName}独自坐在屋顶上，望着满天繁星发呆。\\n\\n明天，就是与${villainName}约定决战的日子。\\n\\n这一战，将决定一切。\\n\\n他深吸一口气，握紧了拳头。\\n\\n"无论如何，我都不能输。"他在心中暗暗发誓。`,
@@ -3139,7 +3178,7 @@ function continueWriting() {
   const continuation = continuations[Math.floor(Math.random() * continuations.length)];
   editor.value += continuation;
   onWritingInput();
-  alert(`✨ 已续写${continuation.length}字！\\n提示：续写内容为模板生成，建议根据大纲方向继续发挥。`);
+  alert(`✨ 已续写${countChineseChars(continuation)}字！\\n提示：续写内容为模板生成，建议根据大纲方向继续发挥。`);
 }
 
 // ═══════════════════════════════════════════════════════════════
@@ -4576,8 +4615,36 @@ function runDiagnostics() {
   // 7. 版本号
   const ver = document.querySelector('.brand-ver');
   results.push('🏷️ 版本: '+(ver?ver.textContent:'未知'));
-  
+
+  // 8. 后端API连通性（异步检查）
+  results.push('');
+  results.push('🔌 后端API连通性（点击确定后异步检测）...');
+
   alert(results.join('\n'));
+
+  // 异步检测后端API
+  setTimeout(async () => {
+    const apiResults = ['🔌 后端API连通性检测', '═══════════════════════════'];
+    const apis = [
+      {name: '健康检查', path: '/health'},
+      {name: '模型列表', path: '/models'},
+      {name: '选项数据', path: '/options'},
+      {name: '质量系统', path: '/quality/trend'},
+      {name: '留存系统', path: '/retention/report'},
+      {name: '疲劳检测', path: '/fatigue/overall'},
+      {name: '风格列表', path: '/style/list'},
+      {name: 'RAG统计', path: '/rag/stats'},
+    ];
+    for (const api of apis) {
+      try {
+        const res = await apiClient.get(api.path);
+        apiResults.push(`✅ ${api.name} (${api.path})：正常`);
+      } catch (e) {
+        apiResults.push(`❌ ${api.name} (${api.path})：${e.message.includes('404')?'未注册':e.message}`);
+      }
+    }
+    alert(apiResults.join('\n'));
+  }, 100);
 }
 
 // ═════════════════════ 启动 ═════════════════════
