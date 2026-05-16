@@ -39,3 +39,4 @@ core/sessions/
 exports/
 push_err.txt
 push_out.txt
+server_debug.log
