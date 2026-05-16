@@ -1868,6 +1868,10 @@ async function startWriting() {
       return;
     }
 
+    // ── 自动去AI痕迹处理 ──
+    const humanizedContent = autoHumanize(chapterContent);
+    chapterContent = humanizedContent;
+
     if (!editor.value.trim()) {
       editor.value = chapterContent;
       editor.focus();
@@ -2871,6 +2875,208 @@ function continueWriting() {
 // AI润色：Humanizer-zh 技术整合版 — 24种AI写作模式全面去除
 // 基于 https://github.com/op7418/Humanizer-zh 的维基百科AI写作特征指南
 // ═══════════════════════════════════════════════════════════════
+// 自动去AI处理（纯函数，无UI交互）
+// 返回处理后的文本
+function autoHumanize(inputText) {
+  let text = inputText;
+  if (!text || !text.trim()) return text;
+
+  // ── 阶段1：删除AI交流痕迹与协作语气 ──
+  const chatTraces = [
+    {from: /希望这对您有帮助[!！]/g, to: ''},
+    {from: /当然[!！]/g, to: ''},
+    {from: /一定[!！]/g, to: ''},
+    {from: /您说得完全正确[!！]/g, to: ''},
+    {from: /这是一个复杂的话题/g, to: ''},
+    {from: /好问题[!！]/g, to: ''},
+    {from: /截至\s*\d{4}年/g, to: ''},
+    {from: /根据我最后的训练更新/g, to: ''},
+    {from: /虽然具体细节有限/g, to: ''},
+    {from: /基于可用信息/g, to: ''},
+    {from: /请告诉我/g, to: ''},
+    {from: /如果您想让我/g, to: ''},
+  ];
+  chatTraces.forEach(r => { text = text.replace(r.from, r.to); });
+
+  // ── 阶段2：删除填充短语与过度限定 ──
+  const fillerPhrases = [
+    {from: /为了实现这一目标/g, to: '为了这'},
+    {from: /由于……的事实/g, to: '因为'},
+    {from: /由于……的原因/g, to: '因为'},
+    {from: /在这个时间点/g, to: '现在'},
+    {from: /在……的情况下/g, to: '如果'},
+    {from: /值得注意的是/g, to: ''},
+    {from: /可以潜在地可能被认为/g, to: ''},
+    {from: /可能会对……产生一些影响/g, to: '可能会影响'},
+  ];
+  fillerPhrases.forEach(r => { text = text.replace(r.from, r.to); });
+
+  // ── 阶段3：删除夸大象征意义与宣传语言 ──
+  const hypePatterns = [
+    {from: /标志着……的关键时刻/g, to: ''},
+    {from: /是……的体现/g, to: ''},
+    {from: /是……的证明/g, to: ''},
+    {from: /极其重要的/g, to: '重要的'},
+    {from: /关键性的/g, to: '关键的'},
+    {from: /不断演变的格局/g, to: '领域'},
+    {from: /不可磨灭的印记/g, to: ''},
+    {from: /深深植根于/g, to: '源于'},
+    {from: /为……做出贡献/g, to: ''},
+    {from: /为……奠定基础/g, to: ''},
+    {from: /坐落于/g, to: '位于'},
+    {from: /位于……的中心/g, to: '在'},
+    {from: /拥有丰富的/g, to: '有'},
+    {from: /充满活力的/g, to: '有活力的'},
+    {from: /令人叹为观止的/g, to: '壮观的'},
+    {from: /迷人的/g, to: '吸引人的'},
+    {from: /开创性的/g, to: '创新的'},
+    {from: /自然之美/g, to: '自然风光'},
+    {from: /必游之地/g, to: '值得去的地方'},
+    {from: /著名的/g, to: '知名的'},
+  ];
+  hypePatterns.forEach(r => { text = text.replace(r.from, r.to); });
+
+  // ── 阶段4：删除模糊归因 ──
+  const vagueAttribution = [
+    {from: /行业报告显示/g, to: ''},
+    {from: /观察者指出/g, to: ''},
+    {from: /专家认为/g, to: ''},
+    {from: /一些批评者认为/g, to: ''},
+    {from: /多个来源指出/g, to: ''},
+    {from: /被广泛认为/g, to: ''},
+  ];
+  vagueAttribution.forEach(r => { text = text.replace(r.from, r.to); });
+
+  // ── 阶段5：AI典型句式修复（中文AI高频模板） ──
+  const aiTemplates = [
+    {from: /值得注意的是，/g, to: ''},
+    {from: /需要指出的是，/g, to: ''},
+    {from: /必须承认，/g, to: ''},
+    {from: /不可否认的是，/g, to: ''},
+    {from: /总而言之，/g, to: ''},
+    {from: /综上所述，/g, to: ''},
+    {from: /从这个角度来看，/g, to: ''},
+    {from: /在……的背景下，/g, to: ''},
+    {from: /随着……的发展，/g, to: ''},
+    {from: /通过……的努力，/g, to: ''},
+  ];
+  aiTemplates.forEach(r => { text = text.replace(r.from, r.to); });
+
+  // ── 阶段6：替换高频AI词汇 ──
+  const aiWords = [
+    {from: /此外/g, to: '另外'},
+    {from: /然而/g, to: '不过'},
+    {from: /因此/g, to: '所以'},
+    {from: /此外，/g, to: '另外，'},
+    {from: /然而，/g, to: '不过，'},
+    {from: /因此，/g, to: '所以，'},
+    {from: /不仅……而且……/g, to: '既……又……'},
+    {from: /不仅……还……/g, to: '既……也……'},
+    {from: /一方面……另一方面……/g, to: '一边……一边……'},
+    {from: /从……到……/g, to: ''},
+    {from: /作为……的/g, to: '是……的'},
+    {from: /扮演着重要的角色/g, to: '很重要'},
+    {from: /发挥着重要的作用/g, to: '很重要'},
+    {from: /具有重要的意义/g, to: '很重要'},
+    {from: /具有重要的价值/g, to: '很有价值'},
+    {from: /具有重要的影响/g, to: '影响很大'},
+    {from: /凸显了/g, to: '显示出'},
+    {from: /反映了/g, to: '说明'},
+    {from: /体现了/g, to: '表现出'},
+    {from: /展示了/g, to: '显出'},
+  ];
+  aiWords.forEach(r => { text = text.replace(r.from, r.to); });
+
+  // ── 阶段7：修复否定排比 ──
+  text = text.replace(/不是……而是……/g, '不是……而是……');
+  text = text.replace(/不仅没有……反而/g, '不但没有……反而');
+  text = text.replace(/不仅没有……还/g, '不但没有……还');
+  text = text.replace(/不仅没有……而且/g, '不但没有……而且');
+
+  // ── 阶段8：修复虚假范围 ──
+  text = text.replace(/从……到……/g, '');
+  text = text.replace(/范围从……到……/g, '');
+
+  // ── 阶段9：修复系动词回避 ──
+  text = text.replace(/作为……的/g, '是……的');
+  text = text.replace(/作为……的重要组成部分/g, '是……的重要部分');
+
+  // ── 阶段10：删除通用积极结论 ──
+  const positiveConclusions = [
+    /为……的发展奠定了坚实的基础[。，]/g,
+    /为……的发展提供了重要的保障[。，]/g,
+    /为……的实现创造了有利的条件[。，]/g,
+    /必将推动……的进一步发展[。，]/g,
+    /必将促进……的进一步提升[。，]/g,
+    /必将为……的发展注入新的活力[。，]/g,
+  ];
+  positiveConclusions.forEach(p => { text = text.replace(p, '。'); });
+
+  // ── 阶段11：删除提纲式"挑战与未来展望" ──
+  const outlinePatterns = [
+    /面临的挑战[：:]/g,
+    /未来的展望[：:]/g,
+    /未来的发展方向[：:]/g,
+    /未来的发展趋势[：:]/g,
+    /需要进一步研究[：:]/g,
+    /需要进一步探讨[：:]/g,
+  ];
+  outlinePatterns.forEach(p => { text = text.replace(p, ''); });
+
+  // ── 阶段12：清理风格痕迹 ──
+  text = text.replace(/——/g, '—');
+  text = text.replace(/\*\*/g, '');
+  text = text.replace(/\*/g, '');
+  text = text.replace(/#[^\n]+/g, '');
+  text = text.replace(/\u201c|\u201d|\u2018|\u2019/g, '"');
+  text = text.replace(/[😀-🿿]/g, '');
+
+  // ── 阶段13：小说AI模板套话修复 ──
+  const novelAiTemplates = [
+    {from: /那是传说中的/g, to: '那是'},
+    {from: /这是他此生唯一的目标/g, to: '这是他唯一的目标'},
+    {from: /这是他此生最大的目标/g, to: '这是他最大的目标'},
+    {from: /在这一刻，他仿佛/g, to: '他仿佛'},
+    {from: /在这一刻，他感觉/g, to: '他感觉'},
+    {from: /在这一刻，他似乎/g, to: '他似乎'},
+    {from: /在这一刻，他好像/g, to: '他好像'},
+    {from: /远方的天际线上/g, to: '天边'},
+    {from: /眼中燃烧着不屈的火焰/g, to: '眼里闪着不甘'},
+    {from: /眼中燃烧着/g, to: '眼里有'},
+    {from: /握紧了拳头/g, to: '攥紧拳头'},
+    {from: /他都不会退缩/g, to: '他也不会退'},
+    {from: /他早已没有退路/g, to: '他没退路了'},
+    {from: /因为，他早已/g, to: '他早'},
+    {from: /因为，他已经/g, to: '他已经'},
+    {from: /因为，他早已没有/g, to: '他没'},
+    {from: /风呼啸而过，吹动他的衣袂/g, to: '风卷过，衣摆猎猎作响'},
+    {from: /风呼啸而过/g, to: '风卷过'},
+    {from: /吹动他的衣袂/g, to: '衣摆猎猎作响'},
+    {from: /他仿佛听到了命运的召唤/g, to: '他隐约听到某种召唤'},
+    {from: /命运的召唤/g, to: '某种召唤'},
+    {from: /站在山巅，望着/g, to: '立在山巅，看'},
+    {from: /望着脚下/g, to: '看脚下'},
+    {from: /云海翻涌/g, to: '云海翻腾'},
+    {from: /一道金光冲天而起/g, to: '一道金光破空'},
+    {from: /冲天而起/g, to: '破空而起'},
+    {from: /他握紧了拳头/g, to: '他攥紧拳头'},
+    {from: /成为强者，这是他/g, to: '成为强者——他'},
+    {from: /无论前方有多少艰难险阻/g, to: '不管前面多难'},
+    {from: /艰难险阻/g, to: '难关'},
+  ];
+  novelAiTemplates.forEach(r => { text = text.replace(r.from, r.to); });
+
+  // ── 清理多余标点和空白 ──
+  text = text.replace(/，，+/g, '，');
+  text = text.replace(/。。+/g, '。');
+  text = text.replace(/；；+/g, '；');
+  text = text.replace(/、、+/g, '、');
+  text = text.replace(/\n\s+/g, '\n');
+  text = text.replace(/\s+\n/g, '\n');
+
+  return text;
+}
+
 function aiPolish() {
   const editor = document.getElementById('writingEditor');
   let text = editor.value;
