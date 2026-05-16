@@ -1969,19 +1969,63 @@ function generateDetailOutline() {
 function onWritingInput() {
   const editor = document.getElementById('writingEditor');
   const text = editor.value;
-  document.getElementById('writtenCount').textContent = text.length;
-  
-  // 模拟AI检测
-  const score = Math.floor(70 + Math.random() * 25);
+  document.getElementById('writtenCount').textContent = countChineseChars(text);
+
+  // 真实AI痕迹检测（基于文本内容，非随机）
+  const aiPatterns = [
+    /此外|至关重要|深入探讨|强调|持久的|增强|培养|获得|突出|相互作用|复杂性|格局|展示|证明|宝贵的|充满活力的|织锦/g,
+    /作为……的|充当……的|代表……的|标志着……的|设有|拥有|提供/g,
+    /不仅……而且|不仅……更|不仅仅是……而是/g,
+    /众所周知|值得注意的是|总的来说|不仅如此|换句话说|事实上|与此同时/g,
+    /首先，|其次，|最后，|因此，|然而，/g,
+    /非常|极其|十分|特别|格外|相当|无比|前所未有|史无前例/g,
+    /进行|实施|开展|利用|通过|采用/g,
+  ];
+  let aiMatches = 0;
+  aiPatterns.forEach(p => {
+    const m = text.match(p);
+    if (m) aiMatches += m.length;
+  });
+  // 每500字允许1个AI痕迹词，超过则扣分
+  const textLen = Math.max(countChineseChars(text), 1);
+  const allowed = Math.max(1, textLen / 500);
+  const aiScore = Math.max(0, Math.min(100, Math.round(100 - (aiMatches / allowed) * 30)));
+
+  // 情感强度：基于情感词密度
+  const emotionWords = text.match(/[喜怒哀乐恨怨愁惊恐悲喜痛苦甜酸苦辣咸温冷暖爱恨情仇]/g) || [];
+  const emotionScore = Math.min(100, Math.round((emotionWords.length / Math.max(textLen, 1)) * 2000));
+  const emotionLevel = emotionScore >= 60 ? '高' : emotionScore >= 30 ? '中' : '低';
+
+  // 对话比例：基于引号内文本
+  const dialogMatches = text.match(/[""""]([^""""]*?)[""""]/g) || [];
+  const dialogChars = dialogMatches.reduce((sum, m) => sum + countChineseChars(m), 0);
+  const dialogPct = textLen > 0 ? Math.round((dialogChars / textLen) * 100) : 0;
+
+  // 短句比例：基于句号/感叹号/问号分割后的短句
+  const sentences = text.split(/[。！？]/).filter(s => s.trim().length > 0);
+  const shortSentences = sentences.filter(s => s.trim().length <= 15);
+  const shortPct = sentences.length > 0 ? Math.round((shortSentences.length / sentences.length) * 100) : 0;
+
+  // 节奏评分：基于句子长度的标准差
+  let rhythmLabel = '中';
+  if (sentences.length >= 3) {
+    const lengths = sentences.map(s => s.trim().length);
+    const avg = lengths.reduce((a, b) => a + b, 0) / lengths.length;
+    const variance = lengths.reduce((sum, len) => sum + Math.pow(len - avg, 2), 0) / lengths.length;
+    const std = Math.sqrt(variance);
+    rhythmLabel = std > 15 ? '优' : std > 8 ? '良' : '中';
+  }
+
+  // 更新显示
   const scoreEl = document.getElementById('aiScore');
-  scoreEl.textContent = score + '分';
-  scoreEl.className = 'score-badge ' + (score >= 85 ? 'score-good' : score >= 70 ? 'score-warn' : 'score-bad');
-  
-  document.getElementById('aiStat').textContent = score >= 85 ? '低' : score >= 70 ? '中' : '高';
-  document.getElementById('emotionStat').textContent = ['低', '中', '高'][Math.floor(Math.random()*3)];
-  document.getElementById('dialogStat').textContent = Math.floor(20 + Math.random()*40) + '%';
-  document.getElementById('shortStat').textContent = Math.floor(30 + Math.random()*30) + '%';
-  document.getElementById('rhythmStat').textContent = ['优', '良', '中'][Math.floor(Math.random()*3)];
+  scoreEl.textContent = aiScore + '分';
+  scoreEl.className = 'score-badge ' + (aiScore >= 85 ? 'score-good' : aiScore >= 70 ? 'score-warn' : 'score-bad');
+
+  document.getElementById('aiStat').textContent = aiScore >= 85 ? '低' : aiScore >= 70 ? '中' : '高';
+  document.getElementById('emotionStat').textContent = emotionLevel;
+  document.getElementById('dialogStat').textContent = dialogPct + '%';
+  document.getElementById('shortStat').textContent = shortPct + '%';
+  document.getElementById('rhythmStat').textContent = rhythmLabel;
 }
 
 function prevChapter() {
