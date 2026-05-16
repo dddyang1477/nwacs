@@ -1489,12 +1489,46 @@ const FOREIGN_NAMES = {
   jp_f: ['美咲','桜','愛','結衣','陽菜','葵','凛','澪','茜','芽依','莉子','美月','愛子','彩花','美羽']
 };
 
-// 智能命名核心函数（五行八卦·阴阳风水·真正启用版）
-function generateTraditionalName(charType, charRole, charPersonality, charGoal, genre) {
+// 智能命名核心函数（五行八卦·阴阳风水·后端联动版）
+async function generateTraditionalName(charType, charRole, charPersonality, charGoal, genre) {
   const isFemale = charRole.includes('女');
   const isVillain = charRole.includes('反派');
   const isMentor = charRole.includes('师') || charRole.includes('导师');
   const isMain = charRole.includes('主角');
+
+  // ── 后端AI模式：调用后端命名引擎 ──
+  if (useBackend) {
+    try {
+      const gender = isFemale ? 'female' : 'male';
+      const role = isMain ? 'protagonist' : isVillain ? 'antagonist' : isMentor ? 'mentor' : 'supporting';
+      const res = await apiClient.post('/generate_names', {
+        genre: genre || state.genre[0] || '玄幻',
+        role: role,
+        gender: gender,
+        personality: charPersonality || '',
+        background: charGoal || '',
+        fate: charGoal || '',
+        ability: '',
+        weakness: '',
+        arc: charGoal || '',
+        story_context: state.plot || '',
+        count: 1
+      });
+      if (res.success && res.names && res.names.length > 0) {
+        const n = res.names[0];
+        const meaning = '【' + n.full_name + '】\n'
+          + '姓氏：' + (n.surname || '') + '\n'
+          + '名字：' + (n.given_name || '') + '\n'
+          + '风格：' + (n.style || '传统') + '\n'
+          + '寓意：' + (n.meaning || n.literal_meaning || '承天地之气运') + '\n'
+          + '命运关联：' + (n.fate_connection || '随剧情而生，因风云而变') + '\n'
+          + '个性匹配：' + (n.personality_match || '');
+        return {name: n.full_name, meaning: meaning};
+      }
+    } catch (e) {
+      console.warn('后端命名生成失败，回退到本地五行八卦：', e);
+    }
+  }
 
   let surname = '';
   let givenName = '';
@@ -1523,7 +1557,7 @@ function generateTraditionalName(charType, charRole, charPersonality, charGoal, 
     return {name: fullName, meaning: '【' + fullName + '】\n日式风格命名\n寓意：东瀛风情'};
   }
 
-  // ═══ 中文命名：真正启用五行八卦阴阳风水 ═══
+  // ═══ 中文命名：本地五行八卦阴阳风水（回退模式） ═══
   // 1. 根据角色性格选定五行主属性
   let mainElement = null;
   const wxKeys = Object.keys(WUXING);
@@ -1610,27 +1644,27 @@ function generateTraditionalName(charType, charRole, charPersonality, charGoal, 
   return {name: finalName, meaning: meaning};
 }
 
-function smartNameChar(index) {
+async function smartNameChar(index) {
   const char = state.characters[index];
   if (!char) return;
-  
+
   const genre = state.genre[0] || '玄幻';
-  const result = generateTraditionalName(
+  const result = await generateTraditionalName(
     char.type || 'default',
     char.role,
     char.personality,
     char.goal,
     genre
   );
-  
+
   // 更新角色名字
   state.characters[index].name = result.name;
   state.characters[index].nameMeaning = result.meaning; // 存储名字含义
   state.characters[index].nameGenerated = true; // 标记为使用命名工具生成
-  
+
   renderCharacters();
   updateAllPreviews();
-  
+
   // 显示名字含义提示
   const meaningEl = document.createElement('div');
   meaningEl.style.cssText = 'position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:var(--bg-elevated);border:1px solid var(--border-base);border-radius:12px;padding:20px;z-index:1000;max-width:320px;text-align:center';
@@ -3090,8 +3124,8 @@ function updateWritingSummary() {
 
 // ═════════════════════ 实用工具函数（有实际功能） ═════════════════════
 
-// 保存章节到localStorage并提供下载
-function saveWriting() {
+// 保存章节到localStorage并提供下载（后端联动版）
+async function saveWriting() {
   const editor = document.getElementById('writingEditor');
   const text = editor.value.trim();
   if (!text) {
@@ -3100,15 +3134,39 @@ function saveWriting() {
   }
   const ch = state.outline[state.currentChapter - 1];
   const chapterTitle = ch ? ch.title : `第${state.currentChapter}章`;
+  const wordCount = countChineseChars(text);
+
+  // ── 后端AI模式：同时保存到后端 ──
+  let backendSaved = false;
+  if (useBackend) {
+    try {
+      const res = await apiClient.post('/save_chapter', {
+        chapter_number: state.currentChapter,
+        title: chapterTitle,
+        content: text,
+        word_count: wordCount
+      });
+      if (res.success) {
+        backendSaved = true;
+        console.log('后端保存成功:', res.saved_path);
+      }
+    } catch (e) {
+      console.warn('后端保存失败，仅保存到本地:', e);
+    }
+  }
+
+  // ── 本地保存（始终执行） ──
   const savedChapters = JSON.parse(localStorage.getItem('nwacs_chapters') || '{}');
   savedChapters[state.currentChapter] = {
     title: chapterTitle,
     content: text,
     savedAt: new Date().toLocaleString('zh-CN'),
-    wordCount: countChineseChars(text)
+    wordCount: wordCount
   };
   localStorage.setItem('nwacs_chapters', JSON.stringify(savedChapters));
-  alert(`💾 第${state.currentChapter}章已保存！\\n字数：${text.length}字\\n保存时间：${new Date().toLocaleString('zh-CN')}`);
+
+  const backendStatus = backendSaved ? '✅ 后端已同步｜' : '';
+  alert(`💾 第${state.currentChapter}章已保存！\n${backendStatus}字数：${wordCount}字\n保存时间：${new Date().toLocaleString('zh-CN')}`);
 }
 
 // 继续写作：基于当前内容生成后续段落
@@ -3439,7 +3497,7 @@ function pickOne(arr) {
   return arr[Math.floor(Math.random() * arr.length)];
 }
 
-function aiPolish() {
+async function aiPolish() {
   const editor = document.getElementById('writingEditor');
   let text = editor.value;
   if (!text.trim()) {
@@ -3447,6 +3505,32 @@ function aiPolish() {
     return;
   }
 
+  // ── 后端AI模式：调用后端深度改写引擎 ──
+  if (useBackend) {
+    try {
+      const btn = event?.target;
+      if (btn) { btn.textContent = '⏳ AI润色中...'; btn.disabled = true; }
+      const res = await apiClient.post('/rewrite', { text: text, style: 'deai' });
+      if (btn) { btn.textContent = '🎨 AI润色'; btn.disabled = false; }
+
+      if (res.success && res.content) {
+        editor.value = res.content;
+        onWritingInput();
+        const before = res.before_score !== undefined ? res.before_score : '?';
+        const after = res.after_score !== undefined ? res.after_score : '?';
+        const beforeT = res.before_traces !== undefined ? res.before_traces : '?';
+        const afterT = res.after_traces !== undefined ? res.after_traces : '?';
+        alert(`🎨 后端AI润色完成（深度去AI引擎）\n\n📊 检测对比：\n• 改写前AI痕迹：${beforeT}处｜得分：${before}\n• 改写后AI痕迹：${afterT}处｜得分：${after}\n\n💡 提示：\n• 建议朗读全文，检查语气是否自然\n• 后端引擎已执行40项去AI规则优化`);
+        return;
+      }
+    } catch (e) {
+      console.warn('后端AI润色失败，回退到本地润色：', e);
+      const btn = event?.target;
+      if (btn) { btn.textContent = '🎨 AI润色'; btn.disabled = false; }
+    }
+  }
+
+  // ── 本地润色模式（原15阶段逻辑） ──
   const originalText = text;
   let totalChanges = 0;
   const changeLog = [];
@@ -3852,9 +3936,9 @@ function checkSentenceRhythm(text) {
 }
 
 // ═══════════════════════════════════════════════════════════════
-// AI痕迹检测：Humanizer-zh 24种模式全覆盖
+// AI痕迹检测：Humanizer-zh 24种模式全覆盖 + 后端API联动
 // ═══════════════════════════════════════════════════════════════
-function checkAIDetect() {
+async function checkAIDetect() {
   const editor = document.getElementById('writingEditor');
   const text = editor.value;
   if (!text.trim()) {
@@ -3862,6 +3946,56 @@ function checkAIDetect() {
     return;
   }
 
+  // ── 后端AI模式：调用后端深度检测 ──
+  if (useBackend) {
+    try {
+      const res = await apiClient.post('/detect_ai', { text: text, deep: true });
+      if (res.success && res.result) {
+        const r = res.result;
+        const traces = r.traces_found || [];
+        const score = r.total_score !== undefined ? r.total_score : (r.ai_probability !== undefined ? Math.round(100 - r.ai_probability) : 85);
+        const level = score >= 85 ? '低（优秀）' : score >= 70 ? '中（良好）' : score >= 50 ? '中高（需优化）' : '高（需大幅修改）';
+        const levelEmoji = score >= 85 ? '✅' : score >= 70 ? '⚠️' : '🔴';
+
+        let report = `${levelEmoji} AI痕迹检测报告（后端深度分析）\n\n`;
+        report += `📊 综合得分：${score}/100\n`;
+        report += `📈 AI痕迹等级：${level}\n`;
+        report += `🔍 检测痕迹数：${traces.length}处\n`;
+        if (r.human_score !== undefined) report += `👤 人性化评分：${r.human_score}/100\n`;
+        if (r.ai_probability !== undefined) report += `🤖 AI概率：${r.ai_probability}%\n`;
+        report += `\n`;
+
+        if (traces.length === 0) {
+          report += `🎉 恭喜！未发现明显AI痕迹\n\n`;
+          report += `💡 您的文字具有较强的人文风！建议：\n`;
+          report += `• 保持当前的叙事节奏\n`;
+          report += `• 继续增加具体感官描写\n`;
+          report += `• 适当增加人物内心独白`;
+        } else {
+          report += `📋 发现问题（按严重程度排序）：\n`;
+          traces.slice(0, 15).forEach((t, i) => {
+            const sev = (t.severity === 'high' || t.weight >= 4) ? '🔴' : (t.severity === 'medium' || t.weight >= 3) ? '🟠' : '🟡';
+            report += `${i+1}. ${sev} 「${t.category || t.pattern || 'AI痕迹'}」${t.found || t.description || ''}\n`;
+            if (t.fix) report += `   💡 修复建议：${t.fix}\n`;
+          });
+          report += `\n💡 优化建议：\n`;
+          report += `• 替换高频AI词汇为日常表达\n`;
+          report += `• 打散"不仅……而且"结构，改为平铺直叙\n`;
+          report += `• 删除过渡套话，让段落直接衔接\n`;
+          report += `• 混合长短句，打破机械节奏\n`;
+          report += `• 增加具体细节和感官描写\n`;
+          report += `• 注入人物真实情感和观点\n`;
+          report += `• 允许叙事有一些"不完美"的起伏`;
+        }
+        alert(report);
+        return;
+      }
+    } catch (e) {
+      console.warn('后端AI检测失败，回退到本地检测：', e);
+    }
+  }
+
+  // ── 本地检测模式（原逻辑） ──
   const issues = [];
   let totalScore = 100;
 
@@ -3973,8 +4107,8 @@ function checkAIDetect() {
   alert(report);
 }
 
-// 剧情漏洞检查
-function checkPlotHole() {
+// 剧情漏洞检查（后端审阅联动版）
+async function checkPlotHole() {
   const ch = state.outline[state.currentChapter - 1];
   const text = document.getElementById('writingEditor').value;
   if (!text.trim()) {
@@ -3982,6 +4116,50 @@ function checkPlotHole() {
     return;
   }
 
+  // ── 后端AI模式：调用后端审阅引擎 ──
+  if (useBackend) {
+    try {
+      const res = await apiClient.post('/review', {
+        chapter: state.currentChapter,
+        text: text,
+        use_llm: true
+      });
+      if (res.success && res.review) {
+        const r = res.review;
+        let report = `🔎 剧情漏洞检查（后端深度审阅）\n\n`;
+        report += `📊 审阅概览：\n`;
+        report += `• 综合评分：${r.overall_score || 'N/A'}/100\n`;
+        report += `• 剧情连贯性：${r.plot_consistency || 'N/A'}/100\n`;
+        report += `• 角色一致性：${r.character_consistency || 'N/A'}/100\n`;
+        report += `• 逻辑合理性：${r.logic_score || 'N/A'}/100\n\n`;
+
+        const issues = r.issues || r.plot_holes || [];
+        if (issues.length > 0) {
+          report += `⚠️ 发现${issues.length}处潜在问题：\n`;
+          issues.slice(0, 10).forEach((issue, i) => {
+            const desc = typeof issue === 'string' ? issue : (issue.description || issue.issue || JSON.stringify(issue));
+            report += `${i+1}. ${desc}\n`;
+          });
+        } else {
+          report += `✅ 未发现明显剧情漏洞\n`;
+        }
+
+        if (r.suggestions && r.suggestions.length > 0) {
+          report += `\n💡 优化建议：\n`;
+          r.suggestions.slice(0, 5).forEach((s, i) => {
+            const sug = typeof s === 'string' ? s : (s.suggestion || JSON.stringify(s));
+            report += `• ${sug}\n`;
+          });
+        }
+        alert(report);
+        return;
+      }
+    } catch (e) {
+      console.warn('后端审阅失败，回退到本地检查：', e);
+    }
+  }
+
+  // ── 本地检查模式（原逻辑） ──
   let holes = [];
 
   // 检查角色名一致性
@@ -4022,21 +4200,70 @@ function checkPlotHole() {
   }
 
   const report = holes.length === 0
-    ? `🔎 剧情漏洞检查完成！\\n\\n✅ 未发现明显剧情漏洞\\n\\n您的剧情逻辑通顺，继续保持！`
-    : `🔎 剧情漏洞检查完成！\\n\\n⚠️ 发现${holes.length}处潜在问题：\\n${holes.map((h, i) => `${i+1}. ${h}`).join('\\n')}\\n\\n💡 建议：根据提示补充相关描写，使剧情更加连贯。`;
+    ? `🔎 剧情漏洞检查完成！\n\n✅ 未发现明显剧情漏洞\n\n您的剧情逻辑通顺，继续保持！`
+    : `🔎 剧情漏洞检查完成！\n\n⚠️ 发现${holes.length}处潜在问题：\n${holes.map((h, i) => `${i+1}. ${h}`).join('\n')}\n\n💡 建议：根据提示补充相关描写，使剧情更加连贯。`;
 
   alert(report);
 }
 
-// 节奏分析
-function checkRhythm() {
+// 节奏分析（后端质量门联动版）
+async function checkRhythm() {
   const text = document.getElementById('writingEditor').value;
   if (!text.trim()) {
     alert('⚠️ 请先写一些内容！');
     return;
   }
 
-  const paragraphs = text.split('\\n\\n').filter(p => p.trim());
+  // ── 后端AI模式：调用后端质量门评估 ──
+  if (useBackend) {
+    try {
+      const dialogMatches = text.match(/"[^"]*"/g) || [];
+      const dialogLength = dialogMatches.join('').length;
+      const dialogRatio = text.length > 0 ? dialogLength / text.length : 0;
+
+      const res = await apiClient.post('/gates/evaluate', {
+        chapter: state.currentChapter,
+        content: text,
+        target_word_count: state.wordsPerChapter || 4000,
+        dialogue_ratio: dialogRatio
+      });
+      if (res.success && res.result) {
+        const r = res.result;
+        let report = `📊 节奏分析（后端质量门评估）\n\n`;
+        report += `📌 质量门状态：${r.status || 'N/A'}\n`;
+        report += `• 综合评分：${r.total_score !== undefined ? r.total_score : 'N/A'}/100\n`;
+        if (r.ai_trace_score !== undefined) report += `• AI痕迹评分：${r.ai_trace_score}/100\n`;
+        if (r.fatigue_score !== undefined) report += `• 阅读疲劳评分：${r.fatigue_score}/100\n`;
+        if (r.retention_score !== undefined) report += `• 留存评分：${r.retention_score}/100\n`;
+        if (r.pacing_score !== undefined) report += `• 节奏评分：${r.pacing_score}/100\n`;
+        if (r.word_count !== undefined) report += `• 实际字数：${r.word_count}\n`;
+        if (r.target_word_count !== undefined) report += `• 目标字数：${r.target_word_count}\n`;
+        report += `\n`;
+
+        const checks = r.checks || r.gate_checks || [];
+        if (checks.length > 0) {
+          report += `📋 详细检查项：\n`;
+          checks.forEach((c, i) => {
+            const name = c.name || c.check || `检查${i+1}`;
+            const score = c.score !== undefined ? c.score : (c.passed ? '✅' : '❌');
+            report += `• ${name}：${score}\n`;
+          });
+        }
+
+        if (r.suggestions && r.suggestions.length > 0) {
+          report += `\n💡 优化建议：\n`;
+          r.suggestions.slice(0, 5).forEach(s => report += `• ${s}\n`);
+        }
+        alert(report);
+        return;
+      }
+    } catch (e) {
+      console.warn('后端质量门评估失败，回退到本地分析：', e);
+    }
+  }
+
+  // ── 本地分析模式（原逻辑） ──
+  const paragraphs = text.split('\n\n').filter(p => p.trim());
   const paraLengths = paragraphs.map(p => p.length);
   const avgLength = Math.round(paraLengths.reduce((a, b) => a + b, 0) / paraLengths.length);
   const maxLength = Math.max(...paraLengths);
@@ -4048,7 +4275,7 @@ function checkRhythm() {
   const dialogRatio = Math.round(dialogLength / text.length * 100);
 
   // 短句比例
-  const sentences = text.split(/[。！？\\n]+/).filter(s => s.trim());
+  const sentences = text.split(/[。！？\n]+/).filter(s => s.trim());
   const shortSentences = sentences.filter(s => s.length <= 15);
   const shortRatio = Math.round(shortSentences.length / sentences.length * 100);
 
@@ -4060,7 +4287,7 @@ function checkRhythm() {
   else if (shortRatio < 20) rhythmScore = '长句过多，建议增加短句节奏';
   else rhythmScore = '节奏适中，张弛有度';
 
-  alert(`📊 节奏分析完成！\\n\\n📌 段落统计\\n总段落数：${paragraphs.length}\\n平均段落长度：${avgLength}字\\n最长段落：${maxLength}字\\n最短段落：${minLength}字\\n\\n📌 对话分析\\n对话字数：${dialogLength}字\\n对话占比：${dialogRatio}%\\n\\n📌 句式分析\\n总句数：${sentences.length}\\n短句比例：${shortRatio}%\\n\\n📌 节奏评价\\n${rhythmScore}`);
+  alert(`📊 节奏分析完成！\n\n📌 段落统计\n总段落数：${paragraphs.length}\n平均段落长度：${avgLength}字\n最长段落：${maxLength}字\n最短段落：${minLength}字\n\n📌 对话分析\n对话字数：${dialogLength}字\n对话占比：${dialogRatio}%\n\n📌 句式分析\n总句数：${sentences.length}\n短句比例：${shortRatio}%\n\n📌 节奏评价\n${rhythmScore}`);
 }
 
 // 降AI痕迹
