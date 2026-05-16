@@ -838,6 +838,9 @@ function deleteChar(index) {
 
 // ═════════════════════ 步骤切换 ═════════════════════
 function goToStep(n) {
+  // ── 自动填充默认值：如果前面步骤未填写，自动生成一套 ──
+  autoFillDefaults(n);
+
   document.querySelectorAll('.step-panel').forEach(p => p.classList.remove('active'));
   document.getElementById('step-'+n).classList.add('active');
 
@@ -853,6 +856,53 @@ function goToStep(n) {
   if (n === 8) {
     updateWritingSummary();
     updateChapterDisplay();
+  }
+}
+
+// ── 自动填充默认值 ──
+function autoFillDefaults(targetStep) {
+  // 第1步：题材（默认玄幻+废柴逆袭+热血爽文+紧张刺激）
+  if (targetStep > 1 && state.genre.length === 0) {
+    selectItem('genre', '玄幻');
+    selectItem('school', '废柴逆袭');
+    selectItem('style', '热血爽文');
+    selectItem('tone', '紧张刺激');
+  }
+  // 第2步：创作手法（默认三幕结构）
+  if (targetStep > 2 && !state.method) {
+    selectItem('method', '三幕结构');
+  }
+  // 第3步：世界构建
+  if (targetStep > 3 && (!state.worldType || !state.worldEra)) {
+    selectItem('worldType', '东方玄幻');
+    if (!state.worldEra) state.worldEra = '天地初开之时';
+    if (!state.worldPower) state.worldPower = '炼气→筑基→金丹→元婴';
+    document.getElementById('worldEra').value = state.worldEra;
+    document.getElementById('worldPower').value = state.worldPower;
+  }
+  // 第4步：角色（已有默认6人，无需处理）
+  if (targetStep > 4) {
+    // 确保角色有名字（如果还是默认的"主角"等，自动生成）
+    const hero = state.characters.find(c => c.role.includes('主角') || c.role.includes('男主角'));
+    if (hero && hero.name === '主角') {
+      hero.name = '叶尘'; updateChar(state.characters.indexOf(hero), 'name', '叶尘');
+    }
+    const heroine = state.characters.find(c => c.role.includes('女主角'));
+    if (heroine && heroine.name === '女主') {
+      heroine.name = '薰儿'; updateChar(state.characters.indexOf(heroine), 'name', '薰儿');
+    }
+  }
+  // 第5步：剧情方案
+  if (targetStep > 5 && state.plots.length === 0) {
+    generatePlots();
+  }
+  // 第6步：大纲
+  if (targetStep > 6 && state.outline.length === 0) {
+    generateOutline();
+  }
+  // 第7步：细纲
+  if (targetStep > 7 && state.detailOutline.length === 0) {
+    generateDetailOutline();
   }
 }
 
@@ -1552,52 +1602,72 @@ function updateChapterDisplay() {
 }
 
 function startWriting() {
-  const editor = document.getElementById('writingEditor');
-  const ch = state.outline[state.currentChapter - 1];
-  const detail = state.detailOutline[state.currentChapter - 1];
-  const hero = state.characters.find(c=>c.role.includes('主角') || c.role.includes('男主角'));
-  const heroine = state.characters.find(c=>c.role.includes('女主角'));
-  const mentor = state.characters.find(c=>c.role.includes('导师'));
-  const villain = state.characters.find(c=>c.role.includes('反派'));
-  const genre = state.genre[0] || '玄幻';
-  const worldEra = state.worldEra || '天地初开之时';
-  const worldPower = state.worldPower || '炼气→筑基→金丹→元婴';
+  try {
+    const editor = document.getElementById('writingEditor');
+    const ch = state.outline[state.currentChapter - 1];
+    const detail = state.detailOutline[state.currentChapter - 1];
+    const hero = state.characters.find(c=>c.role.includes('主角') || c.role.includes('男主角'));
+    const heroine = state.characters.find(c=>c.role.includes('女主角'));
+    const mentor = state.characters.find(c=>c.role.includes('导师'));
+    const villain = state.characters.find(c=>c.role.includes('反派'));
+    const genre = state.genre[0] || '玄幻';
+    const worldEra = state.worldEra || '天地初开之时';
+    const worldPower = state.worldPower || '炼气→筑基→金丹→元婴';
 
-  if (!ch) {
-    alert('请先生成大纲（第6步）！');
-    return;
-  }
-
-  // 获取角色名
-  const heroName = hero?.name || '叶尘';
-  const heroineName = heroine?.name || '薰儿';
-  const mentorName = mentor?.name || '师尊';
-  const villainName = villain?.name || '魔君';
-  const heroPersonality = hero?.personality || '坚毅果敢';
-  const heroGoal = hero?.goal || '成为强者';
-
-  // 根据题材和章节生成完整章节内容
-  const chapterContent = generateChapterContent(genre, ch, detail, {
-    heroName, heroineName, mentorName, villainName,
-    heroPersonality, heroGoal, worldEra, worldPower,
-    currentChapter: state.currentChapter,
-    plotConflict: state.selectedPlotData?.conflict || '命运抗争',
-    plotGoal: state.selectedPlotData?.goal || '成为强者',
-    tone: state.tone[0] || '紧张刺激',
-    style: state.style[0] || '热血爽文'
-  });
-
-  if (!editor.value.trim()) {
-    editor.value = chapterContent;
-    editor.focus();
-    editor.setSelectionRange(editor.value.length, editor.value.length);
-  } else {
-    const confirmed = confirm('编辑器已有内容，是否追加本章内容？');
-    if (confirmed) {
-      editor.value += '\n\n' + chapterContent;
+    if (!ch) {
+      alert('请先生成大纲（第6步）！');
+      return;
     }
+
+    // 获取角色名
+    const heroName = hero?.name || '叶尘';
+    const heroineName = heroine?.name || '薰儿';
+    const mentorName = mentor?.name || '师尊';
+    const villainName = villain?.name || '魔君';
+    const heroPersonality = hero?.personality || '坚毅果敢';
+    const heroGoal = hero?.goal || '成为强者';
+
+    // 根据题材和章节生成完整章节内容
+    const chapterContent = generateChapterContent(genre, ch, detail, {
+      heroName, heroineName, mentorName, villainName,
+      heroPersonality, heroGoal, worldEra, worldPower,
+      currentChapter: state.currentChapter,
+      plotConflict: state.selectedPlotData?.conflict || '命运抗争',
+      plotGoal: state.selectedPlotData?.goal || '成为强者',
+      tone: state.tone[0] || '紧张刺激',
+      style: state.style[0] || '热血爽文'
+    });
+
+    if (!chapterContent) {
+      alert('⚠️ 章节生成失败，内容为空');
+      return;
+    }
+
+    if (!editor.value.trim()) {
+      editor.value = chapterContent;
+      editor.focus();
+      editor.setSelectionRange(editor.value.length, editor.value.length);
+    } else {
+      const confirmed = confirm('编辑器已有内容，是否追加本章内容？');
+      if (confirmed) {
+        editor.value += '\n\n' + chapterContent;
+      }
+    }
+    onWritingInput();
+    alert(`✅ 第${state.currentChapter}章生成完成！\n字数：约${countChineseChars(chapterContent)}字`);
+  } catch (err) {
+    console.error('startWriting error:', err);
+    alert('❌ 生成章节时出错：\n' + err.message + '\n\n请检查控制台获取详细信息。');
   }
-  onWritingInput();
+}
+
+// ═════════════════════ 全局工具函数 ═════════════════════
+
+// 实际字数统计函数（只计算中文字符和中文标点）
+function countChineseChars(text) {
+  if (!text) return 0;
+  const matches = text.match(/[\u4e00-\u9fa5\u3000-\u303f\uff00-\uffef]/g);
+  return matches ? matches.length : 0;
 }
 
 // ═════════════════════ 巨量章节内容生成系统 ═════════════════════
@@ -1917,10 +1987,148 @@ function getToneAtmosphere(tone, heroName) {
 
 // ═════════════════════ 风格DNA系统结束 ═════════════════════
 
+// ═════════════════════ 题材场景库（供章节生成使用）═════════════════════
+const xuanhuanScenes = [
+  (h,goal)=>`
+${h}站在山巅，望着脚下云海翻涌。远方的天际线上，一道金光冲天而起，那是传说中的神迹。
+
+他握紧了拳头，眼中燃烧着不屈的火焰。${goal}，这是他此生唯一的目标。
+
+无论前方有多少艰难险阻，他都不会退缩。因为，他早已没有退路。
+
+风呼啸而过，吹动他的衣袂。在这一刻，他仿佛听到了命运的召唤。`,
+  (h,v)=>`虚空震颤，灵气暴动。
+
+${h}与${v}的战斗已经持续了整整三天三夜。整片大陆都在他们的力量下颤抖，山河破碎，日月无光。
+
+"你以为这样就能赢我吗？"${v}狂笑着，周身环绕着黑色的雾气，"这个世界，注定要在我的脚下颤抖！"
+
+"不。"${h}平静地摇头，"你错了。这个世界，不会因为任何人而颤抖。它只会...迎来新的黎明。"`
+];
+const dushiScenes = [
+  (h,goal)=>`夜幕降临，霓虹闪烁。
+
+${h}站在摩天大楼的顶层，俯瞰着这座不夜城。车水马龙，人来人往，每个人都在为自己的生活奔波。
+
+而他，也即将踏上一条不归路。
+
+${goal}，为了这个目标，他已经准备了整整五年。
+
+今晚，就是行动的开始。
+
+他深吸一口气，推开了天台的门，大步走了出去。`,
+  (h,v)=>`咖啡厅里，悠扬的音乐缓缓流淌。
+
+${h}和${v}相对而坐，表面上是老友聚会，实际上却是一场无声的博弈。
+
+"听说你最近在做一笔大生意？"${v}端起咖啡，轻轻抿了一口，语气轻描淡写。
+
+"小打小闹而已。"${h}笑了笑，"比不上你的大手笔。"
+
+两人相视一笑，眼中却都没有笑意。
+
+这场博弈，才刚刚开始。`
+];
+const xianxiaScenes = [
+  (h,goal)=>`云雾缭绕，仙鹤长鸣。
+
+${h}盘坐在悬崖边的古松之下，周身灵气环绕，如涓涓细流般涌入体内。
+
+他已经在这里闭关三年了。
+
+三年的苦修，只为${goal}这一目标。
+
+"师兄，掌门召你前去。"一个稚嫩的声音从身后传来。
+
+${h}缓缓睁开双眼，眸中精光一闪而逝。
+
+"终于...要开始了么。"他站起身来，长袖一挥，整个人化作一道流光，消失在云雾之中。`,
+  (h,v)=>`剑气纵横，法宝纷飞。
+
+${h}与${v}的战斗已经惊动了整个修仙界。无数修士从四面八方赶来，只为目睹这场旷世之战。
+
+"你不过是区区一个散修，也敢与我争锋？"${v}冷哼一声，祭出一面古镜，镜中射出万道金光。
+
+"散修又如何？"${h}不闪不避，手中长剑划出一道完美的弧线，"大道至简，殊途同归。今日，我便让你见识一下，什么才是真正的剑道！"`
+];
+const kehuanScenes = [
+  (h,goal)=>`星舰内部，警报声此起彼伏。
+
+${h}站在指挥舱的观景窗前，望着外面那片陌生的星系。三颗太阳在远处燃烧，将整片星空染成了诡异的紫红色。
+
+"船长，我们收到一个未知信号。"AI助手的声音在耳边响起。
+
+${h}皱起眉头。在这片被称为"死亡禁区"的星域，任何信号都可能意味着致命的危机。
+
+但同时，也可能意味着...${goal}的线索。
+
+"追踪信号源。"他沉声下令，"全员进入一级戒备。"`,
+  (h,v)=>`太空站内，重力系统发出刺耳的嗡鸣。
+
+${h}和${v}隔着一道防爆门对峙，两人的宇航服上都布满了战斗的痕迹。
+
+"你疯了！启动那个装置会毁掉整个空间站！"${h}怒吼道。
+
+"那又如何？"${v}狂笑着按下了手中的遥控器，"反正我已经得到了我想要的数据。这个空间站，已经没有存在的必要了！"
+
+"我不会让你得逞的！"${h}猛地扑了上去。`
+];
+const wuxiaScenes = [
+  (h,goal)=>`烟雨朦胧，江南古镇。
+
+${h}撑着一把油纸伞，独自走在青石板铺就的小巷中。
+
+雨丝如帘，将整个世界笼罩在一片朦胧之中。
+
+他来到一家不起眼的茶馆前，收起雨伞，推门而入。
+
+"客官，喝点什么？"店小二殷勤地迎了上来。
+
+"龙井。"${h}淡淡地说道，目光却落在了角落里那个黑衣人身上。
+
+${goal}的线索，就在这里。`,
+  (h,v)=>`擂台之上，刀光剑影。
+
+${h}与${v}的战斗已经到了白热化的阶段。两人的招式越来越快，越来越狠，围观的人群纷纷后退，生怕被波及。
+
+"你的剑法确实精妙。"${v}一边格挡一边说道，"但可惜，力道不足！"
+
+"是吗？"${h}嘴角微微上扬，突然变招。
+
+这一剑，快若闪电，势如奔雷。
+
+${v}大惊失色，仓促间举刀相迎。只听"铛"的一声巨响，整个人被震退了七八步，虎口发麻，几乎握不住刀柄。`
+];
+const yanqingScenes = [
+  (h,goal)=>`樱花树下，花瓣纷飞。
+
+${h}望着眼前这个让他魂牵梦萦的身影，心中百感交集。
+
+${goal}，他花了很长时间才明白自己真正想要的是什么。
+
+"我..."他张了张嘴，却发现喉咙干涩得说不出话来。
+
+对方转过身来，目光温柔如水。
+
+"傻瓜，我知道你想说什么。"她轻声笑道，"我也是。"
+
+在这一瞬间，漫天樱花仿佛都成了他们爱情的见证。`,
+  (h,v)=>`烛光摇曳，晚宴正酣。
+
+${h}和${v}坐在长桌的两端，表面上谈笑风生，实际上却在暗中较劲。
+
+"听说你最近在追求她？"${v}摇晃着手中的红酒杯，语气漫不经心，"我劝你早点放弃。她...不属于你。"
+
+"她不属于任何人。"${h}平静地回应，"包括你。"
+
+"是吗？那我们就拭目以待吧。"${v}将杯中的红酒一饮而尽，眼中闪过一丝阴鸷。`
+];
+// ═════════════════════ 题材场景库结束 ═════════════════════
+
 function generateChapterContent(genre, ch, detail, settings) {
   const {heroName, heroineName, mentorName, villainName, heroPersonality, heroGoal, worldEra, worldPower, currentChapter, plotConflict, plotGoal, tone, style} = settings;
-  const phase = ch.phase;
-  const chapterTitle = ch.title;
+  const phase = ch.phase || '发展';
+  const chapterTitle = ch.title || `第${currentChapter}章`;
   const targetWords = state.wordsPerChapter || 4000;
 
   // ── 获取风格DNA和基调DNA ──
@@ -1944,14 +2152,6 @@ function generateChapterContent(genre, ch, detail, settings) {
     if (sceneMatch) detailScene = sceneMatch[1].trim();
     if (eventMatch) detailEvent = eventMatch[1].trim();
     if (emotionMatch) detailEmotion = emotionMatch[1].trim();
-  }
-
-  // ── 实际字数统计函数（只计算中文字符和中文标点） ──
-  function countChineseChars(text) {
-    if (!text) return 0;
-    // 匹配中文字符、中文标点
-    const matches = text.match(/[\u4e00-\u9fa5\u3000-\u303f\uff00-\uffef]/g);
-    return matches ? matches.length : 0;
   }
 
   // ── 根据细纲场景+风格选择核心场景 ──
@@ -2034,7 +2234,8 @@ ${heroName}出生在战火纷飞的年代。他的父亲是一名普通士兵，
 
   } else if (phase === '开篇') {
     const pool = genre === '玄幻' ? xuanhuanScenes : genre === '都市' ? dushiScenes : genre === '仙侠' ? xianxiaScenes : genre === '科幻' ? kehuanScenes : genre === '武侠' ? wuxiaScenes : yanqingScenes;
-    sceneIntro = pool[Math.floor(Math.random() * pool.length)];
+    const sceneFn = pool[Math.floor(Math.random() * pool.length)];
+    sceneIntro = sceneFn(heroName, heroGoal);
 
   } else if (phase === '高潮') {
     const climaxes = [
@@ -2245,7 +2446,8 @@ ${heroName}轻轻给她盖上被子，然后转身走出房间。
   } else {
     // 发展阶段
     const pool = genre === '玄幻' ? xuanhuanScenes : genre === '都市' ? dushiScenes : genre === '仙侠' ? xianxiaScenes : genre === '科幻' ? kehuanScenes : genre === '武侠' ? wuxiaScenes : yanqingScenes;
-    sceneIntro = pool[Math.floor(Math.random() * pool.length)];
+    const sceneFn = pool[Math.floor(Math.random() * pool.length)];
+    sceneIntro = sceneFn(heroName, heroGoal);
   }
 
   // ── 根据字数目标动态生成扩展内容（使用风格化扩展库） ──
@@ -2288,7 +2490,7 @@ ${heroName}轻轻给她盖上被子，然后转身走出房间。
         section = pickRandom(styledExpansion.inner)(heroName, heroGoal);
         break;
       case '对话交锋':
-        if (!phase.includes('尾')) {
+        if (!(phase || '').includes('尾')) {
           section = pickRandom(styledExpansion.dialog)(heroName, villainName, mentorName);
         } else {
           section = pickRandom(styledExpansion.env)(heroName);
@@ -2440,7 +2642,7 @@ function continueWriting() {
   alert(`✨ 已续写${continuation.length}字！\\n提示：续写内容为模板生成，建议根据大纲方向继续发挥。`);
 }
 
-// AI润色：基于规则的文本优化
+// AI润色：基于规则的文本优化（安全版——避免破坏正常词汇）
 function aiPolish() {
   const editor = document.getElementById('writingEditor');
   let text = editor.value;
@@ -2449,9 +2651,27 @@ function aiPolish() {
     return;
   }
 
-  // 替换词库
+  // 替换词库——只使用安全的词组替换，避免破坏"小说""走路"等正常词汇
   const replacements = [
+    // AI套话删除
+    {from: /众所周知/g, to: ''},
+    {from: /值得注意的是/g, to: ''},
+    {from: /总的来说/g, to: ''},
+    {from: /不仅如此/g, to: ''},
+    {from: /换句话说/g, to: ''},
+    {from: /事实上/g, to: ''},
+    {from: /与此同时/g, to: ''},
+    {from: /首先，/g, to: ''},
+    {from: /其次，/g, to: ''},
+    {from: /最后，/g, to: ''},
+
+    // 词汇升级（安全的词组替换）
     {from: /非常重要/g, to: '至关重要'},
+    {from: /非常关键/g, to: '至关紧要'},
+    {from: /非常好/g, to: '极好'},
+    {from: /非常大/g, to: '极大'},
+    {from: /非常快/g, to: '极快'},
+    {from: /非常慢/g, to: '极慢'},
     {from: /非常/g, to: '极其'},
     {from: /很好/g, to: '堪称完美'},
     {from: /很大/g, to: '难以估量'},
@@ -2459,25 +2679,45 @@ function aiPolish() {
     {from: /慢慢/g, to: '徐徐'},
     {from: /突然/g, to: '骤然'},
     {from: /看着/g, to: '凝视'},
-    {from: /说/g, to: '沉声道'},
-    {from: /走/g, to: '迈步'},
-    {from: /跑/g, to: '疾驰'},
-    {from: /笑/g, to: '莞尔'},
-    {from: /哭/g, to: '潸然泪下'},
-    {from: /生气/g, to: '怒不可遏'},
-    {from: /害怕/g, to: '胆战心惊'},
+    {from: /看了看/g, to: '扫视了一眼'},
+    {from: /说道/g, to: '沉声道'},
+    {from: /说道，/g, to: '沉声道，'},
+    {from: /说道：/g, to: '沉声道：'},
+    {from: /问道/g, to: '追问道'},
+    {from: /大喊/g, to: '厉声喝道'},
+    {from: /小声说/g, to: '压低声音道'},
+    {from: /笑着说/g, to: '莞尔道'},
+    {from: /生气地说/g, to: '怒不可遏地道'},
+    {from: /害怕地说/g, to: '胆战心惊地道'},
+    {from: /慢慢地走/g, to: '徐徐而行'},
+    {from: /快步走/g, to: '疾步而行'},
+    {from: /快速地跑/g, to: '疾驰而去'},
+    {from: /大声笑/g, to: '朗声大笑'},
+    {from: /小声哭/g, to: '低声啜泣'},
+    {from: /很生气/g, to: '怒不可遏'},
+    {from: /很害怕/g, to: '胆战心惊'},
   ];
 
   let changed = 0;
   replacements.forEach(r => {
-    const before = text;
-    text = text.replace(r.from, r.to);
-    if (text !== before) changed++;
+    const matches = text.match(r.from);
+    if (matches) {
+      changed += matches.length;
+      text = text.replace(r.from, r.to);
+    }
   });
+
+  // 清理因删除套话产生的多余空行
+  text = text.replace(/
+{3,}/g, '
+
+');
 
   editor.value = text;
   onWritingInput();
-  alert(`🎨 AI润色完成！\\n优化了${changed}处用词\\n提示：建议逐句审阅，根据语境微调`);
+  alert(`🎨 AI润色完成！
+优化了${changed}处用词
+提示：建议逐句审阅，根据语境微调`);
 }
 
 // AI痕迹检测：基于规则的检测
@@ -2753,16 +2993,25 @@ function exportNovel() {
   const editor = document.getElementById('writingEditor');
   const currentText = editor.value.trim();
 
+  const genreName = state.genre.join('、') || '未命名';
+  const schoolName = state.school.join('、') || '未选';
+  const styleName = state.style.join('、') || '未选';
+  const toneName = state.tone.join('、') || '未选';
+  const methodName = state.method || '未选';
+  const hero = state.characters.find(c=>c.role.includes('主角'));
+  const heroName = hero?.name || '未命名';
+
   let content = '';
-  content += `《${state.genre.join('、')}小说》\\n`;
-  content += `题材：${state.genre.join('、')}\\n`;
-  content += `流派：${state.school.join('、')}\\n`;
-  content += `风格：${state.style.join('、')}\\n`;
-  content += `基调：${state.tone.join('、')}\\n`;
-  content += `手法：${state.method}\\n`;
-  content += `字数：${state.totalWords}万字\\n`;
-  content += `章节：${state.outline.length}章\\n`;
-  content += `主角：${state.characters.find(c=>c.role.includes('主角'))?.name || '未命名'}\\n`;
+  content += `《${genreName}小说》\\n`;
+  content += `═══════════════════════════════════════\\n`;
+  content += `题材：${genreName}\\n`;
+  content += `流派：${schoolName}\\n`;
+  content += `风格：${styleName}\\n`;
+  content += `基调：${toneName}\\n`;
+  content += `手法：${methodName}\\n`;
+  content += `字数：${state.totalWords || 50}万字\\n`;
+  content += `章节：${state.outline.length || 0}章\\n`;
+  content += `主角：${heroName}\\n`;
   content += `═══════════════════════════════════════\\n\\n`;
 
   // 按章节顺序导出
@@ -2793,13 +3042,15 @@ function exportNovel() {
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;
-  a.download = `${state.genre.join('_')}_小说_${new Date().toISOString().slice(0,10)}.txt`;
+  const safeGenre = (state.genre[0] || '小说').replace(/[^\w\u4e00-\u9fa5]/g, '_');
+  a.download = `${safeGenre}_${new Date().toISOString().slice(0,10)}.txt`;
   document.body.appendChild(a);
   a.click();
   document.body.removeChild(a);
   URL.revokeObjectURL(url);
 
-  alert(`📤 导出完成！\\n\\n已导出${chapterKeys.length}个已保存章节\\n文件名：${state.genre.join('_')}_小说_${new Date().toISOString().slice(0,10)}.txt\\n\\n💡 提示：未保存的当前章节内容不会被导出，请先点击「保存章节」。`);
+  const displayName = `${safeGenre}_${new Date().toISOString().slice(0,10)}.txt`;
+  alert(`📤 导出完成！\\n\\n已导出${chapterKeys.length}个已保存章节\\n文件名：${displayName}\\n格式：TXT纯文本\\n\\n💡 提示：未保存的当前章节内容不会被导出，请先点击「保存章节」。`);
 }
 
 // ═════════════════════ 更新预览 ═════════════════════
