@@ -2642,7 +2642,10 @@ function continueWriting() {
   alert(`✨ 已续写${continuation.length}字！\\n提示：续写内容为模板生成，建议根据大纲方向继续发挥。`);
 }
 
-// AI润色：基于规则的文本优化（安全版——避免破坏正常词汇）
+// ═══════════════════════════════════════════════════════════════
+// AI润色：Humanizer-zh 技术整合版 — 24种AI写作模式全面去除
+// 基于 https://github.com/op7418/Humanizer-zh 的维基百科AI写作特征指南
+// ═══════════════════════════════════════════════════════════════
 function aiPolish() {
   const editor = document.getElementById('writingEditor');
   let text = editor.value;
@@ -2651,21 +2654,282 @@ function aiPolish() {
     return;
   }
 
-  // 替换词库——只使用安全的词组替换，避免破坏"小说""走路"等正常词汇
-  const replacements = [
-    // AI套话删除
-    {from: /众所周知/g, to: ''},
-    {from: /值得注意的是/g, to: ''},
-    {from: /总的来说/g, to: ''},
-    {from: /不仅如此/g, to: ''},
-    {from: /换句话说/g, to: ''},
-    {from: /事实上/g, to: ''},
-    {from: /与此同时/g, to: ''},
-    {from: /首先，/g, to: ''},
-    {from: /其次，/g, to: ''},
-    {from: /最后，/g, to: ''},
+  const originalText = text;
+  let totalChanges = 0;
+  const changeLog = [];
 
-    // 词汇升级（安全的词组替换）
+  // ── 阶段1：删除AI交流痕迹与协作语气 ──
+  const chatTraces = [
+    {from: /希望这对您有帮助[!！]/g, to: '', name: '协作痕迹'},
+    {from: /当然[!！]/g, to: '', name: '协作痕迹'},
+    {from: /一定[!！]/g, to: '', name: '协作痕迹'},
+    {from: /您说得完全正确[!！]/g, to: '', name: '谄媚语气'},
+    {from: /这是一个复杂的话题/g, to: '', name: '谄媚语气'},
+    {from: /好问题[!！]/g, to: '', name: '谄媚语气'},
+    {from: /截至\s*\d{4}年/g, to: '', name: '知识截止声明'},
+    {from: /根据我最后的训练更新/g, to: '', name: '知识截止声明'},
+    {from: /虽然具体细节有限/g, to: '', name: '知识截止声明'},
+    {from: /基于可用信息/g, to: '', name: '知识截止声明'},
+    {from: /请告诉我/g, to: '', name: '协作痕迹'},
+    {from: /如果您想让我/g, to: '', name: '协作痕迹'},
+  ];
+  chatTraces.forEach(r => {
+    const matches = text.match(r.from);
+    if (matches) {
+      totalChanges += matches.length;
+      changeLog.push(`${r.name}：删除"${matches[0].substring(0,20)}..." x${matches.length}`);
+      text = text.replace(r.from, r.to);
+    }
+  });
+
+  // ── 阶段2：删除填充短语与过度限定 ──
+  const fillerPhrases = [
+    {from: /为了实现这一目标/g, to: '为了这'},
+    {from: /由于……的事实/g, to: '因为'},
+    {from: /由于……的原因/g, to: '因为'},
+    {from: /在这个时间点/g, to: '现在'},
+    {from: /在……的情况下/g, to: '如果'},
+    {from: /系统具有处理……的能力/g, to: '系统可以处理'},
+    {from: /值得注意的是/g, to: ''},
+    {from: /可以潜在地可能被认为/g, to: ''},
+    {from: /可能会对……产生一些影响/g, to: '可能会影响'},
+  ];
+  fillerPhrases.forEach(r => {
+    const matches = text.match(r.from);
+    if (matches) {
+      totalChanges += matches.length;
+      changeLog.push(`填充短语：精简"${matches[0].substring(0,20)}..." x${matches.length}`);
+      text = text.replace(r.from, r.to);
+    }
+  });
+
+  // ── 阶段3：删除夸大象征意义与宣传语言 ──
+  const hypePatterns = [
+    {from: /标志着……的关键时刻/g, to: '', name: '夸大意义'},
+    {from: /是……的体现/g, to: '', name: '夸大意义'},
+    {from: /是……的证明/g, to: '', name: '夸大意义'},
+    {from: /极其重要的/g, to: '重要的', name: '夸大意义'},
+    {from: /关键性的/g, to: '关键的', name: '夸大意义'},
+    {from: /不断演变的格局/g, to: '领域', name: '夸大意义'},
+    {from: /不可磨灭的印记/g, to: '', name: '夸大意义'},
+    {from: /深深植根于/g, to: '源于', name: '夸大意义'},
+    {from: /为……做出贡献/g, to: '', name: '夸大意义'},
+    {from: /为……奠定基础/g, to: '', name: '夸大意义'},
+    {from: /坐落于/g, to: '位于', name: '宣传语言'},
+    {from: /位于……的中心/g, to: '在', name: '宣传语言'},
+    {from: /拥有丰富的/g, to: '有', name: '宣传语言'},
+    {from: /充满活力的/g, to: '有活力的', name: '宣传语言'},
+    {from: /令人叹为观止的/g, to: '壮观的', name: '宣传语言'},
+    {from: /迷人的/g, to: '吸引人的', name: '宣传语言'},
+    {from: /开创性的/g, to: '创新的', name: '宣传语言'},
+    {from: /自然之美/g, to: '自然风光', name: '宣传语言'},
+    {from: /必游之地/g, to: '值得去的地方', name: '宣传语言'},
+    {from: /著名的/g, to: '知名的', name: '宣传语言'},
+  ];
+  hypePatterns.forEach(r => {
+    const matches = text.match(r.from);
+    if (matches) {
+      totalChanges += matches.length;
+      changeLog.push(`${r.name}：删除/替换"${matches[0].substring(0,20)}..." x${matches.length}`);
+      text = text.replace(r.from, r.to);
+    }
+  });
+
+  // ── 阶段4：删除模糊归因 ──
+  const vagueAttribution = [
+    {from: /行业报告显示/g, to: '', name: '模糊归因'},
+    {from: /观察者指出/g, to: '', name: '模糊归因'},
+    {from: /专家认为/g, to: '', name: '模糊归因'},
+    {from: /一些批评者认为/g, to: '', name: '模糊归因'},
+    {from: /多个来源指出/g, to: '', name: '模糊归因'},
+    {from: /被广泛认为/g, to: '', name: '模糊归因'},
+  ];
+  vagueAttribution.forEach(r => {
+    const matches = text.match(r.from);
+    if (matches) {
+      totalChanges += matches.length;
+      changeLog.push(`${r.name}：删除"${matches[0]}" x${matches.length}`);
+      text = text.replace(r.from, r.to);
+    }
+  });
+
+  // ── 阶段5：替换高频AI词汇 ──
+  const aiVocabReplacements = [
+    {from: /此外，/g, to: '', name: 'AI高频词'},
+    {from: /此外/g, to: '另外', name: 'AI高频词'},
+    {from: /至关重要/g, to: '关键', name: 'AI高频词'},
+    {from: /深入探讨/g, to: '分析', name: 'AI高频词'},
+    {from: /强调/g, to: '指出', name: 'AI高频词'},
+    {from: /持久的/g, to: '持续的', name: 'AI高频词'},
+    {from: /增强/g, to: '提高', name: 'AI高频词'},
+    {from: /培养/g, to: '培育', name: 'AI高频词'},
+    {from: /获得/g, to: '得到', name: 'AI高频词'},
+    {from: /突出/g, to: '凸显', name: 'AI高频词'},
+    {from: /相互作用/g, to: '互相影响', name: 'AI高频词'},
+    {from: /复杂性/g, to: '复杂程度', name: 'AI高频词'},
+    {from: /格局/g, to: '形势', name: 'AI高频词'},
+    {from: /展示/g, to: '展现', name: 'AI高频词'},
+    {from: /证明/g, to: '表明', name: 'AI高频词'},
+    {from: /宝贵的/g, to: '珍贵的', name: 'AI高频词'},
+    {from: /充满活力的/g, to: '有活力的', name: 'AI高频词'},
+    {from: /织锦/g, to: '画卷', name: 'AI高频词'},
+  ];
+  aiVocabReplacements.forEach(r => {
+    const matches = text.match(r.from);
+    if (matches) {
+      totalChanges += matches.length;
+      changeLog.push(`${r.name}："${matches[0]}" → 替换为更自然的表达 x${matches.length}`);
+      text = text.replace(r.from, r.to);
+    }
+  });
+
+  // ── 阶段6：修复句式模式 ──
+  // 6a. 否定式排比
+  const negParallel = [
+    {from: /不仅……而且……/g, to: '……，……', name: '否定式排比'},
+    {from: /不仅仅是……，而是……/g, to: '……', name: '否定式排比'},
+    {from: /不只……更……/g, to: '……，……', name: '否定式排比'},
+  ];
+  negParallel.forEach(r => {
+    const matches = text.match(r.from);
+    if (matches) {
+      totalChanges += matches.length;
+      changeLog.push(`${r.name}：打散"不仅……而且"结构 x${matches.length}`);
+      text = text.replace(r.from, r.to);
+    }
+  });
+
+  // 6b. 虚假范围
+  const fakeRange = [
+    {from: /从……到……/g, to: '包括', name: '虚假范围'},
+  ];
+  fakeRange.forEach(r => {
+    const matches = text.match(r.from);
+    if (matches) {
+      totalChanges += matches.length;
+      changeLog.push(`${r.name}：简化范围表述 x${matches.length}`);
+      text = text.replace(r.from, r.to);
+    }
+  });
+
+  // 6c. 系动词回避修复
+  const copulaFix = [
+    {from: /作为……的/g, to: '是……的', name: '系动词回避'},
+    {from: /充当……的/g, to: '是……的', name: '系动词回避'},
+    {from: /代表……的/g, to: '是……的', name: '系动词回避'},
+    {from: /标志着……的/g, to: '是……的', name: '系动词回避'},
+    {from: /设有/g, to: '有', name: '系动词回避'},
+    {from: /拥有/g, to: '有', name: '系动词回避'},
+    {from: /提供/g, to: '有', name: '系动词回避'},
+  ];
+  copulaFix.forEach(r => {
+    const matches = text.match(r.from);
+    if (matches) {
+      totalChanges += matches.length;
+      changeLog.push(`${r.name}："${matches[0]}" → 简化表达 x${matches.length}`);
+      text = text.replace(r.from, r.to);
+    }
+  });
+
+  // ── 阶段7：删除通用积极结论 ──
+  const genericPositive = [
+    {from: /未来看起来光明/g, to: '', name: '通用积极结论'},
+    {from: /激动人心的时代即将到来/g, to: '', name: '通用积极结论'},
+    {from: /向正确方向迈出的重要一步/g, to: '', name: '通用积极结论'},
+    {from: /这代表了……的重要进步/g, to: '', name: '通用积极结论'},
+    {from: /将继续追求卓越的旅程/g, to: '', name: '通用积极结论'},
+  ];
+  genericPositive.forEach(r => {
+    const matches = text.match(r.from);
+    if (matches) {
+      totalChanges += matches.length;
+      changeLog.push(`${r.name}：删除空洞结尾"${matches[0].substring(0,20)}..." x${matches.length}`);
+      text = text.replace(r.from, r.to);
+    }
+  });
+
+  // ── 阶段8：删除提纲式"挑战与未来展望" ──
+  const outlinePatterns = [
+    {from: /尽管……面临若干挑战/g, to: '', name: '提纲式挑战'},
+    {from: /尽管存在这些挑战/g, to: '', name: '提纲式挑战'},
+    {from: /挑战与遗产/g, to: '', name: '提纲式挑战'},
+    {from: /未来展望/g, to: '', name: '提纲式挑战'},
+    {from: /面临诸多挑战/g, to: '', name: '提纲式挑战'},
+  ];
+  outlinePatterns.forEach(r => {
+    const matches = text.match(r.from);
+    if (matches) {
+      totalChanges += matches.length;
+      changeLog.push(`${r.name}：删除公式化表述"${matches[0].substring(0,20)}..." x${matches.length}`);
+      text = text.replace(r.from, r.to);
+    }
+  });
+
+  // ── 阶段9：清理风格痕迹 ──
+  // 9a. 破折号过度使用 → 替换为逗号或句号
+  const dashCount = (text.match(/——/g) || []).length;
+  if (dashCount > 3) {
+    text = text.replace(/——/g, '，');
+    totalChanges += dashCount;
+    changeLog.push(`破折号过度：${dashCount}处"——" → "，"`);
+  }
+  const emDashCount = (text.match(/———/g) || []).length;
+  if (emDashCount > 0) {
+    text = text.replace(/———/g, '。');
+    totalChanges += emDashCount;
+    changeLog.push(`破折号过度：${emDashCount}处"———" → "。"`);
+  }
+
+  // 9b. 删除粗体标记（markdown风格）
+  const boldCount = (text.match(/\*\*[^*]+\*\*/g) || []).length;
+  if (boldCount > 0) {
+    text = text.replace(/\*\*([^*]+)\*\*/g, '$1');
+    totalChanges += boldCount;
+    changeLog.push(`粗体过度：删除${boldCount}处**粗体**标记`);
+  }
+
+  // 9c. 删除表情符号
+  const emojiPattern = /[\u{1F300}-\u{1F9FF}]|[\u{2600}-\u{26FF}]|[\u{2700}-\u{27BF}]/gu;
+  const emojiMatches = text.match(emojiPattern);
+  if (emojiMatches) {
+    text = text.replace(emojiPattern, '');
+    totalChanges += emojiMatches.length;
+    changeLog.push(`表情符号：删除${emojiMatches.length}个emoji`);
+  }
+
+  // 9d. 弯引号统一为直引号
+  const curlyQuotes = (text.match(/[""''']/g) || []).length;
+  if (curlyQuotes > 0) {
+    text = text.replace(/"/g, '"').replace(/"/g, '"').replace(/'/g, "'").replace(/'/g, "'");
+    totalChanges += curlyQuotes;
+    changeLog.push(`弯引号：统一${curlyQuotes}处为直引号`);
+  }
+
+  // ── 阶段10：删除传统AI套话 ──
+  const oldAiPhrases = [
+    {from: /众所周知/g, to: '', name: '传统套话'},
+    {from: /总的来说/g, to: '', name: '传统套话'},
+    {from: /不仅如此/g, to: '', name: '传统套话'},
+    {from: /换句话说/g, to: '', name: '传统套话'},
+    {from: /事实上/g, to: '', name: '传统套话'},
+    {from: /与此同时/g, to: '', name: '传统套话'},
+    {from: /首先，/g, to: '', name: '传统套话'},
+    {from: /其次，/g, to: '', name: '传统套话'},
+    {from: /最后，/g, to: '', name: '传统套话'},
+    {from: /因此，/g, to: '', name: '传统套话'},
+    {from: /然而，/g, to: '', name: '传统套话'},
+  ];
+  oldAiPhrases.forEach(r => {
+    const matches = text.match(r.from);
+    if (matches) {
+      totalChanges += matches.length;
+      changeLog.push(`${r.name}：删除"${matches[0].substring(0,15)}..." x${matches.length}`);
+      text = text.replace(r.from, r.to);
+    }
+  });
+
+  // ── 阶段11：词汇升级（小说专用，保留原有功能） ──
+  const novelUpgrades = [
     {from: /非常重要/g, to: '至关重要'},
     {from: /非常关键/g, to: '至关紧要'},
     {from: /非常好/g, to: '极好'},
@@ -2697,30 +2961,101 @@ function aiPolish() {
     {from: /很生气/g, to: '怒不可遏'},
     {from: /很害怕/g, to: '胆战心惊'},
   ];
-
-  let changed = 0;
-  replacements.forEach(r => {
+  novelUpgrades.forEach(r => {
     const matches = text.match(r.from);
     if (matches) {
-      changed += matches.length;
+      totalChanges += matches.length;
+      changeLog.push(`词汇升级："${matches[0]}" → 更生动的表达 x${matches.length}`);
       text = text.replace(r.from, r.to);
     }
   });
 
-  // 清理因删除套话产生的多余空行
-  text = text.replace(/
-{3,}/g, '
+  // ── 阶段12：清理多余空行与标点 ──
+  text = text.replace(/\n{3,}/g, '\n\n');
+  text = text.replace(/，，+/g, '，');
+  text = text.replace(/。。+/g, '。');
+  text = text.replace(/；；+/g, '；');
+  text = text.replace(/、、+/g, '、');
+  text = text.replace(/\n\s+/g, '\n');
+  text = text.replace(/\s+\n/g, '\n');
 
-');
+  // ── 阶段13：检测并提示同义词循环 ──
+  const synonymCycle = detectSynonymCycles(text);
+  if (synonymCycle.length > 0) {
+    changeLog.push(`同义词循环：发现${synonymCycle.length}处可能的主语轮换，建议合并句子`);
+  }
+
+  // ── 阶段14：检测三段式法则 ──
+  const triplePatterns = [
+    /[^，。；\n]{2,10}、[^，。；\n]{2,10}和[^，。；\n]{2,10}/g,
+    /[^，。；\n]{2,10}、[^，。；\n]{2,10}、[^，。；\n]{2,10}/g,
+  ];
+  let tripleCount = 0;
+  triplePatterns.forEach(p => {
+    const matches = text.match(p);
+    if (matches) tripleCount += matches.length;
+  });
+  if (tripleCount > 0) {
+    changeLog.push(`三段式法则：发现${tripleCount}处三项并列，建议改为两项或打散`);
+  }
+
+  // ── 阶段15：检测并提示句子长度单调 ──
+  const sentenceLengthTip = checkSentenceRhythm(text);
+  if (sentenceLengthTip) {
+    changeLog.push(sentenceLengthTip);
+  }
 
   editor.value = text;
   onWritingInput();
-  alert(`🎨 AI润色完成！
-优化了${changed}处用词
-提示：建议逐句审阅，根据语境微调`);
+
+  const changedChars = originalText.length - text.length;
+  const summary = changeLog.length > 0
+    ? changeLog.slice(0, 12).join('\n') + (changeLog.length > 12 ? `\n... 等共${changeLog.length}项优化` : '')
+    : '未触发明显AI模式，文字已较为自然';
+
+  alert(`🎨 AI润色完成（Humanizer-zh技术整合版）\n\n📊 统计：\n• 优化项目：${changeLog.length}类\n• 替换/删除次数：${totalChanges}处\n• 字数变化：${changedChars > 0 ? '减少' : '增加'}${Math.abs(changedChars)}字\n\n📝 优化详情：\n${summary}\n\n💡 提示：\n${sentenceLengthTip || '• 建议朗读全文，检查语气是否自然'}\n• 同义词循环和三段式需手动调整叙事节奏`);
 }
 
-// AI痕迹检测：基于规则的检测
+// 检测同义词循环
+function detectSynonymCycles(text) {
+  const sentences = text.split(/[。！？\n]+/).filter(s => s.trim().length > 5);
+  const cycles = [];
+  for (let i = 0; i < sentences.length - 2; i++) {
+    const s1 = sentences[i], s2 = sentences[i+1], s3 = sentences[i+2];
+    const subjectPatterns = ['主人公', '主角', '中心人物', '英雄', '主角', '人物'];
+    let hits = 0;
+    [s1, s2, s3].forEach(s => {
+      if (subjectPatterns.some(p => s.includes(p))) hits++;
+    });
+    if (hits >= 2) cycles.push(i);
+  }
+  return cycles;
+}
+
+// 检测句子节奏
+function checkSentenceRhythm(text) {
+  const sentences = text.split(/[。！？]+/).filter(s => s.trim().length > 3);
+  if (sentences.length < 5) return null;
+  const lengths = sentences.map(s => s.length);
+  let monotonous = 0;
+  for (let i = 0; i < lengths.length - 2; i++) {
+    const avg = (lengths[i] + lengths[i+1] + lengths[i+2]) / 3;
+    const dev = Math.max(
+      Math.abs(lengths[i] - avg),
+      Math.abs(lengths[i+1] - avg),
+      Math.abs(lengths[i+2] - avg)
+    );
+    if (dev / avg < 0.15) monotonous++;
+  }
+  if (monotonous >= 2) {
+    return `节奏单调：发现${monotonous}处连续3句长度过于接近，建议混合长短句`;
+  }
+  return null;
+}
+
+// ═══════════════════════════════════════════════════════════════
+// AI痕迹检测：Humanizer-zh 24种模式全覆盖
+// ═══════════════════════════════════════════════════════════════
 function checkAIDetect() {
   const editor = document.getElementById('writingEditor');
   const text = editor.value;
@@ -2729,37 +3064,113 @@ function checkAIDetect() {
     return;
   }
 
-  const aiPatterns = [
-    {pattern: /首先.*其次.*最后/g, desc: '结构化表述（首先/其次/最后）'},
-    {pattern: /众所周知/g, desc: '套话开头'},
-    {pattern: /值得注意的是/g, desc: '过渡套话'},
-    {pattern: /总的来说/g, desc: '总结套话'},
-    {pattern: /不仅如此/g, desc: '递进套话'},
-    {pattern: /然而/g, desc: '转折过度使用'},
-    {pattern: /因此/g, desc: '因果套话'},
-    {pattern: /事实上/g, desc: '强调套话'},
-    {pattern: /与此同时/g, desc: '时间套话'},
-    {pattern: /换句话说/g, desc: '解释套话'},
-    {pattern: /[一二三四五六七八九十]、/g, desc: '编号列表'},
-    {pattern: /\\n\\n【.*】\\n\\n/g, desc: '章节标记（系统生成痕迹）'},
-    {pattern: /\\n\\n—.*—\\n/g, desc: '分隔线标记'},
+  const issues = [];
+  let totalScore = 100;
+
+  const contentPatterns = [
+    {pattern: /标志着|见证了|是……的体现|是……的证明|极其重要的|关键性的|不断演变的格局|不可磨灭的印记|深深植根于|为……做出贡献|为……奠定基础/g, desc: 'A1. 过度强调意义/遗产', weight: 4},
+    {pattern: /独立报道|由知名专家撰写|活跃的社交媒体账号|广泛关注|备受瞩目/g, desc: 'A2. 过度强调知名度', weight: 3},
+    {pattern: /象征着……反映了|展示了……培养了|涵盖了……为……做出贡献/g, desc: 'A3. -ing式肤浅分析', weight: 4},
+    {pattern: /坐落于|位于……的中心|拥有丰富的|充满活力的|令人叹为观止的|必游之地|迷人的|开创性的|自然之美/g, desc: 'A4. 宣传广告式语言', weight: 4},
+    {pattern: /行业报告显示|观察者指出|专家认为|一些批评者认为|多个来源指出|被广泛认为/g, desc: 'A5. 模糊归因', weight: 3},
+    {pattern: /尽管……面临若干挑战|尽管存在这些挑战|挑战与遗产|未来展望|面临诸多挑战/g, desc: 'A6. 提纲式挑战展望', weight: 3},
   ];
 
-  let issues = [];
-  aiPatterns.forEach(p => {
+  const langPatterns = [
+    {pattern: /此外|至关重要|深入探讨|强调|持久的|增强|培养|获得|突出|相互作用|复杂性|格局|展示|证明|宝贵的|充满活力的|织锦/g, desc: 'B7. 高频AI词汇', weight: 3},
+    {pattern: /作为……的|充当……的|代表……的|标志着……的|设有|拥有|提供/g, desc: 'B8. 系动词回避', weight: 2},
+    {pattern: /不仅……而且|不仅……更|不仅仅是……而是/g, desc: 'B9. 否定式排比', weight: 4},
+    {pattern: /[^，。；\n]{2,10}、[^，。；\n]{2,10}和[^，。；\n]{2,10}/g, desc: 'B10. 三段式法则', weight: 2},
+    {pattern: /主人公.*主角.*中心人物|英雄.*主人公.*主角/g, desc: 'B11. 同义词循环', weight: 3},
+    {pattern: /从……到……/g, desc: 'B12. 虚假范围', weight: 2},
+  ];
+
+  const stylePatterns = [
+    {pattern: /——/g, desc: 'C13. 破折号过度使用', weight: 1},
+    {pattern: /\*\*[^*]+\*\*/g, desc: 'C14. 粗体过度使用', weight: 1},
+    {pattern: /- \*\*[^*]+\*\*：/g, desc: 'C15. 内联标题垂直列表', weight: 2},
+    {pattern: /[\u{1F300}-\u{1F9FF}]|[\u{2600}-\u{26FF}]|[\u{2700}-\u{27BF}]/gu, desc: 'C17. 表情符号', weight: 1},
+    {pattern: /[""''']/g, desc: 'C18. 弯引号', weight: 1},
+    {pattern: /首先.*其次.*最后/g, desc: 'C-extra. 结构化表述', weight: 2},
+  ];
+
+  const commPatterns = [
+    {pattern: /希望这对您有帮助|当然！|一定！|您说得完全正确|这是一个复杂的话题|好问题/g, desc: 'D19. 协作交流痕迹', weight: 3},
+    {pattern: /截至\d{4}年|根据我最后的训练更新|虽然具体细节有限|基于可用信息/g, desc: 'D20. 知识截止免责声明', weight: 3},
+    {pattern: /您说得完全正确|这是一个很好的观点|好问题！|过于积极/g, desc: 'D21. 谄媚语气', weight: 2},
+    {pattern: /众所周知|值得注意的是|总的来说|不仅如此|换句话说|事实上|与此同时|首先，|其次，|最后，|因此，|然而，/g, desc: 'D22. 填充短语', weight: 2},
+    {pattern: /可以潜在地|可能被认为|可能会对……产生一些影响/g, desc: 'D23. 过度限定', weight: 2},
+    {pattern: /未来看起来光明|激动人心的时代即将到来|向正确方向迈出的重要一步|将继续追求卓越的旅程/g, desc: 'D24. 通用积极结论', weight: 3},
+  ];
+
+  const allPatterns = [...contentPatterns, ...langPatterns, ...stylePatterns, ...commPatterns];
+
+  allPatterns.forEach(p => {
     const matches = text.match(p.pattern);
     if (matches) {
-      issues.push(`「${p.desc}」出现${matches.length}次`);
+      issues.push({
+        desc: `「${p.desc}」出现${matches.length}次`,
+        weight: p.weight,
+        count: matches.length
+      });
+      totalScore -= p.weight * Math.min(matches.length, 5);
     }
   });
 
-  // 计算得分
-  const score = Math.max(0, 100 - issues.length * 8);
-  const level = score >= 80 ? '低（优秀）' : score >= 60 ? '中（需优化）' : '高（需大幅修改）';
+  const rhythmTip = checkSentenceRhythm(text);
+  if (rhythmTip) {
+    issues.push({desc: `「D-extra. 句子节奏单调」${rhythmTip.replace('节奏单调：', '')}`, weight: 2, count: 1});
+    totalScore -= 2;
+  }
 
-  const report = issues.length === 0
-    ? `🤖 AI检测完成！\\n\\n✅ 未发现明显AI痕迹\\n得分：${score}分\\n状态：低（优秀）\\n\\n您的文字具有较强的人文风！`
-    : `🤖 AI检测完成！\\n\\n⚠️ 发现${issues.length}类AI痕迹：\\n${issues.join('\\n')}\\n\\n得分：${score}分\\n状态：${level}\\n\\n💡 建议：删除或替换上述套话，增加具体的感官描写和人物心理活动。`;
+  totalScore = Math.max(0, Math.min(100, totalScore));
+
+  const level = totalScore >= 85 ? '低（优秀）' : totalScore >= 70 ? '中（良好）' : totalScore >= 50 ? '中高（需优化）' : '高（需大幅修改）';
+  const levelEmoji = totalScore >= 85 ? '✅' : totalScore >= 70 ? '⚠️' : '🔴';
+
+  let report = `${levelEmoji} AI痕迹检测报告（Humanizer-zh 24种模式）\n\n`;
+  report += `📊 综合得分：${totalScore}/100\n`;
+  report += `📈 AI痕迹等级：${level}\n`;
+  report += `🔍 检测模式数：${allPatterns.length}种\n`;
+  report += `⚠️ 触发模式：${issues.length}类\n\n`;
+
+  if (issues.length === 0) {
+    report += `🎉 恭喜！未发现明显AI痕迹\n\n`;
+    report += `💡 您的文字具有较强的人文风！建议：\n`;
+    report += `• 保持当前的叙事节奏\n`;
+    report += `• 继续增加具体感官描写\n`;
+    report += `• 适当增加人物内心独白`;
+  } else {
+    report += `📋 发现问题（按严重程度排序）：\n`;
+    issues.sort((a, b) => b.weight - a.weight);
+    issues.forEach((issue, i) => {
+      const severity = issue.weight >= 4 ? '🔴' : issue.weight >= 3 ? '🟠' : '🟡';
+      report += `${i+1}. ${severity} ${issue.desc}\n`;
+    });
+
+    report += `\n💡 优化建议：\n`;
+    if (issues.some(i => i.desc.includes('A'))) {
+      report += `• 删除夸大象征意义的表述，直接陈述事实\n`;
+    }
+    if (issues.some(i => i.desc.includes('B7'))) {
+      report += `• 替换高频AI词汇为日常表达\n`;
+    }
+    if (issues.some(i => i.desc.includes('B9'))) {
+      report += `• 打散"不仅……而且"结构，改为平铺直叙\n`;
+    }
+    if (issues.some(i => i.desc.includes('B10'))) {
+      report += `• 将三项并列改为两项或打散\n`;
+    }
+    if (issues.some(i => i.desc.includes('D22'))) {
+      report += `• 删除过渡套话，让段落直接衔接\n`;
+    }
+    if (issues.some(i => i.desc.includes('节奏'))) {
+      report += `• 混合长短句，打破机械节奏\n`;
+    }
+    report += `• 增加具体细节和感官描写\n`;
+    report += `• 注入人物真实情感和观点\n`;
+    report += `• 允许叙事有一些"不完美"的起伏`;
+  }
 
   alert(report);
 }
