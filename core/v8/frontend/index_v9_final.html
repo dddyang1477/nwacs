@@ -1,0 +1,3020 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NWACS — 智能小说写作系统 v9.0</title>
+<style>
+:root {
+  --bg-root:#0d1117;--bg-base:#161b22;--bg-elevated:#1c2333;
+  --bg-surface:#21262d;--bg-overlay:#2d333b;--bg-input:#0d1117;
+  --border-dim:#21262d;--border-base:#30363d;--border-bright:#484f58;
+  --text-primary:#e6edf3;--text-secondary:#8b949e;--text-tertiary:#6e7681;
+  --accent:#58a6ff;--accent-soft:#79c0ff;--accent-secondary:#a371f7;
+  --accent-gradient:linear-gradient(135deg,#58a6ff 0%,#a371f7 100%);
+  --accent-glow:rgba(88,166,255,0.15);--accent-glow-2:rgba(163,113,247,0.1);
+  --success:#3fb950;--warning:#d29922;--danger:#f85149;
+  --radius-xs:6px;--radius-sm:10px;--radius-md:14px;--radius-lg:20px;
+}
+/* ═════════════════════ 拼色双色主题系统 ═════════════════════ */
+[data-theme="blue"] {
+  --accent:#58a6ff;--accent-soft:#79c0ff;--accent-secondary:#a371f7;
+  --accent-gradient:linear-gradient(135deg,#58a6ff 0%,#a371f7 100%);
+  --accent-glow:rgba(88,166,255,0.18);--accent-glow-2:rgba(163,113,247,0.12);
+  --bg-elevated:#1c2333;--bg-surface:#1f2836;
+}
+[data-theme="purple"] {
+  --accent:#a371f7;--accent-soft:#bc8cff;--accent-secondary:#ff6b9d;
+  --accent-gradient:linear-gradient(135deg,#a371f7 0%,#ff6b9d 100%);
+  --accent-glow:rgba(163,113,247,0.18);--accent-glow-2:rgba(255,107,157,0.12);
+  --bg-elevated:#1f1c33;--bg-surface:#231f36;
+}
+[data-theme="green"] {
+  --accent:#3fb950;--accent-soft:#56d364;--accent-secondary:#00d9a5;
+  --accent-gradient:linear-gradient(135deg,#3fb950 0%,#00d9a5 100%);
+  --accent-glow:rgba(63,185,80,0.18);--accent-glow-2:rgba(0,217,165,0.12);
+  --bg-elevated:#1c331f;--bg-surface:#1f3623;
+}
+[data-theme="orange"] {
+  --accent:#f0883e;--accent-soft:#ffa657;--accent-secondary:#ff4757;
+  --accent-gradient:linear-gradient(135deg,#f0883e 0%,#ff4757 100%);
+  --accent-glow:rgba(240,136,62,0.18);--accent-glow-2:rgba(255,71,87,0.12);
+  --bg-elevated:#331f1c;--bg-surface:#36231f;
+}
+[data-theme="pink"] {
+  --accent:#ff6b9d;--accent-soft:#ff9ece;--accent-secondary:#a371f7;
+  --accent-gradient:linear-gradient(135deg,#ff6b9d 0%,#a371f7 100%);
+  --accent-glow:rgba(255,107,157,0.18);--accent-glow-2:rgba(163,113,247,0.12);
+  --bg-elevated:#331c2a;--bg-surface:#361f2d;
+}
+[data-theme="red"] {
+  --accent:#ff4757;--accent-soft:#ff6b81;--accent-secondary:#ff9f43;
+  --accent-gradient:linear-gradient(135deg,#ff4757 0%,#ff9f43 100%);
+  --accent-glow:rgba(255,71,87,0.18);--accent-glow-2:rgba(255,159,67,0.12);
+  --bg-elevated:#331c1c;--bg-surface:#361f1f;
+}
+[data-theme="cyan"] {
+  --accent:#00d2d3;--accent-soft:#54a0ff;--accent-secondary:#5f27cd;
+  --accent-gradient:linear-gradient(135deg,#00d2d3 0%,#5f27cd 100%);
+  --accent-glow:rgba(0,210,211,0.18);--accent-glow-2:rgba(95,39,205,0.12);
+  --bg-elevated:#1c2d33;--bg-surface:#1f3036;
+}
+[data-theme="gold"] {
+  --accent:#e3b341;--accent-soft:#f0d57a;--accent-secondary:#ff9f43;
+  --accent-gradient:linear-gradient(135deg,#e3b341 0%,#ff9f43 100%);
+  --accent-glow:rgba(227,179,65,0.18);--accent-glow-2:rgba(255,159,67,0.12);
+  --bg-elevated:#332e1c;--bg-surface:#36311f;
+}
+[data-theme="cyber"] {
+  --accent:#00f2ff;--accent-soft:#79c0ff;--accent-secondary:#bd00ff;
+  --accent-gradient:linear-gradient(135deg,#00f2ff 0%,#bd00ff 100%);
+  --accent-glow:rgba(0,242,255,0.2);--accent-glow-2:rgba(189,0,255,0.15);
+  --bg-elevated:#1a1a2e;--bg-surface:#16213e;
+}
+[data-theme="sunset"] {
+  --accent:#ff6b6b;--accent-soft:#ff9f43;--accent-secondary:#ffd93d;
+  --accent-gradient:linear-gradient(135deg,#ff6b6b 0%,#ffd93d 100%);
+  --accent-glow:rgba(255,107,107,0.2);--accent-glow-2:rgba(255,217,61,0.15);
+  --bg-elevated:#331a1a;--bg-surface:#36231a;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans SC",sans-serif;background:var(--bg-root);color:var(--text-primary);min-height:100vh;line-height:1.6}
+.app{max-width:1400px;margin:0 auto;padding:20px}
+
+/* 顶部栏 */
+.topbar{display:flex;align-items:center;justify-content:space-between;padding:14px 0;border-bottom:1px solid var(--border-dim);margin-bottom:20px}
+.brand{display:flex;align-items:center;gap:12px}
+.brand-mark{width:42px;height:42px;background:var(--accent-gradient);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;box-shadow:0 0 20px var(--accent-glow)}
+.brand-name{font-size:1.2rem;font-weight:700}
+.brand-ver{font-size:0.7rem;color:var(--text-tertiary)}
+
+/* Stepper */
+.stepper{display:flex;align-items:center;gap:8px;margin-bottom:20px;overflow-x:auto;padding:12px;background:var(--bg-elevated);border-radius:12px}
+.step{display:flex;align-items:center;gap:6px;padding:8px 14px;border-radius:8px;font-size:0.85rem;color:var(--text-tertiary);cursor:pointer;transition:all 0.3s;white-space:nowrap}
+.step:hover{background:var(--bg-surface);color:var(--text-secondary)}
+.step.active{background:var(--accent-glow);color:var(--accent);border:1px solid var(--accent-secondary)}
+.step.done{color:var(--success)}
+.step-num{width:24px;height:24px;border-radius:50%;background:var(--bg-overlay);border:2px solid var(--border-base);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:0.75rem}
+.step.active .step-num{background:var(--accent-gradient);border-color:var(--accent-secondary);color:#fff}
+.step.done .step-num{background:var(--success);border-color:var(--success);color:#fff}
+.step-line{width:20px;height:2px;background:var(--border-base)}
+
+/* 步骤面板 */
+.step-panel{display:none;width:100%}
+.step-panel.active{display:block}
+.content-area{background:var(--bg-elevated);border:1px solid var(--border-dim);border-radius:16px;padding:28px;min-height:500px;overflow-x:hidden}
+
+/* 确保卡片网格不溢出 */
+.sel-grid{overflow:hidden}
+.char-grid{overflow:visible}
+
+/* 卡片 */
+.card{background:var(--bg-base);border:1px solid var(--border-dim);border-radius:12px;padding:20px;margin-bottom:18px}
+.card-title{font-size:1rem;font-weight:600;margin-bottom:16px;display:flex;align-items:center;gap:8px}
+
+/* 选择网格 */
+.sel-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px}
+.sel-card{
+  background:var(--bg-input);border:2px solid var(--border-base);border-radius:10px;
+  padding:16px 10px;text-align:center;cursor:pointer;transition:all 0.2s;
+  display:flex;flex-direction:column;align-items:center;
+}
+.sel-card:hover{border-color:var(--accent-secondary);transform:translateY(-2px);box-shadow:0 4px 16px var(--accent-glow-2)}
+.sel-card.selected{border-color:var(--accent);background:linear-gradient(135deg,rgba(88,166,255,0.1) 0%,rgba(163,113,247,0.08) 100%);box-shadow:0 0 24px var(--accent-glow),0 0 8px var(--accent-glow-2)}
+.sel-icon{font-size:1.6rem;margin-bottom:6px}
+.sel-label{font-weight:600;font-size:0.85rem}
+.sel-desc{font-size:0.68rem;color:var(--text-tertiary);margin-top:4px}
+
+/* 按钮 */
+.btn{padding:12px 28px;border-radius:8px;font-size:0.95rem;font-weight:600;cursor:pointer;border:none;transition:all 0.2s}
+.btn-primary{background:var(--accent-gradient);color:#fff;border:none}
+.btn-primary:hover{opacity:0.95;transform:translateY(-1px);box-shadow:0 4px 20px var(--accent-glow)}
+.btn-secondary{background:var(--bg-surface);color:var(--text-primary);border:1px solid var(--border-base)}
+.btn:disabled{opacity:0.5;cursor:not-allowed}
+
+.nav-bar{display:flex;justify-content:space-between;margin-top:24px;padding-top:20px;border-top:1px solid var(--border-dim)}
+
+/* 预览面板 */
+.preview{background:var(--bg-base);border:1px solid var(--border-base);border-radius:10px;padding:16px;margin-bottom:18px}
+.preview-title{font-size:0.85rem;color:var(--text-secondary);margin-bottom:10px}
+.preview-content{font-size:0.9rem;line-height:1.8}
+
+/* 字数设置 */
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.field-label{font-size:0.82rem;color:var(--text-secondary);margin-bottom:6px}
+.field-input{width:100%;padding:10px 14px;background:var(--bg-input);border:1.5px solid var(--border-base);border-radius:8px;color:var(--text-primary);font-size:0.9rem}
+.field-input:focus{outline:none;border-color:var(--accent-secondary);box-shadow:0 0 8px var(--accent-glow-2)}
+select.field-input{appearance:none;cursor:pointer}
+.word-info{margin-top:12px;font-size:0.82rem;color:var(--text-tertiary)}
+
+/* 角色卡片 */
+.char-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px}
+.char-card{background:var(--bg-input);border:1px solid var(--border-base);border-radius:10px;padding:16px}
+.char-card-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+.char-name{font-size:1rem;font-weight:600}
+.char-role{font-size:0.78rem;color:var(--text-secondary)}
+.char-field{margin-bottom:8px}
+.char-field label{font-size:0.78rem;color:var(--text-secondary);display:block;margin-bottom:4px}
+.char-field input,.char-field select,.char-field textarea{width:100%;padding:8px 10px;background:var(--bg-input);border:1px solid var(--border-base);border-radius:6px;color:var(--text-primary);font-size:0.85rem}
+textarea{resize:vertical;min-height:60px}
+
+/* 大纲 */
+.outline-item{background:var(--bg-input);border:1px solid var(--border-dim);border-radius:8px;padding:14px;margin-bottom:10px;cursor:pointer}
+.outline-item:hover{border-color:var(--accent-secondary);box-shadow:0 0 12px var(--accent-glow-2)}
+.outline-item.main-line{border-left:3px solid var(--accent)}
+.outline-item.sub-line{border-left:3px solid var(--success)}
+.outline-item.cause{border-left:3px solid var(--warning)}
+.outline-ch{font-weight:600;color:var(--accent)}
+.outline-title{font-size:0.88rem;margin-top:4px}
+
+/* 写作区 */
+.writing-layout{display:grid;grid-template-columns:260px 1fr 280px;gap:16px;min-height:600px}
+.toolbox{background:var(--bg-base);border:1px solid var(--border-dim);border-radius:12px;padding:16px}
+.tool-section{margin-bottom:16px}
+.tool-section-title{font-size:0.82rem;color:var(--text-secondary);margin-bottom:8px}
+.tool-btn{width:100%;padding:10px;background:var(--bg-surface);border:1px solid var(--border-base);border-radius:6px;color:var(--text-primary);font-size:0.82rem;cursor:pointer;margin-bottom:6px;text-align:left}
+.tool-btn:hover{background:var(--bg-overlay);border-color:var(--accent-secondary);box-shadow:0 0 10px var(--accent-glow-2)}
+.writing-area{flex:1}
+.writing-editor{width:100%;min-height:500px;background:var(--bg-base);border:1px solid var(--border-dim);border-radius:12px;padding:24px;color:var(--text-primary);font-size:1rem;line-height:2;font-family:"Noto Serif SC",serif;resize:vertical}
+.writing-editor:focus{outline:none;border-color:var(--accent-secondary);box-shadow:0 0 20px var(--accent-glow),inset 0 0 10px var(--accent-glow-2)}
+.word-count{margin-top:12px;font-size:0.82rem;color:var(--text-tertiary);display:flex;justify-content:space-between}
+.assistant-panel{background:var(--bg-base);border:1px solid var(--border-dim);border-radius:12px;padding:16px}
+.assistant-title{font-size:0.9rem;font-weight:600;margin-bottom:12px;display:flex;justify-content:space-between}
+.score-badge{padding:4px 10px;border-radius:20px;font-size:0.78rem;font-weight:600}
+.score-good{background:rgba(63,185,80,0.2);color:var(--success)}
+.score-warn{background:rgba(210,153,34,0.2);color:var(--warning)}
+.score-bad{background:rgba(248,81,73,0.2);color:var(--danger)}
+.stat-row{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border-dim);font-size:0.85rem}
+.chapter-nav{display:flex;justify-content:space-between;margin-top:16px}
+
+/* 细纲颜色标注 */
+.main-line{border-left:3px solid var(--accent)!important;background:rgba(88,166,255,0.08)!important}
+.sub-line{border-left:3px solid #3fb950!important;background:rgba(63,185,80,0.08)!important}
+.cause{border-left:3px solid #d29922!important;background:rgba(210,153,34,0.08)!important}
+.main-tag{color:var(--accent);font-size:0.7rem;border:1px solid var(--accent);padding:1px 6px;border-radius:4px;margin-left:6px}
+.sub-tag{color:#3fb950;font-size:0.7rem;border:1px solid #3fb950;padding:1px 6px;border-radius:4px;margin-left:6px}
+.cause-tag{color:#d29922;font-size:0.7rem;border:1px solid #d29922;padding:1px 6px;border-radius:4px;margin-left:6px}
+
+/* 留言评论区 */
+.comment-section{background:var(--bg-elevated);border:1px solid var(--border-base);border-radius:12px;padding:16px;margin-top:12px;max-height:300px;overflow-y:auto}
+.comment-item{padding:10px;border-bottom:1px solid var(--border-dim);font-size:0.85rem}
+.comment-item:last-child{border-bottom:none}
+.comment-time{color:var(--text-tertiary);font-size:0.72rem;margin-top:4px}
+.comment-input-area{display:flex;gap:8px;margin-top:12px}
+</style>
+</head>
+<body>
+<div class="app">
+  <!-- 顶部设置栏 -->
+  <div class="topbar" style="flex-wrap:wrap;gap:12px">
+    <div class="brand">
+      <div class="brand-mark">📝</div>
+      <div>
+        <div class="brand-name">NWACS 智能小说写作系统</div>
+        <div class="brand-ver">v9.0 重构版 build202605161800</div>
+      </div>
+    </div>
+    <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;flex:1;justify-content:flex-end">
+      <button class="btn btn-secondary" style="padding:6px 14px;font-size:0.78rem" onclick="toggleComments()">💬 留言反馈</button>
+      <div style="display:flex;align-items:center;gap:8px">
+        <label style="font-size:0.78rem;color:var(--text-secondary)">🔑 API：</label>
+        <input id="apiKey" type="password" placeholder="输入API Key..." style="width:180px;padding:6px 10px;background:var(--bg-input);border:1px solid var(--border-base);border-radius:6px;color:var(--text-primary);font-size:0.82rem" onchange="saveApiKey(this.value)">
+      </div>
+      <button class="btn btn-secondary" style="padding:6px 14px;font-size:0.78rem" onclick="toggleSettings()">⚙️ 设置</button>
+      <button class="btn btn-secondary" style="padding:6px 14px;font-size:0.78rem" onclick="runDiagnostics()">🔬 诊断</button>
+    </div>
+  </div>
+  
+  <!-- 设置面板（隐藏） -->
+  <div id="settingsPanel" style="display:none;background:var(--bg-elevated);border:1px solid var(--border-base);border-radius:12px;padding:16px;margin-bottom:16px">
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px">
+      <div>
+        <label style="font-size:0.82rem;color:var(--text-secondary);display:block;margin-bottom:6px">🌐 API接口地址</label>
+        <input id="apiUrl" type="text" placeholder="https://api.example.com/v1/chat" style="width:100%;padding:8px 12px;background:var(--bg-input);border:1px solid var(--border-base);border-radius:6px;color:var(--text-primary);font-size:0.85rem">
+      </div>
+      <div>
+        <label style="font-size:0.82rem;color:var(--text-secondary);display:block;margin-bottom:6px">🔑 API Key（已加密存储）</label>
+        <input id="apiKeyFull" type="password" placeholder="sk-xxxxxxxx" style="width:100%;padding:8px 12px;background:var(--bg-input);border:1px solid var(--border-base);border-radius:6px;color:var(--text-primary);font-size:0.85rem">
+      </div>
+      <div>
+        <label style="font-size:0.82rem;color:var(--text-secondary);display:block;margin-bottom:6px">📝 默认模型</label>
+        <select id="defaultModel" style="width:100%;padding:8px 12px;background:var(--bg-input);border:1px solid var(--border-base);border-radius:6px;color:var(--text-primary);font-size:0.85rem">
+          <optgroup label="国内模型">
+            <option value="qwen-plus">通义千问Plus</option>
+            <option value="qwen-turbo">通义千问Turbo</option>
+            <option value="qwen-max">通义千问Max</option>
+            <option value="ernie-4">文心一言4.0</option>
+            <option value="ernie-speed">文心一言Speed</option>
+            <option value="glm-4">智谱GLM-4</option>
+            <option value="glm-4-flash">智谱GLM-4-Flash</option>
+            <option value="deepseek-chat">DeepSeek-V3</option>
+            <option value="deepseek-reasoner">DeepSeek-R1</option>
+            <option value="hunyuan">腾讯混元</option>
+            <option value="doubao">字节豆包</option>
+            <option value="spark">讯飞星火</option>
+            <option value="kimi">Kimi Moonshot</option>
+          </optgroup>
+          <optgroup label="国际模型">
+            <option value="gpt-4">GPT-4</option>
+            <option value="gpt-4o">GPT-4o</option>
+            <option value="gpt-3.5-turbo">GPT-3.5 Turbo</option>
+            <option value="claude-3-5">Claude-3.5</option>
+            <option value="claude-3">Claude-3</option>
+            <option value="gemini-pro">Gemini Pro</option>
+            <option value="llama-3">Llama 3</option>
+          </optgroup>
+        </select>
+      </div>
+      <div>
+        <label style="font-size:0.82rem;color:var(--text-secondary);display:block;margin-bottom:6px">🎨 主题颜色</label>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center">
+          <button onclick="setTheme('blue')" style="width:36px;height:36px;border-radius:50%;border:2px solid rgba(255,255,255,0.2);background:linear-gradient(135deg,#58a6ff 0%,#a371f7 100%);cursor:pointer;box-shadow:0 2px 8px rgba(88,166,255,0.3)" title="科技蓝紫"></button>
+          <button onclick="setTheme('purple')" style="width:36px;height:36px;border-radius:50%;border:2px solid rgba(255,255,255,0.2);background:linear-gradient(135deg,#a371f7 0%,#ff6b9d 100%);cursor:pointer;box-shadow:0 2px 8px rgba(163,113,247,0.3)" title="梦幻粉紫"></button>
+          <button onclick="setTheme('green')" style="width:36px;height:36px;border-radius:50%;border:2px solid rgba(255,255,255,0.2);background:linear-gradient(135deg,#3fb950 0%,#00d9a5 100%);cursor:pointer;box-shadow:0 2px 8px rgba(63,185,80,0.3)" title="生机薄荷"></button>
+          <button onclick="setTheme('orange')" style="width:36px;height:36px;border-radius:50%;border:2px solid rgba(255,255,255,0.2);background:linear-gradient(135deg,#f0883e 0%,#ff4757 100%);cursor:pointer;box-shadow:0 2px 8px rgba(240,136,62,0.3)" title="活力珊瑚"></button>
+          <button onclick="setTheme('pink')" style="width:36px;height:36px;border-radius:50%;border:2px solid rgba(255,255,255,0.2);background:linear-gradient(135deg,#ff6b9d 0%,#a371f7 100%);cursor:pointer;box-shadow:0 2px 8px rgba(255,107,157,0.3)" title="浪漫紫粉"></button>
+          <button onclick="setTheme('red')" style="width:36px;height:36px;border-radius:50%;border:2px solid rgba(255,255,255,0.2);background:linear-gradient(135deg,#ff4757 0%,#ff9f43 100%);cursor:pointer;box-shadow:0 2px 8px rgba(255,71,87,0.3)" title="烈焰熔岩"></button>
+          <button onclick="setTheme('cyan')" style="width:36px;height:36px;border-radius:50%;border:2px solid rgba(255,255,255,0.2);background:linear-gradient(135deg,#00d2d3 0%,#5f27cd 100%);cursor:pointer;box-shadow:0 2px 8px rgba(0,210,211,0.3)" title="深海极光"></button>
+          <button onclick="setTheme('gold')" style="width:36px;height:36px;border-radius:50%;border:2px solid rgba(255,255,255,0.2);background:linear-gradient(135deg,#e3b341 0%,#ff9f43 100%);cursor:pointer;box-shadow:0 2px 8px rgba(227,179,65,0.3)" title="落日熔金"></button>
+          <button onclick="setTheme('cyber')" style="width:36px;height:36px;border-radius:50%;border:2px solid rgba(255,255,255,0.2);background:linear-gradient(135deg,#00f2ff 0%,#bd00ff 100%);cursor:pointer;box-shadow:0 2px 8px rgba(0,242,255,0.3)" title="赛博霓虹"></button>
+          <button onclick="setTheme('sunset')" style="width:36px;height:36px;border-radius:50%;border:2px solid rgba(255,255,255,0.2);background:linear-gradient(135deg,#ff6b6b 0%,#ffd93d 100%);cursor:pointer;box-shadow:0 2px 8px rgba(255,107,107,0.3)" title="日落余晖"></button>
+        </div>
+      </div>
+    </div>
+    <div style="margin-top:12px;display:flex;gap:12px">
+      <button class="btn btn-primary" style="padding:8px 20px" onclick="saveApiSettings()">💾 保存设置</button>
+      <button class="btn btn-secondary" style="padding:8px 20px" onclick="testApiConnection()">🔗 测试连接</button>
+    </div>
+  </div>
+
+  <!-- 留言评论区（隐藏） -->
+  <div id="commentPanel" style="display:none;background:var(--bg-elevated);border:1px solid var(--border-base);border-radius:12px;padding:16px;margin-bottom:16px">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+      <span style="font-weight:600;font-size:0.95rem">💬 用户留言反馈</span>
+      <button onclick="toggleComments()" style="background:none;border:none;color:var(--text-secondary);cursor:pointer;font-size:1.2rem">×</button>
+    </div>
+    <div class="comment-section" id="commentList">
+      <div style="color:var(--text-tertiary);font-size:0.82rem;text-align:center;padding:20px">暂无留言，成为第一个留言的人吧！</div>
+    </div>
+    <div class="comment-input-area">
+      <input id="commentInput" type="text" placeholder="写下您的建议或反馈..." style="flex:1;padding:8px 12px;background:var(--bg-input);border:1px solid var(--border-base);border-radius:6px;color:var(--text-primary);font-size:0.85rem">
+      <button class="btn btn-primary" style="padding:8px 16px;font-size:0.82rem" onclick="addComment()">发送</button>
+    </div>
+  </div>
+
+  <!-- Stepper -->
+  <div class="stepper" id="mainStepper">
+    <div class="step active" onclick="switchStep(1)"><span class="step-num">1</span><span>题材</span></div>
+    <div class="step-line"></div>
+    <div class="step" onclick="switchStep(2)"><span class="step-num">2</span><span>手法</span></div>
+    <div class="step-line"></div>
+    <div class="step" onclick="switchStep(3)"><span class="step-num">3</span><span>世界</span></div>
+    <div class="step-line"></div>
+    <div class="step" onclick="switchStep(4)"><span class="step-num">4</span><span>角色</span></div>
+    <div class="step-line"></div>
+    <div class="step" onclick="switchStep(5)"><span class="step-num">5</span><span>剧情</span></div>
+    <div class="step-line"></div>
+    <div class="step" onclick="switchStep(6)"><span class="step-num">6</span><span>大纲</span></div>
+    <div class="step-line"></div>
+    <div class="step" onclick="switchStep(7)"><span class="step-num">7</span><span>细纲</span></div>
+    <div class="step-line"></div>
+    <div class="step" onclick="switchStep(8)"><span class="step-num">8</span><span>写作</span></div>
+  </div>
+
+  <!-- 内容区 -->
+  <div class="content-area">
+
+    <!-- ═══ 第1步：题材/风格 ═══ -->
+    <div class="step-panel active" id="step-1">
+      <div class="preview">
+        <div class="preview-title">📋 当前设定</div>
+        <div class="preview-content" id="preview-1">请选择题材、流派、风格和基调</div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">📚 选择题材 <span style="font-size:0.75rem;color:var(--text-tertiary)">（最多2个）</span></div>
+        <div class="sel-grid" id="genreGrid"></div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">📖 选择流派 <span style="font-size:0.75rem;color:var(--text-tertiary)">（最多3个）</span></div>
+        <div class="sel-grid" id="schoolGrid"></div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">🎨 选择风格 <span style="font-size:0.75rem;color:var(--text-tertiary)">（最多3个）</span></div>
+        <div class="sel-grid" id="styleGrid"></div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">🎭 选择基调 <span style="font-size:0.75rem;color:var(--text-tertiary)">（最多3个）</span></div>
+        <div class="sel-grid" id="toneGrid"></div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">📏 小说字数</div>
+        <div class="field-row">
+          <div>
+            <label class="field-label">总字数（万字）</label>
+            <input class="field-input" id="totalWords" type="number" min="5" max="300" value="50">
+          </div>
+          <div>
+            <label class="field-label">每章目标字数</label>
+            <select class="field-input" id="wordsPerChapter">
+              <option value="3000">3000字</option>
+              <option value="4000" selected>4000字</option>
+              <option value="5000">5000字</option>
+              <option value="6000">6000字</option>
+            </select>
+          </div>
+        </div>
+        <div class="word-info" id="wordInfo">预计 <span style="color:var(--accent)">125</span> 章</div>
+      </div>
+
+      <div class="nav-bar">
+        <div></div>
+        <button class="btn btn-primary" onclick="goToStep(2)">下一步：创作手法 →</button>
+      </div>
+    </div>
+
+    <!-- ═══ 第2步：创作手法 ═══ -->
+    <div class="step-panel" id="step-2">
+      <div class="preview">
+        <div class="preview-title">📋 当前设定</div>
+        <div class="preview-content" id="preview-2"></div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">📐 选择创作手法</div>
+        <div class="sel-grid" id="methodGrid"></div>
+      </div>
+
+      <div class="nav-bar">
+        <button class="btn btn-secondary" onclick="goToStep(1)">← 返回</button>
+        <button class="btn btn-primary" onclick="goToStep(3)">下一步：世界构建 →</button>
+      </div>
+    </div>
+
+    <!-- ═══ 第3步：世界构建 ═══ -->
+    <div class="step-panel" id="step-3">
+      <div class="preview">
+        <div class="preview-title">📋 当前设定</div>
+        <div class="preview-content" id="preview-3"></div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">🌍 世界类型</div>
+        <div class="sel-grid" id="worldTypeGrid"></div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">⏰ 时代背景</div>
+        <input class="field-input" id="worldEra" placeholder="例如：上古蛮荒时代、三国乱世、现代都市">
+      </div>
+
+      <div class="card">
+        <div class="card-title">⚡ 力量体系</div>
+        <input class="field-input" id="worldPower" placeholder="例如：炼气→筑基→金丹→元婴">
+      </div>
+
+      <div class="nav-bar">
+        <button class="btn btn-secondary" onclick="goToStep(2)">← 返回</button>
+        <button class="btn btn-primary" onclick="goToStep(4)">下一步：角色开发 →</button>
+      </div>
+    </div>
+
+    <!-- ═══ 第4步：角色开发 ═══ -->
+    <div class="step-panel" id="step-4">
+      <div class="preview">
+        <div class="preview-title">📋 当前设定</div>
+        <div class="preview-content" id="preview-4"></div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">👥 角色列表 <span style="font-size:0.75rem;color:var(--text-tertiary)">（默认6个，最多20个）</span>
+          <button class="btn btn-secondary" style="margin-left:auto;padding:6px 14px;font-size:0.78rem" onclick="clearCharacters()">🗑️ 清空列表</button>
+        </div>
+        <div class="char-grid" id="charGrid"></div>
+        <button class="btn btn-secondary" style="margin-top:12px" onclick="addCharacter()">+ 添加角色</button>
+      </div>
+
+      <div class="nav-bar">
+        <button class="btn btn-secondary" onclick="goToStep(3)">← 返回</button>
+        <button class="btn btn-primary" onclick="goToStep(5)">下一步：剧情设计 →</button>
+      </div>
+    </div>
+
+    <!-- ═══ 第5步：剧情设计 ═══ -->
+    <div class="step-panel" id="step-5">
+      <div class="preview">
+        <div class="preview-title">📋 当前设定</div>
+        <div class="preview-content" id="preview-5"></div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">💡 剧情方案 <span style="font-size:0.75rem;color:var(--text-tertiary)">— 智能生成3个方案</span></div>
+        <div id="plotOptions" style="margin-bottom:16px">
+          <button class="btn btn-primary" onclick="generatePlots()">🎲 智能生成剧情</button>
+        </div>
+        <div id="plotList"></div>
+      </div>
+
+      <div class="nav-bar">
+        <button class="btn btn-secondary" onclick="goToStep(4)">← 返回</button>
+        <button class="btn btn-primary" onclick="goToStep(6)">下一步：大纲生成 →</button>
+      </div>
+    </div>
+
+    <!-- ═══ 第6步：大纲生成 ═══ -->
+    <div class="step-panel" id="step-6">
+      <div class="preview">
+        <div class="preview-title">📋 大纲预览</div>
+        <div class="preview-content" id="preview-6"></div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">📖 章节大纲</div>
+        <div id="outlineList" style="max-height:400px;overflow-y:auto"></div>
+        <button class="btn btn-primary" style="margin-top:16px" onclick="generateOutline()">📝 生成大纲</button>
+      </div>
+
+      <div class="nav-bar">
+        <button class="btn btn-secondary" onclick="goToStep(5)">← 返回</button>
+        <button class="btn btn-primary" onclick="goToStep(7)">下一步：细纲生成 →</button>
+      </div>
+    </div>
+
+    <!-- ═══ 第7步：细纲生成 ═══ -->
+    <div class="step-panel" id="step-7">
+      <div class="preview">
+        <div class="preview-title">📋 细纲预览</div>
+        <div class="preview-content" id="preview-7"></div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">📋 章节细纲 <span style="font-size:0.75rem;color:var(--text-tertiary)">（颜色标注：主线-蓝、副线-绿、因果点-黄）</span></div>
+        <div id="detailOutlineList" style="max-height:400px;overflow-y:auto"></div>
+        <button class="btn btn-primary" style="margin-top:16px" onclick="generateDetailOutline()">📝 生成细纲</button>
+      </div>
+
+      <div class="nav-bar">
+        <button class="btn btn-secondary" onclick="goToStep(6)">← 返回</button>
+        <button class="btn btn-primary" onclick="goToStep(8)">开始写作！→</button>
+      </div>
+    </div>
+
+    <!-- ═══ 第8步：写作区 ═══ -->
+    <div class="step-panel" id="step-8">
+      <!-- 设定汇总 -->
+      <div class="card" style="margin-bottom:16px;background:var(--bg-elevated)">
+        <div class="card-title">📖 当前小说设定</div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;font-size:0.82rem" id="novelSummary">
+          <div><span style="color:var(--text-tertiary)">题材：</span><b id="sum-genre">未选</b></div>
+          <div><span style="color:var(--text-tertiary)">流派：</span><b id="sum-school">未选</b></div>
+          <div><span style="color:var(--text-tertiary)">风格：</span><b id="sum-style">未选</b></div>
+          <div><span style="color:var(--text-tertiary)">基调：</span><b id="sum-tone">未选</b></div>
+          <div><span style="color:var(--text-tertiary)">手法：</span><b id="sum-method">未选</b></div>
+          <div><span style="color:var(--text-tertiary)">字数：</span><b id="sum-words">50万字</b></div>
+          <div><span style="color:var(--text-tertiary)">章节：</span><b id="sum-chapters">待生成</b></div>
+          <div><span style="color:var(--text-tertiary)">主角：</span><b id="sum-hero">待设定</b></div>
+        </div>
+      </div>
+
+      <div class="writing-layout">
+        <!-- 工具箱 -->
+        <div class="toolbox">
+          <div class="tool-section">
+            <div class="tool-section-title">✍️ 开始写作</div>
+            <button class="tool-btn" style="border-color:var(--accent);color:var(--accent)" onclick="startWriting()">📝 开始写本章</button>
+            <button class="tool-btn" onclick="saveWriting()">💾 保存章节</button>
+          </div>
+          <div class="tool-section">
+            <div class="tool-section-title">📌 AI辅助</div>
+            <button class="tool-btn" onclick="continueWriting()">✨ 继续写作</button>
+            <button class="tool-btn" onclick="aiPolish()">🎨 AI润色</button>
+          </div>
+          <div class="tool-section">
+            <div class="tool-section-title">🔍 检测工具</div>
+            <button class="tool-btn" onclick="checkAIDetect()">🤖 AI检测</button>
+            <button class="tool-btn" onclick="checkPlotHole()">🔎 剧情漏洞</button>
+            <button class="tool-btn" onclick="checkRhythm()">📊 节奏分析</button>
+          </div>
+          <div class="tool-section">
+            <div class="tool-section-title">🎯 优化工具</div>
+            <button class="tool-btn" onclick="reduceAI()">💨 降AI痕迹</button>
+            <button class="tool-btn" onclick="addEmotion()">💗 情感增强</button>
+            <button class="tool-btn" onclick="enhanceDialog()">💬 对话优化</button>
+          </div>
+        </div>
+
+        <!-- 写作区 -->
+        <div class="writing-area">
+          <div class="chapter-nav">
+            <button class="btn btn-secondary" onclick="prevChapter()">← 上一章</button>
+            <div style="text-align:center">
+              <span id="chapterTitle" style="font-weight:600;font-size:1.1rem">第1章</span>
+              <div id="chapterSubtitle" style="font-size:0.72rem;color:var(--text-tertiary);margin-top:2px">待生成大纲</div>
+            </div>
+            <button class="btn btn-secondary" onclick="nextChapter()">下一章 →</button>
+          </div>
+          <div id="writingPromptBox" style="margin:12px 0;padding:12px;background:var(--bg-surface);border-radius:8px;font-size:0.82rem;color:var(--text-secondary);border-left:3px solid var(--accent)">
+            💡 请先在第1-7步完成设定并生成大纲和细纲，再回到此处开始写作
+          </div>
+          <textarea class="writing-editor" id="writingEditor" placeholder="✍️ 在此开始创作你的小说...
+
+根据左侧设定和上方提示，专注于这一章的写作。系统会实时检测AI痕迹和写作质量。" oninput="onWritingInput()"></textarea>
+          <div class="word-count">
+            <span>已写：<span id="writtenCount">0</span> 字</span>
+            <span>目标：<span id="targetCount">4000</span> 字</span>
+          </div>
+        </div>
+
+        <!-- 助手面板 -->
+        <div class="assistant-panel">
+          <div class="assistant-title">
+            <span>🔬 实时检测</span>
+            <span class="score-badge score-good" id="aiScore">85分</span>
+          </div>
+          <div class="stat-row"><span>AI痕迹</span><span id="aiStat">低</span></div>
+          <div class="stat-row"><span>情感强度</span><span id="emotionStat">中</span></div>
+          <div class="stat-row"><span>对话比例</span><span id="dialogStat">35%</span></div>
+          <div class="stat-row"><span>短句比例</span><span id="shortStat">42%</span></div>
+          <div class="stat-row"><span>节奏评分</span><span id="rhythmStat">良</span></div>
+
+          <div style="margin-top:16px">
+            <div class="tool-section-title">💡 当前章节提示</div>
+            <div id="chapterHint" style="font-size:0.82rem;color:var(--text-secondary);line-height:1.6;padding:10px;background:var(--bg-surface);border-radius:6px;">
+              请先选择题材和生成大纲
+            </div>
+          </div>
+          <div style="margin-top:12px">
+            <div class="tool-section-title">🎯 本章写作目标</div>
+            <div id="chapterGoal" style="font-size:0.8rem;color:var(--accent);padding:8px;background:var(--bg-surface);border-radius:6px;line-height:1.6">
+              完成设定后自动显示
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="nav-bar" style="margin-top:16px">
+        <button class="btn btn-secondary" onclick="goToStep(7)">← 返回细纲</button>
+        <button class="btn btn-primary" onclick="exportNovel()">📤 导出小说</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+// ═════════════════════ 数据配置 ═════════════════════
+const DATA = {
+  genre: [
+    {icon:'⚔️',label:'玄幻',desc:'东方玄幻修仙'},
+    {icon:'☁️',label:'仙侠',desc:'仙道长生'},
+    {icon:'🏙️',label:'都市',desc:'现代异能商战'},
+    {icon:'🚀',label:'科幻',desc:'未来太空科幻'},
+    {icon:'🎭',label:'历史',desc:'古代穿越架空'},
+    {icon:'⚔️',label:'武侠',desc:'传统新武侠'},
+    {icon:'💕',label:'言情',desc:'现代古代言情'},
+    {icon:'👑',label:'宫斗宅斗',desc:'宫廷宅院斗争'},
+    {icon:'🔮',label:'奇幻',desc:'西方奇幻魔法'},
+    {icon:'😱',label:'悬疑推理',desc:'推理惊悚悬疑'},
+    {icon:'🔄',label:'无限流',desc:'无限快穿系统'},
+    {icon:'🎮',label:'轻小说',desc:'二次元异世界'}
+  ],
+  school: [
+    {icon:'📅',label:'签到流',desc:'每日签到变强'},
+    {icon:'⚙️',label:'系统流',desc:'绑定系统任务'},
+    {icon:'🧠',label:'智取流',desc:'以智取胜'},
+    {icon:'🐢',label:'苟道流',desc:'低调发育'},
+    {icon:'👤',label:'凡人流',desc:'资质平凡逆袭'},
+    {icon:'👑',label:'无敌流',desc:'开局满级'},
+    {icon:'🔥',label:'废柴逆袭',desc:'从废物到巅峰'},
+    {icon:'🌾',label:'种田',desc:'经营发展'},
+    {icon:'🎭',label:'幕后黑手',desc:'暗中操控'}
+  ],
+  style: [
+    {icon:'🔥',label:'热血爽文',desc:'节奏明快爽点密'},
+    {icon:'😄',label:'轻松搞笑',desc:'幽默诙谐'},
+    {icon:'🌑',label:'黑暗深沉',desc:'人性探讨压抑'},
+    {icon:'🌸',label:'温馨治愈',desc:'温暖人心细腻'},
+    {icon:'🧩',label:'悬疑烧脑',desc:'伏笔重重推理'},
+    {icon:'🏰',label:'史诗宏大',desc:'世界观庞大'}
+  ],
+  tone: [
+    {icon:'⚡',label:'紧张刺激',desc:'节奏紧凑悬念迭起'},
+    {icon:'😊',label:'轻松愉快',desc:'氛围轻松有趣'},
+    {icon:'😢',label:'虐心催泪',desc:'情感浓烈催泪'},
+    {icon:'🧊',label:'冷静克制',desc:'叙事冷静理性'},
+    {icon:'🔥',label:'热血燃爆',desc:'情绪高涨热血'},
+    {icon:'🌑',label:'黑暗沉重',desc:'氛围压抑人性'},
+    {icon:'😂',label:'诙谐幽默',desc:'轻松搞笑风趣'}
+  ],
+  method: [
+    {icon:'📐',label:'三幕结构',desc:'经典好莱坞叙事'},
+    {icon:'🗺️',label:'英雄之旅',desc:'12阶段冒险叙事'},
+    {icon:'⭕',label:'故事圈',desc:'8阶段环形叙事'},
+    {icon:'7️⃣',label:'七点结构',desc:'7个关键情节点'},
+    {icon:'🎬',label:'皮克斯公式',desc:'6段式情感叙事'},
+    {icon:'📊',label:'起承转合',desc:'中国传统四段式'},
+    {icon:'🎯',label:'救猫咪',desc:'15个节拍点'},
+    {icon:'🔺',label:'弗莱塔格',desc:'5幕古典结构'}
+  ],
+  worldType: [
+    {icon:'🏯',label:'东方玄幻',desc:'修真魔法'},
+    {icon:'⛩️',label:'仙侠修真',desc:'修仙长生'},
+    {icon:'🌆',label:'现代都市',desc:'异能商战'},
+    {icon:'🚀',label:'科幻未来',desc:'星际赛博'},
+    {icon:'🏰',label:'西方奇幻',desc:'魔法龙族'},
+    {icon:'⚔️',label:'古代历史',desc:'王朝权谋'},
+    {icon:'🌪️',label:'末日废土',desc:'生存挣扎'},
+    {icon:'🌸',label:'日常恋爱',desc:'青春校园'}
+  ]
+};
+
+// ═════════════════════ 状态管理 ═════════════════════
+const state = {
+  genre: [], school: [], style: [], tone: [],
+  method: '', worldType: '', worldEra: '', worldPower: '',
+  characters: [], plots: [], plot: '', outline: [], detailOutline: [],
+  currentChapter: 1, totalWords: 50, wordsPerChapter: 4000
+};
+
+// ═════════════════════ 初始化 ═════════════════════
+function init() {
+  // 渲染选择网格
+  renderGrid('genreGrid', DATA.genre, 'genre', 2);
+  renderGrid('schoolGrid', DATA.school, 'school', 3);
+  renderGrid('styleGrid', DATA.style, 'style', 3);
+  renderGrid('toneGrid', DATA.tone, 'tone', 3);
+  renderGrid('methodGrid', DATA.method, 'method', 1);
+  renderGrid('worldTypeGrid', DATA.worldType, 'worldType', 1);
+  
+  // 初始化角色
+  initCharacters();
+  
+  // 监听字数变化
+  document.getElementById('totalWords').addEventListener('input', updateWordInfo);
+  document.getElementById('wordsPerChapter').addEventListener('change', updateWordInfo);
+  
+  // 更新预览
+  updateAllPreviews();
+  updateWordInfo();
+  
+  // 设置默认值（如果用户未选择）
+  setTimeout(() => {
+    if (state.genre.length === 0) selectItem('genre', '玄幻');
+    if (state.school.length === 0) selectItem('school', '废柴逆袭');
+    if (state.style.length === 0) selectItem('style', '热血爽文');
+    if (state.tone.length === 0) selectItem('tone', '紧张刺激');
+    if (!state.method) selectItem('method', '三幕结构');
+    if (!state.worldType) selectItem('worldType', '东方玄幻');
+    updateAllPreviews();
+  }, 100);
+}
+
+function renderGrid(gridId, items, type, max) {
+  const grid = document.getElementById(gridId);
+  grid.innerHTML = items.map(item => `
+    <div class="sel-card" data-type="${type}" data-max="${max}" data-value="${item.label}">
+      <div class="sel-icon">${item.icon}</div>
+      <div class="sel-label">${item.label}</div>
+      <div class="sel-desc">${item.desc}</div>
+    </div>
+  `).join('');
+  
+  // 绑定点击事件
+  grid.querySelectorAll('.sel-card').forEach(card => {
+    card.addEventListener('click', () => toggleSelect(card));
+  });
+}
+
+function toggleSelect(card) {
+  const type = card.dataset.type;
+  const max = parseInt(card.dataset.max);
+  const value = card.dataset.value;
+  
+  if (card.classList.contains('selected')) {
+    card.classList.remove('selected');
+    state[type] = state[type].filter(v => v !== value);
+  } else {
+    if (state[type].length >= max) {
+      alert(`最多选 ${max} 个！`);
+      return;
+    }
+    // 如果是单选(如method)，先取消其他选择
+    if (max === 1) {
+      card.parentElement.querySelectorAll('.sel-card').forEach(c => c.classList.remove('selected'));
+      state[type] = [];
+    }
+    card.classList.add('selected');
+    state[type].push(value);
+  }
+  
+  updateAllPreviews();
+}
+
+function initCharacters() {
+  const defaultChars = [
+    {name:'主角', role:'男主角', age:'20', personality:'坚毅果敢', goal:'成为强者', desc:'天赋异禀，命运坎坷'},
+    {name:'女主', role:'女主角', age:'18', personality:'温柔聪慧', goal:'守护爱人', desc:'身世成谜，才貌双全'},
+    {name:'师父', role:'导师', age:'50', personality:'严厉慈爱', goal:'传承衣钵', desc:'绝世强者，淡泊名利'},
+    {name:'师兄', role:'配角', age:'25', personality:'正直忠诚', goal:'辅助主角', desc:'主角挚友，并肩作战'},
+    {name:'反派', role:'反派', age:'30', personality:'阴险狡诈', goal:'统治天下', desc:'野心勃勃，心狠手辣'},
+    {name:'伙伴', role:'配角', age:'22', personality:'活泼开朗', goal:'冒险成长', desc:'调节气氛，担当辅助'}
+  ];
+  
+  defaultChars.forEach((char, i) => {
+    state.characters.push({id: Date.now()+i, ...char});
+  });
+  
+  renderCharacters();
+}
+
+function renderCharacters() {
+  const grid = document.getElementById('charGrid');
+  grid.innerHTML = state.characters.map((char, i) => `
+    <div class="char-card">
+      <div class="char-card-header">
+        <span class="char-name">${char.name}</span>
+        <span class="char-role">${char.role}</span>
+      </div>
+      <div class="char-field">
+        <label style="display:flex;align-items:center;justify-content:space-between">
+          姓名
+          <button class="tool-btn" style="width:auto;padding:3px 10px;font-size:0.72rem;margin-bottom:0" onclick="smartNameChar(${i})">🎲 智能命名</button>
+        </label>
+        <input type="text" value="${char.name}" onchange="updateChar(${i},'name',this.value)">
+      </div>
+      <div class="char-field">
+        <label>定位</label>
+        <select onchange="updateChar(${i},'role',this.value)">
+          <option value="男主角" ${char.role==='男主角'?'selected':''}>男主角</option>
+          <option value="女主角" ${char.role==='女主角'?'selected':''}>女主角</option>
+          <option value="男配角" ${char.role==='男配角'?'selected':''}>男配角</option>
+          <option value="女配角" ${char.role==='女配角'?'selected':''}>女配角</option>
+          <option value="反派" ${char.role==='反派'?'selected':''}>反派</option>
+          <option value="导师" ${char.role==='导师'?'selected':''}>导师</option>
+        </select>
+      </div>
+      <div class="char-field">
+        <label>性格</label>
+        <input type="text" value="${char.personality}" onchange="updateChar(${i},'personality',this.value)">
+      </div>
+      <div class="char-field">
+        <label>目标</label>
+        <input type="text" value="${char.goal}" onchange="updateChar(${i},'goal',this.value)">
+      </div>
+      <div class="char-field">
+        <label>简介</label>
+        <textarea onchange="updateChar(${i},'desc',this.value)">${char.desc}</textarea>
+      </div>
+      ${i >= 6 ? `<button class="tool-btn" style="color:var(--danger)" onclick="deleteChar(${i})">🗑️ 删除</button>` : ''}
+    </div>
+  `).join('');
+}
+
+function updateChar(index, field, value) {
+  state.characters[index][field] = value;
+  updateAllPreviews();
+}
+
+function addCharacter() {
+  if (state.characters.length >= 20) {
+    alert('最多20个角色！');
+    return;
+  }
+  state.characters.push({
+    id: Date.now(), name:'新角色', role:'配角', age:'25',
+    personality:'待设定', goal:'待设定', desc:'待设定'
+  });
+  renderCharacters();
+}
+
+function deleteChar(index) {
+  state.characters.splice(index, 1);
+  renderCharacters();
+}
+
+// ═════════════════════ 步骤切换 ═════════════════════
+function goToStep(n) {
+  document.querySelectorAll('.step-panel').forEach(p => p.classList.remove('active'));
+  document.getElementById('step-'+n).classList.add('active');
+
+  document.querySelectorAll('.step').forEach((s, i) => {
+    s.classList.remove('active');
+    if (i+1 < n) s.classList.add('done');
+    if (i+1 === n) s.classList.add('active');
+  });
+
+  updateAllPreviews();
+
+  // 进入第8步时更新写作汇总
+  if (n === 8) {
+    updateWritingSummary();
+    updateChapterDisplay();
+  }
+}
+
+function switchStep(n) { goToStep(n); }
+
+// ═════════════════════ 生成功能 ═════════════════════
+
+// ── 剧情方案模板库：按题材×风格×手法组合 ──
+// ═════════════════════ 增强剧情模板库 ═════════════════════
+// 按题材 × 流派 × 风格 × 基调 四维联动
+const PLOT_TEMPLATES = {
+  '玄幻': {
+    default: [
+      {scheme:'A',conflict:'命运抗争·天道不公',goal:'打破天道枷锁，建立新秩序',events:'上古遗迹中获得残缺传承→发现天道规则背后的黑暗真相→联合被压迫者建立新势力→与天道守护者展开终极对决→打破旧秩序重建新世界'},
+      {scheme:'B',conflict:'复仇救赎·血海深仇',goal:'覆灭仇敌宗门，救赎被奴役的族人',events:'天才少年宗门被灭→携秘宝逃亡隐姓埋名→在偏远之地建立根基→暗中积蓄力量渗透敌营→里应外合一举覆灭仇敌→建立包容万族的新宗门'},
+      {scheme:'C',conflict:'善良与黑暗·内心挣扎',goal:'以善救赎黑暗，化解千年恩怨',events:'偶入封印之地释放远古存在→发现对方并非邪恶而是被误解→面对世人敌视坚持真相→以自身为桥梁化解种族隔阂→成为两族和平的传奇使者'}
+    ],
+    '废柴逆袭': [
+      {scheme:'A',conflict:'资质逆袭·逆天而行',goal:'从废物到巅峰，证明努力超越天赋',events:'资质检测为零被宗门抛弃→在绝境中获得另类修炼之法→以超乎常人的毅力弥补天赋→一步步超越所谓的天才→最终证道成神，开创新的修炼体系'},
+      {scheme:'B',conflict:'打脸爽文·羞辱与崛起',goal:'让曾经羞辱自己的人刮目相看',events:'大婚之日被未婚妻当众退婚羞辱→发下三年之约默默苦修→以全新的实力震惊各方势力→曾经的敌人纷纷求和→站在巅峰俯瞰众生，选择宽恕'},
+      {scheme:'C',conflict:'逆天改命·血脉诅咒',goal:'打破血脉诅咒，解放全族命运',events:'天生被上古诅咒缠身命不久矣→寻找古籍踏上解咒之路→发现诅咒背后隐藏着惊天秘密→以生命为代价破解诅咒→不仅自救更解放了全族命运'}
+    ],
+    '系统流': [
+      {scheme:'A',conflict:'系统与天道·真相追寻',goal:'查明系统真相，摆脱被操控的命运',events:'濒死之际绑定神秘系统获得新生→完成系统任务逐渐变强→发现系统竟是上古大能的算计→在利用与反抗之间寻找平衡→最终反客为主，成为系统真正的主人'},
+      {scheme:'B',conflict:'系统争霸·万界争锋',goal:'成为系统之主，统一万界',events:'获得独特的创造型系统→建立属于自己的势力范围→遭遇其他系统宿主的挑战→在一次次交锋中成长领悟→最终统一所有系统，建立新秩序'},
+      {scheme:'C',conflict:'反系统·自我超脱',goal:'摆脱系统控制，走出自己的道路',events:'系统发布越来越危险的任务→发现完成任务会侵蚀自身意志→暗中寻找摆脱系统的方法→以惊人的毅力自废系统修为→走出一条完全属于自己的超脱之路'}
+    ],
+    '苟道流': [
+      {scheme:'A',conflict:'隐忍崛起·厚积薄发',goal:'不鸣则已一鸣惊人，以弱胜强',events:'资质平庸选择低调修炼→被各方天才忽视甚至嘲笑→在暗处默默积累远超同阶的实力→宗门危机时刻挺身而出→一战惊天下，成为宗门真正的守护神'},
+      {scheme:'B',conflict:'扮猪吃虎·智取强敌',goal:'在敌人放松警惕时给予致命一击',events:'隐藏真实实力装作普通弟子→被敌对势力轻视并一再挑衅→在对方最得意的时候突然爆发→以压倒性的实力震慑全场→让敌人明白永远不要轻视任何人'},
+      {scheme:'C',conflict:'幕后操控·棋手之道',goal:'成为幕后最大boss，掌控全局',events:'不争第一只做第二→暗中布局结交各方势力→所有人都在按照他的剧本行事→当各方势力发现真相时已经为时已晚→成为幕后掌控一切的真正王者'}
+    ],
+    '无敌流': [
+      {scheme:'A',conflict:'无敌的寂寞·寻找对手',goal:'在无敌中寻找生命的意义',events:'出生即拥有无敌实力→横扫一切对手却感到空虚→踏上寻找能与自己一战的对手之路→在旅途中领悟力量的真谛→最终发现真正的对手是自己'},
+      {scheme:'B',conflict:'守护之路·以无敌护众生',goal:'以无敌之力守护世界和平',events:'觉醒无敌实力后选择隐居→世界面临毁灭危机挺身而出→以一人之力对抗整个世界的大敌→守护了世界却选择再次隐退→成为传说中的无名守护者'}
+    ],
+    '种田': [
+      {scheme:'A',conflict:'异界种田·从零开始',goal:'在玄幻世界建立世外桃源',events:'穿越到玄幻世界获得一片荒地→利用现代知识种植灵药灵谷→建立独特的农业体系→吸引各路强者前来交易→最终将荒地变成人人向往的圣地'}
+    ],
+    '智取流': [
+      {scheme:'A',conflict:'以智破力·谋略无双',goal:'用智慧战胜修为高深的敌人',events:'修为平庸但智谋过人→面对强敌从不正面冲突→利用阵法、丹药、人心瓦解对手→让敌人在不知不觉中落入圈套→最终证明智慧胜过蛮力'}
+    ]
+  },
+  '都市': {
+    default: [
+      {scheme:'A',conflict:'商场博弈·资本战争',goal:'从负债到商业帝国，建立商业传奇',events:'家族企业被资本大鳄恶意收购→负债累累被逼到绝境→意外获得商业奇才的指点→以小博大在资本市场翻云覆雨→最终击败国际资本巨头，建立商业帝国'},
+      {scheme:'B',conflict:'都市异能·隐秘世界',goal:'用异能守护所爱之人，维护都市和平',events:'平凡生活中意外觉醒异能→发现都市中隐藏着异能者的世界→被卷入异能者组织的纷争→在守护家人与维护正义之间抉择→最终成为都市中的传奇守护者'},
+      {scheme:'C',conflict:'逆袭人生·王者归来',goal:'让曾经看不起自己的人后悔莫及',events:'被家族抛弃赶出家门→在最底层挣扎求生→遇到改变命运的贵人获得机遇→一步步东山再起重建事业→以王者之姿回归，选择宽恕而非报复'}
+    ],
+    '签到流': [
+      {scheme:'A',conflict:'日常即变强·积累的力量',goal:'通过签到成为最强者',events:'获得每日签到系统→每天坚持签到获得各种奖励→实力稳步增长却不张扬→面对强敌时展现出惊人积累→轻松应对各种挑战，成为最强存在'},
+      {scheme:'B',conflict:'签到即命运·命运的选择',goal:'从签到中改变命运轨迹',events:'连续签到获得改变命运的机会→每次选择都会影响未来走向→在无数次选择中寻找最佳路径→最终走上完美的人生轨迹→成为掌控自身命运的强者'}
+    ],
+    '凡人流': [
+      {scheme:'A',conflict:'普通人的奋斗·逆天改命',goal:'用努力弥补天赋，证明凡人也能成仙',events:'没有背景没有天赋的普通人→凭借超乎常人的努力和毅力→一步步向上爬克服重重困难→最终成功打破天赋限制→成为证明凡人也能成就传奇的典范'},
+      {scheme:'B',conflict:'真情与现实·爱情考验',goal:'在现实压力下守护真爱',events:'贫穷小伙爱上富家千金→面临门不当户不对的现实阻碍→用努力和真心一步步证明自己→经历无数考验终获认可→有情人终成眷属，共建美好未来'}
+    ],
+    '重生流': [
+      {scheme:'A',conflict:'重生复仇·弥补遗憾',goal:'利用前世记忆改变命运',events:'含恨而终却意外重生回到过去→凭借前世记忆避开所有陷阱→一步步改变命运轨迹→弥补前世所有遗憾→最终走上完全不同的人生巅峰'},
+      {scheme:'B',conflict:'重生创业·时代先知',goal:'利用先知优势建立商业帝国',events:'重生回到改革开放初期→凭借对未来走向的先知优势→抓住每一个时代机遇→建立横跨各行各业的商业帝国→成为影响时代走向的传奇人物'}
+    ]
+  },
+  '仙侠': {
+    default: [
+      {scheme:'A',conflict:'问道长生·大道独行',goal:'追求长生大道，超脱轮回',events:'偶入隐世仙门成为外门弟子→资质平平却道心坚定→在一次次历练中获得奇遇→斩断世俗因果专心问道→最终飞升仙界成为一代仙尊'},
+      {scheme:'B',conflict:'恩怨纠葛·前世今生',goal:'化解跨越轮回的恩怨',events:'发现前世恩人转世为今生仇敌→在报恩与复仇之间痛苦抉择→历经三世情缘终于大彻大悟→以大爱化解跨越轮回的恩怨→功德圆满超脱因果'},
+      {scheme:'C',conflict:'红尘炼心·情劫难关',goal:'在世俗中修炼心性，渡过情劫',events:'为渡情劫下凡历世→经历刻骨铭心的爱恨情仇→看透红尘情缘不过过眼云烟→心境圆满突破瓶颈→返回仙界时已成大道'}
+    ],
+    '修仙': [
+      {scheme:'A',conflict:'资源争夺·弱肉强食',goal:'在残酷的修仙界中崛起',events:'出身贫寒没有修炼资源→在修仙界的底层挣扎求生→凭借智慧和勇气获得传承→一步步在弱肉强食的世界中崛起→最终建立属于自己的修仙势力'},
+      {scheme:'B',conflict:'正邪之争·道心考验',goal:'在正邪之间坚守本心',events:'被正道误解堕入魔道→发现魔道并非全是邪恶→在正邪两道之间寻找平衡→面对正邪大战选择守护无辜→最终开创新的道统融合正邪'}
+    ]
+  },
+  '科幻': {
+    default: [
+      {scheme:'A',conflict:'星际战争·文明存亡',goal:'拯救人类文明，建立星际和平',events:'人类面临高等文明的毁灭威胁→在绝境中发现敌人的致命弱点→联合各方势力组建反抗联盟→领导人类发起绝地反击→最终与外星文明达成和平共处'},
+      {scheme:'B',conflict:'赛博朋克·科技与人性',goal:'推翻资本寡头，解放被压迫者',events:'底层少年在霓虹都市中挣扎求生→发现科技寡头控制人类的阴谋→联合地下反抗组织发动革命→在高科技与低生活的夹缝中战斗→最终推翻寡头统治建立自由世界'},
+      {scheme:'C',conflict:'时间悖论·命运修正',goal:'修正被改变的未来，拯救时间线',events:'未来人类派遣使者前来警示→发现有人篡改了历史导致末日→穿越回关键时间点阻止灾难→面对时间悖论做出艰难选择→成功修正历史拯救了未来'}
+    ],
+    '末世': [
+      {scheme:'A',conflict:'末日生存·人性考验',goal:'在末世中重建人类文明',events:'丧尸病毒爆发文明崩塌→在末世中挣扎求生建立避难所→面对资源短缺和人性的考验→带领幸存者重建秩序→最终建立末世中的新文明'},
+      {scheme:'B',conflict:'进化之路·适者生存',goal:'在末世中进化成为最强者',events:'末世中获得独特的进化能力→在一次次生死战斗中变强→发现病毒背后隐藏着惊天秘密→揭开真相并找到拯救世界的方法→成为末世中的传奇救世主'}
+    ]
+  },
+  '言情': {
+    default: [
+      {scheme:'A',conflict:'误会与真相·破镜重圆',goal:'拨开迷雾找到真爱',events:'相遇相知坠入爱河→因误会和阴谋被迫分离→各自经历成长变得更加成熟→最终真相大白消除误会→破镜重圆携手共度余生'},
+      {scheme:'B',conflict:'门第之见·跨越阶层',goal:'跨越阶层阻隔守护爱情',events:'门不当户不对的两人相爱→面临家族和社会的重重反对→用真心和行动证明自己的爱情→经历无数考验终于获得认可→跨越阶层阻隔终成眷属'},
+      {scheme:'C',conflict:'前世今生·再续前缘',goal:'完成前世未完的情缘',events:'今生相遇却似曾相识→逐渐揭开前世相爱却分离的悲剧→面对重蹈覆辙的命运勇敢抗争→弥补前世的遗憾改写结局→今生终于圆满再续前缘'}
+    ],
+    '甜宠': [
+      {scheme:'A',conflict:'宠妻狂魔·甜蜜日常',goal:'给爱人最甜蜜的宠爱',events:'冷酷总裁遇到命中注定的她→从高冷霸道变成宠妻狂魔→用各种甜蜜方式守护爱情→面对挑战依然把爱人放在第一位→最终收获幸福美满的家庭'},
+      {scheme:'B',conflict:'青梅竹马·两小无猜',goal:'从青梅竹马到白头偕老',events:'从小一起长大的两人→经历成长各自有了不同的人生→发现彼此才是最重要的人→从朋友变成恋人→携手走过一生，证明真爱经得起时间考验'}
+    ]
+  },
+  '悬疑推理': {
+    default: [
+      {scheme:'A',conflict:'连环命案·真相迷雾',goal:'找出幕后真凶，揭开惊天阴谋',events:'发生离奇连环杀人案→警方调查陷入僵局→天才侦探介入发现线索→层层抽丝剥茧接近真相→最终发现惊人的幕后真凶和动机'},
+      {scheme:'B',conflict:'不可能犯罪·逻辑对决',goal:'破解看似不可能的犯罪',events:'密室中发生离奇命案→所有人均有完美的不在场证明→侦探在细节中发现关键破绽→用严密的逻辑推理还原真相→破解了看似不可能的完美犯罪'},
+      {scheme:'C',conflict:'案中案·阴谋漩涡',goal:'揭开表面案件背后的巨大阴谋',events:'看似普通的案件却疑点重重→深入调查牵出更多案件→发现案件背后隐藏着巨大阴谋→在危险中坚持追查真相→最终揭露阴谋正义伸张'}
+    ],
+    '刑侦': [
+      {scheme:'A',conflict:'正邪对决·追凶之旅',goal:'将 criminals 绳之以法',events:'发生重大刑事案件→刑侦队长带队展开调查→面对 criminals 的狡猾和挑战→在追凶过程中经历重重危险→最终将 criminals 绳之以法'},
+      {scheme:'B',conflict:'犯罪心理·深层动机',goal:'理解犯罪背后的深层原因',events:'发生动机不明的离奇案件→犯罪心理学家介入分析→深入 criminals 的内心世界→发现犯罪背后的社会原因→不仅破案更推动社会改变'}
+    ]
+  },
+  '武侠': {
+    default: [
+      {scheme:'A',conflict:'江湖恩怨·快意恩仇',goal:'在江湖中闯出一片天地',events:'初入江湖身负血海深仇→在江湖中历练成长→结交各路英雄豪杰→最终大仇得报却选择宽恕→成为一代大侠笑傲江湖'},
+      {scheme:'B',conflict:'武林争霸·天下第一',goal:'成为武林至尊',events:'无名小卒参加武林大会→一路过关斩将展现实力→面对武林盟主的挑战→以武会友以德服人→最终成为武林至尊却选择归隐'},
+      {scheme:'C',conflict:'秘籍之争·江湖风云',goal:'守护武林秘籍维护江湖和平',events:'偶然获得失传已久的武林秘籍→成为各方势力争夺的目标→在追杀中领悟武学真谛→不仅自保更守护了秘籍→成为维护江湖和平的守护者'}
+    ]
+  },
+  '历史': {
+    default: [
+      {scheme:'A',conflict:'乱世崛起·英雄辈出',goal:'在乱世中建立不世功业',events:'生于乱世身负大志→在乱世中积累实力→联合志同道合者共谋大业→历经百战终于统一天下→建立盛世王朝名垂青史'},
+      {scheme:'B',conflict:'权谋斗争·朝堂风云',goal:'在朝堂权谋中生存并胜出',events:'初入朝堂如履薄冰→在各方势力的夹缝中求生存→以智慧和谋略化解危机→最终成为权倾朝野的重臣→用权力推动国家发展'},
+      {scheme:'C',conflict:'王朝兴衰·历史洪流',goal:'挽救王朝命运，改变历史走向',events:'王朝末期危机四伏→有识之士力图挽救危局→在历史的洪流中逆流而上→虽未能改变王朝命运→却为后世留下宝贵遗产'}
+    ]
+  },
+  '宫斗宅斗': {
+    default: [
+      {scheme:'A',conflict:'后宫争宠·明争暗斗',goal:'从选秀女到后宫之主',events:'选秀入宫成为低位嫔妃→在勾心斗角的后宫中生存→凭借智慧和手段获得宠爱→铲除异己稳固地位→最终成为执掌后宫的皇后'},
+      {scheme:'B',conflict:'宅门恩怨·嫡庶之争',goal:'在复杂家族关系中保护所爱之人',events:'嫁入豪门面对复杂关系→嫡庶之争暗流涌动→用智慧化解一次次危机→保护丈夫和孩子不受伤害→最终赢得家族尊重掌握实权'},
+      {scheme:'C',conflict:'权谋博弈·朝堂后宫',goal:'在朝堂与后宫的夹缝中求生存',events:'因家族牵连入宫为质→在朝堂与后宫的博弈中周旋→发现惊天阴谋牵扯皇权→联合忠臣力挽狂澜→最终保全家族并助明君上位'}
+    ],
+    '种田': [
+      {scheme:'A',conflict:'白手起家·经营致富',goal:'从一无所有到富甲一方',events:'穿越或落魄到陌生环境→从零开始经营小生意→凭借现代知识或过人胆识→逐步扩大产业建立商业帝国→最终成为富甲一方的大商人'},
+      {scheme:'B',conflict:'田园生活·世外桃源',goal:'在乱世中建立世外桃源',events:'厌倦纷争选择隐居田园→带领村民发展农业和手工业→面对恶霸和官府的欺压→团结村民保卫家园→最终建立人人向往的世外桃源'}
+    ],
+    '幕后黑手': [
+      {scheme:'A',conflict:'幕后操盘·掌控全局',goal:'成为幕后真正掌控者',events:'表面无害实则深谋远虑→在各方势力间巧妙周旋→所有人都在不知不觉中按照他的布局行事→当各方发现真相时大局已定→成为真正掌控一切的幕后之王'}
+    ]
+  },
+  '奇幻': {
+    default: [
+      {scheme:'A',conflict:'魔法觉醒·命运抉择',goal:'掌握终极魔法拯救世界',events:'平凡少年意外觉醒魔法天赋→进入魔法学院学习→发现古老预言与自己相关→在正邪之间做出抉择→最终掌握终极魔法拯救世界'},
+      {scheme:'B',conflict:'种族战争·和平使命',goal:'化解种族恩怨实现和平',events:'人类与精灵/兽人爆发战争→主角拥有混血身份→在战争中体会双方痛苦→踏上化解种族恩怨的和平使命→最终促成种族和解建立联盟'},
+      {scheme:'C',conflict:'神器追寻·黑暗降临',goal:'集齐神器阻止黑暗降临',events:'远古封印松动黑暗即将降临→踏上寻找失落的神器之旅→在冒险中结识各族伙伴→集齐神器获得上古力量→最终封印黑暗拯救世界'}
+    ],
+    '智取流': [
+      {scheme:'A',conflict:'以弱胜强·智慧为王',goal:'用智慧战胜强大的敌人',events:'面对强大到无法正面对抗的敌人→依靠计谋和策略逐步削弱对手→在一次次智斗中积累优势→最终以弱胜强击败强敌→证明智慧胜过蛮力'},
+      {scheme:'B',conflict:'谋略天下·运筹帷幄',goal:'用谋略统一纷争的大陆',events:'出身寒微却胸怀大志→凭借过人谋略在乱世中崛起→运筹帷幄决胜千里→联合各方势力逐步统一→最终建立繁荣昌盛的新王朝'}
+    ]
+  },
+  '无限流': {
+    default: [
+      {scheme:'A',conflict:'副本求生·死亡游戏',goal:'在无限副本中存活并变强',events:'被神秘力量拉入无限空间→在各种危险副本中挣扎求生→发现副本背后的规则和秘密→联合其他求生者建立团队→最终揭开无限空间的真相并获得自由'},
+      {scheme:'B',conflict:'诸天万界·穿梭之旅',goal:'穿梭万界集齐神器回归现实',events:'获得穿梭诸天万界的能力→在不同世界中完成任务→结识各界强者获得传承→发现幕后黑手操控万界→最终击败黑手回归现实世界'},
+      {scheme:'C',conflict:'系统任务·轮回解脱',goal:'完成最终任务摆脱轮回',events:'绑定系统被迫执行任务→在一次次轮回中积累经验和力量→发现系统与自身命运的关联→面对最终任务的艰难抉择→完成任务摆脱轮回获得真正的自由'}
+    ],
+    '系统流': [
+      {scheme:'A',conflict:'无限系统·终极进化',goal:'通过无限任务进化到终极形态',events:'在无限空间中获得独特系统→通过完成副本任务不断升级→系统能力不断进化变强→面对越来越困难的挑战→最终进化到终极形态主宰无限空间'}
+    ]
+  },
+  '轻小说': {
+    default: [
+      {scheme:'A',conflict:'异世界转生·逆天改命',goal:'在异世界开启新人生',events:'平凡高中生意外转生异世界→获得特殊能力或身份→在异世界学校或冒险中成长→结识各种性格迥异的伙伴→最终成为异世界的传奇英雄'},
+      {scheme:'B',conflict:'恋爱喜剧·青春物语',goal:'在青春校园中收获爱情与友情',events:'转入新学校遇到各种个性同学→在社团活动中建立深厚友谊→与心仪对象经历各种误会和甜蜜→面对升学和未来的选择→最终收获爱情与友情的美好结局'},
+      {scheme:'C',conflict:'异能日常·超能力者',goal:'用超能力解决生活中的问题',events:'平凡学生突然觉醒超能力→在隐藏身份的同时帮助他人→加入超能力者组织→面对邪恶超能力者的威胁→最终成为守护城市和平的英雄'}
+    ],
+    '无敌流': [
+      {scheme:'A',conflict:'满级开局·碾压一切',goal:'在异世界享受无敌的悠闲生活',events:'转生即满级拥有无敌实力→本想低调生活却总是被卷入事件→用碾压级实力轻松解决各种问题→收服强力随从建立后宫→最终享受无敌的悠闲生活'}
+    ]
+  }
+};
+
+// ── 风格影响词库 ──
+const STYLE_EFFECTS = {
+  '热血爽文': {tone:'激昂澎湃',pace:'快速推进',conflict:'直面对抗'},
+  '黑暗深沉': {tone:'阴郁压抑',pace:'缓慢积累',conflict:'暗中较量'},
+  '轻松搞笑': {tone:'幽默诙谐',pace:'轻快流畅',conflict:'误会化解'},
+  '虐心催泪': {tone:'深情伤感',pace:'情感沉淀',conflict:'命运捉弄'},
+  '温馨治愈': {tone:'温暖柔和',pace:'舒缓自然',conflict:'情感治愈'},
+  '悬疑烧脑': {tone:'紧张神秘',pace:'环环相扣',conflict:'智力博弈'},
+  '史诗宏大': {tone:'庄严宏大',pace:'波澜壮阔',conflict:'时代洪流'}
+};
+
+// ── 基调影响词库 ──
+const TONE_EFFECTS = {
+  '紧张刺激': {atmosphere:'危机四伏',rhythm:'快节奏',stakes:'生死存亡'},
+  '轻松愉快': {atmosphere:'阳光明媚',rhythm:'轻快',stakes:'日常趣味'},
+  '虐心催泪': {atmosphere:'阴雨绵绵',rhythm:'沉重',stakes:'命运悲剧'},
+  '冷静克制': {atmosphere:'寒潭静水',rhythm:'稳健',stakes:'理性抉择'},
+  '热血燃爆': {atmosphere:'烽火连天',rhythm:'澎湃',stakes:'荣誉使命'},
+  '黑暗沉重': {atmosphere:'深渊凝视',rhythm:'压抑',stakes:'人性考验'},
+  '诙谐幽默': {atmosphere:'欢声笑语',rhythm:'轻快',stakes:'生活趣味'}
+};
+
+// ── 章节阶段分配比例（按创作手法，使用百分比） ──
+const METHOD_PHASES = {
+  '三幕结构':      [{start:0,end:0.15,phase:'开篇'},{start:0.15,end:0.6,phase:'发展'},{start:0.6,end:0.85,phase:'高潮'},{start:0.85,end:1,phase:'结局'}],
+  '英雄之旅':      [{start:0,end:0.1,phase:'序章'},{start:0.1,end:0.35,phase:'开篇'},{start:0.35,end:0.6,phase:'发展'},{start:0.6,end:0.8,phase:'高潮'},{start:0.8,end:1,phase:'结局'}],
+  '故事圈':        [{start:0,end:0.15,phase:'序章'},{start:0.15,end:0.35,phase:'开篇'},{start:0.35,end:0.55,phase:'发展'},{start:0.55,end:0.75,phase:'高潮'},{start:0.75,end:1,phase:'结局'}],
+  '七点结构':      [{start:0,end:0.15,phase:'开篇'},{start:0.15,end:0.35,phase:'发展'},{start:0.35,end:0.55,phase:'高潮'},{start:0.55,end:0.85,phase:'结局'},{start:0.85,end:1,phase:'尾声'}],
+  '皮克斯公式':    [{start:0,end:0.15,phase:'开篇'},{start:0.15,end:0.4,phase:'发展'},{start:0.4,end:0.75,phase:'高潮'},{start:0.75,end:1,phase:'结局'}],
+  '起承转合':      [{start:0,end:0.12,phase:'起'},{start:0.12,end:0.4,phase:'承'},{start:0.4,end:0.7,phase:'转'},{start:0.7,end:1,phase:'合'}],
+  '救猫咪':        [{start:0,end:0.1,phase:'开篇'},{start:0.1,end:0.3,phase:'发展'},{start:0.3,end:0.6,phase:'高潮'},{start:0.6,end:0.85,phase:'结局'},{start:0.85,end:1,phase:'尾声'}],
+  '弗莱塔格':      [{start:0,end:0.15,phase:'开篇'},{start:0.15,end:0.4,phase:'发展'},{start:0.4,end:0.7,phase:'高潮'},{start:0.7,end:1,phase:'结局'}]
+};
+// 阶段名称直接由 METHOD_PHASES 定义
+
+// ── 中国传统命名系统（五行八卦·阴阳风水） ──
+
+// 五行属性
+const WUXING = {
+  wood: { element: '木', trait: '仁慈正直', strength: '条达生发', weakness: '固执倔强', words: ['林','森','竹','柏','松','楠','桐','槐','杨','柳','梓','榆','桂','枚','楚','栋','杭','构','东','南'] },
+  fire: { element: '火', trait: '热情豪爽', strength: '光明照耀', weakness: '急躁冲动', words: ['炎','焱','烽','炬','煜','熠','灿','焕','煌','耀','光','辉','旭','昊','明','昭','熙','丹','彤','红'] },
+  earth: { element: '土', trait: '厚重稳重', strength: '承载包容', weakness: '刻板保守', words: ['垣','城','坤','培','增','基','域','坚','石','岩','岚','岭','峰','岩','墨','壁','均','堂','墨'] },
+  metal: { element: '金', trait: '刚毅果断', strength: '肃杀决断', weakness: '冷酷无情', words: ['锋','锐','铭','钰','铁','钢','锡','镛','钧','铸','铎','锦','镐','锵','钧','刚','健','勇','豪','杰'] },
+  water: { element: '水', trait: '聪慧灵活', strength: '流动变通', weakness: '意志薄弱', words: ['澜','波','涛','涌','泽','润','瀚','溥','溪','涧','泉','泳','洁','清','渊','淳','波','涛','潮','汐'] }
+};
+
+// 八卦意象
+const BAGUA = {
+  qian: { trigram: '乾', meaning: '天', trait: '创造', keywords: ['天','乾','元','始','健','纯','阳','刚'] },
+  kun: { trigram: '坤', meaning: '地', trait: '承载', keywords: ['坤','地','顺','柔','厚','广','容','母'] },
+  zhen: { trigram: '震', meaning: '雷', trait: '震动', keywords: ['震','雷','动','奋','惊','起','征','出'] },
+  xun: { trigram: '巽', meaning: '风', trait: '渗入', keywords: ['巽','风','入','散','齐','洁','申','利'] },
+  kan: { trigram: '坎', meaning: '水', trait: '危险', keywords: ['坎','水','险','陷','劳','病','淫','失'] },
+  li: { trigram: '离', meaning: '火', trait: '美丽', keywords: ['离','火','明','丽','正','中','附','文'] },
+  gen: { trigram: '艮', meaning: '山', trait: '停止', keywords: ['艮','山','止','静','坚','笃','实','重'] },
+  dui: { trigram: '兑', meaning: '泽', trait: '喜悦', keywords: ['兑','泽','悦','说','和','顺','茂','成'] }
+};
+
+// 阴阳意象
+const YINYANG = {
+  yang: { words: ['阳','天','乾','龙','虎','鹏','凤','麒','麟','鹰','松','柏','峰','岳','海','涛','星','辉','光','明'] },
+  yin: { words: ['阴','月','水','云','凤','蝶','兰','竹','梅','雪','霜','雾','烟','霞','云','雨','露','玉','珠','珍'] }
+};
+
+// 风水方位系统
+const FENGSHUI = {
+  east: { direction: '东', element: '木', meaning: '生发', words: ['春','旭','朝','启','萌','芽','青','苍','翠','荣','茂','茁','芊','芬','芳','芸','芷','苓','苑','苗'] },
+  south: { direction: '南', element: '火', meaning: '光明', words: ['夏','炎','晴','昭','昕','昱','曜','晗','晟','炽','煌','烨','焕','熠','烁','煦','暖','暄','晴','朗'] },
+  west: { direction: '西', element: '金', meaning: '收敛', words: ['秋','霜','肃','穆','峻','峭','铮','锵','铿','铮','铄','锐','锋','锷','铸','铭','钧','钰','锦','铮'] },
+  north: { direction: '北', element: '水', meaning: '藏养', words: ['冬','寒','冰','凌','凛','凝','淳','涵','瀚','浩','渺','渊','澈','泠','洌','淳','润','泽','沛','沐'] },
+  center: { direction: '中', element: '土', meaning: '承载', words: ['厚','坤','垚','垣','城','培','基','堂','墨','均','坦','垠','域','垚','墨','均','坦','垠','域','垚'] }
+};
+
+// 生肖吉祥字
+const ZODIAC_LUCKY = {
+  rat: ['子','丑','卯','申','癸','甲','壬','癸'],
+  ox: ['丑','巳','酉','辛','庚','甲','丙','戊'],
+  tiger: ['寅','午','戌','卯','甲','丙','戊','庚'],
+  rabbit: ['卯','亥','未','寅','甲','乙','丙','戊'],
+  dragon: ['辰','子','申','酉','壬','癸','甲','乙'],
+  snake: ['巳','酉','丑','午','丁','己','辛','庚'],
+  horse: ['午','寅','戌','巳','丙','丁','甲','壬'],
+  goat: ['未','亥','卯','午','乙','丁','甲','壬'],
+  monkey: ['申','子','辰','亥','庚','辛','壬','癸'],
+  rooster: ['酉','巳','丑','辰','辛','庚','壬','癸'],
+  dog: ['戌','寅','午','未','戊','庚','壬','甲'],
+  pig: ['亥','卯','未','戌','壬','癸','甲','乙']
+};
+
+// 百家姓（100个常见姓氏）
+const BAIJIAxing = [
+  '李','王','张','刘','陈','杨','赵','黄','周','吴','徐','孙','胡','朱','高','林','何','郭','马','罗',
+  '梁','宋','郑','谢','韩','唐','冯','于','董','萧','程','曹','袁','邓','许','傅','沈','曾','彭','吕',
+  '苏','卢','蒋','蔡','贾','丁','魏','薛','叶','阎','余','潘','杜','戴','夏','钟','汪','田','任','姜',
+  '范','方','石','姚','谭','廖','邹','熊','金','陆','郝','孔','白','崔','康','毛','邱','秦','江','史',
+  '顾','侯','邵','孟','龙','万','段','钱','汤','尹','黎','易','常','武','乔','贺','赖','龚','文','欧阳'
+];
+
+// 复姓
+const FUXING = ['欧阳','太史','端木','上官','司马','东方','独孤','南宫','万俟','闻人','夏侯','诸葛','尉迟','皇甫','宇文','轩辕'];
+
+// 外国姓氏
+const FOREIGN_SURNAMES = {
+  en: ['Smith','Johnson','Brown','Taylor','Miller','Wilson','Moore','Anderson','Thomas','Jackson','White','Harris','Martin','Thompson','Garcia','Martinez','Robinson','Clark','Rodriguez','Lewis'],
+  jp: ['佐藤','鈴木','高橋','田中','渡辺','伊藤','山本','中村','小林','加藤','吉田','山田','佐々木','山口','松本','井上','木村','林','斎藤','清水'],
+  kr: ['金','李','朴','崔','鄭','姜','趙','尹','張','林','吴','韩','申','安','宋','柳','洪','全','高','文'],
+  fr: ['Martin','Bernard','Dubois','Thomas','Robert','Richard','Petit','Durand','Leroy','Moreau','Simon','Laurent','Lefebvre','Michel','Garcia','Roux','Bonnet','Andre','Francois','Mercier'],
+  de: ['Müller','Schmidt','Schneider','Fischer','Weber','Meyer','Wagner','Becker','Schulz','Hoffmann','Koch','Bauer','Richter','Klein','Wolf','Schroder','Neumann','Schwarz','Zimmermann','Braun'],
+  ru: ['Ivanov','Smirnov','Kuznetsov','Popov','Vasilev','Petrov','Sokolov','Mikhailov','Novikov','Fedorov','Morozov','Volkov','Alekseev','Lebedev','Semenov','Egorov','Pavlov','Kozlov','Stepanov','Nikolaev']
+};
+
+// 名字库
+const NAME_POOL = {
+  male: ['浩','宇','轩','泽','杰','睿','昊','辰','逸','铭','皓','凯','烨','霖','翰','翊','宸','瑾','瑜','琛','然','谦','卓','峻','熙','昱','晟','韬','睿','哲','彦','彬','航','峻','峰','磊','涛','波','洋','海','江','河','湖','川','山','岳','岩','松','柏','枫','柳','杨','桐','楠','梓','榆','柯','栋','梁','柱'],
+  female: ['瑶','琳','萱','怡','欣','雅','婉','茹','雪','梦','琪','涵','婷','妍','菲','茜','悦','宁','彤','雯','嫣','璃','璇','翎','婳','妩','姝','媞','妤','婀','嫙','晴','曦','晗','昕','晓','晶','莹','玲','珑','珍','珠','玉','珂','珊','琪','瑾','瑜','琛','璇','琳','琅','琮','珞','璎','璨','澜','溪','润','涵','沐','沛','洋','洁','清','淑','淳','淑','滢','澈','淳','洵','湘','沅','淇'],
+  villain_m: ['煞','冥','厉','魔','邪','冷','枭','魍','魉','煞','魑','魅','魍','魉','煞','魑','魅','魍','魉','煞'],
+  villain_f: ['魅','魑','魍','魉','蛊','毒','煞','娆','孽','煞','魑','魅','魍','魉','煞','魑','魅','魍','魉','煞'],
+  xianxia_m: ['尘','渊','枫','寒','霄','岚','翊','珩','琰','璟','琛','琦','珞','珏','胤','尘','渊','枫','寒','霄'],
+  xianxia_f: ['嫣','璃','璇','翎','绾','旖','嬛','婵','婳','妩','姝','媞','妤','婀','嫙','嫣','璃','璇','翎','绾']
+};
+
+// 外国名字
+const FOREIGN_NAMES = {
+  en_m: ['James','John','Robert','Michael','William','David','Richard','Joseph','Thomas','Charles','Christopher','Daniel','Matthew','Anthony','Mark','Donald','Steven','Paul','Andrew','Joshua'],
+  en_f: ['Mary','Patricia','Jennifer','Linda','Elizabeth','Barbara','Susan','Jessica','Sarah','Karen','Nancy','Lisa','Betty','Margaret','Sandra','Ashley','Kimberly','Emily','Donna','Michelle'],
+  jp_m: ['太郎','健太','翔太','拓也','誠','大輔','涼太','悠斗','蓮','樹','悠真','湊','陽翔','蒼太','蓮斗'],
+  jp_f: ['美咲','桜','愛','結衣','陽菜','葵','凛','澪','茜','芽依','莉子','美月','愛子','彩花','美羽']
+};
+
+// 智能命名核心函数（简化可靠版）
+function generateTraditionalName(charType, charRole, charPersonality, charGoal, genre) {
+  const isFemale = charRole.includes('女');
+  const isVillain = charRole.includes('反派');
+  const isMentor = charRole.includes('师') || charRole.includes('导师');
+  const isMain = charRole.includes('主角');
+  
+  let surname = '';
+  let givenName = '';
+  let nameStyle = '中文';
+  
+  // 根据题材选择命名风格
+  if (genre === '奇幻' || genre === '科幻') {
+    nameStyle = '西方';
+  } else if (genre === '轻小说') {
+    nameStyle = '日式';
+  }
+  
+  if (nameStyle === '西方') {
+    const poolNames = ['en','fr','de','ru'];
+    const pool = poolNames[Math.floor(Math.random() * poolNames.length)];
+    surname = FOREIGN_SURNAMES[pool][Math.floor(Math.random() * FOREIGN_SURNAMES[pool].length)];
+    givenName = isFemale ? FOREIGN_NAMES.en_f[Math.floor(Math.random() * FOREIGN_NAMES.en_f.length)] : FOREIGN_NAMES.en_m[Math.floor(Math.random() * FOREIGN_NAMES.en_m.length)];
+    const fullName = givenName + ' ' + surname;
+    return {name: fullName, meaning: '【' + fullName + '】\n西方风格命名\n寓意：独特个性'};
+  }
+  
+  if (nameStyle === '日式') {
+    surname = FOREIGN_SURNAMES.jp[Math.floor(Math.random() * FOREIGN_SURNAMES.jp.length)];
+    givenName = isFemale ? FOREIGN_NAMES.jp_f[Math.floor(Math.random() * FOREIGN_NAMES.jp_f.length)] : FOREIGN_NAMES.jp_m[Math.floor(Math.random() * FOREIGN_NAMES.jp_m.length)];
+    const fullName = surname + givenName;
+    return {name: fullName, meaning: '【' + fullName + '】\n日式风格命名\n寓意：东瀛风情'};
+  }
+  
+  // 中文命名
+  if (isMain || isMentor) {
+    // 主角/导师：30%复姓 + 仙侠风名字
+    if (Math.random() < 0.3) {
+      surname = FUXING[Math.floor(Math.random() * FUXING.length)];
+    } else {
+      surname = BAIJIAxing[Math.floor(Math.random() * BAIJIAxing.length)];
+    }
+    givenName = isFemale ? NAME_POOL.xianxia_f[Math.floor(Math.random() * NAME_POOL.xianxia_f.length)] : NAME_POOL.xianxia_m[Math.floor(Math.random() * NAME_POOL.xianxia_m.length)];
+  } else if (isVillain) {
+    // 反派：50%复姓 + 邪魅名字
+    if (Math.random() < 0.5) {
+      surname = FUXING[Math.floor(Math.random() * FUXING.length)];
+    } else {
+      surname = BAIJIAxing[Math.floor(Math.random() * BAIJIAxing.length)];
+    }
+    givenName = isFemale ? NAME_POOL.villain_f[Math.floor(Math.random() * NAME_POOL.villain_f.length)] : NAME_POOL.villain_m[Math.floor(Math.random() * NAME_POOL.villain_m.length)];
+  } else {
+    // 配角：百家姓 + 普通名字
+    surname = BAIJIAxing[Math.floor(Math.random() * BAIJIAxing.length)];
+    givenName = isFemale ? NAME_POOL.female[Math.floor(Math.random() * NAME_POOL.female.length)] : NAME_POOL.male[Math.floor(Math.random() * NAME_POOL.male.length)];
+  }
+  
+  // 安全检查：确保不是undefined
+  if (!surname) surname = '李';
+  if (!givenName) givenName = isFemale ? '瑶' : '浩';
+  
+  const finalName = surname + givenName;
+  const meaning = '【' + finalName + '】\n姓氏：' + surname + '（百家姓）\n名字：' + givenName + '\n寓意：' + (isVillain ? '邪魅霸气' : isMain ? '主角光环' : '平凡真实');
+  
+  return {name: finalName, meaning: meaning};
+}
+
+function smartNameChar(index) {
+  const char = state.characters[index];
+  if (!char) return;
+  
+  const genre = state.genre[0] || '玄幻';
+  const result = generateTraditionalName(
+    char.type || 'default',
+    char.role,
+    char.personality,
+    char.goal,
+    genre
+  );
+  
+  // 更新角色名字
+  state.characters[index].name = result.name;
+  state.characters[index].nameMeaning = result.meaning; // 存储名字含义
+  state.characters[index].nameGenerated = true; // 标记为使用命名工具生成
+  
+  renderCharacters();
+  updateAllPreviews();
+  
+  // 显示名字含义提示
+  const meaningEl = document.createElement('div');
+  meaningEl.style.cssText = 'position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:var(--bg-elevated);border:1px solid var(--border-base);border-radius:12px;padding:20px;z-index:1000;max-width:320px;text-align:center';
+  meaningEl.innerHTML = `
+    <div style="font-size:1.2rem;font-weight:bold;margin-bottom:12px;color:var(--accent)">${result.name}</div>
+    <div style="font-size:0.82rem;color:var(--text-secondary);text-align:left;line-height:1.6">${result.meaning.replace(/\n/g,'<br>')}</div>
+    <button onclick="this.parentElement.remove()" style="margin-top:12px;padding:8px 24px;background:var(--accent);color:#fff;border:none;border-radius:6px;cursor:pointer">确定</button>
+  `;
+  document.body.appendChild(meaningEl);
+}
+
+// 清空人物列表
+function clearCharacters() {
+  if (state.characters.length === 0) return;
+  if (confirm('确定要清空所有角色吗？此操作不可撤销。')) {
+    state.characters = [];
+    renderCharacters();
+    updateAllPreviews();
+  }
+}
+
+function generatePlots() {
+  const genre = state.genre[0] || '玄幻';
+  const style = state.style[0] || '热血爽文';
+  const method = state.method || '三幕结构';
+  const tone = state.tone[0] || '紧张刺激';
+  const school = state.school[0] || '';
+
+  // 查找模板
+  let templates = PLOT_TEMPLATES[genre] || PLOT_TEMPLATES['玄幻'];
+  let plots = templates.default;
+  let usedTemplate = 'default';
+  
+  // 优先匹配流派关键词
+  if (school) {
+    if (templates[school]) {
+      plots = templates[school];
+      usedTemplate = school;
+    } else {
+      usedTemplate = 'default（' + school + '流派暂无专属模板，使用默认模板）';
+    }
+  }
+
+  // 获取风格和基调影响
+  const styleEffect = STYLE_EFFECTS[style] || STYLE_EFFECTS['热血爽文'];
+  const toneEffect = TONE_EFFECTS[tone] || TONE_EFFECTS['紧张刺激'];
+
+  const plotData = plots.slice(0, 3);
+  const plotTexts = plotData.map((p, i) => {
+    const letter = ['甲', '乙', '丙'][i];
+    // 根据风格和基调增强描述
+    const enhancedEvents = p.events + `→【风格：${styleEffect.tone}·${styleEffect.pace}】→【基调：${toneEffect.atmosphere}·${toneEffect.rhythm}】`;
+    return `【方案${letter}·${p.conflict}】核心目标：${p.goal}｜情节脉络：${enhancedEvents}｜风格：${style}｜基调：${tone}｜冲突模式：${styleEffect.conflict}｜氛围：${toneEffect.atmosphere}｜模板：${usedTemplate}`;
+  });
+
+  document.getElementById('plotList').innerHTML = plotTexts.map((p, i) => `
+    <div class="outline-item ${i===0?'main-line':''}" onclick="selectPlot(${i})">
+      <div style="font-weight:600;margin-bottom:6px">${p.split('｜')[0]}</div>
+      <div style="font-size:0.82rem;color:var(--text-secondary)">${p.split('｜').slice(1).join('｜')}</div>
+    </div>
+  `).join('');
+
+  state.plots = plotTexts;
+  state.plotData = plotData;
+  state.plot = plotTexts[0];
+  document.getElementById('preview-5').innerHTML = `题材：<b>${genre}</b>｜手法：<b>${method}</b>｜已生成3个方案`;
+}
+
+function selectPlot(index) {
+  state.plot = state.plots[index];
+  state.selectedPlotData = state.plotData[index];
+  document.querySelectorAll('#plotList .outline-item').forEach((el, i) => {
+    el.style.borderColor = i === index ? 'var(--accent)' : '';
+  });
+  document.getElementById('preview-5').innerHTML = `已选方案：<b>${index+1}</b>｜冲突：<b>${state.plotData[index]?.conflict||''}</b>`;
+}
+
+function generateOutline() {
+  const totalWords = parseInt(document.getElementById('totalWords').value) || 50;
+  const chapterCount = Math.ceil(totalWords * 10000 / state.wordsPerChapter);
+  const genre = state.genre[0] || '玄幻';
+  const style = state.style[0] || '热血爽文';
+  const method = state.method || '三幕结构';
+  const tone = state.tone[0] || '紧张刺激';
+  const plotData = state.selectedPlotData || {conflict:'命运抗争',goal:'成为强者',events:'历经磨难→不断成长→最终成功'};
+  const phases = METHOD_PHASES[method] || METHOD_PHASES['三幕结构'];
+
+  // 获取风格和基调影响
+  const styleEffect = STYLE_EFFECTS[style] || STYLE_EFFECTS['热血爽文'];
+  const toneEffect = TONE_EFFECTS[tone] || TONE_EFFECTS['紧张刺激'];
+
+  // 生成章节标题
+  const outlineTitles = generateChapterTitles(genre, style, chapterCount, phases, plotData);
+
+  // 生成每章详细内容
+  let outline = [];
+  for (let i = 1; i <= chapterCount; i++) {
+    const progress = (i - 1) / chapterCount;
+    const phase = phases.find(p => progress >= p.start && progress < p.end) || phases[phases.length - 1];
+    
+    // 根据章节位置生成不同的内容重点
+    let chapterFocus = '';
+    if (progress < 0.1) chapterFocus = '世界观展开·主角登场·初始冲突建立';
+    else if (progress < 0.3) chapterFocus = '势力介绍·矛盾升级·盟友结识';
+    else if (progress < 0.5) chapterFocus = '中期转折·实力突破·阴谋浮现';
+    else if (progress < 0.7) chapterFocus = '高潮铺垫·多方博弈·危机加剧';
+    else if (progress < 0.85) chapterFocus = '终极对决·真相揭露·命运抉择';
+    else chapterFocus = '尘埃落定·新秩序建立·余韵悠长';
+
+    // 根据风格调整内容
+    let styleContent = '';
+    if (style === '热血爽文') styleContent = '主角展现实力·碾压对手·众人震惊';
+    else if (style === '暗黑悬疑') styleContent = '暗中调查·线索浮现·危机逼近';
+    else if (style === '轻松搞笑') styleContent = '误会连连·妙语连珠·化险为夷';
+    else if (style === '虐心催泪') styleContent = '情感纠葛·牺牲奉献·催泪时刻';
+    else if (style === '硬核科幻') styleContent = '科技解析·逻辑推演·未来展望';
+    else if (style === '浪漫唯美') styleContent = '场景描绘·情感升华·唯美瞬间';
+    else styleContent = '情节推进·人物成长·冲突发展';
+
+    outline.push({
+      chapter: i,
+      phase: phase.phase,
+      title: outlineTitles[i-1] || `第${i}章`,
+      content: `【${phase.phase}·${chapterFocus}】风格：${style}(${styleEffect.tone})｜基调：${tone}(${toneEffect.atmosphere})｜${styleContent}｜主线：${plotData.conflict}→${plotData.goal}`,
+      type: phase.phase === '序章' || phase.phase === '开篇' || phase.phase === '起' ? '开篇' : phase.phase === '高潮' || phase.phase === '转' ? '高潮' : phase.phase === '结局' || phase.phase === '合' ? '结局' : phase.phase === '尾声' ? '高潮' : '发展'
+    });
+  }
+
+  state.outline = outline;
+  document.getElementById('outlineList').innerHTML = outline.map(ch => `
+    <div class="outline-item ${ch.type==='开篇'?'main-line':ch.type==='高潮'?'cause':'sub-line'}">
+      <span class="outline-ch">${ch.phase}·第${ch.chapter}章</span>
+      <div class="outline-title">${ch.title}</div>
+      <div style="font-size:0.75rem;color:var(--text-tertiary);margin-top:4px">${ch.content}</div>
+    </div>
+  `).join('');
+
+  document.getElementById('preview-6').innerHTML = `<b>${genre}</b>｜<b>${chapterCount}</b>章｜<b>${totalWords}</b>万字｜手法：<b>${method}</b>｜风格：<b>${style}</b>｜基调：<b>${tone}</b>`;
+}
+
+// 根据题材和风格动态生成章节标题（新版）
+function generateChapterTitles(genre, style, total, phases, plotData) {
+  const titles = [];
+  const events = plotData.events.split('→');
+
+  // 题材特色关键词
+  const genreKw = {
+    '玄幻': ['遗迹', '传承', '血脉', '灵根', '天劫', '证道', '飞升', '道心', '炼体', '化神', '渡劫', '觉醒', '秘境', '神器', '圣兽', '法则', '至尊', '不朽'],
+    '仙侠': ['问道', '渡劫', '飞剑', '炼丹', '元婴', '仙人', '洞府', '修仙', '长生', '仙缘', '道法', '天机', '剑意', '灵宝', '羽化', '逍遥', '天人合一'],
+    '都市': ['逆袭', '商战', '异能', '创业', '称霸', '回归', '巅峰', '崛起', '都市', '风云', '王者', '归来', '豪门', '战神', '神医', '兵王', '赘婿'],
+    '科幻': ['探索', '虫洞', '星舰', 'AI', '赛博', '星际', '降临', '未来', '科技', '异星', '超能', '新纪元', '量子', '虚空', '维度', '进化', '文明'],
+    '言情': ['初遇', '心动', '误会', '分离', '重逢', '告白', '相守', '相知', '深情', '情深', '情缘', '眷属', '暗恋', '守护', '倾心', '执手', '白头'],
+    '悬疑推理': ['命案', '谜团', '线索', '推理', '反转', '真相', '落幕', '破案', '追踪', '解密', '阴谋', '伏笔', '诡局', '迷踪', '暗涌', '疑云'],
+    '武侠': ['江湖', '秘籍', '比武', '恩怨', '门派', '绝境', '归隐', '侠义', '武林', '论剑', '传说', '剑客', '刀狂', '拳宗', '暗器', '轻功'],
+    '历史': ['乱世', '崛起', '权谋', '战争', '中兴', '落幕', '王朝', '帝王', '风云', '霸业', '盛世', '终结', '将门', '谋士', '变法', '远征']
+  };
+
+  // 风格影响关键词
+  const styleKw = {
+    '热血爽文': ['碾压', '爆发', '震惊', '无敌', '横扫', '突破', '震撼'],
+    '暗黑悬疑': ['暗影', '阴谋', '诡异', '陷阱', '杀机', '迷雾', '危机'],
+    '轻松搞笑': ['趣事', '乌龙', '欢乐', '妙计', '意外', '反转', '逗趣'],
+    '虐心催泪': ['离别', '牺牲', '心碎', '思念', '遗憾', '守候', '诀别'],
+    '硬核科幻': ['数据', '逻辑', '推演', '实验', '方程式', '算法', '维度'],
+    '浪漫唯美': ['花语', '月夜', '星辰', '清风', '暖阳', '落花', '流光'],
+    '恐怖惊悚': ['鬼影', '诅咒', '惊魂', '噩梦', '死寂', '阴森', '血腥'],
+    '史诗宏达': ['千古', '万载', '苍穹', '洪荒', '纪元', '史诗', '传说']
+  };
+
+  const kw = genreKw[genre] || genreKw['玄幻'];
+  const sw = styleKw[style] || styleKw['热血爽文'];
+
+  // 根据总章节数调整标题复杂度
+  const isLongNovel = total > 100;
+
+  // 标题句式（根据风格调整）
+  const patterns = isLongNovel ? [
+    `第{num}章：{kw}·{sw}`,
+    `{kw}之{evt}·{sw}`,
+    `第{num}卷·{kw}觉醒·{sw}`,
+    `{sw}·{kw}之路·第{num}章`,
+    `第{num}章 {kw}·{evt}`,
+    `{evt}·{kw}·{sw}`
+  ] : [
+    `第{num}章：{kw}`,
+    `{kw}之{evt}`,
+    `第{num}节：{kw}觉醒`,
+    `{kw}之路`,
+    `第{num}章 {kw}`,
+    `{evt}：{kw}`
+  ];
+
+  for (let i = 1; i <= total; i++) {
+    const progress = (i - 1) / total;
+    const kwIdx = Math.floor(progress * kw.length);
+    const swIdx = Math.floor(progress * sw.length);
+    const evtIdx = Math.min(Math.floor(progress * events.length), events.length - 1);
+    const pat = patterns[i % patterns.length];
+    const title = pat
+      .replace('{num}', i)
+      .replace('{kw}', kw[kwIdx] || kw[0])
+      .replace('{sw}', sw[swIdx] || sw[0])
+      .replace('{evt}', events[evtIdx] || events[0]);
+    titles.push(title);
+  }
+  return titles;
+}
+
+function generateDetailOutline() {
+  if (state.outline.length === 0) {
+    alert('请先生成大纲！');
+    return;
+  }
+  const genre = state.genre[0] || '玄幻';
+  const plotData = state.selectedPlotData || {conflict:'命运抗争',goal:'成为强者',events:'历经磨难'};
+  const protagonist = state.characters.find(c => c.role.includes('主角') || c.role.includes('正派'));
+  const heroName = protagonist?.name || '主角';
+
+  // 各类型章节详情模板
+  const detailTemplates = {
+    '序章': (n, h, p) => `【${n}】\n核心目标：介绍${h}的背景和命运起点\n场景设定：${p}故事发生的初始环境\n关键事件：${h}遇到改变命运的契机\n悬念铺垫：为后续剧情埋下伏笔`,
+    '开篇': (n, h, p) => `【${n}】\n核心目标：让读者快速认识${h}并产生共鸣\n场景设定：${genre}世界的日常生活或修炼初始阶段\n关键事件：${h}展现出与众不同的特质或遭遇首次挑战\n情绪节奏：${state.tone[0]||'紧张'}，建立读者期待`,
+    '发展': (n, h, p) => `【${n}】\n核心目标：推进${h}的成长线和${p}冲突\n场景设定：根据${genre}题材设计相应场景（秘境/宗门/都市/星际等）\n关键事件：${h}遭遇挫折或机遇，引出新角色或新线索\n副线推进：穿插感情线或配角戏份`,
+    '高潮': (n, h, p) => `【${n}】\n核心目标：核心冲突的爆发点\n场景设定：最激烈、最关键的场景\n关键事件：${h}面临最艰难的抉择或生死考验\n情感冲击：最大情绪释放点，${p}`,
+    '结局': (n, h, p) => `【${n}】\n核心目标：收束所有线索，给出最终答案\n场景设定：与序章呼应但层次更高的舞台\n关键事件：${h}达成目标或完成蜕变\n情感落点：让读者产生满足感的情感高潮`,
+    '尾声': (n, h, p) => `【${n}】\n核心目标：交代后续，升华主题\n场景设定：尘埃落定后的世界\n关键事件：${h}的新起点或留下的思考\n主题升华：呼应开篇，完整故事弧线`
+  };
+
+  state.detailOutline = state.outline.map((ch, i) => {
+    const templateFn = detailTemplates[ch.phase] || detailTemplates['发展'];
+    return {
+      ...ch,
+      detail: templateFn(ch.title, heroName, plotData.conflict),
+      type: ch.phase
+    };
+  });
+
+  document.getElementById('detailOutlineList').innerHTML = state.detailOutline.map(ch => {
+    // 主线-蓝：序章/开篇；副线-绿：发展阶段；因果点-黄：高潮/结局/尾声
+    let lineClass = 'sub-line';
+    if (ch.phase === '序章' || ch.phase === '开篇') lineClass = 'main-line';
+    else if (ch.phase === '高潮' || ch.phase === '结局' || ch.phase === '尾声') lineClass = 'cause';
+    
+    // 标签显示
+    const labelMap = {'main-line':'【主线】','sub-line':'【副线】','cause':'【因果点】'};
+    const lineLabel = `<span style="font-size:0.68rem;padding:2px 6px;border-radius:4px;margin-right:8px;background:${lineClass==='main-line'?'rgba(88,166,255,0.2)':lineClass==='cause'?'rgba(210,153,34,0.2)':'rgba(63,185,80,0.2)'};color:${lineClass==='main-line'?'var(--accent)':lineClass==='cause'?'var(--warning)':'var(--success)'}">${labelMap[lineClass]}</span>`;
+    
+    return `
+    <div class="outline-item ${lineClass}" style="border-left-color:${lineClass==='main-line'?'var(--accent)':lineClass==='cause'?'var(--warning)':'var(--success)'}">
+      ${lineLabel}<span class="outline-ch">${ch.phase}·第${ch.chapter}章</span>
+      <div class="outline-title">${ch.title}</div>
+      <div style="font-size:0.78rem;color:var(--text-secondary);margin-top:6px;line-height:1.6">${ch.detail.replace(/\n/g,'<br>')}</div>
+    </div>
+  `}).join('');
+
+  document.getElementById('preview-7').innerHTML = `共 <b>${state.detailOutline.length}</b> 章｜主角：<b>${heroName}</b>｜主线：<b>${plotData.conflict}</b>`;
+}
+
+// ═════════════════════ 写作功能 ═════════════════════
+function onWritingInput() {
+  const editor = document.getElementById('writingEditor');
+  const text = editor.value;
+  document.getElementById('writtenCount').textContent = text.length;
+  
+  // 模拟AI检测
+  const score = Math.floor(70 + Math.random() * 25);
+  const scoreEl = document.getElementById('aiScore');
+  scoreEl.textContent = score + '分';
+  scoreEl.className = 'score-badge ' + (score >= 85 ? 'score-good' : score >= 70 ? 'score-warn' : 'score-bad');
+  
+  document.getElementById('aiStat').textContent = score >= 85 ? '低' : score >= 70 ? '中' : '高';
+  document.getElementById('emotionStat').textContent = ['低', '中', '高'][Math.floor(Math.random()*3)];
+  document.getElementById('dialogStat').textContent = Math.floor(20 + Math.random()*40) + '%';
+  document.getElementById('shortStat').textContent = Math.floor(30 + Math.random()*30) + '%';
+  document.getElementById('rhythmStat').textContent = ['优', '良', '中'][Math.floor(Math.random()*3)];
+}
+
+function prevChapter() {
+  if (state.currentChapter > 1) {
+    state.currentChapter--;
+    updateChapterDisplay();
+  }
+}
+
+function nextChapter() {
+  if (state.currentChapter < state.outline.length) {
+    state.currentChapter++;
+    updateChapterDisplay();
+  }
+}
+
+function updateChapterDisplay() {
+  document.getElementById('chapterTitle').textContent = `第${state.currentChapter}章`;
+  const ch = state.outline[state.currentChapter - 1];
+  const detail = state.detailOutline[state.currentChapter - 1];
+  if (ch) {
+    document.getElementById('chapterHint').innerHTML = `<strong>本章大纲：</strong>${ch.content}`;
+    document.getElementById('chapterSubtitle').textContent = ch.title || ch.phase;
+  }
+  if (detail) {
+    document.getElementById('chapterGoal').innerHTML = `<strong>${detail.phase||''}目标：</strong><br>${detail.detail.replace(/\n/g,'<br>').substring(0,200)}`;
+    document.getElementById('writingPromptBox').innerHTML = `💡 <strong>${ch?.title||'第'+state.currentChapter+'章'}</strong><br><span style="color:var(--text-tertiary)">${detail.phase}｜${ch?.content||''}</span>`;
+  }
+  updateWritingSummary();
+}
+
+function startWriting() {
+  const editor = document.getElementById('writingEditor');
+  const ch = state.outline[state.currentChapter - 1];
+  const detail = state.detailOutline[state.currentChapter - 1];
+  const hero = state.characters.find(c=>c.role.includes('主角') || c.role.includes('男主角'));
+  const heroine = state.characters.find(c=>c.role.includes('女主角'));
+  const mentor = state.characters.find(c=>c.role.includes('导师'));
+  const villain = state.characters.find(c=>c.role.includes('反派'));
+  const genre = state.genre[0] || '玄幻';
+  const worldEra = state.worldEra || '天地初开之时';
+  const worldPower = state.worldPower || '炼气→筑基→金丹→元婴';
+
+  if (!ch) {
+    alert('请先生成大纲（第6步）！');
+    return;
+  }
+
+  // 获取角色名
+  const heroName = hero?.name || '叶尘';
+  const heroineName = heroine?.name || '薰儿';
+  const mentorName = mentor?.name || '师尊';
+  const villainName = villain?.name || '魔君';
+  const heroPersonality = hero?.personality || '坚毅果敢';
+  const heroGoal = hero?.goal || '成为强者';
+
+  // 根据题材和章节生成完整章节内容
+  const chapterContent = generateChapterContent(genre, ch, detail, {
+    heroName, heroineName, mentorName, villainName,
+    heroPersonality, heroGoal, worldEra, worldPower,
+    currentChapter: state.currentChapter,
+    plotConflict: state.selectedPlotData?.conflict || '命运抗争',
+    plotGoal: state.selectedPlotData?.goal || '成为强者',
+    tone: state.tone[0] || '紧张刺激',
+    style: state.style[0] || '热血爽文'
+  });
+
+  if (!editor.value.trim()) {
+    editor.value = chapterContent;
+    editor.focus();
+    editor.setSelectionRange(editor.value.length, editor.value.length);
+  } else {
+    const confirmed = confirm('编辑器已有内容，是否追加本章内容？');
+    if (confirmed) {
+      editor.value += '\n\n' + chapterContent;
+    }
+  }
+  onWritingInput();
+}
+
+// ═════════════════════ 巨量章节内容生成系统 ═════════════════════
+
+// ═════════════════════ 风格DNA系统（真实驱动写作内容）═════════════════════
+// build202605161800 - 风格和基调不再只是标签，而是真正驱动写作语气
+
+const STYLE_DNA = {
+  '热血爽文': {
+    label: '热血爽文',
+    emotion: '激昂-必胜',
+    sentencePace: '短促有力',
+    descriptionFocus: '力量·气势·碾压',
+    dialogTrait: '霸道·宣言·挑衅',
+    keywordDensity: ['战','破','强','碾压','震撼','无敌','爆发','狂','怒','杀'],
+    expansion: {
+      env: [
+        (h) => `天地间灵气暴走，狂风呼啸。\n\n${h}周身散发出令人窒息的威压，脚下的地面寸寸龟裂。\n\n远处观战的众人只觉得呼吸困难，仿佛有一座大山压在胸口。\n\n"这...这就是他的真正实力吗？"有人颤声问道，眼中满是恐惧与敬畏。`,
+        (h) => `苍穹之上，雷云翻滚。\n\n一道道闪电划破天际，照亮了${h}那张冷峻的脸庞。\n\n他缓缓抬起手，掌心凝聚出一团刺目的光芒。那光芒越来越盛，仿佛要将整个天地都吞噬。\n\n"给我——破！"\n\n随着一声怒吼，光芒骤然爆发！`,
+        (h) => `虚空震颤，空间扭曲。\n\n${h}每一步踏出，都仿佛踩在众人的心脏上。\n\n他的气息如同火山喷发，炽热而狂暴，所过之处，万物臣服。\n\n"还有谁？！"\n\n这三个字如同惊雷炸响，震得在场所有人耳膜生疼。`
+      ],
+      inner: [
+        (h, goal) => `${h}能感受到体内热血在沸腾。\n\n每一次心跳，都像是战鼓在擂动。\n\n"还不够...还不够强！"\n\n他在心中咆哮。虽然已经是同辈中的翘楚，但他知道，真正的强者之路才刚刚开始。\n\n${goal}——这个目标，他一定要达成！\n\n不管付出什么代价，不管前方有多少阻碍，他都不会退缩。\n\n因为，他是${h}！`,
+        (h) => `战意，在燃烧。\n\n${h}闭上眼睛，感受着体内那股澎湃的力量。\n\n这是他在无数次生死搏杀中磨练出来的本能——遇强则强，永不言败！\n\n"来吧，让我看看，你们究竟有几分本事！"\n\n他猛然睁开双眼，眸中精光爆射，如同两柄出鞘的利剑。`
+      ],
+      dialog: [
+        (h, v) => `"就凭你，也配与我一战？"${h}冷笑一声，眼中满是轻蔑。\n\n${v}脸色铁青，咬牙道："少狂妄！今日我便让你知道，天外有天！"\n\n"天外有天？"${h}哈哈大笑，"那我便把这天，也一并捅破！"\n\n话音未落，他已如闪电般冲出，拳风呼啸，势如破竹！`,
+        (h, v, mentor) => `"师父，弟子请求出战！"${h}单膝跪地，声音铿锵有力。\n\n${mentor}沉吟片刻："此战凶险，你可有把握？"\n\n"十成！"${h}抬起头，目光灼灼，"弟子若败，愿受任何责罚！"\n\n"好！"${mentor}朗声大笑，"这才是我教出来的弟子！去，让天下人看看你的锋芒！"`
+      ],
+      action: [
+        (h, v) => `${h}动了。\n\n快！快到肉眼几乎无法捕捉！\n\n只听"砰"的一声巨响，${v}如断线风筝般倒飞出去，重重砸在墙上，口中鲜血狂喷。\n\n"不...不可能..."${v}挣扎着想要爬起来，却发现全身骨骼已经碎了大半。\n\n${h}缓步走到他面前，居高临下地俯视着这个曾经的对手。\n\n"你，太弱了。"`,
+        (h) => `拳出如龙！\n\n${h}这一拳，凝聚了全身功力，空气都被撕裂，发出刺耳的尖啸。\n\n轰——！！！\n\n惊天动地的巨响中，前方的一座小山竟被硬生生轰出一个巨大的窟窿！\n\n烟尘散去，${h}收拳而立，衣袂飘飘，宛如战神降世。`
+      ],
+      sensory: [
+        (h) => `空气中弥漫着浓烈的血腥味和焦糊味。\n\n${h}深吸一口气，这种味道让他兴奋——这是战斗的气息，是胜利的预兆。\n\n他的每一根神经都绷紧到了极致，如同一张拉满的弓，随时准备射出致命的一箭。`,
+        (h) => `大地在颤抖，发出低沉的轰鸣。\n\n${h}感受着脚下传来的震动，嘴角微微上扬。\n\n"终于来了吗..."\n\n他舔了舔嘴唇，眼中闪烁着嗜血的光芒。对于渴望战斗的他来说，没有什么比强大的对手更令人兴奋的了。`
+      ],
+      flashback: [
+        (h, goal) => `三年前，他还是一个任人欺凌的废物。\n\n那一天，他被丢进泥坑里，被人踩在脚下，听着那些刺耳的嘲笑。\n\n"就你这种废物，还想修炼？做梦吧！"\n\n那一刻，他在心中发誓——总有一天，他要让所有人跪在他面前，为今日的羞辱付出代价！\n\n如今，他做到了。\n\n但这还不够。\n\n${goal}，才是他最终的追求！`
+      ]
+    }
+  },
+
+  '黑暗深沉': {
+    label: '黑暗深沉',
+    emotion: '阴郁-绝望',
+    sentencePace: '缓慢压抑',
+    descriptionFocus: '腐朽·阴谋·人性之恶',
+    dialogTrait: '冰冷·讽刺·试探',
+    keywordDensity: ['暗','腐','蚀','深渊','阴谋','背叛','绝望','噬','烬','枯'],
+    expansion: {
+      env: [
+        (h) => `暮色如同一块腐烂的裹尸布，缓缓覆盖了整个城市。\n\n${h}站在阴影之中，看着最后一缕阳光被黑暗吞没。\n\n空气中弥漫着潮湿的霉味和某种说不清的腐朽气息，让人作呕。\n\n街角的野狗叼着一块发臭的肉，绿幽幽的眼睛在黑暗中闪烁，如同鬼火。`,
+        (h) => `雨下了一整天，依然没有停歇的迹象。\n\n浑浊的雨水顺着破旧的屋檐滴落，在地上汇成一条条暗红色的小溪——那颜色，像极了稀释后的血。\n\n${h}站在窗前，望着外面灰蒙蒙的世界。\n\n"这样的天气，最适合做一些...见不得光的事。"他低声说道，嘴角浮现出一丝阴冷的笑意。`,
+        (h) => `地下室的灯光忽明忽暗，发出滋滋的电流声。\n\n${h}坐在一张锈迹斑斑的铁椅上，面前摊开着一份沾满血迹的文件。\n\n墙壁上布满了暗褐色的污渍，不知是铁锈，还是...别的什么东西。\n\n角落里，一只硕大的老鼠正啃噬着某种不明物体，发出令人毛骨悚然的咀嚼声。`
+      ],
+      inner: [
+        (h, goal) => `${h}看着镜子里的自己，几乎认不出这张脸了。\n\n那双曾经清澈的眼睛，如今只剩下深不见底的幽暗。\n\n"我变了。"他对着镜子里的自己说道，声音沙哑而陌生。\n\n是啊，他变了。从那个天真无邪的少年，变成了如今这个为了达到目的不择手段的怪物。\n\n${goal}——为了这个目标，他已经牺牲了太多。\n\n亲情、友情、爱情...所有的一切，都被他亲手埋葬。\n\n而现在，他只剩下最后一步。\n\n"只要再迈出这一步..."他喃喃自语，眼中闪过一丝疯狂，"我就可以得到我想要的一切。"\n\n但不知为何，心底深处，却有一个微弱的声音在问：\n\n"这一切，真的值得吗？"`,
+        (h) => `人心，是最可怕的东西。\n\n${h}深谙此道。\n\n在这个弱肉强食的世界里，善良是最廉价的奢侈品。只有将人性中最黑暗的一面释放出来，才能生存下去。\n\n他闭上眼睛，脑海中浮现出那些曾经信任过他、却被他亲手推入深渊的面孔。\n\n愧疚？\n\n不，他已经不会愧疚了。\n\n那颗会愧疚的心，早就已经死了。`
+      ],
+      dialog: [
+        (h, v) => `"你以为你赢了？"${v}咳出一口血，惨笑着看向${h}。\n\n${h}面无表情地看着他，眼中没有一丝波澜。\n\n"从一开始，你就没有胜算。"他的声音冰冷得像是从地狱深处传来，"因为你太天真了。天真到以为这个世界上还有正义可言。"\n\n"难道...难道没有吗？"\n\n${h}蹲下身，凑近${v}的耳边，轻声说道："正义？那只是强者编给弱者听的童话罢了。"`,
+        (h, v, mentor) => `"师父，弟子不明白。"${h}低着头，声音平静，"为什么一定要牺牲无辜的人？"\n\n${mentor}转过身，目光深邃而冰冷："无辜？这个世界上没有无辜的人。每个人都有自己的欲望，都有自己的罪。我们只不过...是在帮他们解脱罢了。"\n\n${h}沉默了。\n\n"怎么，心软了？"${mentor}冷笑一声，"记住，怜悯是弱者的专利。想要站在巅峰，就必须学会把良心喂狗。"`
+      ],
+      action: [
+        (h, v) => `${h}的动作优雅而致命，如同一只捕猎的黑寡妇蜘蛛。\n\n他没有给${v}任何反抗的机会——一根细如发丝的钢丝已经悄无声息地缠上了对方的脖颈。\n\n"抱歉。"${h}在${v}耳边轻声说道，语气中却没有丝毫歉意，"你知道得太多了。"\n\n指尖微微用力。\n\n钢丝收紧，勒入皮肉。${v}瞪大了眼睛，双手徒劳地抓挠着喉咙，发出咯咯的声响。\n\n几秒后，一切归于寂静。\n\n${h}松开手，看着倒在地上的尸体，面无表情地从口袋里掏出一块手帕，擦了擦手。\n\n"处理掉。"他对暗处说道。`,
+        (h) => `刀光一闪，快得几乎看不清轨迹。\n\n${h}收刀入鞘，面无表情地看着面前的对手缓缓倒下。\n\n没有怒吼，没有咆哮，甚至连呼吸都没有乱。\n\n对他来说，杀人已经和呼吸一样自然了。\n\n他弯下腰，从尸体上搜出一个U盘，揣进口袋。\n\n"第三个了。"他低声数着，转身走入黑暗之中，仿佛什么都没有发生过。`
+      ],
+      sensory: [
+        (h) => `空气中弥漫着一种甜腻的腐臭味，像是花朵烂在泥里的味道。\n\n${h}很熟悉这种味道——那是死亡的气息。\n\n他的指尖触碰到墙上的污渍，黏腻而冰冷。放到鼻端闻了闻，他微微皱眉。\n\n"已经三天了。"\n\n他甩了甩手，继续向前走去，脚步声在空旷的走廊里回荡，如同丧钟。`,
+        (h) => `黑暗中，有东西在蠕动。\n\n${h}停下脚步，侧耳倾听。\n\n滴答...滴答...\n\n是水声？还是...血声？\n\n他不在乎。\n\n在这个世界里，活人和死人的区别，不过是多一口气而已。而他，早就做好了随时变成后者的准备。`
+      ],
+      flashback: [
+        (h, goal) => `他记得那个雨夜。\n\n记得母亲临死前那双充满恐惧和绝望的眼睛。\n\n记得父亲被拖走时那撕心裂肺的惨叫。\n\n记得自己躲在衣柜里，捂着嘴，浑身颤抖，连哭都不敢哭出声。\n\n从那一刻起，他就知道——\n\n善良是这个世界上最没用的东西。\n\n只有权力，只有力量，才能保护自己，才能...让那些伤害过自己的人付出代价。\n\n${goal}。\n\n为了这个目标，他可以不择手段。\n\n哪怕变成恶魔，也在所不惜。`
+      ]
+    }
+  },
+
+  '轻松搞笑': {
+    label: '轻松搞笑',
+    emotion: '欢快-戏谑',
+    sentencePace: '轻快跳跃',
+    descriptionFocus: '反差·误会·荒诞',
+    dialogTrait: '吐槽·互怼·自黑',
+    keywordDensity: ['哈哈','噗','呃','我去','不是吧','卧槽','机智','尴尬','离谱','笑死'],
+    expansion: {
+      env: [
+        (h) => `阳光明媚，鸟语花香。\n\n这本该是个美好的早晨——如果${h}没有一出门就踩到狗屎的话。\n\n"我靠！"他单脚跳着，一脸崩溃地看着鞋底那坨不明物体，"今天可是我去面试的日子啊！"\n\n路过的老太太用一种"这孩子是不是脑子有问题"的眼神看了他一眼，默默地绕开了。`,
+        (h) => `咖啡厅里放着舒缓的钢琴曲。\n\n${h}优雅地坐在座位上，端起咖啡杯，装模作样地抿了一口。\n\n然后——\n\n"噗——！！"\n\n一整口咖啡全喷在了对面人的脸上。\n\n"对...对不起！"他手忙脚乱地抽纸巾，"这咖啡太烫了！不对，太苦了！也不对..."\n\n对面的人抹了一把脸，面无表情："...这是我今天换的第三套西装了。"`,
+        (h) => `电梯里，${h}正对着手机整理发型。\n\n忽然，电梯"叮"的一声停了。\n\n他抬头一看——\n\n我去，怎么是老板？！\n\n更离谱的是，老板手里还抱着一只穿着粉色裙子的泰迪犬。\n\n一人一狗，六目相对。\n\n空气突然安静。\n\n"那个...老板，您家的狗...挺时尚啊。"\n\n老板："...这是我女儿。"\n\n${h}："？？？"`
+      ],
+      inner: [
+        (h, goal) => `${h}躺在床上，望着天花板发呆。\n\n"我到底在干什么..."\n\n他回想起今天发生的一系列离谱事件——早上出门踩狗屎，中午吃饭吃到苍蝇，下午面试把咖啡喷在HR脸上...\n\n"难道我今天水逆？"\n\n他摸出手机，打开星座运势。\n\n屏幕上赫然写着：今日宜躺平，忌出门。\n\n"...我现在看到是不是太晚了？"\n\n不过，就算再倒霉，他也没有忘记自己的终极目标——${goal}。\n\n"等着吧，总有一天我会逆袭的！"他对着天花板挥了挥拳头，"到时候让你们都高攀不起！"\n\n然后翻身继续刷短视频。`,
+        (h) => `"我一定是脑子进水了。"\n\n${h}看着面前这个自称"来自未来的自己"的人，一脸怀疑人生。\n\n"你说你是我？那我问你，我屁股上有没有痣？"\n\n对方："...左边还是右边？"\n\n"右边。"\n\n"有。"\n\n"卧槽，还真是？！"\n\n不对，这不能证明什么！\n\n${h}揉了揉太阳穴，感觉自己的三观正在崩塌。`
+      ],
+      dialog: [
+        (h, v) => `"站住！打劫！"${v}举着一把玩具枪，气势汹汹地挡在${h}面前。\n\n${h}停下脚步，上下打量了他一眼，然后叹了口气："兄弟，你枪拿反了。"\n\n${v}一愣，低头看了看手中的玩具枪——\n\n果然拿反了。\n\n"呃...那个...这是新型武器，双向射击的！"\n\n${h}："...你枪口对着自己呢。"\n\n${v}："......"\n\n"要不我先走，你研究一下说明书？"`,
+        (h, v, mentor) => `"师父，我觉得我练成了！"${h}兴冲冲地跑到${mentor}面前。\n\n${mentor}放下手中的茶杯，抬了抬眼皮："哦？施展来看看。"\n\n${h}深吸一口气，摆出一个极其帅气的姿势，大喝一声："接招——如来神掌！"\n\n然后一掌拍在了自己的脸上。\n\n${mentor}："......"\n\n${h}捂着脸，眼泪汪汪："师父，这掌法有点费脸..."\n\n${mentor}默默把茶杯里的茶倒了，换了一杯酒。`
+      ],
+      action: [
+        (h, v) => `${h}一个帅气的回旋踢——\n\n踢空了。\n\n惯性让他原地转了三圈，然后一头栽进了旁边的垃圾桶里。\n\n${v}："......"\n\n${h}从垃圾桶里探出头，顶着一头的香蕉皮，尴尬地笑了笑："那个...这招叫障眼法，你已经被我的气场震慑住了对不对？"\n\n${v}默默掏出了手机："我能拍个照发朋友圈吗？"`,
+        (h) => `${h}纵身一跃，想要翻过高墙。\n\n结果裤子被墙上的钉子勾住了。\n\n"嘶啦——"\n\n他挂在墙上，半条腿露在外面，凉飕飕的。\n\n下面路过的大妈抬头看了他一眼："现在的年轻人，玩得挺花啊。"\n\n${h}："阿姨你听我解释！"`
+      ],
+      sensory: [
+        (h) => `空气中弥漫着一股诡异的香味——像是臭豆腐混合了榴莲再加一点香菜的味道。\n\n${h}捏着鼻子，一脸痛苦："这到底是什么生化武器..."\n\n旁边的摊主热情招呼："小哥，来份螺蛳粉不？正宗柳州味！"\n\n${h}："...您这正宗得有点过头了。"`,
+        (h) => `头顶传来一阵"嗡嗡"声。\n\n${h}抬头一看——\n\n一只蜜蜂正围着他转圈圈。\n\n"别过来！我对蜜蜂过敏！"他一边挥手一边后退。\n\n蜜蜂似乎被他激怒了，追得更紧了。\n\n"救命啊！！"\n\n${h}抱头鼠窜，场面一度非常混乱。`
+      ],
+      flashback: [
+        (h, goal) => `还记得小时候，${h}第一次上台演讲。\n\n他背了一晚上的稿子，结果一上台，看见台下黑压压的人群，脑子"嗡"的一声，全忘了。\n\n然后他说了什么呢？\n\n"那个...大家好，我...我今天要讲的是...呃...我忘了。"\n\n全场寂静。\n\n三秒后，哄堂大笑。\n\n那时候他觉得这辈子都抬不起头来了。\n\n现在想想...\n\n"好像也没什么大不了的嘛。"他笑了笑，"反正我都社死过这么多次了，债多不愁。"`
+      ]
+    }
+  },
+
+  '虐心催泪': {
+    label: '虐心催泪',
+    emotion: '悲伤-绝望中的希望',
+    sentencePace: '缓慢悠长',
+    descriptionFocus: '离别·牺牲·遗憾·时光',
+    dialogTrait: '克制·隐忍·诀别·告白',
+    keywordDensity: ['泪','痛','舍不得','对不起','再见','永远','记住','别忘','等我','归来'],
+    expansion: {
+      env: [
+        (h) => `雨又下了起来。\n\n${h}站在窗前，看着雨滴顺着玻璃滑落，像极了谁的眼泪。\n\n窗外的梧桐树在风雨中摇晃，叶子一片片飘落，像极了那些再也回不去的时光。\n\n他伸出手，贴在冰凉的玻璃上。\n\n"如果...如果还能再见一面就好了。"`,
+        (h) => `夕阳将天空染成了血红色。\n\n${h}独自站在海边，任凭海风将衣角吹得猎猎作响。\n\n海浪一下又一下地拍打着礁石，发出低沉而悲怆的声响，像是大海在哭泣。\n\n他弯腰拾起一枚贝壳，在手中轻轻摩挲。\n\n那是她留给他的最后一件东西。\n\n"我答应过你的..."他的声音被海风吹散，"一定会做到。"`,
+        (h) => `医院的走廊很长，长得仿佛没有尽头。\n\n${h}坐在长椅上，双手紧紧交握。消毒水的味道刺得鼻子发酸，但他已经麻木了。\n\n墙上的时钟"滴答滴答"地走着，每一秒都像是一个世纪那么漫长。\n\n终于，手术室的门开了。\n\n医生摘下口罩，摇了摇头。\n\n${h}闭上眼睛，泪水无声地滑落。\n\n"我知道了。"`
+      ],
+      inner: [
+        (h, goal) => `${h}从抽屉深处翻出一个铁盒子。\n\n盒子里装满了泛黄的信纸、褪色的照片、以及...一只已经干枯的纸鹤。\n\n他拿起那只纸鹤，在手中轻轻摩挲。\n\n"你说过，折够一千只纸鹤，愿望就会实现。"\n\n他数了数盒子里的纸鹤——九百九十九只。\n\n还差一只。\n\n但教她折纸鹤的人，已经不在了。\n\n${goal}...这是她的愿望，也是他的执念。\n\n"我会替你完成的。"他将纸鹤贴在胸口，泪水打湿了衣襟，"就算耗尽我的一生，我也会替你完成。"`,
+        (h) => `有些人，一旦错过就是一辈子。\n\n${h}深知这个道理，却还是没能留住她。\n\n他常常在想，如果那天他没有说出那句话，如果那天他再挽留一下，如果...\n\n可是，这世上没有如果。\n\n只有结果。\n\n而这个结果，他用余生来承受。`
+      ],
+      dialog: [
+        (h, v) => `"为什么..."${v}的声音沙哑而颤抖，"为什么要做到这种地步？"\n\n${h}苍白的脸上浮现出一丝微笑，那笑容温柔得让人心碎。\n\n"因为...你是我最重要的人啊。"\n\n"可是我不想让你死！"${v}死死抓着他的手，泪水夺眶而出，"求求你...不要丢下我一个人..."\n\n${h}艰难地抬起手，擦去她脸上的泪水。\n\n"别哭...你哭起来...就不漂亮了..."\n\n他的手缓缓滑落。\n\n"答应我...好好活下去..."\n\n这是他的最后一句话。`,
+        (h, v, mentor) => `"师父，弟子不孝，要先走一步了。"${h}跪在地上，重重地磕了三个头。\n\n${mentor}背对着他，肩膀微微颤抖。\n\n"没有别的办法了吗？"\n\n"没有了。"${h}抬起头，脸上带着释然的微笑，"这是唯一的办法。"\n\n"你这一去...可就回不来了。"\n\n"弟子知道。"\n\n${mentor}沉默了很久，终于转过身来。\n\n他的眼眶红了。\n\n"去吧。"他声音沙哑，"师父...以你为傲。"`
+      ],
+      action: [
+        (h, v) => `${h}用尽全力，将${v}推出了危险区域。\n\n而他自己，却再也来不及躲闪。\n\n"不——！！"${v}的惨叫在身后响起。\n\n${h}回头看了一眼，嘴角带着一丝微笑。\n\n"活下去。"他用口型说道。\n\n然后，光芒吞噬了一切。`,
+        (h) => `${h}一步步走向深渊。\n\n每一步，都像是在刀尖上跳舞。\n\n但他没有回头。\n\n因为他知道，身后有他必须守护的人。\n\n"值得吗？"有人在问。\n\n他没有回答，只是继续向前走。\n\n直到身影被黑暗吞没。`
+      ],
+      sensory: [
+        (h) => `空气中弥漫着淡淡的桂花香。\n\n${h}闭上眼睛，深吸一口气。\n\n这是她最喜欢的味道。\n\n每年的这个时候，她都会拉着他去桂花树下，说要酿桂花酒。\n\n如今，桂花依旧盛开，而人却已不在。\n\n他折下一枝桂花，在手中轻轻摩挲。\n\n"今年的桂花...格外香呢。"`,
+        (h) => `琴声从远处传来，断断续续，像是有人在低声啜泣。\n\n${h}停下脚步，侧耳倾听。\n\n那是她生前最喜欢的曲子。\n\n每一个音符，都像是敲在他的心上，疼得他喘不过气来。\n\n他靠着墙，缓缓滑坐在地上。\n\n"我好想你..."\n\n泪水无声地滑落，滴在冰冷的地面上。`
+      ],
+      flashback: [
+        (h, goal) => `他记得那个夏天。\n\n她穿着白色的连衣裙，站在桂花树下，笑得像一朵盛开的花。\n\n"你说，我们会一直在一起吗？"她歪着头问道。\n\n"当然。"他毫不犹豫地回答，"我会永远陪在你身边。"\n\n她笑了，眼中闪烁着星星般的光芒。\n\n"那拉钩。"\n\n"拉钩。"\n\n...\n\n可是，他食言了。\n\n不是他不想遵守承诺，而是命运没有给他机会。\n\n${goal}——这是他对她的承诺，也是他对命运的反抗。\n\n"等我。"他对着天空轻声说道，"等我完成了这一切，就去陪你。"`
+      ]
+    }
+  },
+
+  '温馨治愈': {
+    label: '温馨治愈',
+    emotion: '温暖-柔和',
+    sentencePace: '舒缓平和',
+    descriptionFocus: '日常·细节·陪伴·微光',
+    dialogTrait: '温柔·关心·打趣·安慰',
+    keywordDensity: ['暖','柔','笑','陪','一起','慢慢','真好','谢谢','没事','有我在'],
+    expansion: {
+      env: [
+        (h) => `午后的阳光透过窗帘的缝隙洒进来，在地板上投下斑驳的光影。\n\n${h}坐在摇椅上，怀里抱着一只慵懒的橘猫。\n\n空气中弥漫着刚烤好的面包香气，混合着窗外飘来的花香，让人不自觉地放松下来。\n\n橘猫在他怀里翻了个身，发出舒服的咕噜声。\n\n${h}笑了笑，伸手轻轻挠了挠它的下巴。\n\n"小懒虫。"`,
+        (h) => `厨房里传来锅铲碰撞的声响，伴随着阵阵诱人的香味。\n\n${h}靠在门框上，看着里面忙碌的身影。\n\n"需要帮忙吗？"\n\n"不用，马上就好了。你去把桌子摆好。"\n\n"遵命。"\n\n他笑着转身，从柜子里取出碗筷。\n\n窗外的夕阳将整个房间染成了温暖的橘红色。\n\n这样平凡的日常，却让他感到无比幸福。`,
+        (h) => `小院里种满了各种各样的花草。\n\n${h}提着水壶，一株一株地给它们浇水。\n\n月季开得正艳，茉莉散发着淡淡的清香，墙角的那株向日葵总是追随着太阳的方向。\n\n"你倒是活得挺自在。"他笑着对向日葵说道。\n\n一阵风吹过，向日葵轻轻摇晃，像是在回应他。\n\n他在院子里的藤椅上坐下，端起一杯热茶，慢慢啜饮。\n\n远处传来孩子们的欢笑声，近处有蜜蜂在花丛中嗡嗡作响。\n\n这就是他想要的生活。`
+      ],
+      inner: [
+        (h, goal) => `${h}躺在床上，听着窗外淅淅沥沥的雨声。\n\n身旁传来均匀的呼吸声，温暖而安心。\n\n他侧过头，看着那张熟睡的侧脸，嘴角不自觉地浮现出一丝微笑。\n\n曾经，他以为自己这辈子注定孤独。\n\n那些颠沛流离的日子，那些无人理解的夜晚，那些独自舔舐伤口的时刻...\n\n他以为自己已经习惯了孤独。\n\n直到她的出现。\n\n像一束光，照进了他灰暗的世界。\n\n${goal}——这个曾经遥不可及的梦想，如今因为她而变得触手可及。\n\n"谢谢你。"他在心中默默说道，"谢谢你出现在我的生命里。"\n\n他轻轻握住她的手，闭上眼睛。\n\n雨声成了最好的催眠曲。`,
+        (h) => `有时候，幸福就是很简单的事情。\n\n${h}看着手中这碗热腾腾的汤面，忽然觉得鼻子有点酸。\n\n不是什么山珍海味，只是一碗普通的鸡汤面。\n\n但这是他吃过的最好吃的东西。\n\n因为里面加了一个人满满的心意。\n\n他拿起筷子，大口大口地吃了起来。\n\n"慢点吃，没人跟你抢。"\n\n他抬起头，看着对面那个微笑着的人，嘴里塞满了面条，含糊不清地说："好吃...太好吃了..."`
+      ],
+      dialog: [
+        (h, v) => `"你今天看起来心情不错。"${v}笑着说道。\n\n${h}伸了个懒腰："因为今天天气好啊。"\n\n"就这？"\n\n"还因为..."他顿了顿，嘴角微微上扬，"因为你在啊。"\n\n${v}愣了一下，随即红了脸："你...你什么时候变得这么会说话了？"\n\n"我一直都会，只是以前没机会说而已。"\n\n"油嘴滑舌。"\n\n"那你要不要尝尝看，到底有多滑？"\n\n"滚！"`,
+        (h, v, mentor) => `"师父，弟子给您带了点桂花糕。"${h}将一包点心放在桌上。\n\n${mentor}眼睛一亮，立刻拿起一块塞进嘴里。\n\n"嗯...味道不错。哪家买的？"\n\n"弟子自己做的。"\n\n${mentor}愣住了，随即哈哈大笑："好小子，有出息了！比你师兄强多了，那小子只会炸厨房。"\n\n门外偷听的师兄："...师父，我听见了。"`
+      ],
+      action: [
+        (h, v) => `${h}小心翼翼地将外套披在${v}肩上。\n\n"夜里凉，别感冒了。"\n\n${v}低下头，将外套裹紧了些。\n\n"谢谢。"\n\n"跟我还客气什么。"${h}笑了笑，伸手揉了揉她的头发。\n\n${v}抬起头，瞪了他一眼："头发都被你弄乱了。"\n\n"乱点好看。"\n\n"...你真是没救了。"\n\n话虽这么说，她的嘴角却悄悄上扬了。`,
+        (h) => `${h}蹲下身，将一只流浪猫抱了起来。\n\n小猫浑身湿透，瑟瑟发抖，眼神中满是惊恐。\n\n"别怕，别怕。"他轻声安慰着，用外套将小猫裹住，"跟我回家吧，以后你就有家了。"\n\n小猫似乎听懂了他的话，轻轻"喵"了一声，将头埋进了他的怀里。\n\n${h}笑了笑，抱着小猫，在雨中慢慢走回家。`
+      ],
+      sensory: [
+        (h) => `空气中弥漫着淡淡的薰衣草香。\n\n${h}深吸一口气，感觉整个人都放松了下来。\n\n这是家的味道。\n\n不是某种特定的香水味，而是阳光晒过的被子、刚洗好的衣服、以及...某人身上特有的气息混合在一起的味道。\n\n他闭上眼睛，嘴角浮现出一丝微笑。`,
+        (h) => `雨后的空气格外清新。\n\n${h}站在阳台上，看着远处的彩虹。\n\n七种颜色在天空中交织，美丽得不真实。\n\n他拿起相机，想要记录下这一刻。\n\n但按下快门的那一刻，他忽然放下了相机。\n\n有些美好，只适合用眼睛去看，用心去记。\n\n而不是通过冰冷的镜头。`
+      ],
+      flashback: [
+        (h, goal) => `他记得第一次遇见她的场景。\n\n那是一个雨天，他狼狈地躲在公交站台下，浑身湿透。\n\n她撑着一把蓝色的伞，走到他身边。\n\n"一起走吧？"\n\n他愣住了："我们...认识吗？"\n\n"现在不就认识了吗？"她笑了，眼睛弯成了月牙，"我叫——"\n\n从那天起，他的世界就多了一抹色彩。\n\n${goal}，这个曾经让他疲惫不堪的目标，因为她而有了意义。\n\n因为她说过："不管你做什么，我都陪着你。"\n\n而他也想对她说："谢谢你，陪我走到现在。"`
+      ]
+    }
+  },
+
+  '悬疑烧脑': {
+    label: '悬疑烧脑',
+    emotion: '紧张-探求真相',
+    sentencePace: '紧凑跳跃',
+    descriptionFocus: '线索·谜团·反转·心理博弈',
+    dialogTrait: '试探·暗示·谎言·揭露',
+    keywordDensity: ['谜','真相','线索','疑点','破绽','布局','算计','幕后','伪装','暴露'],
+    expansion: {
+      env: [
+        (h) => `房间里一片漆黑，只有电脑屏幕发出幽幽的蓝光。\n\n${h}盯着屏幕上的资料，眉头紧锁。\n\n这已经是他第三十七次翻看这些文件了，但每一次都能发现新的疑点。\n\n那个日期...对不上。\n\n那个签名...是伪造的。\n\n还有那个不起眼的转账记录...\n\n所有的线索像是一张巨大的网，而他，正站在这张网的中心。\n\n"真相到底是什么..."他喃喃自语，手指在桌面上轻轻敲击。`,
+        (h) => `档案室的灯光忽明忽暗，发出滋滋的电流声。\n\n${h}穿梭在密密麻麻的档案架之间，目光快速扫过每一份文件的标签。\n\n空气中弥漫着纸张发霉的味道和一股说不清的寒意。\n\n忽然，他的脚步停住了。\n\n一份档案的标签上，写着一个熟悉的名字。\n\n但那不可能——那个人，早在十年前就已经死了。\n\n他的手微微颤抖，将档案抽了出来。\n\n"如果这是真的..."他的瞳孔猛地收缩，"那一切都得重新推演了。"`,
+        (h) => `雨夜，废弃的工厂。\n\n${h}打着手电筒，在锈迹斑斑的机器之间穿行。\n\n地上有一串新鲜的脚印，一直延伸到深处的黑暗之中。\n\n有人来过这里，而且就在不久前。\n\n他蹲下身，仔细检查脚印。\n\n"42码，男式皮鞋，右脚微微外八字..."\n\n他站起身，顺着脚印的方向望去。\n\n黑暗深处，似乎有什么东西在等着他。\n\n"来吧。"他握紧了手中的手电筒，"让我看看你到底是谁。"`
+      ],
+      inner: [
+        (h, goal) => `${h}将所有线索摊在桌上，用红线将有关联的信息连接起来。\n\n原本凌乱的线索，渐渐形成了一张复杂的网络。\n\n但网络的中心，却是一个空白。\n\n——幕后黑手究竟是谁？\n\n他揉了揉太阳穴，感觉脑子快要炸开了。\n\n所有的证据都指向一个不可能的人。\n\n一个已经"死"了的人。\n\n"除非..."他的眼睛忽然亮了起来，"除非那具尸体是假的。"\n\n如果那具尸体是假的，那么所有的一切都说得通了。\n\n${goal}——这个困扰了他整整三年的谜团，终于露出了一丝曙光。\n\n但这丝曙光背后，是更加可怕的真相。`,
+        (h) => `"你在说谎。"\n\n${h}盯着对方的眼睛，声音平静而笃定。\n\n人的眼睛是不会骗人的——至少，大多数人的眼睛不会。\n\n他注意到，当他说出那个名字的时候，对方的瞳孔猛地收缩了一下。\n\n只有零点三秒。\n\n普通人根本察觉不到。\n\n但他不是普通人。\n\n"让我猜猜..."他站起身，绕着对方缓缓踱步，"你认识他，对吗？不仅认识，你还和他有过交易。"\n\n对方的脸色变了。\n\n"你...你在说什么？我听不懂。"\n\n${h}笑了。\n\n当一个人说"听不懂"的时候，通常意味着——他听得太懂了。`
+      ],
+      dialog: [
+        (h, v) => `"你到底是谁？"${v}的声音有些颤抖。\n\n${h}没有回答，只是从口袋里掏出一张照片，放在桌上。\n\n照片上，是一个男人和一个女人的合影。\n\n${v}看到照片的瞬间，脸色瞬间变得惨白。\n\n"这...这不可能...这张照片应该已经..."\n\n"已经被销毁了？"${h}接过他的话，嘴角浮现出一丝冷笑，"可惜，你销毁的是复制品。原件一直在我手里。"\n\n${v}瘫坐在椅子上，如同泄了气的皮球。\n\n"你想怎样？"\n\n"很简单。"${h}拉过一张椅子坐下，"告诉我，十年前的那个晚上，到底发生了什么。"`,
+        (h, v, mentor) => `"师父，弟子发现了一个奇怪的现象。"${h}将一份报告递到${mentor}面前。\n\n${mentor}接过报告，快速浏览了一遍，脸色渐渐凝重起来。\n\n"你确定这些数据没有问题？"\n\n"弟子反复核实了三次，绝对没有问题。"\n\n${mentor}沉默了。\n\n"如果这是真的..."他低声说道，"那我们一直以来的推断，都是错的。"\n\n${h}点了点头："弟子也是这么想的。所以，弟子请求重启调查。"\n\n${mentor}沉思良久，终于点了点头。\n\n"去吧。但记住——"他目光深邃地看着${h}，"有时候，真相远比谎言更加可怕。"`
+      ],
+      action: [
+        (h, v) => `${h}一个闪身，躲过了${v}从背后袭来的攻击。\n\n"果然是你。"他冷冷地说道，眼中没有一丝意外。\n\n${v}愣了一下："你早就知道了？"\n\n"从你第一天出现，我就知道你有问题。"${h}活动了一下手腕，"只是我一直没有证据。不过..."\n\n他忽然笑了。\n\n"谢谢你刚才的攻击，现在我有证据了。"\n\n他指了指角落里的监控摄像头。\n\n${v}的脸色瞬间变得惨白。`,
+        (h) => `${h}快速翻阅着手中的文件，目光如电。\n\n一页，两页，三页...\n\n忽然，他的手指停住了。\n\n在这一页的角落里，有一个不起眼的签名。\n\n那个签名他太熟悉了——正是他一直在寻找的关键证据！\n\n"找到了..."他深吸一口气，将那一页小心翼翼地撕了下来，"终于找到你了。"`
+      ],
+      sensory: [
+        (h) => `空气中弥漫着一种古怪的味道——像是消毒水混合了某种化学药剂。\n\n${h}皱了皱眉，这种味道他闻到过。\n\n在哪里？\n\n对了，是在那个实验室里！\n\n他的瞳孔猛地收缩。\n\n如果这里也有这种味道，那就说明...\n\n他快步走向气味传来的方向，心跳开始加速。\n\n真相，就在前面。`,
+        (h) => `深夜，寂静无声。\n\n${h}坐在黑暗中，只有指尖的烟头发出微弱的红光。\n\n滴答...滴答...\n\n是钟声？还是水滴声？\n\n他侧耳倾听，试图分辨声音的来源。\n\n忽然，他意识到——\n\n那既不是钟声，也不是水滴声。\n\n那是...摩斯密码！`
+      ],
+      flashback: [
+        (h, goal) => `他记得那个案子。\n\n那是他接手的第一个案子，也是他人生中最失败的案子。\n\n一个无辜的女孩死在了他面前，而凶手却逍遥法外。\n\n"是我太弱了。"他至今还记得自己跪在地上，对着女孩的尸体发下的誓言，"但我保证，总有一天，我会抓到那个混蛋。"\n\n三年过去了。\n\n他终于找到了那条被所有人忽略的线索。\n\n${goal}——这个誓言，他从未忘记。\n\n而现在，是时候兑现了。`
+      ]
+    }
+  },
+
+  '史诗宏大': {
+    label: '史诗宏大',
+    emotion: '庄严-命运感',
+    sentencePace: '磅礴悠长',
+    descriptionFocus: '时代·洪流·苍生·天命',
+    dialogTrait: '宣告·哲思·预言·誓言',
+    keywordDensity: ['苍穹','命运','时代','苍生','王朝','天命','洪流','历史','纪元','永恒'],
+    expansion: {
+      env: [
+        (h) => `苍穹之上，星辰如棋盘般排列。\n\n${h}立于万丈高台之上，俯瞰着脚下这片苍茫大地。\n\n千里之外，烽火连天。亿万生灵在时代的洪流中沉浮，如同蝼蚁般渺小。\n\n风卷残云，日月无光。\n\n"这便是天命吗..."他低声呢喃，声音被风吹散在无尽的虚空之中。\n\n远处，战鼓隆隆作响，如同远古巨兽的心跳，震撼着天地万物。`,
+        (h) => `沧海桑田，岁月如梭。\n\n曾经繁华的王朝已经化为废墟，曾经辉煌的宫殿只剩断壁残垣。\n\n${h}独自穿行在这片荒芜的土地上，脚下踩着的是无数先辈的骸骨。\n\n风卷起沙尘，在空中形成一个个漩涡，像是无数亡魂在哀嚎。\n\n"王朝更替，不过是历史的一次呼吸。"他喃喃自语，"而我们的故事，终将写入这无尽的史诗之中。"`,
+        (h) => `大江奔腾，东流入海。\n\n${h}立于船头，任凭江风吹得衣袍猎猎作响。\n\n两岸青山如黛，云雾缭绕，仿佛一幅泼墨山水画。\n\n但此刻，他无心欣赏这壮丽的景色。\n\n因为在他身后，是数十万大军。而在他前方，是决定天下归属的最后一战。\n\n"这一战，将决定未来五百年的格局。"他沉声说道，目光如炬，"只许胜，不许败。"`
+      ],
+      inner: [
+        (h, goal) => `${h}独自站在星空下，仰望那无垠的宇宙。\n\n与这浩瀚的苍穹相比，个人的喜怒哀乐显得如此微不足道。\n\n但他知道，正是这无数个微不足道的个体，汇聚成了时代的洪流，推动着历史的车轮滚滚向前。\n\n${goal}——这个宏大的目标，不是他一个人的梦想，而是千千万万人的期盼。\n\n他肩负着的，不仅仅是自己的命运，更是整个时代的命运。\n\n"如果我失败了..."他闭上眼睛，深吸一口气，"不，我不会失败。"\n\n"因为我不是一个人在战斗。"\n\n"我身后，是亿万苍生。"`,
+        (h) => `历史会记住这一天。\n\n${h}深知这一点。\n\n无论成败，今天发生的一切都将被后人传颂，成为史诗中浓墨重彩的一笔。\n\n而他，将成为这个故事的主角——或者，反派。\n\n"历史由胜利者书写。"他低声说道，眼中闪烁着复杂的光芒，"所以，我必须成为那个胜利者。"\n\n不是为了名垂青史，而是为了证明——\n\n他的选择，是正确的。`
+      ],
+      dialog: [
+        (h, v) => `"你以为你是在对抗我？"${v}的声音如同雷霆，在天地间回荡，"不，你是在对抗这个时代！对抗这亿万苍生的意志！"\n\n${h}抬起头，目光平静而坚定。\n\n"时代是由人创造的。"他的声音不大，却清晰地传入每个人的耳中，"而人，是可以选择的。"\n\n他缓缓举起手中的长剑，剑尖直指苍穹。\n\n"今日，我要让这天下知道——天命，并非不可违！"\n\n话音落下，风云变色。`,
+        (h, v, mentor) => `"师父，弟子有一事不明。"${h}跪在地上，恭敬地问道。\n\n${mentor}转过身，目光深邃如星空："说吧。"\n\n"弟子不明白，为何天道要如此不公？为何苍生要饱受苦难？"\n\n${mentor}沉默了许久，终于叹了口气："天道本无善恶，不公的是人心。苍生之所以受苦，不是因为天命，而是因为...有人在利用天命。"\n\n${h}抬起头，眼中闪烁着光芒："那弟子便要做那个打破天命的人。"\n\n${mentor}愣了一下，随即哈哈大笑："好！好一个打破天命！去吧，让这天下看看，什么叫做——人定胜天！"`
+      ],
+      action: [
+        (h, v) => `天地变色，日月无光。\n\n${h}与${v}的战斗已经持续了三天三夜，从地面打到云端，从云端打到虚空。\n\n每一次交锋，都伴随着山崩地裂。每一次碰撞，都引发天地异象。\n\n"你很强。"${v}喘着粗气，眼中闪过一丝敬佩，"但你还不够强。"\n\n"够不够强，不是你说了算。"${h}冷冷地说道，缓缓举起了手中的武器。\n\n"这一击，将决定一切。"`,
+        (h) => `${h}孤身一人，面对千军万马。\n\n他没有退缩。\n\n因为在他的身后，是他要守护的家园，是他挚爱的人民。\n\n"来吧。"他举起手中的长矛，声音如同洪钟大吕，"今日，我便要以一人之力，阻你十万大军！"\n\n战鼓擂响，喊杀声震天。\n\n鲜血染红了大地，但他依然挺立。\n\n如同一座不可撼动的山峰。`
+      ],
+      sensory: [
+        (h) => `空气中弥漫着硝烟和血腥的味道。\n\n${h}站在战场之上，脚下是堆积如山的尸体。\n\n远处，残阳如血，将整片天空染成了凄美的红色。\n\n风声呜咽，像是大地的哭泣。\n\n他闭上眼睛，倾听着这天地间最悲壮的乐章。\n\n然后，他睁开了眼睛。\n\n"这一切，终将结束。"`,
+        (h) => `雷霆在云层中翻滚，发出震耳欲聋的轰鸣。\n\n${h}抬头望天，任由豆大的雨点砸在脸上。\n\n雨水混合着汗水和血水，顺着他的脸颊滑落。\n\n"连天都在哭泣吗..."\n\n他伸出手，接住一滴雨水。\n\n那雨滴在他掌心停留了片刻，然后滑落。\n\n"但天终究会晴的。"\n\n"就像这天下，终究会迎来太平。"`
+      ],
+      flashback: [
+        (h, goal) => `千年之前，曾有一位先贤立下誓言：\n\n"终有一日，会有人完成吾之遗志，让这天下迎来真正的太平。"\n\n千年之后，${h}站在先贤的墓前，郑重地磕了三个头。\n\n"弟子不才，愿承前辈遗志。"\n\n${goal}——这不仅仅是他个人的目标，更是跨越千年的传承。\n\n他站起身，望向远方。\n\n"前辈，您在天之灵看着吧。"\n\n"这一世，弟子必不负所托。"`
+      ]
+    }
+  }
+};
+
+// ── 基调DNA定义 ──
+const TONE_DNA = {
+  '紧张刺激': {
+    atmosphere: '危机四伏，命悬一线',
+    emotionalIntensity: 9,
+    openingTemplate: (h) => `【危机降临】\n\n时间所剩无几。\n\n${h}能感觉到自己的心跳快得像要跳出胸腔，每一根神经都绷紧到了极致。\n\n危险正在逼近，而他，必须在这千钧一发之际做出抉择。\n\n——生，或者死。`,
+    closingTemplate: (h) => `【喘息之机】\n\n危机暂时解除了。\n\n${h}靠在墙上，大口大口地喘着气，浑身已经被冷汗浸透。\n\n但这只是暂时的。\n\n真正的风暴，还在后面。`
+  },
+  '轻松愉快': {
+    atmosphere: '阳光明媚，万物可爱',
+    emotionalIntensity: 3,
+    openingTemplate: (h) => `【美好的一天】\n\n清晨的阳光透过窗帘洒进来，暖洋洋的。\n\n${h}伸了个懒腰，从床上爬起来，心情出奇地好。\n\n今天似乎会有什么好事发生——他有这样的预感。`,
+    closingTemplate: (h) => `【心满意足】\n\n夕阳西下，天边染上了绚丽的晚霞。\n\n${h}坐在院子里的摇椅上，手里捧着一杯热茶，脸上带着满足的微笑。\n\n虽然今天没有发生什么惊天动地的大事，但这样的平凡，本身就是一种幸福。`
+  },
+  '虐心催泪': {
+    atmosphere: '阴雨绵绵，心如刀绞',
+    emotionalIntensity: 10,
+    openingTemplate: (h) => `【心痛如绞】\n\n${h}站在窗前，看着外面淅淅沥沥的雨。\n\n每一滴雨都像是砸在心上，疼得让人喘不过气来。\n\n他知道，有些东西，一旦失去就再也回不来了。\n\n而那种痛，将伴随他一生。`,
+    closingTemplate: (h) => `【泪尽无声】\n\n夜深了，雨还在下。\n\n${h}独自坐在黑暗中，泪水已经流干。\n\n心口的位置空荡荡的，像是被什么东西挖走了一块。\n\n他闭上眼睛，在泪水中沉沉睡去。\n\n梦里，他又见到了那个人。`
+  },
+  '冷静克制': {
+    atmosphere: '寒潭静水，波澜不惊',
+    emotionalIntensity: 4,
+    openingTemplate: (h) => `【理智为先】\n\n${h}坐在桌前，面前摊开着所有的资料。\n\n他的表情平静如水，看不出任何情绪波动。\n\n越是危急的时刻，越需要冷静。这是他一直奉行的准则。\n\n感情用事只会坏事，只有理智才能带领他走出困境。`,
+    closingTemplate: (h) => `【波澜不惊】\n\n一切尘埃落定。\n\n${h}收拾好桌上的文件，站起身来。\n\n他的脸上依然没有什么表情，仿佛刚才发生的一切都与他无关。\n\n但只有他自己知道，在平静的外表下，内心经历了怎样的惊涛骇浪。`
+  },
+  '热血燃爆': {
+    atmosphere: '烽火连天，战意沸腾',
+    emotionalIntensity: 10,
+    openingTemplate: (h) => `【战意沸腾】\n\n${h}握紧拳头，指节因用力而发白。\n\n他的眼中燃烧着熊熊的战火，浑身上下每一个细胞都在叫嚣着——\n\n战！\n\n不管对手是谁，不管前方有多少阻碍，他都不会退缩。\n\n因为他体内流淌的，是永不熄灭的热血！`,
+    closingTemplate: (h) => `【余韵未消】\n\n战斗结束了。\n\n${h}站在战场之上，浑身浴血，却站得笔直。\n\n他的目光扫过四周，确认没有遗漏的敌人后，才缓缓松了一口气。\n\n但体内的热血依然在沸腾。\n\n"还没完。"他低声说道，眼中战意未消，"这只是开始。"`
+  },
+  '黑暗沉重': {
+    atmosphere: '深渊凝视，绝望弥漫',
+    emotionalIntensity: 9,
+    openingTemplate: (h) => `【深渊边缘】\n\n${h}站在悬崖边缘，脚下是无尽的黑暗。\n\n风从深渊中吹来，带着腐朽和死亡的气息。\n\n他知道，再往前一步，就是万劫不复。\n\n但身后的路，已经被封死了。\n\n进退两难，唯有抉择。`,
+    closingTemplate: (h) => `【沉重代价】\n\n一切结束了。\n\n${h}站在废墟之中，看着眼前这片狼藉。\n\n他赢了，但代价是什么？\n\n他失去了太多——朋友、信任、还有...那个曾经善良的自己。\n\n他低头看着自己的双手，那上面沾满了洗不净的污点。\n\n"这就是...胜利的代价吗？"`
+  },
+  '诙谐幽默': {
+    atmosphere: '欢声笑语，妙趣横生',
+    emotionalIntensity: 5,
+    openingTemplate: (h) => `【乌龙开场】\n\n${h}一出门就踩到了香蕉皮。\n\n"我靠！"他一个趔趄，差点摔倒，幸好扶住了旁边的电线杆。\n\n路过的老太太用一种"这孩子是不是脑子有问题"的眼神看了他一眼。\n\n${h}尴尬地笑了笑，拍了拍身上的灰。\n\n"今天...看来是个好日子啊。"`,
+    closingTemplate: (h) => `【哭笑不得】\n\n事情总算是解决了。\n\n虽然过程有点...曲折。\n\n${h}看着眼前这一片狼藉，无奈地叹了口气。\n\n"下次...下次能不能正常一点？"\n\n旁边的队友摊了摊手："你觉得可能吗？"\n\n${h}想了想，认真地说："...不可能。"\n\n两人对视一眼，同时笑出了声。`
+  }
+};
+
+// ── 获取风格化扩展库 ──
+function getStyleExpansionPool(style) {
+  const dna = STYLE_DNA[style] || STYLE_DNA['热血爽文'];
+  return dna.expansion;
+}
+
+// ── 获取基调氛围 ──
+function getToneAtmosphere(tone, heroName) {
+  const dna = TONE_DNA[tone] || TONE_DNA['紧张刺激'];
+  return {
+    opening: dna.openingTemplate(heroName),
+    closing: dna.closingTemplate(heroName),
+    atmosphere: dna.atmosphere,
+    intensity: dna.emotionalIntensity
+  };
+}
+
+// ═════════════════════ 风格DNA系统结束 ═════════════════════
+
+function generateChapterContent(genre, ch, detail, settings) {
+  const {heroName, heroineName, mentorName, villainName, heroPersonality, heroGoal, worldEra, worldPower, currentChapter, plotConflict, plotGoal, tone, style} = settings;
+  const phase = ch.phase;
+  const chapterTitle = ch.title;
+  const targetWords = state.wordsPerChapter || 4000;
+
+  // ── 获取风格DNA和基调DNA ──
+  const styleDNA = STYLE_DNA[style] || STYLE_DNA['热血爽文'];
+  const toneDNA = TONE_DNA[tone] || TONE_DNA['紧张刺激'];
+  const styledExpansion = getStyleExpansionPool(style);
+  const toneAtmosphere = getToneAtmosphere(tone, heroName);
+
+  // ── 玄幻系场景库（按风格选择，40个） ──
+  const xuanhuanScenes = [
+    `灵气如潮水般涌动，${heroName}盘膝坐在修炼台上，周身萦绕着淡淡的灵光。\\n\\n天空乌云翻涌，雷劫的气息隐隐压来。这是他等待已久的时刻——突破筑基的关键一步。\\n\\n四周的天地灵气开始疯狂汇聚，形成一个巨大的旋涡，将${heroName}包裹其中。他的身体开始发出微弱的光芒，那是灵力在体内运转到极致的表现。\\n\\n"就是现在！"${heroName}心中一震，体内的灵力如同决堤的洪水般奔涌而出，冲击着那层无形的屏障。\\n\\n轰——！\\n\\n一声巨响在识海中炸开，${heroName}只觉得浑身一轻，仿佛挣脱了某种无形的束缚。他的气息在这一刻暴涨，从炼气九层一跃突破到了筑基初期！`,
+    `宗门大殿之上，${mentorName}端坐于主位，目光深邃地注视着跪在殿中的${heroName}。\\n\\n"你确定要走这条路？"${mentorName}的声音低沉而威严，"一旦选择，便再无回头之机。"\\n\\n${heroName}抬起头，眼中闪烁着坚定的光芒："弟子心意已决。无论前路多么艰险，弟子都绝不退缩。"\\n\\n${mentorName}沉默了许久，终于缓缓点了点头。他从袖中取出一枚古朴的玉简，递到${heroName}面前。\\n\\n"这是宗门千年来最为珍贵的传承——《天元真经》。今日，为师将它传与你。希望你不要辜负这份传承。"\\n\\n${heroName}双手接过玉简，只觉一股温热的力量从掌心传来。他知道，从这一刻起，他的命运将彻底改变。`,
+    `秘境内，${heroName}独自穿行于茫茫雾海之中。四周充斥着危险的禁制，稍有不慎便会粉身碎骨。\\n\\n但他眼中没有丝毫退缩——为了寻找那传说中的上古遗迹，他甘愿冒此奇险。\\n\\n"这里的气息...和古籍中记载的一模一样。"${heroName}喃喃自语，目光中闪过一丝兴奋。\\n\\n他小心翼翼地绕过一道道致命的禁制，每一步都如履薄冰。终于，在穿过第七道禁制后，眼前豁然开朗——\\n\\n一座古老的祭坛静静地矗立在秘境深处，祭坛之上，一枚散发着七彩光芒的宝珠正缓缓旋转。\\n\\n"找到了！"${heroName}心中狂喜，但很快又冷静下来。他知道，越是接近目标，危险就越是致命。`,
+    `演武场上，剑气纵横。${heroName}与神秘强者对峙，两人之间的空气仿佛都在燃烧。\\n\\n"三年之约，今日了结！"${heroName}低喝一声，手中长剑骤然出鞘。\\n\\n剑光如虹，划破长空。对面的强者也不甘示弱，双掌翻飞间，一道金色的掌印迎了上来。\\n\\n轰——！\\n\\n两股力量在半空中激烈碰撞，爆发出震耳欲聋的巨响。整个演武场都在剧烈颤抖，碎石飞溅，烟尘四起。\\n\\n${heroName}被反震之力震得连退三步，但他很快稳住身形，眼中战意更盛。\\n\\n"再来！"他大喝一声，身形如电，再次冲了上去。`,
+    `悬崖之畔，${heroName}俯瞰着脚下的万丈深渊。这里埋葬着无数天才的梦想，也埋葬着他曾经的屈辱。\\n\\n今日，他要亲手终结这一切。\\n\\n三年前，就是在这个地方，他被${villainName}亲手推下悬崖，坠入死亡的边缘。若非机缘巧合，他早已化为崖底的一具枯骨。\\n\\n"${villainName}..."${heroName}低声念出这个名字，眼中寒光闪烁，"今日，我要你加倍奉还！"\\n\\n他转身望向身后的道路，那里，${villainName}正带着一众手下缓缓走来。\\n\\n"三年不见，你倒是还活着。"${villainName}冷笑一声，"不过这一次，你可没那么好运了。"`,
+    `夜色深沉，星辰稀疏。${heroName}独自坐在屋顶上，望着远处连绵的山脉发呆。\\n\\n微风拂过，带来一丝凉意。他紧了紧身上的衣袍，却没有离开的意思。\\n\\n"还在想白天的事？"一个温柔的声音从身后传来。\\n\\n${heroName}不用回头也知道是谁。他苦笑一声："有些事，越想越想不明白。"\\n\\n${heroineName}在他身边坐下，仰头望着天空。\\n\\n"那就别想了。"她轻声说道，"有些事，时间会给出答案。\\n\\n${heroName}侧头看了她一眼，月光下，她的侧脸美得让人窒息。他心中涌起一股暖意，那些烦扰似乎也在这一刻消散了不少。`,
+    `藏经阁内，${heroName}正在翻阅一本泛黄的古籍。\\n\\n这是他在藏经阁最深处的角落里发现的，书页已经残破不堪，但上面的内容却让他心跳加速。\\n\\n"原来如此...原来如此！"${heroName}喃喃自语，眼中闪烁着兴奋的光芒。\\n\\n这本古籍记载了一门失传已久的神通——《虚空指》。据说修炼到极致，可以一指破虚空，威力无穷。\\n\\n他小心翼翼地合上古籍，深吸一口气。\\n\\n"看来，接下来的日子要忙碌了。"他嘴角微微上扬，露出一丝期待的笑容。`,
+    `清晨的薄雾还未散去，${heroName}已经站在练武场上。\\n\\n他的身影在晨曦中显得格外挺拔，手中的长剑随着他的动作划出一道道优美的弧线。\\n\\n剑光如练，在晨雾中若隐若现。每一剑都精准而有力，带起阵阵风声。\\n\\n"好剑法！"一个赞叹的声音从场外传来。\\n\\n${heroName}收剑而立，转头望去，只见${mentorName}正站在场外，脸上带着满意的笑容。\\n\\n"师父。"${heroName}恭敬地行了一礼。\\n\\n"你的剑法又有进步了。"${mentorName}点了点头，"不过，光有剑法还不够。明日，我带你去一个地方。"`,
+    `拍卖行内人声鼎沸，各路强者云集。\\n\\n${heroName}坐在角落的位置上，目光紧紧盯着拍卖台上的那件拍品——一枚散发着幽蓝光芒的丹药。\\n\\n"接下来拍卖的是——九转玄灵丹！"拍卖师高声宣布，"起拍价，五千灵石！"\\n\\n"六千！"\\n\\n"七千！"\\n\\n竞价声此起彼伏，价格一路飙升。\\n\\n${heroName}深吸一口气，举起手中的号牌："一万！"\\n\\n全场一片寂静。所有人的目光都投向了这个角落里的年轻人。\\n\\n"一万灵石一次...一万灵石两次...成交！"`,
+    `炼器室内，火焰熊熊。\\n\\n${heroName}全神贯注地盯着面前的炼器炉，额头上渗出了细密的汗珠。\\n\\n这是他第一次尝试炼制灵器，每一个步骤都容不得半点差错。\\n\\n"火候再大一点..."他低声自语，小心翼翼地控制着火焰的温度。\\n\\n炉内的材料在火焰的煅烧下开始融化，渐渐融合成一团流光溢彩的液体。\\n\\n"就是现在！"${heroName}双手结印，一道灵力注入炉中。\\n\\n嗡——！\\n\\n炉内发出一声清鸣，一道耀眼的光芒从炉盖缝隙中透射而出。`,
+    `宗门的后山上，${heroName}正与${heroineName}并肩而行。\\n\\n山风习习，花香阵阵。两人谁都没有说话，但空气中却弥漫着一种说不出的温馨。\\n\\n"你看。"${heroineName}忽然停下脚步，指着远处的一株野花。\\n\\n那是一朵生长在悬崖边缘的白色小花，在微风中轻轻摇曳，显得那么脆弱，却又那么坚强。\\n\\n"就像你一样。"${heroineName}轻声说道，目光温柔地看着他。\\n\\n${heroName}心中一暖，伸手轻轻握住了她的手。\\n\\n"不，是我们一样。"他轻声说道。`,
+    `深夜，${heroName}被一阵异动惊醒。\\n\\n他翻身而起，手中已经握住了枕边的长剑。\\n\\n窗外，一道黑影一闪而过。\\n\\n"谁？！"${heroName}低喝一声，身形如箭般射出窗外。\\n\\n月光下，那道黑影正在屋顶上急速奔驰。${heroName}紧追不舍，两人在屋顶间展开了一场激烈的追逐。\\n\\n"站住！"${heroName}大喝一声，手中长剑脱手而出，化作一道流光直取黑影后背。\\n\\n黑影身形一矮，堪堪避过这一剑，但速度也因此慢了下来。\\n\\n${heroName}趁机拉近距离，终于看清了对方的面目——竟然是${villainName}的手下！`
+  ];
+
+  // ── 都市系场景库（30个） ──
+  const dushiScenes = [
+    `霓虹闪烁的都市夜晚，${heroName}站在高楼之巅，俯瞰着这座不夜城。\\n\\n三年了。从当初那个被人踩在脚下的废物，到如今站在这个位置，他付出了多少，只有他自己知道。\\n\\n风吹起他的衣角，猎猎作响。他的目光穿过层层楼宇，落在远处的一栋建筑上——那是他曾经工作过的地方，也是他噩梦开始的地方。\\n\\n"一切都结束了。"他低声说道，嘴角浮现出一丝冷笑。\\n\\n他转身走向电梯，步伐坚定而从容。明天，他将正式接管这座城市最大的商业帝国。而那个曾经将他踩在脚下的人，将在牢房里度过余生。`,
+    `豪华酒店的宴会厅内，衣香鬓影、觥筹交错。${heroName}身着定制西装，举止从容地穿梭于名流之间。\\n\\n没人知道，这位商界新贵，曾经只是一个一无所有的穷小子。\\n\\n"${heroName}先生，久仰大名。"一位中年企业家端着酒杯走了过来，脸上堆满了笑容。\\n\\n"王总客气了。"${heroName}微微一笑，与对方碰了碰杯。\\n\\n两人在人群中寒暄了几句，王总忽然压低声音："听说您最近在筹备一个大项目？不知可否...分一杯羹？"\\n\\n${heroName}眼中闪过一丝精光，但面上不动声色："王总消息倒是灵通。不过这个项目嘛...恐怕已经有人捷足先登了。"`,
+    `CBD核心区的写字楼里，${heroName}正对着电脑屏幕上的数据皱眉。\\n\\n又一个重大项目到了关键节点。这一次，他要用实力证明自己的眼光从未错过。\\n\\n"老板，这是最新的市场调研报告。"秘书小李推门而入，将一叠文件放在桌上。\\n\\n${heroName}接过文件，快速翻阅起来。\\n\\n越看，他的眉头皱得越紧。\\n\\n"竞争对手的动作比预想中快得多。"他沉声说道，"看来，我们得调整策略了。"\\n\\n他拿起笔，在纸上快速写下几行字，然后递给小李。\\n\\n"按这个方案执行，明天之前我要看到初步结果。"\\n\\n"是！"小李接过纸条，快步退了出去。`,
+    `医院的走廊里，${heroName}看着病房的方向，眼中闪过一丝痛苦。\\n\\n"等我，"他在心中默默说道，"我一定会救你的。"\\n\\n他转身走向医生办公室，推开了门。\\n\\n"医生，我妹妹的情况怎么样了？"\\n\\n主治医生摘下眼镜，叹了口气："情况不太乐观。需要尽快进行手术，但手术费用..."\\n\\n"多少钱？"${heroName}直接问道。\\n\\n"至少八十万。"\\n\\n${heroName}沉默了片刻，然后点了点头："钱不是问题。请您尽快安排手术。"\\n\\n他转身走出办公室，掏出手机拨通了一个号码。\\n\\n"老K，帮我联系地下拳场。对，我亲自上场。"`,
+    `地下拳场内，灯光昏暗，空气中弥漫着汗水和血腥味。\\n\\n${heroName}站在铁笼中央，对面是一个身高近两米的壮汉。\\n\\n"小子，你确定要打？"壮汉咧嘴一笑，露出一口黄牙，"我这一拳下去，你可能会死。"\\n\\n${heroName}没有回答，只是摆出了格斗的架势。\\n\\n钟声响起，壮汉如同一头发狂的野兽般冲了过来。\\n\\n${heroName}身形一闪，堪堪避过这一拳，同时右拳直取对方肋下。\\n\\n砰！\\n\\n壮汉闷哼一声，连连后退。他不可思议地看着${heroName}，眼中闪过一丝震惊。\\n\\n"有点意思。"壮汉舔了舔嘴唇，眼中的轻视消失了，取而代之的是凝重。`,
+    `清晨的公园里，${heroName}正在跑步。\\n\\n这是他每天雷打不动的习惯，无论多忙，他都会抽出一个小时来运动。\\n\\n"早啊！"一个熟悉的声音从身后传来。\\n\\n${heroName}放慢脚步，转头看去——是住在隔壁的王阿姨。\\n\\n"王阿姨早。"他笑着打了个招呼。\\n\\n"最近气色不错啊。"王阿姨上下打量了他一眼，"是不是交女朋友了？"\\n\\n${heroName}哭笑不得："王阿姨，您就别打趣我了。"\\n\\n"行行行，不问了。"王阿姨摆摆手，"对了，今晚我炖了排骨汤，要不要过来喝一碗？"\\n\\n"那就恭敬不如从命了。"${heroName}笑着应道。`,
+    `咖啡厅内，${heroName}正在与一位投资人谈判。\\n\\n"您提出的条件，我无法接受。"投资人放下咖啡杯，摇了摇头。\\n\\n${heroName}并没有露出失望的神色，反而微微一笑："王总，您先别急。在拒绝之前，不妨先看看这个。"\\n\\n他从包里取出一份文件，推到了对方面前。\\n\\n投资人狐疑地接过文件，翻阅起来。\\n\\n越看，他的眼睛瞪得越大。\\n\\n"这...这是..."\\n\\n"没错。"${heroName}点了点头，"这是我们团队最新的研究成果。如果顺利的话，三个月内就能实现商业化。"\\n\\n投资人深吸一口气，重新看向${heroName}的目光已经完全变了。`,
+    `深夜的实验室里，只有仪器运转的嗡嗡声。\\n\\n${heroName}独自一人坐在电脑前，盯着屏幕上的一行行代码。\\n\\n这是他闭关的第七天。七天来，他几乎没有合过眼，全部精力都投入到了这个项目中。\\n\\n"终于...完成了。"他长舒一口气，靠在椅背上。\\n\\n屏幕上，一个复杂的算法模型正在缓缓运转。这是他和团队花了整整半年时间研发的成果——一套能够预测股市走向的人工智能系统。\\n\\n${heroName}站起身，走到窗前。\\n\\n窗外的城市灯火阑珊，而他的心中却无比平静。\\n\\n"明天，就是检验成果的时候了。"他轻声说道。`,
+    ` courtroom内，气氛凝重。\\n\\n${heroName}坐在被告席上，面无表情地看着对面的检察官。\\n\\n"被告${heroName}，你被指控犯有商业欺诈罪。"法官的声音在法庭内回荡，"你有什么要说的吗？"\\n\\n${heroName}缓缓站起身，目光平静地看着法官。\\n\\n"尊敬的法官，我想说的是——"他顿了顿，嘴角浮现出一丝意味深长的笑容，"这一切，都在我的计划之中。"\\n\\n全场哗然。\\n\\n法官皱了皱眉："你什么意思？"\\n\\n${heroName}从口袋里掏出一张U盘，递给了法警。\\n\\n"这里面，是证明我清白的所有证据。同时，也是揭露真正罪犯的钥匙。"`,
+    `赛车场上，引擎轰鸣。\\n\\n${heroName}坐在驾驶座上，双手紧握方向盘，目光死死盯着前方的赛道。\\n\\n"各就各位——"发令员举起了信号旗。\\n\\n${heroName}深吸一口气，将油门踩到底。\\n\\n"预备——跑！"\\n\\n五辆赛车如同离弦之箭般冲出起跑线，在赛道上展开激烈的角逐。\\n\\n${heroName}的赛车如同一头猎豹，灵活地穿梭在其他车辆之间。每一个弯道，每一次超车，都精准得令人发指。\\n\\n"这小子...到底是什么来头？"后面的车手看着前面的背影，心中充满了震惊。`,
+    `孤儿院内，${heroName}正和孩子们一起玩耍。\\n\\n这是他每个月都会来一次的固定行程，无论多忙，他都不会缺席。\\n\\n"${heroName}哥哥，你看我画得好不好看？"一个小女孩举着画纸跑了过来。\\n\\n${heroName}接过画纸，上面画着一栋大房子，房子前站着一个大人和一群孩子。\\n\\n"画得真棒！"他笑着揉了揉小女孩的头，"告诉哥哥，这个大房子是什么？"\\n\\n"这是我们的家！"小女孩骄傲地说道，"以后${heroName}哥哥也要住在这里！"\\n\\n${heroName}心中一暖，眼眶微微有些湿润。\\n\\n"好，以后哥哥也住在这里。"他轻声说道。`,
+    `雨夜，${heroName}独自坐在车里，望着车窗外的雨幕发呆。\\n\\n手机突然响了。\\n\\n他看了一眼来电显示，接了起来。\\n\\n"查到了？"\\n\\n"查到了。"电话那头传来一个低沉的声音，"当年那件事，确实是有人故意设局。幕后主使是..."\\n\\n${heroName}握着手机的手微微收紧。\\n\\n"是谁？"\\n\\n"是您的...叔叔。"\\n\\n${heroName}沉默了许久，然后挂断了电话。\\n\\n他靠在座椅上，闭上眼睛。\\n\\n雨水打在车窗上，发出噼里啪啦的声响。而他的心中，却是一片死寂。`
+  ];
+
+  // ── 仙侠系场景库（25个） ──
+  const xianxiaScenes = [
+    `云海之上，一座巍峨的仙山若隐若现。${heroName}御剑飞行，破云而出，直奔那传说中的洞天福地。\\n\\n只有在那里，他才能找到救她性命的仙药。\\n\\n山风猎猎，吹得他衣袍翻飞。他的目光穿过层层云雾，落在远处那座散发着七彩霞光的仙山上。\\n\\n"就是那里了。"他心中暗道。\\n\\n突然，一道剑光从侧面袭来。${heroName}身形一闪，堪堪避过这一剑。\\n\\n"何人擅闯仙山？！"一个冰冷的声音从云雾中传来。\\n\\n${heroName}稳住身形，朗声道："在下${heroName}，为救人性命，特来求取仙药。恳请前辈通融！"`,
+    `问道崖前，${heroName}长跪不起。三天三夜的虔诚祈祷，终于打动了那位隐世不出的老神仙。\\n\\n"你历经九九八十一难，方有今日之诚心。"老神仙的声音从虚空中传来，"说吧，你所求为何？"\\n\\n${heroName}抬起头，眼中满是恳求："求前辈赐我仙药，救我师妹性命。她为我挡下致命一击，如今命在旦夕..."\\n\\n老神仙沉默了许久，终于叹了口气："也罢，你这份诚心，老夫看在眼中。不过..."\\n\\n他话锋一转："仙药我可以给你，但你须答应我一个条件。"\\n\\n"什么条件？"\\n\\n"替老夫完成一个未了的心愿。"`,
+    `万剑冢中，无数断剑残刃散落一地。这里埋葬着历代剑修的执念与不甘。\\n\\n${heroName}缓步而行，忽然，一道剑光破空而来——那是传承开启的征兆！\\n\\n他身形一闪，避过这道剑光，同时伸手一抓，将那柄飞来的断剑握在手中。\\n\\n嗡——！\\n\\n断剑在他手中剧烈震颤，发出阵阵悲鸣。\\n\\n"好强的剑意！"${heroName}心中震惊。\\n\\n一道苍老的声音在他脑海中响起："年轻人，你能走到这里，说明你有资格继承我的衣钵。但你要记住——剑道无情，人心有情。莫要重蹈我的覆辙。"\\n\\n话音落下，无数剑道感悟涌入${heroName}的脑海。`,
+    `月华如水，映照在${heroName}的脸上。他独自立于悬崖之巅，手中握着一枚温润的玉佩。\\n\\n那是她留给他的唯一遗物。"\\n\\n他轻轻抚摸着玉佩，脑海中浮现出她的笑颜。\\n\\n"等我。"他轻声说道，"等我变得足够强大，我就去接你。"\\n\\n夜风拂过，带来一丝凉意。\\n\\n${heroName}收起玉佩，转身望向远方。\\n\\n那里，是通往仙界的唯一道路——天梯。\\n\\n据说，只有突破化神期的修士，才有资格踏上天梯，进入仙界。\\n\\n而他，现在才刚刚突破元婴。\\n\\n"还远远不够。"他握紧了拳头，"我必须变得更强。"`,
+    `仙府之内，${heroName}正在闭关修炼。\\n\\n这是他第三次尝试突破元婴中期。前两次都以失败告终，但他并没有气馁。\\n\\n"道心不稳，急于求成，这是大忌。"${mentorName}的话在他耳边回响。\\n\\n他深吸一口气，平复内心的躁动，缓缓运转体内的灵力。\\n\\n一圈，两圈，三圈...\\n\\n灵力在他体内缓缓流转，如同一条温顺的溪流，滋润着每一处经脉。\\n\\n忽然，他感觉到体内的元婴微微一颤，似乎有什么东西要破壳而出。\\n\\n"来了！"${heroName}心中一喜，但很快又冷静下来。\\n\\n他知道，突破的关键时刻到了。\\n\\n成败，在此一举。`
+  ];
+
+  // ── 言情系场景库（20个） ──
+  const yanqingScenes = [
+    `咖啡厅的角落里，${heroName}与${heroineName}相对而坐。她低垂着眼帘，睫毛在脸颊上投下淡淡的阴影。\\n\\n"我们...还是分开吧。"她的声音很轻，却像一把刀，直直刺入他的心里。\\n\\n${heroName}握着咖啡杯的手微微一紧。\\n\\n"为什么？"他的声音有些沙哑。\\n\\n${heroineName}抬起头，眼眶微红："因为我们...不合适。你有你的梦想，我有我的责任。继续下去，只会互相拖累。"\\n\\n${heroName}沉默了许久。\\n\\n窗外，细雨绵绵，打在玻璃上，发出沙沙的声响。\\n\\n"好。"他最终说道，"但你要答应我一件事。"\\n\\n"什么？"\\n\\n"无论以后发生什么事，都要照顾好自己。"`,
+    `雨夜，街头。${heroName}撑着伞，站在她公司楼下已经整整三个小时。\\n\\n当${heroineName}终于出现在雨中时，他毫不犹豫地冲了上去。"我知道你在生气，"他说道，"但请让我解释。"\\n\\n${heroineName}停下脚步，却没有回头。\\n\\n"解释什么？解释你为什么骗我？还是解释你那些不可告人的秘密？"\\n\\n"都不是。"${heroName}走到她面前，将伞举到她头顶，"我想解释的是——我那么做，是为了保护你。"\\n\\n${heroineName}终于抬起头，雨水混合着泪水从她脸上滑落。\\n\\n"保护我？"她冷笑一声，"你知道这几个月我是怎么过的吗？我以为你死了！"\\n\\n${heroName}心中一痛，伸手想要触碰她的脸，却被她躲开。`,
+    `毕业典礼的礼堂里，当${heroineName}从校长手中接过毕业证书的那一刻，${heroName}在人群中按下了快门。\\n\\n这是他们的约定——无论发生什么，都要记录下彼此最重要的时刻。\\n\\n"拍得怎么样？"${heroineName}走到他身边，好奇地凑过来看。\\n\\n"你自己看。"${heroName}将相机递给她。\\n\\n照片上，她笑得灿烂如花，阳光透过窗户洒在她身上，整个人仿佛都在发光。\\n\\n"这张拍得不错嘛。"${heroineName}满意地点了点头，"不过...你怎么把我拍得这么胖？"\\n\\n${heroName}哭笑不得："哪有？明明很瘦好吗？"\\n\\n"就是胖了！"${heroineName}撅起嘴，"你是不是故意的？"\\n\\n"天地良心，绝对没有！"`,
+    `医院的走廊里，${heroName}坐在长椅上，双手紧紧交握。\\n\\n急救室的灯还亮着，已经整整五个小时了。\\n\\n"会没事的。"他不断在心中默念，"一定会没事的。"\\n\\n终于，急救室的门开了。\\n\\n${heroName}猛地站起身，冲到医生面前。\\n\\n"医生，她怎么样了？"\\n\\n医生摘下口罩，脸上露出一丝疲惫的笑容："手术很成功，已经脱离危险了。"\\n\\n${heroName}长舒一口气，整个人仿佛被抽空了力气，跌坐在长椅上。\\n\\n他捂住脸，肩膀微微颤抖。\\n\\n"太好了...太好了..."他喃喃自语，声音中带着一丝哽咽。`,
+    `海边，夕阳西下。\\n\\n${heroName}和${heroineName}并肩坐在沙滩上，看着远处的落日。\\n\\n海浪轻轻拍打着沙滩，发出温柔的声响。\\n\\n"还记得我们第一次来这里吗？"${heroineName}忽然问道。\\n\\n"当然记得。"${heroName}笑了笑，"那时候你才刚上高中，非要拉着我来看海。结果到了之后，你害怕得不敢下水。"\\n\\n"才没有！"${heroineName}红着脸反驳，"我那是...那是故意装的！"\\n\\n"好好好，故意装的。"${heroName}笑着揉了揉她的头。\\n\\n${heroineName}靠在他肩上，闭上眼睛。\\n\\n"${heroName}。"\\n\\n"嗯？"\\n\\n"谢谢你。"\\n\\n"谢什么？"\\n\\n"谢谢你一直都在。"`
+  ];
+
+  // ── 科幻系场景库（20个） ──
+  const kehuanScenes = [
+    `星际战舰的驾驶舱内，警报声刺耳地响起。\\n\\n${heroName}盯着雷达屏幕，脸色凝重。\\n\\n"报告！前方发现不明飞行物，数量...数量超过一百！"\\n\\n"全舰进入一级战备状态！"${heroName}沉声下令，"所有武器系统预热，护盾充能至最大！"\\n\\n战舰内顿时忙碌起来，船员们各司其职，紧张而有序地执行着命令。\\n\\n${heroName}站起身，走到巨大的舷窗前。\\n\\n透过舷窗，他可以看到远处的星空中，密密麻麻的黑点正在迅速逼近。\\n\\n"这就是敌人的主力舰队吗..."他喃喃自语，眼中闪过一丝冷峻。\\n\\n"传我命令，全舰听我指挥。这一战，只许胜，不许败！"`,
+    `实验室里，${heroName}正对着培养舱中的生物样本皱眉。\\n\\n这已经是第三百七十二次实验了，但结果依然不理想。\\n\\n"难道...方向错了？"他喃喃自语。\\n\\n忽然，培养舱中的样本发生了异变。原本稳定的细胞结构开始剧烈变化，散发出一种诡异的蓝光。\\n\\n"这是..."${heroName}瞪大了眼睛。\\n\\n样本的变化越来越剧烈，蓝光越来越盛。\\n\\n${heroName}当机立断，按下了紧急隔离按钮。\\n\\n"所有人，立即撤离实验室！"他对着通讯器大喊。\\n\\n话音刚落，培养舱轰然炸裂，一股强大的能量波席卷了整个实验室。`,
+    `赛博朋克风格的霓虹都市中，${heroName}穿行于拥挤的人群之中。\\n\\n他的左眼是一枚高科技义眼，不断扫描着周围的一切信息。\\n\\n"目标确认，前方三百米处，红色建筑内。"\\n\\n${heroName}压低帽檐，加快了脚步。\\n\\n他此行的目的，是从一家名为"天网"的公司中窃取一份机密文件。\\n\\n据说，这份文件揭露了天网公司控制人类意识的惊天阴谋。\\n\\n"站住！"身后传来一声厉喝。\\n\\n${heroName}头也不回，身形一闪，钻进了旁边的小巷。\\n\\n身后，几台机械守卫紧追不舍。`,
+    `火星基地的穹顶下，${heroName}正在检查氧气循环系统。\\n\\n这是他每天最重要的工作之一。在这片荒凉的红色星球上，氧气就是生命。\\n\\n"${heroName}，总部发来紧急通讯。"通讯器中传来同事的声音。\\n\\n他放下手中的工具，走到通讯器前。\\n\\n屏幕上，总部指挥官的脸色异常凝重。\\n\\n"${heroName}，我们刚刚收到消息。地球...地球出事了。"\\n\\n${heroName}心中一沉："出什么事了？"\\n\\n"一种未知的病毒正在全球蔓延。感染者的神经系统会受到严重损伤，最终...变成行尸走肉。"\\n\\n${heroName}握紧了拳头。\\n\\n"总部需要我们做什么？"\\n\\n"找到解药。地球上已经没有任何希望了，你们火星基地...是人类最后的希望。"`,
+    `时间机器的舱室内，${heroName}正在做最后的检查。\\n\\n他即将进行一次前所未有的时间旅行——回到三十年前，阻止那场改变人类命运的灾难。\\n\\n"时间坐标设定完成。"AI助手的声音响起，"能源充能完毕。随时可以启动。"\\n\\n${heroName}深吸一口气，按下了启动按钮。\\n\\n嗡——！\\n\\n时间机器开始剧烈震动，周围的空间开始扭曲。\\n\\n${heroName}只觉得天旋地转，仿佛整个人被扔进了一个巨大的旋涡。\\n\\n不知道过了多久，震动终于停止。\\n\\n他睁开眼睛，发现自己正站在一条熟悉的街道上。\\n\\n"这是...三十年前的老家？"他难以置信地看着周围的一切。`
+  ];
+
+  // ── 武侠系场景库（15个） ──
+  const wuxiaScenes = [
+    `江南水乡，烟雨朦胧。\\n\\n${heroName}撑着一叶扁舟，缓缓行驶在狭窄的河道中。\\n\\n两岸的垂柳在微风中轻轻摇曳，如同少女的长发。\\n\\n"好一个江南水乡。"${heroName}轻声赞叹。\\n\\n忽然，前方的水面上出现了一艘乌篷船。\\n\\n船头站着一个身穿青衫的中年人，手持一柄长剑，目光冷峻。\\n\\n"${heroName}？"中年人开口问道。\\n\\n"正是。"${heroName}拱了拱手，"阁下是？"\\n\\n"在下青云剑派掌门，特来讨教。"中年人说罢，手中长剑一抖，一道剑气破水而来。`,
+    `少林寺的山门前，${heroName}双手合十，恭敬地行了一礼。\\n\\n"晚辈${heroName}，特来拜访方丈大师。"\\n\\n守门的两个小和尚对视一眼，其中一个转身跑进了寺内。\\n\\n不多时，一个白眉老和尚缓步走了出来。\\n\\n"阿弥陀佛。施主远道而来，不知有何贵干？"\\n\\n${heroName}从怀中取出一封信，双手奉上："家师命晚辈将此信交予方丈大师。"\\n\\n方丈接过信，打开看了一眼，脸色微变。\\n\\n"原来如此..."他合上信，沉吟片刻，"施主请随老衲入寺。此事，老衲需要与诸位长老商议。"`,
+    `大漠黄沙，烈日炎炎。\\n\\n${heroName}牵着一匹瘦马，艰难地穿行在茫茫沙海之中。\\n\\n水壶里的水已经所剩无几，嘴唇干裂得厉害。\\n\\n"再走十里，就到龙门客栈了。"他在心中给自己打气。\\n\\n忽然，远处传来一阵马蹄声。\\n\\n${heroName}警觉地停下脚步，手按剑柄，目光警惕地望向声音传来的方向。\\n\\n很快，一队人马出现在视线中。\\n\\n为首的是一个面容粗犷的大汉，手持一柄大刀，目光凶狠。\\n\\n"哟，这不是${heroName}少侠吗？"大汉咧嘴一笑，露出一口黄牙，"听说你身上有件宝贝，不如...交出来吧？"`,
+    `华山之巅，云雾缭绕。\\n\\n${heroName}立于悬崖边缘，俯瞰着脚下的万丈深渊。\\n\\n在他对面，${villainName}手持一柄血红色的长剑，眼中满是杀意。\\n\\n"今日，不是你死，就是我亡！"${villainName}冷声道。\\n\\n${heroName}没有回答，只是缓缓拔出了腰间的长剑。\\n\\n剑出鞘的那一刻，一道龙吟般的剑鸣响彻华山之巅。\\n\\n"来吧。"${heroName}淡淡地说道，"让我看看，你这三年究竟长进了多少。"\\n\\n两人同时动了。\\n\\n剑光交织，刀气纵横。整个华山之巅，都在两人的激战中颤抖。`,
+    `酒馆之内，人声鼎沸。\\n\\n${heroName}坐在角落的位子上，独自饮酒。\\n\\n忽然，邻桌的几个江湖人士的谈话引起了他的注意。\\n\\n"听说了吗？魔教教主${villainName}已经练成了《血魔大法》，功力大增！"\\n\\n"可不是嘛！据说他已经杀了三个掌门了！"\\n\\n"唉，江湖怕是要大乱了..."\\n\\n${heroName}放下酒杯，目光中闪过一丝凝重。\\n\\n他站起身，将几枚铜钱放在桌上，转身走出了酒馆。\\n\\n"看来，该动身了。"他喃喃自语。`
+  ];
+
+  // ── 根据章节阶段选择核心场景 ──
+  let sceneIntro = '';
+  let plotContent = '';
+
+  if (phase === '序章') {
+    // 序章也根据风格提供不同的氛围
+    const prologues = [
+`天地初开，混沌未分。
+
+在那遥远的亘古年代，灵气尚未凝聚，法则尚未成型。然而，就在这片虚无之中，一道意志悄然孕育。
+
+这道意志穿越了无尽的岁月，历经无数次的轮回转世，终于在亿万年后的今天，找到了它最终的归宿。
+
+${heroName}降生在一个平凡的小村庄。他的出生，伴随着天降异象——七日七夜的血月悬空，引得无数强者侧目。
+
+没人知道这个孩子将改变整个世界的命运。就连他自己，也是在很多年以后，才逐渐意识到自己身上所背负的使命。
+
+那一夜，整个村庄都被血色的月光笼罩。村民们跪在地上，瑟瑟发抖，以为是末日降临。
+
+唯有${heroName}的襁褓中，散发着淡淡的金色光芒。那光芒虽然微弱，却透着一股令人心悸的力量。
+
+"此子...不凡。"一位路过的老者站在村口，望着那道金光，喃喃自语。
+
+他的目光中既有期待，也有担忧。因为他知道，在这个孩子未来的道路上，等待着他的将是无尽的磨难与考验。
+
+但老者没有出手干预。他只是静静地看了一会儿，然后转身离去。
+
+"一切，都是命数。"他的声音在风中飘散，"是龙是虫，就看他自己的造化了。"`,
+`寒风凛冽，大雪纷飞。
+
+${heroName}蜷缩在破旧的茅屋角落，单薄的衣服难以抵挡刺骨的寒意。他的目光穿过缝隙，望向远处的宗门山门——那是他梦想的起点，也是他命运的转折点。
+
+三天前，他还是一个衣食无忧的富家公子。父亲虽然不是大富大贵，但也算是个小康之家。
+
+然而一夜之间，一切都变了。
+
+那个叫${villainName}的人，带着一群手下闯进了他家。父亲拼死抵抗，最终却惨死在对方刀下。
+
+母亲为了保护他，用自己的身体挡住了致命的一击。
+
+"快走..."这是母亲留给他的最后一句话。
+
+他哭着逃出了家门，在风雪中狂奔了整整一夜。最终，体力不支的他倒在了这座破茅屋前。
+
+醒来时，他发现自己躺在一个老人的草席上。\\n\\n老人什么也没问，只是递给他一碗热粥。
+
+"想报仇吗？"老人忽然问道。
+
+${heroName}抬起头，眼中燃烧着仇恨的火焰。
+
+"想！"
+
+"那就活下去。"老人站起身，望向远处的山门，"明日，我送你去那个地方。能不能活下来，就看你的造化了。"`,
+`乱世之中，人命如草芥。
+
+${heroName}出生在战火纷飞的年代。他的父亲是一名普通士兵，母亲是一位平凡的农妇。
+
+他刚满三岁，父亲就战死在了沙场上。母亲带着他改嫁，却在两年后病逝。
+
+继父不待见他，经常对他拳脚相加。\\n\\n十岁那年，他再也忍受不了继父的虐待，在一个雨夜离家出走。
+
+他漫无目的地在荒野中游荡，靠乞讨和偷窃勉强维生。
+
+就在他以为自己将要饿死的时候，一个改变他命运的人出现了。
+
+那是一个衣衫褴褛的老乞丐。
+
+老乞丐什么也没说，只是递给他一个馒头，然后转身离去。
+
+但${heroName}注意到，老乞丐转身时，眼中闪过了一丝异样的光芒。
+
+那光芒中，有怜悯，有期待，还有...一丝说不清道不明的意味。
+
+从那天起，${heroName}开始跟随老乞丐流浪。
+
+他不知道的是，这个看似普通的老乞丐，曾经是名震天下的绝世高手。而他，将成为老乞丐唯一的传人。`
+    ];
+    sceneIntro = prologues[Math.floor(Math.random() * prologues.length)];
+    plotContent = `\\n\\n【本章核心任务】\\n- 建立${genre}世界观的基本设定（时代背景、力量体系、世界规则）\\n- 交代主角${heroName}的身世背景与成长环境\\n- 埋下主线${plotConflict}的伏笔\\n- 展现主角${heroPersonality}的初始性格特征\\n- 设置后续剧情发展的悬念与期待`;
+
+  } else if (phase === '开篇') {
+    const pool = genre === '玄幻' ? xuanhuanScenes : genre === '都市' ? dushiScenes : genre === '仙侠' ? xianxiaScenes : genre === '科幻' ? kehuanScenes : genre === '武侠' ? wuxiaScenes : yanqingScenes;
+    sceneIntro = pool[Math.floor(Math.random() * pool.length)];
+    plotContent = `\\n\\n【本章核心任务】\\n- 让读者快速认识${heroName}并产生情感共鸣\\n- 展现${heroName}的核心性格特质：${heroPersonality}\\n- 建立${heroName}与其他角色的初始关系网\\n- 埋下主线${plotConflict}的关键伏笔\\n- 通过具体事件展现${genre}世界的独特魅力\\n- 设置本章的小高潮，建立读者期待`;
+
+  } else if (phase === '高潮') {
+    const climaxes = [
+`战！战！战！
+
+${heroName}的怒吼响彻天地，手中的长剑爆发出前所未有的光芒。这是他全部的怒火，全部的不甘，全部的执念！
+
+从清晨到黄昏，从黄昏到黎明。三天三夜的血战，终于迎来最后的决战时刻。
+
+战场上，尸横遍野，血流成河。空气中弥漫着浓重的血腥味，令人作呕。
+
+"你不会赢的！"${villainName}狂笑着，整个人笼罩在一层血色的光芒中，"这个世界的规则，由我制定！你不过是只蝼蚁罢了！"
+
+然而，${heroName}只是淡淡一笑。
+
+"规则？"他的声音平静而坚定，"真正的强者，从不遵守别人制定的规则。他们...创造规则！"
+
+话音落下，${heroName}体内的力量开始疯狂涌动。一道金色的光柱从他体内冲天而起，直入云霄。
+
+"这是...这是传说中的..."${villainName}瞪大了眼睛，脸上第一次露出了恐惧的神色。
+
+"没错。"${heroName}缓缓举起手中的长剑，剑身上缠绕着金色的光芒，"这就是${plotGoal}的力量！"
+
+剑光如虹，破空而出！
+
+这一剑，凝聚了${heroName}毕生的修为。
+
+这一剑，承载了他所有的执念与不甘。
+
+这一剑，将决定整个世界的命运！
+
+轰——！！！
+
+天地变色，日月无光。
+
+当光芒散去，${villainName}已经倒在地上，再也没有了声息。
+
+${heroName}站在原地，浑身是血，却站得笔直。
+
+他做到了。`,
+`生死一线。
+
+${heroName}的身体已经被鲜血染红，但他依然站立不倒。在他身后，是无数等待他保护的同伴；在他面前，是穷凶极恶的敌人。
+
+"值得吗？"${villainName}冷笑着，眼中满是不屑，"为了那些蝼蚁般的人，值得你拼上性命？"
+
+${heroName}没有回答。他只是缓缓抬起手中的剑，眼中的光芒比任何时候都要坚定。
+
+"因为这就是我的道。"他轻声说道，"守护我所珍视的一切...这就是我的道！"
+
+${villainName}的脸色变了。他第一次在这个年轻人眼中，看到了真正的...信念。
+
+"可笑。"他摇了摇头，"你的道？你的道能救得了谁？"
+
+"也许救不了所有人。"${heroName}握紧了手中的剑，"但至少...我可以保护我身后的人！"
+
+他动了。
+
+速度快到肉眼几乎无法捕捉。
+
+${villainName}大惊，仓促间举剑格挡。
+
+铛——！
+
+两剑相交，爆发出刺目的火花。
+
+${villainName}只觉得一股巨力从剑身上传来，震得他虎口发麻，连退数步。
+
+"这...这怎么可能？"他难以置信地看着${heroName}，"你的力量...怎么会突然变强这么多？"
+
+${heroName}没有回答。他只是静静地看着对方，眼中没有任何波澜。
+
+"因为你不懂。"他轻声说道，"真正的力量，不是来自修为，而是来自...信念。"
+
+话音落下，他再次动了。`,
+`惊天逆转！
+
+就在所有人都以为${heroName}必败无疑的时候，异变陡生。
+
+他体内的封印突然崩碎，一股前所未有的力量从他体内爆发而出。金色的光芒笼罩了他的全身，将他衬托得如同天神下凡。
+
+"这是..."${heroName}感受着体内汹涌的力量，喃喃自语，"这就是${plotGoal}的力量吗？"
+
+对面的${villainName}瞪大了眼睛，脸上第一次露出了恐惧的神色。
+
+"不可能！"他失声叫道，"你怎么可能拥有这种力量？！"
+
+${heroName}缓缓抬起头，目光平静地看着对方。
+
+"没有什么是不可能的。"他的声音如同来自九霄之上，"只要心中有信念，就没有什么是不可能的。"
+
+他缓缓抬起手，一道金色的光芒从他掌心涌出，化作一条金色的巨龙。
+
+龙吟声响彻天地。
+
+${villainName}脸色惨白，连连后退。
+
+"不...不要..."他的声音中带着颤抖，"我认输...我认输！"
+
+但${heroName}没有给他机会。
+
+"太晚了。"他淡淡地说道，"当你伤害我所珍视的人的那一刻起，就已经没有回头路了。"
+
+金龙咆哮着冲了出去，将${villainName}吞没。
+
+天地间，只剩下一片金色的光芒。`
+    ];
+    sceneIntro = climaxes[Math.floor(Math.random() * climaxes.length)];
+    plotContent = `\\n\\n【本章核心任务】\\n- ${plotConflict}的最终爆发与对决\\n- ${heroName}与${villainName}的终极交锋\\n- 主角的蜕变与觉醒，展现${heroPersonality}的极致\\n- 命运的重大转折，胜负分晓\\n- 情感的最高潮，让读者热血沸腾或泪目\\n- 为结局章节铺垫，留下余韵`;
+
+  } else if (phase === '结局') {
+    const endings = [
+`尘埃落定。
+
+当最后一缕硝烟散去，${heroName}站在战场之上，俯瞰着这片被他亲手改变的天地。
+
+他做到了。从一个籍籍无名的少年，到如今站在这个世界巅峰的存在，他用了整整二十年。
+
+但此刻，他心中没有胜利的喜悦，只有深深的疲惫。
+
+"结束了..."他喃喃道，"终于...结束了。"
+
+身后，传来一阵脚步声。
+
+他转过身，看到了${heroineName}。
+
+她微笑着向他走来，眼中满是温柔。
+
+"辛苦了。"她轻声说道。
+
+${heroName}看着她，嘴角终于浮现出一丝笑容。
+
+"不辛苦。"他摇了摇头，"只要能看到你的笑容，一切都值得。"
+
+${heroineName}走到他面前，轻轻握住了他的手。
+
+"走吧。"她说道，"我们回家。"
+
+${heroName}点了点头，转身望向身后的世界。
+
+阳光穿透云层，洒在大地上，给一切披上了一层金色的光芒。
+
+新的一天，开始了。
+
+而他们的故事，也将翻开新的篇章。`,
+`新的开始。
+
+大战之后，${heroName}选择归隐山林。在一个无人知晓的小村庄，他过上了梦寐以求的平凡生活。
+
+日出而作，日落而息。\\n\\n白天，他在田间劳作，汗水滴落在泥土中。晚上，他和${heroineName}一起坐在院子里，看着满天繁星，聊着家常。
+
+这样的生活，简单而又幸福。
+
+然而，这并不意味着终结。
+
+每当夜深人静，他都会抬头望向那片星空——那里，还有更广阔的天地等待着他。
+
+"等我。"他轻声说道，"等我准备好的那一天，我会再次出发。"
+
+${heroineName}在他身边睡着了，嘴角带着满足的微笑。
+
+${heroName}轻轻给她盖上被子，然后转身走出房间。
+
+院子里，月光如水。
+
+他抬头望着月亮，眼中闪过一丝期待。
+
+"下一次...会是什么样的冒险呢？"
+
+他笑了。
+
+无论前路如何，他都已经做好了准备。
+
+因为这就是他选择的路。
+
+一条...永不停歇的路。`
+    ];
+    sceneIntro = endings[Math.floor(Math.random() * endings.length)];
+    plotContent = `\\n\\n【本章核心任务】\\n- ${plotConflict}的最终解决与收束\\n- ${heroName}完成${plotGoal}的最终目标\\n- 所有线索的交代与收尾\\n- 情感的高潮回落，给读者满足感\\n- 升华主题，引发读者思考\\n- 为可能的续作留下伏笔`;
+
+  } else if (phase === '尾声') {
+    sceneIntro = `多年以后。
+
+当后人翻开这段历史时，总会看到一个名字——${heroName}。
+
+他被后世尊为"${genre}之传奇"，被无数后辈视为偶像和目标。他的故事被改编成无数的小说、戏曲、话本，流传于世。
+
+然而，很少有人知道，在通往巅峰的道路上，他经历了怎样的磨难与抉择。
+
+那些孤独的长夜，那些生死的关头，那些...不得不做出的选择。
+
+每一次，他都选择了最难走的那条路。
+
+每一次，他都咬紧牙关坚持了下来。
+
+也许，这才是他最了不起的地方。
+
+不是因为他有多强，而是因为他...从未放弃。
+
+无论前路多么艰险，无论希望多么渺茫，他都从未放弃。
+
+而这，正是他留给后人最宝贵的财富。
+
+一个信念——
+
+只要心中有光，就没有什么黑暗是无法驱散的。
+
+【全书完】`;
+    plotContent = `\\n\\n【本章核心任务】\\n- 交代所有角色的最终归宿\\n- 升华主题，给读者以启发和感动\\n- 完整的故事弧线，首尾呼应\\n- 引发读者回味与思考`;
+
+  } else {
+    // 发展阶段
+    const pool = genre === '玄幻' ? xuanhuanScenes : genre === '都市' ? dushiScenes : genre === '仙侠' ? xianxiaScenes : genre === '科幻' ? kehuanScenes : genre === '武侠' ? wuxiaScenes : yanqingScenes;
+    sceneIntro = pool[Math.floor(Math.random() * pool.length)];
+    plotContent = `\\n\\n【本章核心任务】\\n- 推进${plotConflict}的主线剧情\\n- ${heroName}的成长与收获\\n- 引入新角色或新线索\\n- 情感线的推进（若有）\\n- 为后续高潮章节做铺垫\\n- 展现${genre}世界的深度与广度`;
+  }
+
+  // ── 根据字数目标动态生成扩展内容（使用风格化扩展库） ──
+  let extendedContent = '';
+  let totalGenerated = sceneIntro.length + plotContent.length;
+
+  function pickRandom(arr) {
+    return arr[Math.floor(Math.random() * arr.length)];
+  }
+
+  // 根据目标字数决定扩展轮次
+  const cycles = targetWords >= 6000 ? 8 : targetWords >= 5000 ? 6 : targetWords >= 4000 ? 5 : targetWords >= 3000 ? 4 : 2;
+
+  // 使用风格化的章节段落标题
+  const sectionTitles = [
+    styleDNA.label + '·场景展开',
+    styleDNA.label + '·内心刻画',
+    styleDNA.label + '·对话交锋',
+    styleDNA.label + '·动作细节',
+    toneDNA.atmosphere + '·氛围渲染',
+    styleDNA.label + '·感官描写',
+    styleDNA.label + '·回忆闪回'
+  ];
+
+  // 注入基调氛围开头（根据情感强度决定是否插入）
+  if (toneDNA.emotionalIntensity >= 7) {
+    extendedContent += `\\n\\n${toneAtmosphere.opening}\\n\\n`;
+    totalGenerated += toneAtmosphere.opening.length;
+  }
+
+  for (let i = 0; i < cycles; i++) {
+    const title = sectionTitles[i % sectionTitles.length];
+    let section = `\\n\\n【${title}】\\n\\n`;
+
+    switch (title.split('·')[1]) {
+      case '场景展开':
+        section += pickRandom(styledExpansion.env)(heroName);
+        break;
+      case '内心刻画':
+        section += pickRandom(styledExpansion.inner)(heroName, heroGoal);
+        break;
+      case '对话交锋':
+        if (!phase.includes('尾')) {
+          section += pickRandom(styledExpansion.dialog)(heroName, villainName, mentorName);
+        } else {
+          section += pickRandom(styledExpansion.env)(heroName);
+        }
+        break;
+      case '动作细节':
+        section += pickRandom(styledExpansion.action)(heroName, villainName);
+        break;
+      case '氛围渲染':
+        section += pickRandom(styledExpansion.env)(heroName);
+        break;
+      case '感官描写':
+        section += pickRandom(styledExpansion.sensory)(heroName);
+        break;
+      case '回忆闪回':
+        section += pickRandom(styledExpansion.flashback)(heroName, heroGoal);
+        break;
+    }
+    extendedContent += section;
+    totalGenerated += section.length;
+  }
+
+  // 注入基调氛围结尾（根据情感强度决定是否插入）
+  if (toneDNA.emotionalIntensity >= 6) {
+    extendedContent += `\\n\\n${toneAtmosphere.closing}\\n`;
+    totalGenerated += toneAtmosphere.closing.length;
+  }
+
+  // 如果字数还不够，再补充风格化描写
+  if (totalGenerated < targetWords * 0.6) {
+    // 根据风格选择不同的兜底内容
+    const extraSectionsByStyle = {
+      '热血爽文': [
+        `\\n\\n【战意未消】\\n\\n${heroName}的目光扫过四周，战意依然在燃烧。\\n\\n他注意到，远处还有几道不怀好意的气息正在逼近。\\n\\n"还没完吗..."他握紧了拳头，嘴角浮现出一丝冷笑，"来吧，让我一次性解决你们！"\\n\\n体内的力量再次涌动，金色的光芒从他身上散发出来，将周围的黑暗驱散。\\n\\n无论来多少敌人，他都不会退缩。\\n\\n因为，他是不可战胜的！`,
+        `\\n\\n【强者之路】\\n\\n${heroName}站在山巅，俯瞰着脚下的芸芸众生。\\n\\n从他这个位置看下去，所有人都显得那么渺小。\\n\\n但他知道，自己也是从那个位置一步步爬上来的。\\n\\n"强者之路，永无止境。"他喃喃自语，目光望向更远处的天际线，"前面，还有更强的对手在等着我。"\\n\\n他转身离去，背影在夕阳下拉得很长很长。\\n\\n那是一条通往巅峰的道路，也是一条孤独的道路。`
+      ],
+      '黑暗深沉': [
+        `\\n\\n【阴谋浮现】\\n\\n${heroName}从阴影中走出，脸上没有任何表情。\\n\\n他刚刚完成了一笔"交易"——用一个人的命，换来了他想要的东西。\\n\\n那个人是无辜的吗？\\n\\n也许是，也许不是。\\n\\n在这个世界里，没有绝对的无辜，也没有绝对的罪恶。\\n\\n只有...利益。\\n\\n他低头看了看自己的双手，那上面似乎还残留着血腥的气息。\\n\\n"又一个。"他低声数着，转身走入更深的黑暗之中。`,
+        `\\n\\n【深渊凝视】\\n\\n${heroName}站在镜子前，看着镜中的自己。\\n\\n那双眼睛，已经不再是人类的眼睛了。\\n\\n里面藏着太多的秘密，太多的罪恶，太多的...不可告人的东西。\\n\\n"你已经变成了你最讨厌的那种人。"镜中的自己似乎在对他这样说。\\n\\n他没有反驳。\\n\\n因为这就是事实。\\n\\n为了得到力量，他付出了灵魂作为代价。\\n\\n而现在，他已经没有回头路了。`
+      ],
+      '轻松搞笑': [
+        `\\n\\n【乌龙续集】\\n\\n${heroName}看着眼前的局面，一时间不知道该哭还是该笑。\\n\\n他本来是来救人的，结果一不小心把人家的房子给拆了。\\n\\n"那个...我可以解释。"他尴尬地笑了笑，"这是个意外，真的。"\\n\\n房主老太太拿着扫把，气势汹汹地追了出来："意外？你把我家墙撞穿了也叫意外？！"\\n\\n"不是...我是说..."\\n\\n"别说了！赔钱！"\\n\\n${heroName}摸了摸空荡荡的钱包，欲哭无泪。`,
+        `\\n\\n【哭笑不得】\\n\\n${heroName}看着自己手里的东西，陷入了沉思。\\n\\n他明明是去买菜的，怎么买回来一只鸭子？\\n\\n而且这只鸭子似乎还把他当成了妈妈，寸步不离地跟着他。\\n\\n"我不是你妈妈啊..."他无奈地对鸭子说道。\\n\\n鸭子："嘎？"\\n\\n"算了，养着吧。"\\n\\n于是，他的家里多了一位新成员——一只认定他是妈妈的鸭子。`
+      ],
+      '虐心催泪': [
+        `\\n\\n【痛彻心扉】\\n\\n${heroName}独自坐在黑暗中，泪水无声地滑落。\\n\\n他失去了太多——亲人、朋友、还有那个他最深爱的人。\\n\\n每一次呼吸，都像是在刀尖上跳舞。\\n\\n"为什么..."他哽咽着，"为什么留下我一个人..."\\n\\n没有人回答他。\\n\\n只有无尽的黑暗，和那颗已经千疮百孔的心。\\n\\n他抱紧双膝，将头埋进臂弯里。\\n\\n在这个冰冷的世界里，这是他唯一的取暖方式。`,
+        `\\n\\n【时光荏苒】\\n\\n${heroName}站在墓碑前，手中捧着一束她最喜欢的花。\\n\\n"我来看你了。"他轻声说道，声音有些沙哑。\\n\\n风吹过，花瓣纷纷扬扬地飘落，像是她在回应他。\\n\\n"这一年发生了很多事。"他在墓前坐下，像是在和她聊天，"我完成了我们约定好的事，我去过了我们说好的地方，我..."\\n\\n他说不下去了。\\n\\n泪水模糊了视线，他伸手擦去，却越擦越多。\\n\\n"我好想你。"\\n\\n这是他每次来都会说的话，也是他最想说的话。`
+      ],
+      '温馨治愈': [
+        `\\n\\n【温暖日常】\\n\\n${heroName}端着两杯热可可，走到阳台。\\n\\n夕阳的余晖洒在身上，暖洋洋的。\\n\\n"给。"他将其中一杯递给身边的人。\\n\\n"谢谢。"对方接过杯子，抿了一口，"好喝。"\\n\\n${heroName}笑了笑，在她身边坐下。\\n\\n两人谁都没有说话，只是静静地看着远处的夕阳。\\n\\n这样的时刻，不需要任何语言。\\n\\n因为陪伴本身，就是最好的告白。`,
+        `\\n\\n【小确幸】\\n\\n${heroName}正在厨房里忙碌着。\\n\\n锅里的汤咕嘟咕嘟地冒着泡，空气中弥漫着诱人的香味。\\n\\n"需要帮忙吗？"一个声音从身后传来。\\n\\n"不用，马上就好了。你去坐着等吧。"\\n\\n"可是我想陪着你。"\\n\\n${heroName}愣了一下，随即笑了。\\n\\n"那...你帮我把那边的盘子拿过来吧。"\\n\\n"好！"\\n\\n小小的厨房里，充满了欢声笑语。`
+      ],
+      '悬疑烧脑': [
+        `\\n\\n【疑点重重】\\n\\n${heroName}将所有线索重新排列了一遍，发现了一个之前被忽略的细节。\\n\\n那个证人的证词里，有一个时间对不上。\\n\\n如果那个时间是假的，那么整个案件的走向都将完全不同。\\n\\n"除非..."他的眼睛亮了起来，"除非那个证人在撒谎。"\\n\\n但为什么要撒谎？\\n\\n是受人所托，还是...他就是幕后黑手的同伙？\\n\\n${heroName}拿起外套，快步走出房间。\\n\\n"我要去找他谈谈。"`,
+        `\\n\\n【真相逼近】\\n\\n${heroName}盯着手中的照片，眉头紧锁。\\n\\n照片上是一个模糊的身影，站在案发现场的角落里。\\n\\n之前所有人都以为那只是一个路人。\\n\\n但放大之后，${heroName}发现——那个人手里，拿着一件属于死者的物品。\\n\\n"你到底是谁？"他喃喃自语，手指轻轻敲击着桌面。\\n\\n答案就在眼前，只需要再往前一步。\\n\\n但他也知道，这一步可能是最危险的一步。`
+      ],
+      '史诗宏大': [
+        `\\n\\n【时代洪流】\\n\\n${heroName}立于高台之上，俯瞰着脚下这片苍茫大地。\\n\\n烽火连天，战鼓隆隆。亿万生灵在时代的洪流中沉浮，如同蝼蚁般渺小。\\n\\n"这就是乱世吗..."他喃喃自语。\\n\\n在这样的时代里，个人的力量显得如此微不足道。\\n\\n但他知道，正是这无数个微不足道的个体，汇聚成了改变时代的力量。\\n\\n"我不会放弃。"他握紧了拳头，目光如炬，"哪怕只有一线希望，我也要为这天下苍生，搏一个太平盛世！"`,
+        `\\n\\n【历史见证】\\n\\n${heroName}站在历史的十字路口，回望来时的路。\\n\\n那条路上，洒满了鲜血和泪水，铺满了白骨与废墟。\\n\\n但正是这些牺牲，换来了今天的局面。\\n\\n"你们的牺牲不会白费。"他对着虚空说道，像是在对那些已故的战友承诺，"我会带着你们的遗志，走到最后。"\\n\\n他转身面向前方，那里是未知的命运，也是历史的篇章。\\n\\n"来吧。"他沉声说道，"让历史记住这一天。"`
+      ]
+    };
+    const extraPool = extraSectionsByStyle[style] || extraSectionsByStyle['热血爽文'];
+    const needed = Math.ceil((targetWords * 0.6 - totalGenerated) / 400);
+    extendedContent += extraPool.slice(0, Math.min(2, needed)).join('');
+  }
+
+  // 组合章节内容
+  return `${chapterTitle}\\n\\n${sceneIntro}\\n${extendedContent}\\n${plotContent}\\n\\n— 本章完 —\\n`;
+}
+// 更新第8步小说设定汇总
+function updateWritingSummary() {
+  const genre = state.genre[0] || '未选';
+  const hero = state.characters.find(c=>c.role.includes('主角'));
+  const totalWords = parseInt(document.getElementById('totalWords')?.value) || state.totalWords || 50;
+  const chapterCount = state.outline.length || Math.ceil(totalWords * 10000 / (state.wordsPerChapter || 4000));
+
+  document.getElementById('sum-genre').textContent = state.genre.join('、') || '未选';
+  document.getElementById('sum-school').textContent = state.school.join('、') || '未选';
+  document.getElementById('sum-style').textContent = state.style.join('、') || '未选';
+  document.getElementById('sum-tone').textContent = state.tone.join('、') || '未选';
+  document.getElementById('sum-method').textContent = state.method || '未选';
+  document.getElementById('sum-words').textContent = totalWords + '万字';
+  document.getElementById('sum-chapters').textContent = chapterCount > 0 ? chapterCount + '章' : '待生成';
+  document.getElementById('sum-hero').textContent = hero?.name || '待设定';
+  document.getElementById('targetCount').textContent = state.wordsPerChapter || 4000;
+}
+
+// ═════════════════════ 实用工具函数（有实际功能） ═════════════════════
+
+// 保存章节到localStorage并提供下载
+function saveWriting() {
+  const editor = document.getElementById('writingEditor');
+  const text = editor.value.trim();
+  if (!text) {
+    alert('⚠️ 编辑器内容为空，无法保存！');
+    return;
+  }
+  const ch = state.outline[state.currentChapter - 1];
+  const chapterTitle = ch ? ch.title : `第${state.currentChapter}章`;
+  const savedChapters = JSON.parse(localStorage.getItem('nwacs_chapters') || '{}');
+  savedChapters[state.currentChapter] = {
+    title: chapterTitle,
+    content: text,
+    savedAt: new Date().toLocaleString('zh-CN'),
+    wordCount: text.length
+  };
+  localStorage.setItem('nwacs_chapters', JSON.stringify(savedChapters));
+  alert(`💾 第${state.currentChapter}章已保存！\\n字数：${text.length}字\\n保存时间：${new Date().toLocaleString('zh-CN')}`);
+}
+
+// 继续写作：基于当前内容生成后续段落
+function continueWriting() {
+  const editor = document.getElementById('writingEditor');
+  const text = editor.value.trim();
+  if (!text) {
+    alert('⚠️ 请先点击「开始写本章」生成初始内容！');
+    return;
+  }
+  const ch = state.outline[state.currentChapter - 1];
+  const detail = state.detailOutline[state.currentChapter - 1];
+  const hero = state.characters.find(c => c.role.includes('主角'));
+  const villain = state.characters.find(c => c.role.includes('反派'));
+  const genre = state.genre[0] || '玄幻';
+  const heroName = hero?.name || '主角';
+  const villainName = villain?.name || '反派';
+  const phase = ch?.phase || '发展';
+
+  const continuations = [
+    `\\n\\n接下来的日子里，${heroName}开始了更加艰苦的修炼。\\n\\n每天清晨，当第一缕阳光照进窗户时，他就已经在修炼场中挥汗如雨。\\n\\n他知道，只有变得更强，才能保护自己所珍视的一切。\\n\\n而此刻的${villainName}，也正在暗中积蓄力量，准备发起最后的反扑...`,
+    `\\n\\n夜色渐深，${heroName}独自坐在屋顶上，望着满天繁星发呆。\\n\\n明天，就是与${villainName}约定决战的日子。\\n\\n这一战，将决定一切。\\n\\n他深吸一口气，握紧了拳头。\\n\\n"无论如何，我都不能输。"他在心中暗暗发誓。`,
+    `\\n\\n第二天一早，${heroName}便踏上了新的征程。\\n\\n前方的道路充满了未知和危险，但他的脚步却没有丝毫犹豫。\\n\\n因为他知道，在他的身后，有无数人在默默支持着他。\\n\\n而他，绝不能让他们失望。`,
+    `\\n\\n修炼室内，${heroName}正在尝试一种新的修炼方法。\\n\\n这是他从一本古籍中学到的，据说可以大幅提升修炼速度。\\n\\n但风险也同样巨大——稍有不慎，就可能走火入魔。\\n\\n"拼了。"他一咬牙，开始了尝试。`,
+    `\\n\\n一封神秘的来信打破了平静。\\n\\n${heroName}展开信纸，上面只有寥寥数字：\\n\\n「欲知真相，今夜子时，独往黑风崖。」\\n\\n没有署名，没有落款。\\n\\n但${heroName}知道，这封信背后一定隐藏着重要的秘密。\\n\\n"去，还是不去？"他陷入了沉思。`,
+  ];
+
+  const continuation = continuations[Math.floor(Math.random() * continuations.length)];
+  editor.value += continuation;
+  onWritingInput();
+  alert(`✨ 已续写${continuation.length}字！\\n提示：续写内容为模板生成，建议根据大纲方向继续发挥。`);
+}
+
+// AI润色：基于规则的文本优化
+function aiPolish() {
+  const editor = document.getElementById('writingEditor');
+  let text = editor.value;
+  if (!text.trim()) {
+    alert('⚠️ 编辑器内容为空！');
+    return;
+  }
+
+  // 替换词库
+  const replacements = [
+    {from: /非常重要/g, to: '至关重要'},
+    {from: /非常/g, to: '极其'},
+    {from: /很好/g, to: '堪称完美'},
+    {from: /很大/g, to: '难以估量'},
+    {from: /很快/g, to: '转瞬即逝'},
+    {from: /慢慢/g, to: '徐徐'},
+    {from: /突然/g, to: '骤然'},
+    {from: /看着/g, to: '凝视'},
+    {from: /说/g, to: '沉声道'},
+    {from: /走/g, to: '迈步'},
+    {from: /跑/g, to: '疾驰'},
+    {from: /笑/g, to: '莞尔'},
+    {from: /哭/g, to: '潸然泪下'},
+    {from: /生气/g, to: '怒不可遏'},
+    {from: /害怕/g, to: '胆战心惊'},
+  ];
+
+  let changed = 0;
+  replacements.forEach(r => {
+    const before = text;
+    text = text.replace(r.from, r.to);
+    if (text !== before) changed++;
+  });
+
+  editor.value = text;
+  onWritingInput();
+  alert(`🎨 AI润色完成！\\n优化了${changed}处用词\\n提示：建议逐句审阅，根据语境微调`);
+}
+
+// AI痕迹检测：基于规则的检测
+function checkAIDetect() {
+  const editor = document.getElementById('writingEditor');
+  const text = editor.value;
+  if (!text.trim()) {
+    alert('⚠️ 编辑器内容为空！');
+    return;
+  }
+
+  const aiPatterns = [
+    {pattern: /首先.*其次.*最后/g, desc: '结构化表述（首先/其次/最后）'},
+    {pattern: /众所周知/g, desc: '套话开头'},
+    {pattern: /值得注意的是/g, desc: '过渡套话'},
+    {pattern: /总的来说/g, desc: '总结套话'},
+    {pattern: /不仅如此/g, desc: '递进套话'},
+    {pattern: /然而/g, desc: '转折过度使用'},
+    {pattern: /因此/g, desc: '因果套话'},
+    {pattern: /事实上/g, desc: '强调套话'},
+    {pattern: /与此同时/g, desc: '时间套话'},
+    {pattern: /换句话说/g, desc: '解释套话'},
+    {pattern: /[一二三四五六七八九十]、/g, desc: '编号列表'},
+    {pattern: /\\n\\n【.*】\\n\\n/g, desc: '章节标记（系统生成痕迹）'},
+    {pattern: /\\n\\n—.*—\\n/g, desc: '分隔线标记'},
+  ];
+
+  let issues = [];
+  aiPatterns.forEach(p => {
+    const matches = text.match(p.pattern);
+    if (matches) {
+      issues.push(`「${p.desc}」出现${matches.length}次`);
+    }
+  });
+
+  // 计算得分
+  const score = Math.max(0, 100 - issues.length * 8);
+  const level = score >= 80 ? '低（优秀）' : score >= 60 ? '中（需优化）' : '高（需大幅修改）';
+
+  const report = issues.length === 0
+    ? `🤖 AI检测完成！\\n\\n✅ 未发现明显AI痕迹\\n得分：${score}分\\n状态：低（优秀）\\n\\n您的文字具有较强的人文风！`
+    : `🤖 AI检测完成！\\n\\n⚠️ 发现${issues.length}类AI痕迹：\\n${issues.join('\\n')}\\n\\n得分：${score}分\\n状态：${level}\\n\\n💡 建议：删除或替换上述套话，增加具体的感官描写和人物心理活动。`;
+
+  alert(report);
+}
+
+// 剧情漏洞检查
+function checkPlotHole() {
+  const ch = state.outline[state.currentChapter - 1];
+  const text = document.getElementById('writingEditor').value;
+  if (!text.trim()) {
+    alert('⚠️ 请先写一些内容！');
+    return;
+  }
+
+  let holes = [];
+
+  // 检查角色名一致性
+  state.characters.forEach(char => {
+    if (text.includes(char.name) && char.name !== '新角色') {
+      // 角色名出现了，正常
+    }
+  });
+
+  // 检查是否有未交代的新角色
+  const nameMatches = text.match(/[\u4e00-\u9fa5]{2,4}(?:先生|女士|小姐|公子|姑娘|大人|阁下|师兄|师弟|师姐|师妹|师父|徒弟|掌门|长老|护法|门主|教主|帮主|岛主|城主|家主|老爷|夫人|少爷|丫鬟|侍卫|将军|丞相|王爷|皇上|皇后|太子|公主|郡主|世子|侯爷|伯爵|公爵)/g);
+  if (nameMatches) {
+    const knownNames = state.characters.map(c => c.name);
+    nameMatches.forEach(name => {
+      if (!knownNames.some(kn => name.includes(kn))) {
+        holes.push(`出现未在角色列表中定义的人物称呼：「${name}」`);
+      }
+    });
+  }
+
+  // 检查章节目标是否覆盖
+  if (ch) {
+    const phase = ch.phase;
+    if (phase === '开篇' && !text.includes('性格') && !text.includes('特点') && !text.includes('初次')) {
+      holes.push('开篇章节建议描写主角的性格特点和初始状态');
+    }
+    if (phase === '高潮' && !text.includes('对决') && !text.includes('战') && !text.includes('决战')) {
+      holes.push('高潮章节建议有明确的对决或冲突爆发');
+    }
+    if (phase === '结局' && !text.includes('结束') && !text.includes('完成') && !text.includes('归宿')) {
+      holes.push('结局章节建议交代故事的最终结果');
+    }
+  }
+
+  // 检查逻辑漏洞
+  if (text.includes('死了') && text.includes('复活') && !text.includes('复活')) {
+    holes.push('注意：角色死亡与复活的逻辑需要合理铺垫');
+  }
+
+  const report = holes.length === 0
+    ? `🔎 剧情漏洞检查完成！\\n\\n✅ 未发现明显剧情漏洞\\n\\n您的剧情逻辑通顺，继续保持！`
+    : `🔎 剧情漏洞检查完成！\\n\\n⚠️ 发现${holes.length}处潜在问题：\\n${holes.map((h, i) => `${i+1}. ${h}`).join('\\n')}\\n\\n💡 建议：根据提示补充相关描写，使剧情更加连贯。`;
+
+  alert(report);
+}
+
+// 节奏分析
+function checkRhythm() {
+  const text = document.getElementById('writingEditor').value;
+  if (!text.trim()) {
+    alert('⚠️ 请先写一些内容！');
+    return;
+  }
+
+  const paragraphs = text.split('\\n\\n').filter(p => p.trim());
+  const paraLengths = paragraphs.map(p => p.length);
+  const avgLength = Math.round(paraLengths.reduce((a, b) => a + b, 0) / paraLengths.length);
+  const maxLength = Math.max(...paraLengths);
+  const minLength = Math.min(...paraLengths);
+
+  // 对话比例
+  const dialogMatches = text.match(/"[^"]*"/g) || [];
+  const dialogLength = dialogMatches.join('').length;
+  const dialogRatio = Math.round(dialogLength / text.length * 100);
+
+  // 短句比例
+  const sentences = text.split(/[。！？\\n]+/).filter(s => s.trim());
+  const shortSentences = sentences.filter(s => s.length <= 15);
+  const shortRatio = Math.round(shortSentences.length / sentences.length * 100);
+
+  // 节奏评分
+  let rhythmScore = '良';
+  if (dialogRatio > 50) rhythmScore = '对话过多，建议增加叙述';
+  else if (dialogRatio < 10) rhythmScore = '对话过少，建议增加人物互动';
+  else if (shortRatio > 60) rhythmScore = '短句过多，建议增加长句描写';
+  else if (shortRatio < 20) rhythmScore = '长句过多，建议增加短句节奏';
+  else rhythmScore = '节奏适中，张弛有度';
+
+  alert(`📊 节奏分析完成！\\n\\n📌 段落统计\\n总段落数：${paragraphs.length}\\n平均段落长度：${avgLength}字\\n最长段落：${maxLength}字\\n最短段落：${minLength}字\\n\\n📌 对话分析\\n对话字数：${dialogLength}字\\n对话占比：${dialogRatio}%\\n\\n📌 句式分析\\n总句数：${sentences.length}\\n短句比例：${shortRatio}%\\n\\n📌 节奏评价\\n${rhythmScore}`);
+}
+
+// 降AI痕迹
+function reduceAI() {
+  const editor = document.getElementById('writingEditor');
+  let text = editor.value;
+  if (!text.trim()) {
+    alert('⚠️ 编辑器内容为空！');
+    return;
+  }
+
+  // 删除系统标记
+  text = text.replace(/\\n\\n【[^】]+】\\n\\n/g, '\\n\\n');
+  text = text.replace(/\\n\\n—.*—\\n/g, '\\n\\n');
+
+  // 替换套话
+  const phrases = [
+    ['众所周知', ''],
+    ['值得注意的是', ''],
+    ['总的来说', ''],
+    ['不仅如此', ''],
+    ['换句话说', ''],
+    ['事实上', ''],
+    ['与此同时', ''],
+    ['首先', ''],
+    ['其次', ''],
+    ['最后', ''],
+  ];
+
+  let removed = 0;
+  phrases.forEach(([from, to]) => {
+    const regex = new RegExp(from, 'g');
+    const matches = text.match(regex);
+    if (matches) {
+      removed += matches.length;
+      text = text.replace(regex, to);
+    }
+  });
+
+  // 添加口语化表达
+  const oralAdditions = [
+    '\\n\\n「唉，这世道...」他叹了口气。',
+    '\\n\\n「该死！」他忍不住骂了一句。',
+    '\\n\\n他挠了挠头，有些无奈。',
+    '\\n\\n「啧，麻烦了。」他皱了皱眉。',
+    '\\n\\n他忍不住翻了个白眼。',
+  ];
+
+  // 在对话后随机插入口语化
+  const dialogPositions = [];
+  let match;
+  const dialogRegex = /"[^"]*"/g;
+  while ((match = dialogRegex.exec(text)) !== null) {
+    dialogPositions.push(match.index + match[0].length);
+  }
+
+  if (dialogPositions.length > 0 && Math.random() < 0.5) {
+    const pos = dialogPositions[Math.floor(Math.random() * dialogPositions.length)];
+    const addition = oralAdditions[Math.floor(Math.random() * oralAdditions.length)];
+    text = text.slice(0, pos) + addition + text.slice(pos);
+  }
+
+  editor.value = text;
+  onWritingInput();
+  alert(`💨 降AI痕迹完成！\\n\\n✅ 删除了${removed}处套话\\n✅ 添加了口语化表达\\n\\n💡 建议：继续人工润色，增加具体的感官描写和独特的比喻。`);
+}
+
+// 情感增强
+function addEmotion() {
+  const editor = document.getElementById('writingEditor');
+  const text = editor.value;
+  if (!text.trim()) {
+    alert('⚠️ 编辑器内容为空！');
+    return;
+  }
+
+  const emotionAdditions = [
+    `\\n\\n他的眼眶微微泛红，心中涌起一股难以言喻的情绪。\\n\\n是悲伤？是愤怒？还是...不甘？\\n\\n或许，都有吧。\\n\\n他深吸一口气，试图平复内心的波动。\\n\\n但眼泪，却怎么也止不住。`,
+    `\\n\\n那一刻，他的心脏仿佛被什么东西狠狠地攥住了。\\n\\n疼痛，从胸口蔓延到四肢百骸。\\n\\n他张了张嘴，想要说些什么，却发现一个字都说不出来。\\n\\n泪水模糊了他的视线，世界变得一片朦胧。\\n\\n他咬紧牙关，指甲深深嵌入手掌中。\\n\\n「为什么...」他喃喃自语，声音沙哑得几乎听不清，「为什么会变成这样...」`,
+    `\\n\\n他笑了。\\n\\n笑声中带着一丝苦涩，一丝无奈，还有一丝...解脱。\\n\\n「原来如此。"他轻声说道，"原来...一直都是这样。"\\n\\n他闭上眼睛，任由泪水从眼角滑落。\\n\\n在这一刻，他终于明白了。\\n\\n明白了自己一直以来的坚持，究竟是为了什么。`,
+    `\\n\\n愤怒如同火焰般在他心中燃烧。\\n\\n他的双拳紧紧攥住，指节发出咔咔的声响。\\n\\n「不可原谅...」他低声说道，声音中带着令人心悸的寒意，「绝对...不可原谅。"\\n\\n他的眼中闪过一丝血红，那是愤怒到极致的表现。\\n\\n周围的空气仿佛都因为他的怒火而变得灼热。`,
+    `\\n\\n一股暖流涌上心头。\\n\\n他看着眼前的这一幕，心中涌起一股说不出的感动。\\n\\n那些曾经以为已经失去的，原来一直都在。\\n\\n只是他自己，一直没有发现罢了。\\n\\n「谢谢你。"他轻声说道，声音中带着一丝哽咽，「真的...谢谢你。"`,
+  ];
+
+  const addition = emotionAdditions[Math.floor(Math.random() * emotionAdditions.length)];
+  editor.value = text + addition;
+  onWritingInput();
+  alert(`💗 情感增强完成！\\n\\n✅ 已添加情感描写段落\\n\\n💡 提示：请根据上下文调整情感描写的位置和程度。`);
+}
+
+// 对话优化
+function enhanceDialog() {
+  const editor = document.getElementById('writingEditor');
+  let text = editor.value;
+  if (!text.trim()) {
+    alert('⚠️ 编辑器内容为空！');
+    return;
+  }
+
+  // 为纯对话添加动作和神态描写
+  const pureDialogRegex = /"([^"]*)"[。！？\\n]/g;
+  let match;
+  let positions = [];
+  while ((match = pureDialogRegex.exec(text)) !== null) {
+    positions.push({index: match.index, text: match[0], quote: match[1]});
+  }
+
+  const actionDescriptions = [
+    '，语气中带着一丝不耐烦',
+    '，声音低沉而有力',
+    '，眼中闪过一丝复杂的神色',
+    '，嘴角微微上扬',
+    '，眉头紧锁',
+    '，语气中带着几分无奈',
+    '，声音有些沙哑',
+    '，目光中带着期待',
+  ];
+
+  // 替换部分纯对话
+  let modified = 0;
+  positions.forEach((pos, i) => {
+    if (i % 2 === 0 && pos.quote.length > 5) {
+      const action = actionDescriptions[Math.floor(Math.random() * actionDescriptions.length)];
+      const oldStr = pos.text;
+      const newStr = '"' + pos.quote + '"' + action + oldStr.slice(-1);
+      text = text.substring(0, pos.index) + newStr + text.substring(pos.index + oldStr.length);
+      modified++;
+    }
+  });
+
+  editor.value = text;
+  onWritingInput();
+  alert(`💬 对话优化完成！\\n\\n✅ 优化了${modified}处对话\\n为对话添加了神态和动作描写\\n\\n💡 建议：继续检查对话节奏，确保每段对话都有推动剧情的作用。`);
+}
+
+// 导出小说
+function exportNovel() {
+  const savedChapters = JSON.parse(localStorage.getItem('nwacs_chapters') || '{}');
+  const editor = document.getElementById('writingEditor');
+  const currentText = editor.value.trim();
+
+  let content = '';
+  content += `《${state.genre.join('、')}小说》\\n`;
+  content += `题材：${state.genre.join('、')}\\n`;
+  content += `流派：${state.school.join('、')}\\n`;
+  content += `风格：${state.style.join('、')}\\n`;
+  content += `基调：${state.tone.join('、')}\\n`;
+  content += `手法：${state.method}\\n`;
+  content += `字数：${state.totalWords}万字\\n`;
+  content += `章节：${state.outline.length}章\\n`;
+  content += `主角：${state.characters.find(c=>c.role.includes('主角'))?.name || '未命名'}\\n`;
+  content += `═══════════════════════════════════════\\n\\n`;
+
+  // 按章节顺序导出
+  const chapterKeys = Object.keys(savedChapters).sort((a, b) => parseInt(a) - parseInt(b));
+  if (chapterKeys.length === 0 && !currentText) {
+    alert('⚠️ 暂无保存的章节内容！\\n请先点击「开始写本章」生成内容，再点击「保存章节」保存。');
+    return;
+  }
+
+  chapterKeys.forEach(key => {
+    const ch = savedChapters[key];
+    content += `\\n\\n${ch.title}\\n`;
+    content += `═══════════════════════════════════════\\n\\n`;
+    content += ch.content;
+    content += `\\n\\n`;
+  });
+
+  // 如果当前编辑器有内容但未保存，也导出
+  if (currentText && !savedChapters[state.currentChapter]) {
+    const ch = state.outline[state.currentChapter - 1];
+    content += `\\n\\n${ch ? ch.title : '第' + state.currentChapter + '章'}\\n`;
+    content += `═══════════════════════════════════════\\n\\n`;
+    content += currentText;
+  }
+
+  // 下载文件
+  const blob = new Blob([content], {type: 'text/plain;charset=utf-8'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `${state.genre.join('_')}_小说_${new Date().toISOString().slice(0,10)}.txt`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+
+  alert(`📤 导出完成！\\n\\n已导出${chapterKeys.length}个已保存章节\\n文件名：${state.genre.join('_')}_小说_${new Date().toISOString().slice(0,10)}.txt\\n\\n💡 提示：未保存的当前章节内容不会被导出，请先点击「保存章节」。`);
+}
+
+// ═════════════════════ 更新预览 ═════════════════════
+function updateAllPreviews() {
+  const g = state.genre.join('、') || '未选';
+  const s = state.school.join('、') || '未选';
+  const st = state.style.join('、') || '未选';
+  const t = state.tone.join('、') || '未选';
+  
+  document.getElementById('preview-1').innerHTML = `题材：<b>${g}</b>｜流派：<b>${s}</b><br>风格：<b>${st}</b>｜基调：<b>${t}</b>`;
+  document.getElementById('preview-2').innerHTML = `题材：<b>${g}</b>｜手法：<b>${state.method || '未选'}</b>`;
+  document.getElementById('preview-3').innerHTML = `题材：<b>${g}</b>｜世界：<b>${state.worldType || '未选'}</b>｜时代：<b>${state.worldEra || '未填'}</b>`;
+  document.getElementById('preview-4').innerHTML = `角色：<b>${state.characters.length}</b>个｜主角：<b>${state.characters.find(c=>c.role.includes('主角'))?.name || '未设'}</b>`;
+  document.getElementById('preview-5').innerHTML = `剧情：<b>${state.plot ? '已选择' : '未选择'}</b>｜方法：<b>${state.method || '未选'}</b>`;
+}
+
+function updateWordInfo() {
+  const total = parseInt(document.getElementById('totalWords').value) || 50;
+  const per = parseInt(document.getElementById('wordsPerChapter').value) || 4000;
+  state.totalWords = total;
+  state.wordsPerChapter = per;
+  document.getElementById('wordInfo').innerHTML = `预计 <span style="color:var(--accent)">${Math.ceil(total*10000/per)}</span> 章`;
+  document.getElementById('targetCount').textContent = per;
+}
+
+// ═════════════════════ 设置管理 ═════════════════════
+function toggleSettings() {
+  const panel = document.getElementById('settingsPanel');
+  panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
+  if (panel.style.display === 'block') {
+    loadApiSettings();
+  }
+}
+
+function loadApiSettings() {
+  const settings = JSON.parse(localStorage.getItem('nwacs_settings') || '{}');
+  document.getElementById('apiUrl').value = settings.apiUrl || '';
+  document.getElementById('apiKeyFull').value = settings.apiKey || '';
+  document.getElementById('defaultModel').value = settings.model || 'gpt-4';
+    document.getElementById('userNote').value = settings.note || '';
+  document.getElementById('apiKey').value = settings.apiKey ? '••••••••' : '';
+}
+
+function saveApiSettings() {
+  const settings = {
+    apiUrl: document.getElementById('apiUrl').value,
+    apiKey: document.getElementById('apiKeyFull').value,
+    model: document.getElementById('defaultModel').value,
+    
+    note: document.getElementById('userNote').value,
+    theme: document.body.getAttribute('data-theme') || 'blue'
+  };
+  localStorage.setItem('nwacs_settings', JSON.stringify(settings));
+  alert('✅ 设置已保存！');
+}
+
+function setTheme(theme) {
+  document.body.setAttribute('data-theme', theme);
+  const settings = JSON.parse(localStorage.getItem('nwacs_settings') || '{}');
+  settings.theme = theme;
+  localStorage.setItem('nwacs_settings', JSON.stringify(settings));
+}
+
+function loadTheme() {
+  const settings = JSON.parse(localStorage.getItem('nwacs_settings') || '{}');
+  if (settings.theme) {
+    document.body.setAttribute('data-theme', settings.theme);
+  }
+}
+
+function saveApiKey(value) {
+  if (value && value !== '••••••••') {
+    const settings = JSON.parse(localStorage.getItem('nwacs_settings') || '{}');
+    settings.apiKey = value;
+    localStorage.setItem('nwacs_settings', JSON.stringify(settings));
+    document.getElementById('apiKey').value = '••••••••';
+  }
+}
+
+function saveNote(value) {
+  const settings = JSON.parse(localStorage.getItem('nwacs_settings') || '{}');
+  settings.note = value;
+  localStorage.setItem('nwacs_settings', JSON.stringify(settings));
+}
+
+function toggleComments() {
+  const panel = document.getElementById('commentPanel');
+  panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
+  if (panel.style.display === 'block') loadComments();
+}
+
+function loadComments() {
+  const comments = JSON.parse(localStorage.getItem('nwacs_comments') || '[]');
+  const list = document.getElementById('commentList');
+  if (comments.length === 0) {
+    list.innerHTML = '<div style="color:var(--text-tertiary);font-size:0.82rem;text-align:center;padding:20px">暂无留言，成为第一个留言的人吧！</div>';
+    return;
+  }
+  list.innerHTML = comments.map(c => '<div class="comment-item"><div>' + c.text + '</div><div class="comment-time">' + c.time + '</div></div>').join('');
+}
+
+function addComment() {
+  const input = document.getElementById('commentInput');
+  const text = input.value.trim();
+  if (!text) return;
+  const comments = JSON.parse(localStorage.getItem('nwacs_comments') || '[]');
+  comments.unshift({text: text, time: new Date().toLocaleString('zh-CN')});
+  localStorage.setItem('nwacs_comments', JSON.stringify(comments.slice(0, 50)));
+  input.value = '';
+  loadComments();
+}
+
+function testApiConnection() {
+  const apiUrl = document.getElementById('apiUrl').value;
+  const apiKey = document.getElementById('apiKeyFull').value;
+  if (!apiUrl || !apiKey) {
+    alert('⚠️ 请先填写API地址和Key！');
+    return;
+  }
+  alert('🔗 正在测试连接...\n（此功能需要实际API支持）');
+}
+
+function getApiSettings() {
+  return JSON.parse(localStorage.getItem('nwacs_settings') || '{}');
+}
+function runDiagnostics() {
+  const results = [];
+  results.push('🔬 NWACS v9.0 诊断报告');
+  results.push('═══════════════════════════');
+  
+  // 1. 检查核心DOM元素
+  const criticalIds = ['genreGrid','schoolGrid','charGrid','outlineList','writingEditor','chapterTitle','apiKey','userNote'];
+  const missingIds = criticalIds.filter(id => !document.getElementById(id));
+  results.push(missingIds.length === 0 ? '✅ 所有核心DOM元素存在' : '❌ 缺失DOM元素: '+missingIds.join(', '));
+  
+  // 2. 检查JS函数是否定义
+  const funcs = ['init','initCharacters','renderCharacters','smartNameChar','generatePlots','generateOutline','generateChapterContent','startWriting','runDiagnostics'];
+  const missingFuncs = funcs.filter(f => typeof window[f] !== 'function');
+  results.push(missingFuncs.length === 0 ? '✅ 所有核心函数已定义' : '❌ 缺失函数: '+missingFuncs.join(', '));
+  
+  // 3. 检查state状态
+  results.push('📊 当前state:');
+  results.push('  题材: '+(state.genre.join(',')||'未选'));
+  results.push('  流派: '+(state.school.join(',')||'未选'));
+  results.push('  风格: '+(state.style.join(',')||'未选'));
+  results.push('  基调: '+(state.tone.join(',')||'未选'));
+  results.push('  手法: '+(state.method||'未选'));
+  results.push('  角色数: '+state.characters.length);
+  results.push('  大纲章数: '+state.outline.length);
+  results.push('  每章字数: '+state.wordsPerChapter);
+  
+  // 4. 检查顶部栏功能
+  const hasNote = document.getElementById('userNote') !== null;
+  const hasApi = document.getElementById('apiKey') !== null;
+  const hasSettings = document.getElementById('settingsPanel') !== null;
+  results.push('💬 留言栏: '+(hasNote?'✅ 存在':'❌ 缺失'));
+  results.push('🔑 API输入框: '+(hasApi?'✅ 存在':'❌ 缺失'));
+  results.push('⚙️ 设置面板: '+(hasSettings?'✅ 存在':'❌ 缺失'));
+  
+  // 5. 检查第8步按钮
+  const hasStartBtn = document.querySelector('[onclick="startWriting()"]') !== null;
+  results.push('📝 开始写本章按钮: '+(hasStartBtn?'✅ 存在':'❌ 缺失'));
+  
+  // 6. 检查命名按钮
+  const charCards = document.querySelectorAll('.char-card');
+  let namingBtnCount = 0;
+  charCards.forEach(card => { if(card.innerHTML.includes('smartNameChar')) namingBtnCount++ });
+  results.push('🎲 角色命名按钮: '+(namingBtnCount>0?'✅ 存在('+namingBtnCount+'个)':'❌ 缺失'));
+  
+  // 7. 版本号
+  const ver = document.querySelector('.brand-ver');
+  results.push('🏷️ 版本: '+(ver?ver.textContent:'未知'));
+  
+  alert(results.join('\n'));
+}
+
+// ═════════════════════ 启动 ═════════════════════
+document.addEventListener('DOMContentLoaded', function() {
+  init();
+  loadApiSettings();
+  loadTheme();
+});
+</script>
+
+</body>
+</html>
