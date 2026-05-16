@@ -486,16 +486,19 @@ class NWACSHandler(BaseHTTPRequestHandler):
                 traceback.print_exc()
                 self._send_json({"success": False, "error": str(e)[:200]})
         elif path == '/' or path == '/index.html':
-            frontend_path = os.path.join(os.path.dirname(__file__), 'frontend', 'index.html')
-            if os.path.exists(frontend_path):
-                with open(frontend_path, 'r', encoding='utf-8') as f:
-                    html = f.read()
-                self.send_response(200)
-                self.send_header('Content-Type', 'text/html; charset=utf-8')
-                self.end_headers()
-                self.wfile.write(html.encode('utf-8'))
-            else:
-                self._send_json({"error": "Frontend not found"}, 404)
+            # 优先服务最新的 index_v9_final.html
+            frontend_dir = os.path.join(os.path.dirname(__file__), 'frontend')
+            for fname in ['index_v9_final.html', 'index.html']:
+                frontend_path = os.path.join(frontend_dir, fname)
+                if os.path.exists(frontend_path):
+                    with open(frontend_path, 'r', encoding='utf-8') as f:
+                        html = f.read()
+                    self.send_response(200)
+                    self.send_header('Content-Type', 'text/html; charset=utf-8')
+                    self.end_headers()
+                    self.wfile.write(html.encode('utf-8'))
+                    return
+            self._send_json({"error": "Frontend not found"}, 404)
         else:
             self._send_json({"error": "Not found"}, 404)
     

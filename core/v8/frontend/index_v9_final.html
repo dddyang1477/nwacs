@@ -281,9 +281,11 @@ textarea{resize:vertical;min-height:60px}
         </div>
       </div>
     </div>
-    <div style="margin-top:12px;display:flex;gap:12px">
+    <div style="margin-top:12px;display:flex;gap:12px;align-items:center;flex-wrap:wrap">
       <button class="btn btn-primary" style="padding:8px 20px" onclick="saveApiSettings()">💾 保存设置</button>
       <button class="btn btn-secondary" style="padding:8px 20px" onclick="testApiConnection()">🔗 测试连接</button>
+      <button class="btn btn-secondary" style="padding:8px 20px" onclick="toggleBackendMode()" id="backendModeIndicator">⚪ 本地模板模式</button>
+      <span style="font-size:0.75rem;color:var(--text-tertiary)">切换后生成剧情/大纲/章节将调用后端AI</span>
     </div>
   </div>
 
@@ -606,6 +608,39 @@ textarea{resize:vertical;min-height:60px}
 </div>
 
 <script>
+// ═════════════════════ API 桥接层（前后端联动）═════════════════════
+const API_BASE = (() => {
+  const origin = window.location.origin;
+  if (origin.includes('localhost') || origin.includes('127.0.0.1')) return origin;
+  return '';
+})();
+
+const apiClient = {
+  async call(endpoint, data = null, method = 'POST') {
+    const url = `${API_BASE}/api${endpoint}`;
+    const opts = {
+      method,
+      headers: { 'Content-Type': 'application/json' },
+    };
+    if (data && method !== 'GET') opts.body = JSON.stringify(data);
+    const res = await fetch(url, opts);
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    return await res.json();
+  },
+  async get(endpoint) { return this.call(endpoint, null, 'GET'); },
+  async post(endpoint, data) { return this.call(endpoint, data, 'POST'); },
+};
+
+let useBackend = localStorage.getItem('nwacs_use_backend') === 'true';
+
+function toggleBackendMode() {
+  useBackend = !useBackend;
+  localStorage.setItem('nwacs_use_backend', useBackend);
+  const el = document.getElementById('backendModeIndicator');
+  if (el) el.textContent = useBackend ? '🟢 后端AI模式' : '⚪ 本地模板模式';
+  return useBackend;
+}
+
 // ═════════════════════ 数据配置 ═════════════════════
 const DATA = {
   genre: [
@@ -689,7 +724,11 @@ function init() {
   renderGrid('toneGrid', DATA.tone, 'tone', 3);
   renderGrid('methodGrid', DATA.method, 'method', 1);
   renderGrid('worldTypeGrid', DATA.worldType, 'worldType', 1);
-  
+
+  // 初始化后端模式指示器
+  const backendEl = document.getElementById('backendModeIndicator');
+  if (backendEl) backendEl.textContent = useBackend ? '🟢 后端AI模式' : '⚪ 本地模板模式';
+
   // 初始化角色
   initCharacters();
   
@@ -1316,13 +1355,56 @@ function clearCharacters() {
   }
 }
 
-function generatePlots() {
+async function generatePlots() {
   const genre = state.genre[0] || '玄幻';
   const style = state.style[0] || '热血爽文';
   const method = state.method || '三幕结构';
   const tone = state.tone[0] || '紧张刺激';
   const school = state.school[0] || '';
 
+  // ── 后端AI模式 ──
+  if (useBackend) {
+    try {
+      document.getElementById('plotList').innerHTML = '<div class="outline-item" style="text-align:center;padding:20px"><span class="spinner"></span> 正在调用后端AI生成剧情方案...</div>';
+      const res = await apiClient.post('/generate_plots', {
+        genres: state.genre,
+        styles: state.style,
+        tones: state.tone,
+        schools: state.school,
+        school_names: state.school_names || state.school,
+        writing_method: state.method,
+        length: '自定义字数',
+        total_word_count: (parseInt(document.getElementById('totalWords')?.value || 50) * 10000),
+        target_word_count: parseInt(document.getElementById('wordsPerChapter')?.value || 4000),
+        theme: document.getElementById('theme')?.value || '逆境成长',
+        protagonist: state.characters.find(c => c.role === '主角')?.name || '',
+        extra_requirements: document.getElementById('extraReq')?.value || '',
+        world_requirement: document.getElementById('worldReq')?.value || '',
+        creation_notes: document.getElementById('creationNote')?.value || ''
+      });
+      if (res.success && res.plots) {
+        const plotTexts = res.plots.map((p, i) => {
+          const letter = ['甲', '乙', '丙'][i];
+          return `【方案${letter}·${p.conflict || p.title || '剧情方案'}】核心目标：${p.goal || ''}｜情节脉络：${(p.events || p.summary || '').substring(0, 80)}...｜风格：${style}｜基调：${tone}｜模板：后端AI生成`;
+        });
+        document.getElementById('plotList').innerHTML = plotTexts.map((p, i) => `
+          <div class="outline-item ${i===0?'main-line':''}" onclick="selectPlot(${i})">
+            <div style="font-weight:600;margin-bottom:6px">${p.split('｜')[0]}</div>
+            <div style="font-size:0.82rem;color:var(--text-secondary)">${p.split('｜').slice(1).join('｜')}</div>
+          </div>
+        `).join('');
+        state.plots = plotTexts;
+        state.plotData = res.plots;
+        state.plot = plotTexts[0];
+        document.getElementById('preview-5').innerHTML = `题材：<b>${genre}</b>｜手法：<b>${method}</b>｜已生成3个方案（后端AI）`;
+        return;
+      }
+    } catch (e) {
+      console.warn('后端剧情生成失败，回退到本地模板：', e);
+    }
+  }
+
+  // ── 本地模板模式（原逻辑） ──
   // 查找模板
   let templates = PLOT_TEMPLATES[genre] || PLOT_TEMPLATES['玄幻'];
   let plots = templates.default;
@@ -1372,7 +1454,7 @@ function selectPlot(index) {
   document.getElementById('preview-5').innerHTML = `已选方案：<b>${index+1}</b>｜冲突：<b>${state.plotData[index]?.conflict||''}</b>`;
 }
 
-function generateOutline() {
+async function generateOutline() {
   const totalWords = parseInt(document.getElementById('totalWords').value) || 50;
   const chapterCount = Math.ceil(totalWords * 10000 / state.wordsPerChapter);
   const genre = state.genre[0] || '玄幻';
@@ -1381,6 +1463,36 @@ function generateOutline() {
   const tone = state.tone[0] || '紧张刺激';
   const plotData = state.selectedPlotData || {conflict:'命运抗争',goal:'成为强者',events:'历经磨难→不断成长→最终成功'};
   const phases = METHOD_PHASES[method] || METHOD_PHASES['三幕结构'];
+
+  // ── 后端AI模式 ──
+  if (useBackend) {
+    try {
+      document.getElementById('outlineList').innerHTML = '<div class="outline-item" style="text-align:center;padding:20px"><span class="spinner"></span> 正在调用后端AI生成大纲...</div>';
+      const res = await apiClient.post('/generate_detailed_outline', {
+        outline: state.outline,
+        genres: state.genre,
+        styles: state.style,
+        tones: state.tone,
+        method: state.method,
+        target_word_count: state.wordsPerChapter
+      });
+      if (res.success && res.detailed_outline && res.detailed_outline.chapters) {
+        const chapters = res.detailed_outline.chapters;
+        state.outline = chapters.map((ch, i) => ({
+          chapter: ch.chapter || (i + 1),
+          phase: ch.phase || '发展',
+          title: ch.title || `第${i+1}章`,
+          content: ch.summary || ch.content || '',
+          type: ch.type || '发展'
+        }));
+        renderOutline();
+        document.getElementById('preview-6').innerHTML = `<b>${genre}</b>｜<b>${chapters.length}</b>章｜<b>${totalWords}</b>万字｜手法：<b>${method}</b>｜风格：<b>${style}</b>｜基调：<b>${tone}</b>（后端AI）`;
+        return;
+      }
+    } catch (e) {
+      console.warn('后端大纲生成失败，回退到本地模板：', e);
+    }
+  }
 
   // 获取风格和基调影响
   const styleEffect = STYLE_EFFECTS[style] || STYLE_EFFECTS['热血爽文'];
@@ -1601,7 +1713,7 @@ function updateChapterDisplay() {
   updateWritingSummary();
 }
 
-function startWriting() {
+async function startWriting() {
   try {
     const editor = document.getElementById('writingEditor');
     const ch = state.outline[state.currentChapter - 1];
@@ -1627,16 +1739,52 @@ function startWriting() {
     const heroPersonality = hero?.personality || '坚毅果敢';
     const heroGoal = hero?.goal || '成为强者';
 
-    // 根据题材和章节生成完整章节内容
-    const chapterContent = generateChapterContent(genre, ch, detail, {
-      heroName, heroineName, mentorName, villainName,
-      heroPersonality, heroGoal, worldEra, worldPower,
-      currentChapter: state.currentChapter,
-      plotConflict: state.selectedPlotData?.conflict || '命运抗争',
-      plotGoal: state.selectedPlotData?.goal || '成为强者',
-      tone: state.tone[0] || '紧张刺激',
-      style: state.style[0] || '热血爽文'
-    });
+    let chapterContent = '';
+
+    // ── 后端AI模式 ──
+    if (useBackend) {
+      try {
+        editor.placeholder = '正在调用后端AI生成章节内容，请稍候...';
+        const res = await apiClient.post('/generate_chapter', {
+          genre: state.genre,
+          style: state.style,
+          tone: state.tone,
+          chapter_number: state.currentChapter,
+          chapter_title: ch.title || `第${state.currentChapter}章`,
+          chapter_summary: ch.content || '',
+          outline: state.outline.map(o => ({chapter: o.chapter, title: o.title, content: o.content})),
+          characters: state.characters,
+          plot_conflict: state.selectedPlotData?.conflict || '命运抗争',
+          plot_goal: state.selectedPlotData?.goal || '成为强者',
+          writing_method: state.method,
+          target_word_count: state.wordsPerChapter,
+          world_setting: {era: worldEra, power_system: worldPower}
+        });
+        if (res.success && res.content) {
+          chapterContent = res.content;
+        } else {
+          throw new Error(res.error || '后端返回内容为空');
+        }
+      } catch (e) {
+        console.warn('后端章节生成失败，回退到本地模板：', e);
+        alert('后端生成失败，已回退到本地模板模式。错误：' + e.message);
+      }
+    }
+
+    // ── 本地模板模式（回退或默认） ──
+    if (!chapterContent) {
+      chapterContent = generateChapterContent(genre, ch, detail, {
+        heroName, heroineName, mentorName, villainName,
+        heroPersonality, heroGoal, worldEra, worldPower,
+        currentChapter: state.currentChapter,
+        plotConflict: state.selectedPlotData?.conflict || '命运抗争',
+        plotGoal: state.selectedPlotData?.goal || '成为强者',
+        tone: state.tone[0] || '紧张刺激',
+        style: state.style[0] || '热血爽文'
+      });
+    }
+
+    editor.placeholder = '在此输入或生成章节内容...';
 
     if (!chapterContent) {
       alert('⚠️ 章节生成失败，内容为空');
@@ -3574,14 +3722,35 @@ function addComment() {
   loadComments();
 }
 
-function testApiConnection() {
+async function testApiConnection() {
+  const results = [];
+  // 1. 测试NWACS后端服务
+  try {
+    const health = await apiClient.get('/health');
+    if (health.status === 'ok') {
+      results.push('✅ NWACS后端服务：正常');
+      // 获取后端信息
+      const models = await apiClient.get('/models');
+      results.push(`📡 当前模型：${models.current?.model_name || '未知'}`);
+      const opts = await apiClient.get('/options');
+      results.push(`📚 题材数：${Object.keys(opts.genres||{}).length} 个`);
+    } else {
+      results.push('❌ NWACS后端服务：异常');
+    }
+  } catch (e) {
+    results.push('❌ NWACS后端服务：未启动或无法连接');
+    results.push(`   错误：${e.message}`);
+  }
+  // 2. 测试外部API
   const apiUrl = document.getElementById('apiUrl').value;
   const apiKey = document.getElementById('apiKeyFull').value;
-  if (!apiUrl || !apiKey) {
-    alert('⚠️ 请先填写API地址和Key！');
-    return;
+  if (apiUrl && apiKey) {
+    results.push('🔑 外部API配置：已填写');
+    results.push('   （外部API连通性由后端统一管理）');
+  } else {
+    results.push('⚠️ 外部API：未配置');
   }
-  alert('🔗 正在测试连接...\n（此功能需要实际API支持）');
+  alert(results.join('\n'));
 }
 
 function getApiSettings() {
